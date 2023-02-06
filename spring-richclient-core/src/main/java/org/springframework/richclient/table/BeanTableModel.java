@@ -107,19 +107,19 @@ public abstract class BeanTableModel extends BaseTableModel {
 
 	@Override
 	protected Object getValueAtInternal(Object row, int columnIndex) {
-		beanWrapper.setWrappedInstance(row);
+		((BeanWrapperImpl) beanWrapper).setWrappedInstance(row);
 		return beanWrapper.getPropertyValue(columnPropertyNames[columnIndex]);
 	}
 
 	@Override
 	protected boolean isCellEditableInternal(Object row, int columnIndex) {
-		beanWrapper.setWrappedInstance(row);
+		((BeanWrapperImpl) beanWrapper).setWrappedInstance(row);
 		return beanWrapper.isWritableProperty(getColumnPropertyName(columnIndex));
 	}
 
 	@Override
 	protected void setValueAtInternal(Object value, Object bean, int columnIndex) {
-		beanWrapper.setWrappedInstance(bean);
+		((BeanWrapperImpl) beanWrapper).setWrappedInstance(bean);
 		beanWrapper.setPropertyValue(getColumnPropertyName(columnIndex), value);
 	}
 }

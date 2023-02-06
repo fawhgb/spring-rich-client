@@ -17,6 +17,7 @@ package org.springframework.binding.validation.support;
 
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -41,6 +42,8 @@ import org.springframework.binding.validation.ValidationResults;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ReflectiveVisitorHelper;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.richclient.application.ApplicationServicesLocator;
 import org.springframework.richclient.core.Severity;
 import org.springframework.util.Assert;
@@ -283,11 +286,6 @@ public class ValangRichValidator implements RichValidator {
 		}
 
 		@Override
-		public void setWrappedInstance(Object obj) {
-			throw new UnsupportedOperationException("Not implemented");
-		}
-
-		@Override
 		public Object getWrappedInstance() {
 			throw new UnsupportedOperationException("Not implemented");
 		}
@@ -386,6 +384,46 @@ public class ValangRichValidator implements RichValidator {
 		@Override
 		public Object convertIfNecessary(Object object, Class aClass, MethodParameter methodParameter)
 				throws TypeMismatchException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
+
+		@Override
+		public void setConversionService(ConversionService conversionService) {
+			throw new UnsupportedOperationException("Not implemented");
+		}
+
+		@Override
+		public ConversionService getConversionService() {
+			throw new UnsupportedOperationException("Not implemented");
+		}
+
+		@Override
+		public void setAutoGrowNestedPaths(boolean autoGrowNestedPaths) {
+			throw new UnsupportedOperationException("Not implemented");
+		}
+
+		@Override
+		public boolean isAutoGrowNestedPaths() {
+			throw new UnsupportedOperationException("Not implemented");
+		}
+
+		@Override
+		public TypeDescriptor getPropertyTypeDescriptor(String propertyName) throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
+
+		@Override
+		public <T> T convertIfNecessary(Object value, Class<T> requiredType, Field field) throws TypeMismatchException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
+
+		@Override
+		public void setAutoGrowCollectionLimit(int autoGrowCollectionLimit) {
+			throw new UnsupportedOperationException("Not implemented");
+		}
+
+		@Override
+		public int getAutoGrowCollectionLimit() {
 			throw new UnsupportedOperationException("Not implemented");
 		}
 	}

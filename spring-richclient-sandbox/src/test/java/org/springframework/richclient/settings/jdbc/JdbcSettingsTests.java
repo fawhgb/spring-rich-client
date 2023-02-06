@@ -29,100 +29,105 @@ import org.springframework.richclient.settings.SettingsAbstractTests;
  * @author Peter De Bruycker
  */
 public class JdbcSettingsTests extends SettingsAbstractTests {
-    private DataSource dataSource;
-    private JdbcTemplate jdbcTemplate;
+	private DataSource dataSource;
+	private JdbcTemplate jdbcTemplate;
 
-    public JdbcSettingsTests() {
-    }
+	public JdbcSettingsTests() {
+	}
 
-    protected Settings createSettings() {
-        return new JdbcSettings(dataSource, "user", Integer.valueOf(5), "test");
-    }
+	@Override
+	protected Settings createSettings() {
+		return new JdbcSettings(dataSource, "user", Integer.valueOf(5), "test");
+	}
 
-    protected void doSetUp() throws Exception {
-        dataSource = createDataSource();
-        jdbcTemplate = new JdbcTemplate(dataSource);
+	@Override
+	protected void doSetUp() throws Exception {
+		dataSource = createDataSource();
+		jdbcTemplate = new JdbcTemplate(dataSource);
 
-        // setup the schema
-        jdbcTemplate.execute("DROP TABLE SETTINGS_VALUES IF EXISTS");
-        jdbcTemplate.execute("DROP TABLE SETTINGS IF EXISTS");
+		// setup the schema
+		jdbcTemplate.execute("DROP TABLE SETTINGS_VALUES IF EXISTS");
+		jdbcTemplate.execute("DROP TABLE SETTINGS IF EXISTS");
 
-        jdbcTemplate.execute("CREATE TABLE SETTINGS (ID INTEGER IDENTITY, KEY VARCHAR(250) NOT NULL, PARENT INTEGER, USER VARCHAR(250) NOT NULL, CONSTRAINT SYS_CT_52 UNIQUE(KEY,USER))");
-        jdbcTemplate.execute("CREATE TABLE SETTINGS_VALUES (SETTINGS_ID INTEGER NOT NULL, KEY VARCHAR(250) NOT NULL, VALUE VARCHAR(250), PRIMARY KEY(SETTINGS_ID,KEY), CONSTRAINT SYS_FK_48 FOREIGN KEY(SETTINGS_ID) REFERENCES SETTINGS(ID))");
-    }
+		jdbcTemplate.execute(
+				"CREATE TABLE SETTINGS (ID INTEGER IDENTITY, KEY VARCHAR(250) NOT NULL, PARENT INTEGER, USER VARCHAR(250) NOT NULL, CONSTRAINT SYS_CT_52 UNIQUE(KEY,USER))");
+		jdbcTemplate.execute(
+				"CREATE TABLE SETTINGS_VALUES (SETTINGS_ID INTEGER NOT NULL, KEY VARCHAR(250) NOT NULL, VALUE VARCHAR(250), PRIMARY KEY(SETTINGS_ID,KEY), CONSTRAINT SYS_FK_48 FOREIGN KEY(SETTINGS_ID) REFERENCES SETTINGS(ID))");
+	}
 
-    /**
-     * Creates a <code>DataSource</code> using hsqldb in memory-only mode
-     * @return the <code>DataSource</code>
-     */
-    private static DataSource createDataSource() {
-        DriverManagerDataSource ds = new DriverManagerDataSource();
-        ds.setDriverClassName("org.hsqldb.jdbcDriver");
-        ds.setUrl("jdbc:hsqldb:mem:test-database");
-        ds.setUsername("sa");
+	/**
+	 * Creates a <code>DataSource</code> using hsqldb in memory-only mode
+	 * 
+	 * @return the <code>DataSource</code>
+	 */
+	private static DataSource createDataSource() {
+		DriverManagerDataSource ds = new DriverManagerDataSource();
+		ds.setDriverClassName("org.hsqldb.jdbcDriver");
+		ds.setUrl("jdbc:hsqldb:mem:test-database");
+		ds.setUsername("sa");
 
-        return ds;
-    }
+		return ds;
+	}
 
-    public void testLoadExistingSettings() throws Exception {
-        jdbcTemplate.execute("INSERT INTO SETTINGS (ID, KEY, USER) VALUES (55, 'test-key', 'test-user')");
-        jdbcTemplate.execute("INSERT INTO SETTINGS_VALUES (SETTINGS_ID, KEY, VALUE) VALUES (55, 'key0', 'true')");
-        jdbcTemplate.execute("INSERT INTO SETTINGS_VALUES (SETTINGS_ID, KEY, VALUE) VALUES (55, 'key1', '25')");
+	public void testLoadExistingSettings() throws Exception {
+		jdbcTemplate.execute("INSERT INTO SETTINGS (ID, KEY, USER) VALUES (55, 'test-key', 'test-user')");
+		jdbcTemplate.execute("INSERT INTO SETTINGS_VALUES (SETTINGS_ID, KEY, VALUE) VALUES (55, 'key0', 'true')");
+		jdbcTemplate.execute("INSERT INTO SETTINGS_VALUES (SETTINGS_ID, KEY, VALUE) VALUES (55, 'key1', '25')");
 
-        JdbcSettings settings = new JdbcSettings(dataSource, "test-user", Integer.valueOf(55), "test-key");
-        settings.load();
-    }
+		JdbcSettings settings = new JdbcSettings(dataSource, "test-user", Integer.valueOf(55), "test-key");
+		settings.load();
+	}
 
-    public void testLoadHierarchy() throws Exception {
+	public void testLoadHierarchy() throws Exception {
 
-    }
+	}
 
-    public void testSaveHierarchy() throws Exception {
-        JdbcSettings settings = new JdbcSettings(dataSource, "test-user", null, "test-key");
-        settings.setBoolean("boolean-value", true);
+	public void testSaveHierarchy() throws Exception {
+		JdbcSettings settings = new JdbcSettings(dataSource, "test-user", null, "test-key");
+		settings.setBoolean("boolean-value", true);
 
-        JdbcSettings childSettings = (JdbcSettings)settings.getSettings("child");
-        childSettings.setString("string", "test");
-        childSettings.save();
-        
-        assertEquals(Integer.valueOf(0), settings.getId());
-        assertEquals(Integer.valueOf(1), childSettings.getId());
-    }
+		JdbcSettings childSettings = (JdbcSettings) settings.getSettings("child");
+		childSettings.setString("string", "test");
+		childSettings.save();
 
-    public void testSaveNewSettings() throws Exception {
-        JdbcSettings settings = new JdbcSettings(dataSource, "test-user", null, "test-key");
+		assertEquals(Integer.valueOf(0), settings.getId());
+		assertEquals(Integer.valueOf(1), childSettings.getId());
+	}
 
-        assertEquals("name not set", "test-key", settings.getName());
-        assertEquals("user not set", "test-user", settings.getUser());
-        assertNull("id must be null until first save", settings.getId());
+	public void testSaveNewSettings() throws Exception {
+		JdbcSettings settings = new JdbcSettings(dataSource, "test-user", null, "test-key");
 
-        settings.setBoolean("boolean-value", true);
-        settings.setString("string-value", "value");
+		assertEquals("name not set", "test-key", settings.getName());
+		assertEquals("user not set", "test-user", settings.getUser());
+		assertNull("id must be null until first save", settings.getId());
 
-        settings.save();
+		settings.setBoolean("boolean-value", true);
+		settings.setString("string-value", "value");
 
-        assertEquals(Integer.valueOf(0), settings.getId());
+		settings.save();
 
-        assertEquals(1, jdbcTemplate.queryForInt("SELECT count(*) FROM SETTINGS"));
-        Map map = jdbcTemplate.queryForMap("SELECT * FROM SETTINGS WHERE ID = 0");
-        assertEquals(Integer.valueOf(0), map.get("ID"));
-        assertEquals("test-key", map.get("KEY"));
-        assertEquals(null, map.get("PARENT"));
-        assertEquals("test-user", map.get("USER"));
+		assertEquals(Integer.valueOf(0), settings.getId());
 
-        assertEquals(2, jdbcTemplate.queryForInt("SELECT count(*) FROM SETTINGS_VALUES"));
-        List values = jdbcTemplate.queryForList("SELECT * FROM SETTINGS_VALUES");
-        assertEquals(2, values.size());
-        Map first = (Map) values.get(0);
-        Map second = (Map) values.get(1);
+		assertEquals(1, jdbcTemplate.queryForObject("SELECT count(*) FROM SETTINGS", Integer.class).intValue());
+		Map map = jdbcTemplate.queryForMap("SELECT * FROM SETTINGS WHERE ID = 0");
+		assertEquals(Integer.valueOf(0), map.get("ID"));
+		assertEquals("test-key", map.get("KEY"));
+		assertEquals(null, map.get("PARENT"));
+		assertEquals("test-user", map.get("USER"));
 
-        assertEquals(Integer.valueOf(0), first.get("SETTINGS_ID"));
-        assertEquals(Integer.valueOf(0), second.get("SETTINGS_ID"));
+		assertEquals(2, jdbcTemplate.queryForObject("SELECT count(*) FROM SETTINGS_VALUES", Integer.class).intValue());
+		List values = jdbcTemplate.queryForList("SELECT * FROM SETTINGS_VALUES");
+		assertEquals(2, values.size());
+		Map first = (Map) values.get(0);
+		Map second = (Map) values.get(1);
 
-        assertEquals("boolean-value", first.get("KEY"));
-        assertEquals("true", first.get("VALUE"));
+		assertEquals(Integer.valueOf(0), first.get("SETTINGS_ID"));
+		assertEquals(Integer.valueOf(0), second.get("SETTINGS_ID"));
 
-        assertEquals("string-value", second.get("KEY"));
-        assertEquals("value", second.get("VALUE"));
-    }
+		assertEquals("boolean-value", first.get("KEY"));
+		assertEquals("true", first.get("VALUE"));
+
+		assertEquals("string-value", second.get("KEY"));
+		assertEquals("value", second.get("VALUE"));
+	}
 }

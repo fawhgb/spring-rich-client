@@ -29,4 +29,9 @@ public class ApplicationWindowScope implements Scope {
 		return null;
 	}
 
+	@Override
+	public Object resolveContextualObject(String key) {
+		return null;
+	}
+
 }

@@ -126,7 +126,7 @@ public class GlazedTableModel extends EventTableModel {
 	}
 
 	protected Object getColumnValue(Object row, int column) {
-		beanWrapper.setWrappedInstance(row);
+		((BeanWrapperImpl) beanWrapper).setWrappedInstance(row);
 		return beanWrapper.getPropertyValue(columnPropertyNames[column]);
 	}
 
@@ -158,12 +158,12 @@ public class GlazedTableModel extends EventTableModel {
 	 * @return editable
 	 */
 	protected boolean isEditable(Object row, int column) {
-		beanWrapper.setWrappedInstance(row);
+		((BeanWrapperImpl) beanWrapper).setWrappedInstance(row);
 		return beanWrapper.isWritableProperty(columnPropertyNames[column]);
 	}
 
 	protected Object setColumnValue(Object row, Object value, int column) {
-		beanWrapper.setWrappedInstance(row);
+		((BeanWrapperImpl) beanWrapper).setWrappedInstance(row);
 		beanWrapper.setPropertyValue(columnPropertyNames[column], value);
 
 		return row;

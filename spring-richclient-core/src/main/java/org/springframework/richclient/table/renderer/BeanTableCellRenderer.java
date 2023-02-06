@@ -62,7 +62,7 @@ public class BeanTableCellRenderer extends DefaultTableCellRenderer {
 			if (beanWrapper == null) {
 				beanWrapper = new BeanWrapperImpl(value);
 			} else {
-				beanWrapper.setWrappedInstance(value);
+				((BeanWrapperImpl) beanWrapper).setWrappedInstance(value);
 			}
 			try {
 				BeanInfo info = Introspector.getBeanInfo(value.getClass());

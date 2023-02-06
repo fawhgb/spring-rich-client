@@ -185,6 +185,18 @@
             <artifactId>commons-httpclient</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>burlap</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.xml.rpc</groupId>
+            <artifactId>javax.xml.rpc-api</artifactId>
+        </dependency>
 
         <!-- Needed for SortedListModel to work
    Is actually added by spring-modules-validation in

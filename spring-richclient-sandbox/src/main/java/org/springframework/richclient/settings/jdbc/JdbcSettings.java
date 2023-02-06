@@ -132,7 +132,7 @@ public class JdbcSettings extends AbstractSettings {
 			JdbcSettings parent = (JdbcSettings) getParent();
 			template.update("INSERT INTO SETTINGS (KEY, PARENT, USER) VALUES (?, ?, ?)",
 					new Object[] { getName(), parent == null ? null : parent.getId(), user });
-			id = Integer.valueOf(template.queryForInt("SELECT MAX(ID) FROM SETTINGS"));
+			id = Integer.valueOf(template.queryForObject("SELECT MAX(ID) FROM SETTINGS", Integer.class));
 		} else {
 			for (Iterator iter = remove.iterator(); iter.hasNext();) {
 				String key = (String) iter.next();

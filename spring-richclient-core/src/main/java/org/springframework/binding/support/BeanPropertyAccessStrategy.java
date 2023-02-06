@@ -60,7 +60,7 @@ public class BeanPropertyAccessStrategy extends AbstractPropertyAccessStrategy {
 	public BeanPropertyAccessStrategy(final ValueModel domainObjectHolder) {
 		super(domainObjectHolder);
 		this.beanWrapper = new BeanWrapperImpl(false);
-		this.beanWrapper.setWrappedInstance(domainObjectHolder.getValue());
+		((BeanWrapperImpl) this.beanWrapper).setWrappedInstance(domainObjectHolder.getValue());
 	}
 
 	/**
@@ -108,6 +108,6 @@ public class BeanPropertyAccessStrategy extends AbstractPropertyAccessStrategy {
 
 	@Override
 	protected void domainObjectChanged() {
-		beanWrapper.setWrappedInstance(getDomainObject());
+		((BeanWrapperImpl) beanWrapper).setWrappedInstance(getDomainObject());
 	}
 }

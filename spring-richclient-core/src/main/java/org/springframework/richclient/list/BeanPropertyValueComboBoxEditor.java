@@ -101,7 +101,7 @@ public class BeanPropertyValueComboBoxEditor implements ComboBoxEditor {
 		if (item == null) {
 			innerEditor.setItem("");
 		} else {
-			beanWrapper.setWrappedInstance(item);
+			((BeanWrapperImpl) beanWrapper).setWrappedInstance(item);
 			if (renderedProperty != null) {
 				innerEditor.setItem(String.valueOf(beanWrapper.getPropertyValue(renderedProperty)));
 			} else {

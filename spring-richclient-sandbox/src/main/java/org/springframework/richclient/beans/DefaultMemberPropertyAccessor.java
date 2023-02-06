@@ -33,6 +33,7 @@ import org.springframework.beans.NullValueInNestedPathException;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.core.JdkVersion;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.richclient.util.ReflectionUtils;
 
 /**
@@ -307,6 +308,11 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 	public Object convertIfNecessary(Object value, Class requiredType, MethodParameter methodParam)
 			throws TypeMismatchException {
 		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TypeDescriptor getPropertyTypeDescriptor(String propertyName) throws BeansException {
 		return null;
 	}
 }
