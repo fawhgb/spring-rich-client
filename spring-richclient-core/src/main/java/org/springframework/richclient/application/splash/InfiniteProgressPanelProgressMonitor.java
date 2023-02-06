@@ -18,8 +18,9 @@ package org.springframework.richclient.application.splash;
 import org.springframework.richclient.progress.ProgressMonitor;
 
 /**
- * <code>ProgressMonitor</code> adapter implementation for the <code>InfiniteProgressPanel</code>.
- * 
+ * <code>ProgressMonitor</code> adapter implementation for the
+ * <code>InfiniteProgressPanel</code>.
+ *
  * @author Peter De Bruycker
  */
 public class InfiniteProgressPanelProgressMonitor implements ProgressMonitor {
@@ -31,19 +32,23 @@ public class InfiniteProgressPanelProgressMonitor implements ProgressMonitor {
 		this.progressPanel = progressPanel;
 	}
 
+	@Override
 	public void worked(int work) {
 		// not used
 	}
 
+	@Override
 	public void taskStarted(String name, int totalWork) {
 		progressPanel.setText(name);
 		progressPanel.start();
 	}
 
+	@Override
 	public void subTaskStarted(String name) {
 		progressPanel.setText(name);
 	}
 
+	@Override
 	public void setCanceled(boolean b) {
 		if (b) {
 			progressPanel.interrupt();
@@ -51,10 +56,12 @@ public class InfiniteProgressPanelProgressMonitor implements ProgressMonitor {
 		cancelled = b;
 	}
 
+	@Override
 	public boolean isCanceled() {
 		return cancelled;
 	}
 
+	@Override
 	public void done() {
 		progressPanel.stop();
 	}

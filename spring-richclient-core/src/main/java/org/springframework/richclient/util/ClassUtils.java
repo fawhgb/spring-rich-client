@@ -75,16 +75,15 @@ public class ClassUtils {
 	public static void initializeClass(Class clazz) {
 		try {
 			Class.forName(clazz.getName(), true, Thread.currentThread().getContextClassLoader());
-		}
-		catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	/**
-	 * Returns the qualified class field name with the specified value. For
-	 * example, with a class defined with a static field "NORMAL" with value =
-	 * "0", passing in "0" would return: className.NORMAL.
+	 * Returns the qualified class field name with the specified value. For example,
+	 * with a class defined with a static field "NORMAL" with value = "0", passing
+	 * in "0" would return: className.NORMAL.
 	 *
 	 * @return The qualified field.
 	 */
@@ -97,8 +96,7 @@ public class ClassUtils {
 				if (value.equals(constant)) {
 					return clazz.getName() + "." + field.getName();
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
@@ -112,14 +110,12 @@ public class ClassUtils {
 		Class clazz;
 		try {
 			clazz = classForName(ClassUtils.qualifier(qualifiedFieldName));
-		}
-		catch (ClassNotFoundException cnfe) {
+		} catch (ClassNotFoundException cnfe) {
 			return null;
 		}
 		try {
 			return clazz.getField(ClassUtils.unqualify(qualifiedFieldName)).get(null);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
@@ -134,8 +130,7 @@ public class ClassUtils {
 	public static Class classForName(String name) throws ClassNotFoundException {
 		try {
 			return Thread.currentThread().getContextClassLoader().loadClass(name);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return Class.forName(name);
 		}
 	}
@@ -143,8 +138,7 @@ public class ClassUtils {
 	public static Method findMethod(String methodName, Class clazz, Class[] parmTypes) {
 		try {
 			return clazz.getMethod(methodName, parmTypes);
-		}
-		catch (NoSuchMethodException e) {
+		} catch (NoSuchMethodException e) {
 			return null;
 		}
 	}
@@ -176,8 +170,9 @@ public class ClassUtils {
 	 */
 	public static String qualifier(String qualifiedName) {
 		int loc = qualifiedName.lastIndexOf('.');
-		if (loc < 0)
+		if (loc < 0) {
 			return "";
+		}
 
 		return qualifiedName.substring(0, loc);
 	}
@@ -191,9 +186,8 @@ public class ClassUtils {
 
 	/**
 	 * Does the provided bean class represent a simple scalar property? A simple
-	 * scalar property is considered a value property; that is, it is not
-	 * another bean. Examples include primitives, primitive wrappers, Enums, and
-	 * Strings.
+	 * scalar property is considered a value property; that is, it is not another
+	 * bean. Examples include primitives, primitive wrappers, Enums, and Strings.
 	 */
 	public static boolean isSimpleScalar(Class clazz) {
 		return clazz.isPrimitive() || simpleClasses.contains(clazz) || LabeledEnum.class.isAssignableFrom(clazz);
@@ -204,12 +198,12 @@ public class ClassUtils {
 			logger.debug("Attempting to get method '" + name + "' on class " + locatorClass + " with arguments '"
 					+ StylerUtils.style(args) + "'");
 			Method method = locatorClass.getDeclaredMethod(name, args);
-			if ((method.getModifiers() & Modifier.STATIC) != 0)
+			if ((method.getModifiers() & Modifier.STATIC) != 0) {
 				return method;
+			}
 
 			return null;
-		}
-		catch (NoSuchMethodException e) {
+		} catch (NoSuchMethodException e) {
 			return null;
 		}
 	}
@@ -227,38 +221,38 @@ public class ClassUtils {
 	}
 
 	/**
-	 * Gets the equivalent class to convert to if the given clazz is a
-	 * primitive.
+	 * Gets the equivalent class to convert to if the given clazz is a primitive.
 	 *
 	 * @param clazz Class to examin.
 	 * @return the class to convert to or the inputted clazz.
 	 */
 	public static Class convertPrimitiveToWrapper(Class clazz) {
-		if (clazz == null || !clazz.isPrimitive())
+		if (clazz == null || !clazz.isPrimitive()) {
 			return clazz;
+		}
 
 		return (Class) primativeToWrapperMap.get(clazz);
 	}
 
 	/**
-	 * Given a {@link Map}where the keys are {@link Class}es, search the map
-	 * for the closest match of the key to the <tt>typeClass</tt>. This is
-	 * extremely useful to support polymorphism (and an absolute requirement to
-	 * find proxied classes where classes are acting as keys in a map).
+	 * Given a {@link Map}where the keys are {@link Class}es, search the map for the
+	 * closest match of the key to the <tt>typeClass</tt>. This is extremely useful
+	 * to support polymorphism (and an absolute requirement to find proxied classes
+	 * where classes are acting as keys in a map).
 	 * <p />
 	 *
-	 * For example: If the Map has keys of Number.class and String.class, using
-	 * a <tt>typeClass</tt> of Long.class will find the Number.class entry and
-	 * return its value.
+	 * For example: If the Map has keys of Number.class and String.class, using a
+	 * <tt>typeClass</tt> of Long.class will find the Number.class entry and return
+	 * its value.
 	 * <p />
 	 *
 	 * When doing the search, it looks for the most exact match it can, giving
 	 * preference to interfaces over class inheritance. As a performance
-	 * optimiziation, if it finds a match it stores the derived match in the map
-	 * so it does not have to be derived again.
+	 * optimiziation, if it finds a match it stores the derived match in the map so
+	 * it does not have to be derived again.
 	 *
 	 * @param typeClass the kind of class to search for
-	 * @param classMap the map where the keys are of type Class
+	 * @param classMap  the map where the keys are of type Class
 	 * @return null only if it can't find any match
 	 */
 	public static Object getValueFromMapForClass(final Class typeClass, final Map classMap) {
@@ -340,7 +334,7 @@ public class ClassUtils {
 	 * Is the given name a property in the class? In other words, does it have a
 	 * setter and/or a getter method?
 	 *
-	 * @param theClass the class to look for the property in
+	 * @param theClass     the class to look for the property in
 	 * @param propertyName the name of the property
 	 *
 	 * @return true if there is either a setter or a getter for the property
@@ -348,15 +342,16 @@ public class ClassUtils {
 	 * @throws IllegalArgumentException if either argument is null
 	 */
 	public static boolean isAProperty(Class theClass, String propertyName) {
-		if (theClass == null)
+		if (theClass == null) {
 			throw new IllegalArgumentException("theClass == null");
-		if (propertyName == null)
+		}
+		if (propertyName == null) {
 			throw new IllegalArgumentException("propertyName == null");
+		}
 
-		if (getReadMethod(theClass, propertyName) != null)
+		if ((getReadMethod(theClass, propertyName) != null) || (getWriteMethod(theClass, propertyName) != null)) {
 			return true;
-		if (getWriteMethod(theClass, propertyName) != null)
-			return true;
+		}
 		return false;
 	}
 
@@ -408,8 +403,7 @@ public class ClassUtils {
 	private static Method getMethod(final Class theClass, final String getterName) {
 		try {
 			return theClass.getMethod(getterName, null);
-		}
-		catch (NoSuchMethodException e) {
+		} catch (NoSuchMethodException e) {
 			return null;
 		}
 	}
@@ -457,20 +451,22 @@ public class ClassUtils {
 	 * For example, getPropertyClass(JFrame.class, "size") would return the
 	 * java.awt.Dimension class.
 	 *
-	 * @param parentClass the class to look for the property in
+	 * @param parentClass  the class to look for the property in
 	 * @param propertyName the name of the property
 	 *
 	 * @return the class of the property; never null
 	 *
 	 * @throws IllegalArgumentException if either argument is null
-	 * @throws IllegalArgumentException <tt>propertyName</tt> is not a
-	 * property of <tt>parentClass</tt>
+	 * @throws IllegalArgumentException <tt>propertyName</tt> is not a property of
+	 *                                  <tt>parentClass</tt>
 	 */
 	public static Class getPropertyClass(Class parentClass, String propertyName) throws IllegalArgumentException {
-		if (parentClass == null)
+		if (parentClass == null) {
 			throw new IllegalArgumentException("theClass == null");
-		if (propertyName == null)
+		}
+		if (propertyName == null) {
 			throw new IllegalArgumentException("propertyName == null");
+		}
 
 		final Method getterMethod = getReadMethod(parentClass, propertyName);
 		if (getterMethod != null) {

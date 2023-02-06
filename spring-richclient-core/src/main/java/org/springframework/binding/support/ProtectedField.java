@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 
 /**
  * marks a field as protected - usefull for password fields
- * 
+ *
  * @author Mathias Broekelmann
  */
 @Documented

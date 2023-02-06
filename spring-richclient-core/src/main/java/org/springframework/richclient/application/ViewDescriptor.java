@@ -29,17 +29,16 @@ import org.springframework.richclient.command.config.CommandButtonLabelInfo;
  */
 public interface ViewDescriptor extends PageComponentDescriptor {
 
-    /**
-     * Create a command that when executed, will attempt to show the
-     * page component described by this descriptor in the provided
-     * application window.
-     *
-     * @param window The window
-     *
-     * @return The show page component command.
-     */
-    public ActionCommand createShowViewCommand(ApplicationWindow window);
+	/**
+	 * Create a command that when executed, will attempt to show the page component
+	 * described by this descriptor in the provided application window.
+	 *
+	 * @param window The window
+	 *
+	 * @return The show page component command.
+	 */
+	public ActionCommand createShowViewCommand(ApplicationWindow window);
 
-    public CommandButtonLabelInfo getShowViewCommandLabel();
+	public CommandButtonLabelInfo getShowViewCommandLabel();
 
 }

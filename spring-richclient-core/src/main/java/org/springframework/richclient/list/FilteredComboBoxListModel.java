@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -26,56 +26,63 @@ import org.springframework.util.Assert;
  */
 public class FilteredComboBoxListModel extends FilteredListModel implements ComboBoxModel {
 
-    private boolean matchedSelected;
+	private static final long serialVersionUID = 1L;
 
-    private boolean selectingItem;
+	private boolean matchedSelected;
 
-    public FilteredComboBoxListModel(ComboBoxModel filteredModel, Constraint filter) {
-        super(filteredModel, filter);
-    }
+	private boolean selectingItem;
 
-    public void setFilteredModel(ListModel model) {
-        Assert.isInstanceOf(ComboBoxModel.class, model);
-        super.setFilteredModel(model);
-    }
+	public FilteredComboBoxListModel(ComboBoxModel filteredModel, Constraint filter) {
+		super(filteredModel, filter);
+	}
 
-    protected ComboBoxModel getComboBoxModel() {
-        return (ComboBoxModel) getFilteredModel();
-    }
+	@Override
+	public void setFilteredModel(ListModel model) {
+		Assert.isInstanceOf(ComboBoxModel.class, model);
+		super.setFilteredModel(model);
+	}
 
-    protected void onMatchingElement(Object element) {
-        if (element == getSelectedItem()) {
-            matchedSelected = true;
-        }
-    }
+	protected ComboBoxModel getComboBoxModel() {
+		return (ComboBoxModel) getFilteredModel();
+	}
 
-    protected void postConstraintApplied() {
-        if (!matchedSelected) {
-            if (getSize() > 0) {
-                setSelectedItem(getElementAt(0));
-            } else {
-                setSelectedItem(null);
-            }
-        }
-        matchedSelected = false;
-    }
+	@Override
+	protected void onMatchingElement(Object element) {
+		if (element == getSelectedItem()) {
+			matchedSelected = true;
+		}
+	}
 
-    public Object getSelectedItem() {
-        if (getSize() == 0) {
-            return null;
-        }
-        return getComboBoxModel().getSelectedItem();
-    }
+	@Override
+	protected void postConstraintApplied() {
+		if (!matchedSelected) {
+			if (getSize() > 0) {
+				setSelectedItem(getElementAt(0));
+			} else {
+				setSelectedItem(null);
+			}
+		}
+		matchedSelected = false;
+	}
 
-    public void setSelectedItem(Object anItem) {
-        if (!selectingItem) {
-            selectingItem = true;
-            try {
-                getComboBoxModel().setSelectedItem(anItem);
-            } finally {
-                selectingItem = false;
-            }
-        }
-    }
+	@Override
+	public Object getSelectedItem() {
+		if (getSize() == 0) {
+			return null;
+		}
+		return getComboBoxModel().getSelectedItem();
+	}
+
+	@Override
+	public void setSelectedItem(Object anItem) {
+		if (!selectingItem) {
+			selectingItem = true;
+			try {
+				getComboBoxModel().setSelectedItem(anItem);
+			} finally {
+				selectingItem = false;
+			}
+		}
+	}
 
 }

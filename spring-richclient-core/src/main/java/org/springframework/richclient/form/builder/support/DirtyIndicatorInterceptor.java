@@ -15,6 +15,21 @@
  */
 package org.springframework.richclient.form.builder.support;
 
+import java.awt.BorderLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Locale;
+
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.value.ValueChangeDetector;
 import org.springframework.binding.value.support.ValueHolder;
@@ -22,15 +37,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.richclient.application.ApplicationServicesLocator;
 import org.springframework.richclient.factory.AbstractControlFactory;
 import org.springframework.richclient.image.IconSource;
-import org.springframework.richclient.util.OverlayHelper;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Locale;
 
 /**
  * Adds a "dirty overlay" to a component that is triggered by user editing. The
@@ -39,7 +45,7 @@ import java.util.Locale;
  * set to a message (retrieved with key "dirty.message") such as "{field} has
  * changed, original value was {value}.". It also adds a small revert button
  * that resets the value of the field.
- * 
+ *
  * @author Peter De Bruycker
  */
 public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor {
@@ -57,12 +63,14 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
 		super(formModel);
 	}
 
+	@Override
 	public void processComponent(final String propertyName, final JComponent component) {
 		final OriginalValueHolder originalValueHolder = new OriginalValueHolder();
 		final DirtyOverlay overlay = new DirtyOverlay(getFormModel(), propertyName, originalValueHolder);
 
 		final ValueHolder reset = new ValueHolder(Boolean.FALSE);
 		getFormModel().getValueModel(propertyName).addValueChangeListener(new PropertyChangeListener() {
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				if (reset.getValue() == Boolean.TRUE) {
 					originalValueHolder.reset();
@@ -80,10 +88,11 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
 				Object oldValue = originalValueHolder.getValue();
 				Object newValue = evt.getNewValue();
 				overlay.setVisible(getValueChangeDetector().hasValueChanged(oldValue, newValue)
-                    && !getFormModel().getFieldMetadata(propertyName).isReadOnly());
+						&& !getFormModel().getFieldMetadata(propertyName).isReadOnly());
 			}
 		});
 		getFormModel().getFormObjectHolder().addValueChangeListener(new PropertyChangeListener() {
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				// reset original value, new "original" value is in the form
 				// model as the form object has changed
@@ -91,14 +100,14 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
 			}
 		});
 
-		InterceptorOverlayHelper.attachOverlay(overlay.getControl(), component, OverlayHelper.NORTH_WEST, 5, 0);
+		InterceptorOverlayHelper.attachOverlay(overlay.getControl(), component, SwingConstants.NORTH_WEST, 5, 0);
 		overlay.setVisible(false);
 	}
 
 	private ValueChangeDetector getValueChangeDetector() {
 		if (valueChangeDetector == null) {
-			valueChangeDetector = (ValueChangeDetector) ApplicationServicesLocator.services().getService(
-					ValueChangeDetector.class);
+			valueChangeDetector = (ValueChangeDetector) ApplicationServicesLocator.services()
+					.getService(ValueChangeDetector.class);
 		}
 
 		return valueChangeDetector;
@@ -121,8 +130,15 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
 			this.originalValueHolder = originalValueHolder;
 		}
 
+		@Override
 		protected JComponent createControl() {
 			final JPanel control = new JPanel(new BorderLayout()) {
+				/**
+				 *
+				 */
+				private static final long serialVersionUID = 1L;
+
+				@Override
 				public void repaint() {
 					// hack for RCP-426: if the form component is on a tabbed
 					// pane, when switching between tabs when the overlay is
@@ -159,6 +175,7 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
 			revertButton.setFocusable(false);
 			revertButton.setMargin(new Insets(-3, -3, -3, -3));
 			revertButton.addActionListener(new ActionListener() {
+				@Override
 				public void actionPerformed(ActionEvent e) {
 					// reset
 					formModel.getValueModel(propertyName).setValue(originalValueHolder.getValue());
@@ -173,15 +190,15 @@ public class DirtyIndicatorInterceptor extends AbstractFormComponentInterceptor 
 			getControl().setSize(getControl().getPreferredSize());
 
 			if (visible) {
-				MessageSource messageSource = (MessageSource) ApplicationServicesLocator.services().getService(
-						MessageSource.class);
+				MessageSource messageSource = (MessageSource) ApplicationServicesLocator.services()
+						.getService(MessageSource.class);
 				String dirtyTooltip = messageSource.getMessage(DIRTY_MESSAGE_KEY, new Object[] {
-						formModel.getFieldFace(propertyName).getDisplayName(), originalValueHolder.getValue() }, Locale
-						.getDefault());
+						formModel.getFieldFace(propertyName).getDisplayName(), originalValueHolder.getValue() },
+						Locale.getDefault());
 				dirtyLabel.setToolTipText(dirtyTooltip);
 
-				String revertTooltip = messageSource.getMessage(REVERT_MESSAGE_KEY, new Object[] { formModel
-						.getFieldFace(propertyName).getDisplayName() }, Locale.getDefault());
+				String revertTooltip = messageSource.getMessage(REVERT_MESSAGE_KEY,
+						new Object[] { formModel.getFieldFace(propertyName).getDisplayName() }, Locale.getDefault());
 				revertButton.setToolTipText(revertTooltip);
 			}
 		}

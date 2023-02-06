@@ -35,17 +35,18 @@ public abstract class AbstractDerivedValueModel extends AbstractValueModel imple
 	private final PropertyChangeListener sourceChangeHandler;
 
 	/**
-	 * Create a derivedValueModel based on the given sourceValueModels. When any
-	 * of these valueModels has their value changed, the derivedValueModel will
-	 * update its value.
+	 * Create a derivedValueModel based on the given sourceValueModels. When any of
+	 * these valueModels has their value changed, the derivedValueModel will update
+	 * its value.
 	 *
-	 * @param sourceValueModels an <code>Array</code> of valueModels that
-	 * influence the derived value.
+	 * @param sourceValueModels an <code>Array</code> of valueModels that influence
+	 *                          the derived value.
 	 */
 	protected AbstractDerivedValueModel(ValueModel[] sourceValueModels) {
 		this.sourceValueModels = sourceValueModels;
 		this.sourceChangeHandler = new PropertyChangeListener() {
 
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				sourceValuesChanged();
 			}
@@ -55,6 +56,7 @@ public abstract class AbstractDerivedValueModel extends AbstractValueModel imple
 		}
 	}
 
+	@Override
 	public ValueModel[] getSourceValueModels() {
 		return sourceValueModels;
 	}
@@ -63,8 +65,8 @@ public abstract class AbstractDerivedValueModel extends AbstractValueModel imple
 	 * Convenience method to extract values from all sourceValueModels that
 	 * influence the derived value.
 	 *
-	 * @return an <code>Array</code> containing the source values in the same
-	 * order as the source valueModels were defined.
+	 * @return an <code>Array</code> containing the source values in the same order
+	 *         as the source valueModels were defined.
 	 */
 	protected Object[] getSourceValues() {
 		Object[] values = new Object[sourceValueModels.length];
@@ -75,8 +77,8 @@ public abstract class AbstractDerivedValueModel extends AbstractValueModel imple
 	}
 
 	/**
-	 * Derive the value from the source values and fire a valueChangeEvent to
-	 * notify listeners.
+	 * Derive the value from the source values and fire a valueChangeEvent to notify
+	 * listeners.
 	 */
 	protected abstract void sourceValuesChanged();
 
@@ -85,15 +87,16 @@ public abstract class AbstractDerivedValueModel extends AbstractValueModel imple
 	 *
 	 * @see #setValue(Object)
 	 */
+	@Override
 	public boolean isReadOnly() {
 		return true;
 	}
 
 	/**
-	 * A {@link DerivedValueModel}'s value is based on other valueModels, it
-	 * cannot be set. Will throw an {@link UnsupportedOperationException} when
-	 * used.
+	 * A {@link DerivedValueModel}'s value is based on other valueModels, it cannot
+	 * be set. Will throw an {@link UnsupportedOperationException} when used.
 	 */
+	@Override
 	public void setValue(Object newValue) {
 		throw new UnsupportedOperationException("This value model is read only");
 	}

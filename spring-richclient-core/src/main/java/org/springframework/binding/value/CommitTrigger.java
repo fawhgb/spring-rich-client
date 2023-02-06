@@ -66,8 +66,8 @@ public class CommitTrigger {
 	}
 
 	/**
-	 * Removed the provided listener to the list of listeners that will be
-	 * notified whenever a commit or revert event is fired.
+	 * Removed the provided listener to the list of listeners that will be notified
+	 * whenever a commit or revert event is fired.
 	 *
 	 * @param listener the <code>CommitTriggerListener</code> to remove
 	 */

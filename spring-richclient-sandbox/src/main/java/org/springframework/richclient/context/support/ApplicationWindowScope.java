@@ -8,21 +8,25 @@ public class ApplicationWindowScope implements Scope {
 	public ApplicationWindowScope() {
 		System.out.println("ttt");
 	}
-	
-    public Object get(String name, ObjectFactory objectFactory) {
-        return objectFactory.getObject();
-    }
 
-    public String getConversationId() {
-        return "ttt";
-    }
+	@Override
+	public Object get(String name, ObjectFactory objectFactory) {
+		return objectFactory.getObject();
+	}
 
-    public void registerDestructionCallback(String name, Runnable callback) {
-        
-    }
+	@Override
+	public String getConversationId() {
+		return "ttt";
+	}
 
-    public Object remove(String name) {
-        return null;
-    }
+	@Override
+	public void registerDestructionCallback(String name, Runnable callback) {
+
+	}
+
+	@Override
+	public Object remove(String name) {
+		return null;
+	}
 
 }

@@ -41,8 +41,8 @@ import org.springframework.util.StringUtils;
  * <code>ProgressMonitor</code> implementation that handles its own controls:
  * <ul>
  * <li>a <code>JProgressBar</code> to show the progress to the user</li>
- * <li>optionally a <code>JButton</code> to allow the user to cancel the
- * current task</li>
+ * <li>optionally a <code>JButton</code> to allow the user to cancel the current
+ * task</li>
  * </ul>
  * <p>
  * Initally the progress bar and button are hidden, and shown when a task is
@@ -51,8 +51,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Peter De Bruycker
  */
-public class StatusBarProgressMonitor extends AbstractControlFactory implements
-		ProgressMonitor {
+public class StatusBarProgressMonitor extends AbstractControlFactory implements ProgressMonitor {
 
 	/** Progress bar creation is delayed by this ms */
 	public static final int DEFAULT_DELAY_PROGRESS = 500;
@@ -86,11 +85,13 @@ public class StatusBarProgressMonitor extends AbstractControlFactory implements
 		return cancelButton;
 	}
 
+	@Override
 	protected JComponent createControl() {
 		control = new JPanel(new BorderLayout());
 
 		cancelButton = createCancelButton();
 		cancelButton.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				logger.info("Requesting task cancellation...");
 				setCanceled(true);
@@ -101,10 +102,10 @@ public class StatusBarProgressMonitor extends AbstractControlFactory implements
 		control.add(progressBar);
 		control.add(cancelButton, BorderLayout.LINE_END);
 
-        Border bevelBorder = BorderFactory.createBevelBorder(BevelBorder.LOWERED, UIManager
-                .getColor("controlHighlight"), UIManager.getColor("controlShadow"));
-        Border emptyBorder = BorderFactory.createEmptyBorder(1, 3, 1, 3);
-        control.setBorder(BorderFactory.createCompoundBorder(bevelBorder, emptyBorder));
+		Border bevelBorder = BorderFactory.createBevelBorder(BevelBorder.LOWERED,
+				UIManager.getColor("controlHighlight"), UIManager.getColor("controlShadow"));
+		Border emptyBorder = BorderFactory.createEmptyBorder(1, 3, 1, 3);
+		control.setBorder(BorderFactory.createCompoundBorder(bevelBorder, emptyBorder));
 
 		// initially hide the control
 		hideProgress();
@@ -120,6 +121,7 @@ public class StatusBarProgressMonitor extends AbstractControlFactory implements
 		return progressBar;
 	}
 
+	@Override
 	public void done() {
 		startTime = 0;
 		if (progressBar != null) {
@@ -131,8 +133,8 @@ public class StatusBarProgressMonitor extends AbstractControlFactory implements
 
 	public Icon getCancelIcon() {
 		if (cancelIcon == null) {
-			cancelIcon = ((IconSource) ApplicationServicesLocator.services()
-					.getService(IconSource.class)).getIcon("cancel.icon");
+			cancelIcon = ((IconSource) ApplicationServicesLocator.services().getService(IconSource.class))
+					.getIcon("cancel.icon");
 		}
 
 		return cancelIcon;
@@ -154,10 +156,12 @@ public class StatusBarProgressMonitor extends AbstractControlFactory implements
 		}
 	}
 
+	@Override
 	public boolean isCanceled() {
 		return isCanceled;
 	}
 
+	@Override
 	public void setCanceled(boolean b) {
 		isCanceled = b;
 		cancelButton.setEnabled(!b);
@@ -193,6 +197,7 @@ public class StatusBarProgressMonitor extends AbstractControlFactory implements
 		}
 	}
 
+	@Override
 	public void subTaskStarted(String name) {
 		String text;
 		if (name.length() == 0) {
@@ -207,6 +212,7 @@ public class StatusBarProgressMonitor extends AbstractControlFactory implements
 		progressBar.setString(text);
 	}
 
+	@Override
 	public void taskStarted(String name, int totalWork) {
 		startTime = System.currentTimeMillis();
 		isCanceled = false;
@@ -222,16 +228,17 @@ public class StatusBarProgressMonitor extends AbstractControlFactory implements
 		showProgress();
 	}
 
+	@Override
 	public void worked(int work) {
 		if (!progressBar.isVisible()) {
 			if ((System.currentTimeMillis() - startTime) > delayProgress) {
 				control.setVisible(true);
 			}
 		}
-		progressBar.setValue((int) work);
+		progressBar.setValue(work);
 
 		if (progressBar.isStringPainted()) {
-			progressBar.setString(((int) work) + "%");
+			progressBar.setString((work) + "%");
 		}
 	}
 

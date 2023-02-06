@@ -15,8 +15,8 @@
  */
 package org.springframework.binding.value.support;
 
-import org.springframework.rules.closure.Closure;
 import org.springframework.core.style.StylerUtils;
+import org.springframework.rules.closure.Closure;
 import org.springframework.util.Assert;
 
 /**
@@ -33,24 +33,25 @@ public class RefreshableValueHolder extends ValueHolder {
 	private boolean alwaysRefresh;
 
 	/**
-	 * Constructor supplying a refresh <code>Closure</code>. Refresh has to be triggered
-	 * manually.
+	 * Constructor supplying a refresh <code>Closure</code>. Refresh has to be
+	 * triggered manually.
 	 */
 	public RefreshableValueHolder(Closure refreshFunction) {
 		this(refreshFunction, false);
 	}
 
 	/**
-	 * Constructor supplying a refresh <code>Closure</code> that allways has to be triggered
-	 * when reading the value.
+	 * Constructor supplying a refresh <code>Closure</code> that allways has to be
+	 * triggered when reading the value.
 	 */
 	public RefreshableValueHolder(Closure refreshFunction, boolean alwaysRefresh) {
 		this(refreshFunction, alwaysRefresh, true);
 	}
 
 	/**
-	 * Constructor supplying a refresh <code>Closure</code> that allways has to be triggered
-	 * when reading the value. Additionally a refresh is triggered on construction.
+	 * Constructor supplying a refresh <code>Closure</code> that allways has to be
+	 * triggered when reading the value. Additionally a refresh is triggered on
+	 * construction.
 	 */
 	public RefreshableValueHolder(Closure refreshFunction, boolean alwaysRefresh, boolean lazyInit) {
 		super();
@@ -65,8 +66,10 @@ public class RefreshableValueHolder extends ValueHolder {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * If allwaysRefresh is set, this method will trigger refresh() each time it is executed.
+	 * If allwaysRefresh is set, this method will trigger refresh() each time it is
+	 * executed.
 	 */
+	@Override
 	public Object getValue() {
 		if (alwaysRefresh) {
 			refresh();

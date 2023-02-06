@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -27,65 +27,66 @@ import javax.swing.table.TableModel;
  * identified by the event is visible.
  */
 public class VisibleTableModelEvent extends TableModelEvent {
-    private Point tmpPoint;
+	private static final long serialVersionUID = 1L;
 
-    // This implementation caches the information for one JTable, it is
-    // certainly possible to cache it for more than one should
-    // you have this need.
-    private boolean valid;
+	private Point tmpPoint;
 
-    private int firstVisRow;
+	// This implementation caches the information for one JTable, it is
+	// certainly possible to cache it for more than one should
+	// you have this need.
+	private boolean valid;
 
-    private int lastVisRow;
+	private int firstVisRow;
 
-    private int firstVisCol;
+	private int lastVisRow;
 
-    private int lastVisCol;
+	private int firstVisCol;
 
-    public VisibleTableModelEvent(TableModel source) {
-        super(source, 0, 0, 0, UPDATE);
-        tmpPoint = new Point();
-    }
+	private int lastVisCol;
 
-    /**
-     * Resets the underlying fields of the TableModelEvent. This assumes no ONE
-     * is going to cache the TableModelEvent.
-     */
-    public void set(int row, int col) {
-        firstRow = row;
-        lastRow = row;
-        column = col;
-    }
+	public VisibleTableModelEvent(TableModel source) {
+		super(source, 0, 0, 0, UPDATE);
+		tmpPoint = new Point();
+	}
 
-    /**
-     * Invoked to indicate the visible rows/columns need to be recalculated
-     * again.
-     */
-    public void reset() {
-        valid = false;
-    }
+	/**
+	 * Resets the underlying fields of the TableModelEvent. This assumes no ONE is
+	 * going to cache the TableModelEvent.
+	 */
+	public void set(int row, int col) {
+		firstRow = row;
+		lastRow = row;
+		column = col;
+	}
 
-    public boolean isVisible(JTable table) {
-        if (!valid) {
-            // Determine the visible region of the table.
-            Rectangle visRect = table.getVisibleRect();
+	/**
+	 * Invoked to indicate the visible rows/columns need to be recalculated again.
+	 */
+	public void reset() {
+		valid = false;
+	}
 
-            tmpPoint.x = visRect.x;
-            tmpPoint.y = visRect.y;
-            firstVisCol = table.columnAtPoint(tmpPoint);
-            firstVisRow = table.rowAtPoint(tmpPoint);
+	public boolean isVisible(JTable table) {
+		if (!valid) {
+			// Determine the visible region of the table.
+			Rectangle visRect = table.getVisibleRect();
 
-            tmpPoint.x += visRect.width;
-            tmpPoint.y += visRect.height;
-            lastVisCol = table.columnAtPoint(tmpPoint);
-            if (lastVisCol == -1) {
-                lastVisCol = table.getColumnCount() - 1;
-            }
-            if ((lastVisRow = table.rowAtPoint(tmpPoint)) == -1) {
-                lastVisRow = table.getRowCount();
-            }
-            valid = true;
-        }
-        return (firstRow >= firstVisRow && firstRow <= lastVisRow && column >= firstVisCol && column <= lastVisCol);
-    }
+			tmpPoint.x = visRect.x;
+			tmpPoint.y = visRect.y;
+			firstVisCol = table.columnAtPoint(tmpPoint);
+			firstVisRow = table.rowAtPoint(tmpPoint);
+
+			tmpPoint.x += visRect.width;
+			tmpPoint.y += visRect.height;
+			lastVisCol = table.columnAtPoint(tmpPoint);
+			if (lastVisCol == -1) {
+				lastVisCol = table.getColumnCount() - 1;
+			}
+			if ((lastVisRow = table.rowAtPoint(tmpPoint)) == -1) {
+				lastVisRow = table.getRowCount();
+			}
+			valid = true;
+		}
+		return (firstRow >= firstVisRow && firstRow <= lastVisRow && column >= firstVisCol && column <= lastVisCol);
+	}
 }

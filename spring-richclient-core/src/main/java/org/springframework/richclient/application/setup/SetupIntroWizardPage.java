@@ -20,67 +20,74 @@ import org.springframework.richclient.wizard.AbstractWizardPage;
  * @author cro
  */
 public class SetupIntroWizardPage extends AbstractWizardPage {
-    private static final Color TITLE_COLOR = new Color(48, 48, 48);
+	private static final Color TITLE_COLOR = new Color(48, 48, 48);
 
-    public SetupIntroWizardPage() {
-        super("intro");
-    }
+	public SetupIntroWizardPage() {
+		super("intro");
+	}
 
-    protected JComponent createControl() {
-        GridBagLayoutBuilder builder = new GridBagLayoutBuilder();
+	@Override
+	protected JComponent createControl() {
+		GridBagLayoutBuilder builder = new GridBagLayoutBuilder();
 
-        builder.setDefaultInsets(new Insets(10, 20, 0, 0));
+		builder.setDefaultInsets(new Insets(10, 20, 0, 0));
 
-        builder.append(createWelcomeToLabel(), 1, 1, true, false);
-        builder.nextLine();
-        builder.append(createTitleLabel(), 1, 1, true, false, new Insets(10, 20, 15, 0));
+		builder.append(createWelcomeToLabel(), 1, 1, true, false);
+		builder.nextLine();
+		builder.append(createTitleLabel(), 1, 1, true, false, new Insets(10, 20, 15, 0));
 
-        builder.nextLine();
-        builder.append(createDescriptionLabel(), 1, 1, true, false);
+		builder.nextLine();
+		builder.append(createDescriptionLabel(), 1, 1, true, false);
 
-        builder.nextLine();
-        builder.append(createSpacer(0, 0), 1, 1, true, true);
+		builder.nextLine();
+		builder.append(createSpacer(0, 0), 1, 1, true, true);
 
-        JPanel control = builder.getPanel();
-        control.setOpaque(false);
-        return control;
-    }
+		JPanel control = builder.getPanel();
+		control.setOpaque(false);
+		return control;
+	}
 
-    protected JLabel createTitleLabel() {
-        JLabel bigTitleLabel = new JLabel(getMessage("setup.intro.title")) {
-            public void paintComponent(Graphics g) {
-                Graphics2D g2 = (Graphics2D)g;
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                super.paintComponent(g2);
-            }
-        };
-        Font font = new Font(bigTitleLabel.getFont().getFontName(), Font.BOLD, 22);
-        bigTitleLabel.setFont(font);
-        bigTitleLabel.setForeground(TITLE_COLOR);
-        return bigTitleLabel;
-    }
+	protected JLabel createTitleLabel() {
+		JLabel bigTitleLabel = new JLabel(getMessage("setup.intro.title")) {
+			private static final long serialVersionUID = 1L;
 
-    private JLabel createWelcomeToLabel() {
-        JLabel welcomeToLabel = new JLabel(this.getMessage("setup.intro.welcomeTo"));
-        Font font = new Font(welcomeToLabel.getFont().getFontName(), Font.BOLD, welcomeToLabel.getFont().getSize());
+			@Override
+			public void paintComponent(Graphics g) {
+				Graphics2D g2 = (Graphics2D) g;
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+				super.paintComponent(g2);
+			}
+		};
+		Font font = new Font(bigTitleLabel.getFont().getFontName(), Font.BOLD, 22);
+		bigTitleLabel.setFont(font);
+		bigTitleLabel.setForeground(TITLE_COLOR);
+		return bigTitleLabel;
+	}
 
-        welcomeToLabel.setFont(font);
-        welcomeToLabel.setForeground(TITLE_COLOR);
+	private JLabel createWelcomeToLabel() {
+		JLabel welcomeToLabel = new JLabel(this.getMessage("setup.intro.welcomeTo"));
+		Font font = new Font(welcomeToLabel.getFont().getFontName(), Font.BOLD, welcomeToLabel.getFont().getSize());
 
-        return welcomeToLabel;
-    }
+		welcomeToLabel.setFont(font);
+		welcomeToLabel.setForeground(TITLE_COLOR);
 
-    private JLabel createDescriptionLabel() {
-        return new JLabel(LabelUtils.htmlBlock(getMessage("setup.intro.description")));
-    }
+		return welcomeToLabel;
+	}
 
-    private JComponent createSpacer(final int x, final int y) {
-        JPanel spacer = new JPanel() {
-            public Dimension getPreferredSize() {
-                return new Dimension(x, y);
-            }
-        };
-        spacer.setOpaque(false);
-        return spacer;
-    }
+	private JLabel createDescriptionLabel() {
+		return new JLabel(LabelUtils.htmlBlock(getMessage("setup.intro.description")));
+	}
+
+	private JComponent createSpacer(final int x, final int y) {
+		JPanel spacer = new JPanel() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Dimension getPreferredSize() {
+				return new Dimension(x, y);
+			}
+		};
+		spacer.setOpaque(false);
+		return spacer;
+	}
 }

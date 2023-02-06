@@ -24,22 +24,23 @@ import org.springframework.richclient.form.binding.support.DecoratedControlBindi
 
 /**
  * A convenience class that decorates the component produced from a source
- * Binding with a JScrollPane.  Useful for placing JList (and JTextArea)
+ * Binding with a JScrollPane. Useful for placing JList (and JTextArea)
  * bindings, among others, in a scroll pane when needed.
- * 
+ *
  * @author Andy DePue
  */
 public class ScrollPaneDecoratedBinding extends DecoratedControlBinding {
-    public ScrollPaneDecoratedBinding(final Binding source) {
-        this(source, ((ComponentFactory)ApplicationServicesLocator.services().getService(ComponentFactory.class)).createScrollPane(source.getControl()));
-    }
+	public ScrollPaneDecoratedBinding(final Binding source) {
+		this(source, ((ComponentFactory) ApplicationServicesLocator.services().getService(ComponentFactory.class))
+				.createScrollPane(source.getControl()));
+	}
 
-    public ScrollPaneDecoratedBinding(final Binding source, final int vsbPolicy, final int hsbPolicy) {
-        this(source, ((ComponentFactory)ApplicationServicesLocator.services().getService(ComponentFactory.class)).createScrollPane(source.getControl(), vsbPolicy,
-                hsbPolicy));
-    }
+	public ScrollPaneDecoratedBinding(final Binding source, final int vsbPolicy, final int hsbPolicy) {
+		this(source, ((ComponentFactory) ApplicationServicesLocator.services().getService(ComponentFactory.class))
+				.createScrollPane(source.getControl(), vsbPolicy, hsbPolicy));
+	}
 
-    public ScrollPaneDecoratedBinding(final Binding source, JComponent scrollPane) {
-        super(source, scrollPane);
-    }
+	public ScrollPaneDecoratedBinding(final Binding source, JComponent scrollPane) {
+		super(source, scrollPane);
+	}
 }

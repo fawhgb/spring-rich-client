@@ -21,24 +21,26 @@ import org.springframework.binding.value.ValueModel;
 
 /**
  * Adapts a value model to JavaBean's property.
- * 
+ *
  * @author Oliver Hutchison
  */
 public class PropertyAdapter extends AbstractValueModelAdapter {
 
-    private final ValueModel propertValueModel;
-    
-    public PropertyAdapter(ValueModel valueModel, Object bean, String property) {
-        this(valueModel, new BeanPropertyAccessStrategy(bean), property);
-    }
+	private final ValueModel propertValueModel;
 
-    public PropertyAdapter(ValueModel valueModel, MutablePropertyAccessStrategy propertyAccessStrategy, String property) {
-        super(valueModel);
-        this.propertValueModel = propertyAccessStrategy.getPropertyValueModel(property);
-        initalizeAdaptedValue();
-    }
+	public PropertyAdapter(ValueModel valueModel, Object bean, String property) {
+		this(valueModel, new BeanPropertyAccessStrategy(bean), property);
+	}
 
-    protected void valueModelValueChanged(Object newValue) {
-        propertValueModel.setValue(newValue);
-    }
+	public PropertyAdapter(ValueModel valueModel, MutablePropertyAccessStrategy propertyAccessStrategy,
+			String property) {
+		super(valueModel);
+		this.propertValueModel = propertyAccessStrategy.getPropertyValueModel(property);
+		initalizeAdaptedValue();
+	}
+
+	@Override
+	protected void valueModelValueChanged(Object newValue) {
+		propertValueModel.setValue(newValue);
+	}
 }

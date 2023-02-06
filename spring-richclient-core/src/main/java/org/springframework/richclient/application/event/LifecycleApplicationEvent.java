@@ -2,7 +2,7 @@
  * $Header: /usr/local/cvs/java-tools/environment/eclipse/code-templates.xml,v
  * 1.2 2004/03/31 18:20:53 keith Exp $ $Revision$ $Date: 2004/03/31
  * 18:20:53 $
- * 
+ *
  * Copyright Computer Science Innovations (CSI), 2003. All rights reserved.
  */
 package org.springframework.richclient.application.event;
@@ -12,39 +12,43 @@ import org.springframework.core.style.ToStringCreator;
 
 /**
  * Application event that communicates lifecycle changes in application objects.
- * 
+ *
  * @author Keith Donald
  */
 public class LifecycleApplicationEvent extends ApplicationEvent {
-    private String eventType;
+	private static final long serialVersionUID = 1L;
 
-    public static final String CREATED = "lifecycleEvent.created";
+	private String eventType;
 
-    public static final String MODIFIED = "lifecycleEvent.modified";
+	public static final String CREATED = "lifecycleEvent.created";
 
-    public static final String DELETED = "lifecycleEvent.deleted";
+	public static final String MODIFIED = "lifecycleEvent.modified";
 
-    public LifecycleApplicationEvent(String eventType, Object source) {
-        super(source);
-        this.eventType = eventType;
-    }
+	public static final String DELETED = "lifecycleEvent.deleted";
 
-    public Object getObject() {
-        return getSource();
-    }
+	public LifecycleApplicationEvent(String eventType, Object source) {
+		super(source);
+		this.eventType = eventType;
+	}
 
-    public boolean objectIs(Class clazz) {
-        if (clazz.isAssignableFrom(getSource().getClass())) 
-            return true;
+	public Object getObject() {
+		return getSource();
+	}
 
-        return false;
-    }
+	public boolean objectIs(Class clazz) {
+		if (clazz.isAssignableFrom(getSource().getClass())) {
+			return true;
+		}
 
-    public String getEventType() {
-        return eventType;
-    }
+		return false;
+	}
 
-    public String toString() {
-        return new ToStringCreator(this).toString();
-    }
+	public String getEventType() {
+		return eventType;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).toString();
+	}
 }

@@ -14,19 +14,21 @@ import org.springframework.binding.format.support.SimpleFormatterFactory;
 import org.springframework.util.StringUtils;
 
 /**
- * Simple formatter factory that returns a custom date/time formatter.  By default, this 
- * formatter is used to format all date fields in the application.
+ * Simple formatter factory that returns a custom date/time formatter. By
+ * default, this formatter is used to format all date fields in the application.
  *
  * @author Keith Donald
  */
 public class SimpleAppFormatterFactory extends SimpleFormatterFactory {
 
+	@Override
 	public Formatter getDateTimeFormatter() {
 		return new AppDateFormatter();
 	}
 
 	/**
 	 * Formatter for date fields in the application.
+	 *
 	 * @author Larry and Geoffrey (by Keith)
 	 */
 	class AppDateFormatter extends AbstractFormatter {
@@ -37,13 +39,15 @@ public class SimpleAppFormatterFactory extends SimpleFormatterFactory {
 		/** Pattern to verify date contains full 4 digit year. */
 		private final Pattern MDY_PATTERN = Pattern.compile("[0-9]{1,2}-[0-9]{1,2}-[0-9]{4}");
 
+		@Override
 		protected String doFormatValue(Object value) {
 			return (value == null) ? "" : format.formatValue(value);
 		}
 
-		protected Object doParseValue(String formattedString, Class targetClass) throws InvalidFormatException,
-				ParseException {
-			String src = (String) formattedString;
+		@Override
+		protected Object doParseValue(String formattedString, Class targetClass)
+				throws InvalidFormatException, ParseException {
+			String src = formattedString;
 			// If the user entered slashes, convert them to dashes
 			if (src.indexOf('/') >= 0) {
 				src = src.replace('/', '-');

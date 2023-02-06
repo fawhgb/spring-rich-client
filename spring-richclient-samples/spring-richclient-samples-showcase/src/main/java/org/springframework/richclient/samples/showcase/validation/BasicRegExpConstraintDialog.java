@@ -26,10 +26,9 @@ import org.springframework.util.StringUtils;
 public class BasicRegExpConstraintDialog extends TitledApplicationDialog {
 
 	/**
-	 * This object is used as formObject. It contains a value to set, the
-	 * regular expression that should be used while validating that value and
-	 * the logic to get the {@link PropertyConstraint} for the value based on
-	 * the regexp.
+	 * This object is used as formObject. It contains a value to set, the regular
+	 * expression that should be used while validating that value and the logic to
+	 * get the {@link PropertyConstraint} for the value based on the regexp.
 	 */
 	private class RegExpValue implements PropertyConstraintProvider {
 		private String regExp = "";
@@ -52,9 +51,9 @@ public class BasicRegExpConstraintDialog extends TitledApplicationDialog {
 			this.value = value;
 		}
 
+		@Override
 		public PropertyConstraint getPropertyConstraint(String propertyName) {
-			if (StringUtils.hasText(regExp))
-			{
+			if (StringUtils.hasText(regExp)) {
 				if ((propertyName == null) || ("value".equals(propertyName))) {
 					return new PropertyValueConstraint("value", new RegexpConstraint(regExp, "regExpViolated"));
 				}
@@ -70,6 +69,7 @@ public class BasicRegExpConstraintDialog extends TitledApplicationDialog {
 			super(FormModelHelper.createFormModel(new RegExpValue(), false));
 		}
 
+		@Override
 		protected JComponent createFormControl() {
 			TableFormBuilder builder = new TableFormBuilder(getBindingFactory());
 			builder.add("regExp");
@@ -85,6 +85,7 @@ public class BasicRegExpConstraintDialog extends TitledApplicationDialog {
 		private ActionCommand createValidateCommand() {
 			ActionCommand validateCommand = new ActionCommand("validateCommand") {
 
+				@Override
 				protected void doExecuteCommand() {
 					getFormModel().validate();
 				}
@@ -95,10 +96,12 @@ public class BasicRegExpConstraintDialog extends TitledApplicationDialog {
 		}
 	}
 
+	@Override
 	protected JComponent createTitledDialogContentPane() {
 		return new RegExpForm().getControl();
 	}
 
+	@Override
 	protected boolean onFinish() {
 		return true;
 	}

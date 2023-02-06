@@ -22,6 +22,7 @@ import java.net.URL;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.WindowConstants;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,13 +33,13 @@ import org.springframework.richclient.util.WindowUtils;
 
 /**
  * An abstract helper implementation of the {@link SplashScreen} interface.
- * 
+ *
  * <p>
  * The splash screen produced by this class will be an undecorated, centered
  * frame containing the component provided by {@link #createContentPane()},
  * which is the only method that subclasses need to implement.
  * </p>
- * 
+ *
  * @author Peter De Bruycker
  */
 public abstract class AbstractSplashScreen implements SplashScreen {
@@ -62,13 +63,13 @@ public abstract class AbstractSplashScreen implements SplashScreen {
 
 	/**
 	 * Returns the location of the image to be used as the icon for the splash
-	 * screen's frame. The splash screen produced by this class is undecorated,
-	 * so the icon will only be visible in the frame's taskbar icon. If the
-	 * given path starts with a '/', it is interpreted to be relative to the
-	 * root of the runtime classpath. Otherwise it is interpreted to be relative
-	 * to the subdirectory of the classpath root that corresponds to the package
-	 * of this class.
-	 * 
+	 * screen's frame. The splash screen produced by this class is undecorated, so
+	 * the icon will only be visible in the frame's taskbar icon. If the given path
+	 * starts with a '/', it is interpreted to be relative to the root of the
+	 * runtime classpath. Otherwise it is interpreted to be relative to the
+	 * subdirectory of the classpath root that corresponds to the package of this
+	 * class.
+	 *
 	 * @return The location of the icon resource.
 	 */
 	public String getIconResourcePath() {
@@ -76,14 +77,13 @@ public abstract class AbstractSplashScreen implements SplashScreen {
 	}
 
 	/**
-	 * Sets the location of the image to be used as the icon for the splash
-	 * screen's frame. The splash screen produced by this class is undecorated,
-	 * so the icon will only be visible in the frame's taskbar icon. If the
-	 * given path starts with a '/', it is interpreted to be relative to the
-	 * root of the runtime classpath. Otherwise it is interpreted to be relative
-	 * to the subdirectory of the classpath root that corresponds to the package
-	 * of this class.
-	 * 
+	 * Sets the location of the image to be used as the icon for the splash screen's
+	 * frame. The splash screen produced by this class is undecorated, so the icon
+	 * will only be visible in the frame's taskbar icon. If the given path starts
+	 * with a '/', it is interpreted to be relative to the root of the runtime
+	 * classpath. Otherwise it is interpreted to be relative to the subdirectory of
+	 * the classpath root that corresponds to the package of this class.
+	 *
 	 * @param iconResourcePath The location of the icon resource.
 	 */
 	public void setIconResourcePath(String iconResourcePath) {
@@ -92,7 +92,7 @@ public abstract class AbstractSplashScreen implements SplashScreen {
 
 	/**
 	 * Returns the message source used to resolve localized messages.
-	 * 
+	 *
 	 * @return The message source, or null.
 	 */
 	public MessageSource getMessageSource() {
@@ -101,13 +101,14 @@ public abstract class AbstractSplashScreen implements SplashScreen {
 
 	/**
 	 * Sets the message source used to resolve localized messages.
-	 * 
+	 *
 	 * @param messageSource The message source.
 	 */
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
 
+	@Override
 	public final void dispose() {
 
 		if (frame != null) {
@@ -118,18 +119,19 @@ public abstract class AbstractSplashScreen implements SplashScreen {
 	}
 
 	/**
-	 * Creates and displays an undecorated, centered splash screen containing
-	 * the component provided by {@link #createContentPane()}. If this instance
-	 * has been provided with a {@link MessageSource}, it will be used to
-	 * retrieve the splash screen's frame title under the key
-	 * {@value #SPLASH_TITLE_KEY}.
+	 * Creates and displays an undecorated, centered splash screen containing the
+	 * component provided by {@link #createContentPane()}. If this instance has been
+	 * provided with a {@link MessageSource}, it will be used to retrieve the splash
+	 * screen's frame title under the key {@value #SPLASH_TITLE_KEY}.
 	 */
+	@Override
 	public final void splash() {
 		frame = shadowBorder ? new ShadowBorderFrame() : new JFrame();
-		if (isRootFrame())
+		if (isRootFrame()) {
 			JOptionPane.setRootFrame(frame);
+		}
 
-		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		frame.setUndecorated(true);
 
 		frame.setTitle(loadFrameTitle());
@@ -147,15 +149,14 @@ public abstract class AbstractSplashScreen implements SplashScreen {
 	/**
 	 * Loads the message under the key {@value #SPLASH_TITLE_KEY} if a
 	 * {@link MessageSource} has been set on this instance.
-	 * 
-	 * @return The message resource stored under the key
-	 * {@value #SPLASH_TITLE_KEY}, or null if no message source has been set.
+	 *
+	 * @return The message resource stored under the key {@value #SPLASH_TITLE_KEY},
+	 *         or null if no message source has been set.
 	 */
 	private String loadFrameTitle() {
 		try {
 			return messageSource == null ? null : messageSource.getMessage(SPLASH_TITLE_KEY, null, null);
-		}
-		catch (NoSuchMessageException e) {
+		} catch (NoSuchMessageException e) {
 			return null;
 		}
 	}
@@ -174,18 +175,18 @@ public abstract class AbstractSplashScreen implements SplashScreen {
 	}
 
 	/**
-	 * Returns the component to be displayed in the splash screen's main frame.
-	 * If the returned value is null the frame for the splash screen will still
-	 * be created but will not have any content
-	 * 
+	 * Returns the component to be displayed in the splash screen's main frame. If
+	 * the returned value is null the frame for the splash screen will still be
+	 * created but will not have any content
+	 *
 	 * @return The content pane component. Can be null.
 	 */
 	protected abstract Component createContentPane();
 
 	/**
-	 * Returns whether the splash screen will be rendered with a shadow border.
-	 * The shadow border will let the background show through.
-	 * 
+	 * Returns whether the splash screen will be rendered with a shadow border. The
+	 * shadow border will let the background show through.
+	 *
 	 * @return whether to show a shadow border or not
 	 */
 	public boolean isShadowBorder() {
@@ -195,7 +196,7 @@ public abstract class AbstractSplashScreen implements SplashScreen {
 	/**
 	 * Sets whether the splash screen will be rendered with a shadow border. If
 	 * <code>true</code> a border will be shown.
-	 * 
+	 *
 	 * @param shadowBorder Show the shadow border or not
 	 */
 	public void setShadowBorder(boolean shadowBorder) {
@@ -203,12 +204,12 @@ public abstract class AbstractSplashScreen implements SplashScreen {
 	}
 
 	/**
-	 * The frame that is used to display this splashscreen can be used as
-	 * rootFrame for other dialogs/windows that need a Frame before the
-	 * applicationFrame is created. (eg login).
-	 * 
+	 * The frame that is used to display this splashscreen can be used as rootFrame
+	 * for other dialogs/windows that need a Frame before the applicationFrame is
+	 * created. (eg login).
+	 *
 	 * @param rootFrame <code>true</code> if the created frame must be set as
-	 * rootFrame. Defaults to <code>true</code>.
+	 *                  rootFrame. Defaults to <code>true</code>.
 	 * @see JOptionPane#setRootFrame(java.awt.Frame)
 	 */
 	public void setRootFrame(boolean rootFrame) {

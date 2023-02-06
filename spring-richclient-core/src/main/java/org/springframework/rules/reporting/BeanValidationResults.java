@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * @TODO field error type stuff, errors interface adaption
  * @TODO number of errors per field...
- * @author  Keith Donald
+ * @author Keith Donald
  */
 public interface BeanValidationResults {
 

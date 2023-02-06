@@ -35,6 +35,7 @@ public class ValidationMessageComparator implements Comparator {
 	protected ValidationMessageComparator() {
 	}
 
+	@Override
 	public int compare(Object o1, Object o2) {
 		ValidationMessage m1 = (ValidationMessage) o1;
 		ValidationMessage m2 = (ValidationMessage) o2;
@@ -47,8 +48,7 @@ public class ValidationMessageComparator implements Comparator {
 					c = m1.getMessage().compareTo(m2.getMessage());
 				}
 			}
-		}
-		else {
+		} else {
 			c = (m1.getTimestamp() > m2.getTimestamp()) ? -1 : 1;
 		}
 		return c;

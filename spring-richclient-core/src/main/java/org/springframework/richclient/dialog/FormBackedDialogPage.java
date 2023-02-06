@@ -26,62 +26,63 @@ import org.springframework.richclient.form.Form;
  * @author Oliver Hutchison
  */
 public class FormBackedDialogPage extends AbstractDialogPage {
-    private Form backingFormPage;
+	private Form backingFormPage;
 
-    /**
-     * Creates a new FormBackedDialogPage
-     *
-     * @param backingFormPage
-     *            a named form page that will provide the control for this
-     *            dialog page
-     */
-    public FormBackedDialogPage(Form backingFormPage) {
-        this(backingFormPage, true);
-    }
+	/**
+	 * Creates a new FormBackedDialogPage
+	 *
+	 * @param backingFormPage a named form page that will provide the control for
+	 *                        this dialog page
+	 */
+	public FormBackedDialogPage(Form backingFormPage) {
+		this(backingFormPage, true);
+	}
 
-    public FormBackedDialogPage(Form backingFormPage, boolean autoConfigure) {
-        super(backingFormPage.getId(), autoConfigure);
-        this.backingFormPage = backingFormPage;
-    }
+	public FormBackedDialogPage(Form backingFormPage, boolean autoConfigure) {
+		super(backingFormPage.getId(), autoConfigure);
+		this.backingFormPage = backingFormPage;
+	}
 
-    /**
-     * Creates a new FormPageBackedDialogPage.
-     *
-     * @param parentPageId
-     *            the id of a containing parent page. This will be used to
-     *            configure page titles/description
-     * @param backingFormPage
-     *            the FormPage which will provide the control for this page.
-     */
-    public FormBackedDialogPage(String parentPageId, Form backingFormPage) {
-        super(parentPageId + (backingFormPage.getId() != null ? "." + backingFormPage.getId() : ""));
-        this.backingFormPage = backingFormPage;
-    }
+	/**
+	 * Creates a new FormPageBackedDialogPage.
+	 *
+	 * @param parentPageId    the id of a containing parent page. This will be used
+	 *                        to configure page titles/description
+	 * @param backingFormPage the FormPage which will provide the control for this
+	 *                        page.
+	 */
+	public FormBackedDialogPage(String parentPageId, Form backingFormPage) {
+		super(parentPageId + (backingFormPage.getId() != null ? "." + backingFormPage.getId() : ""));
+		this.backingFormPage = backingFormPage;
+	}
 
-    /**
-     * Get the Form backing this dialog page.
-     * @return form
-     */
-    public Form getBackingFormPage() {
-        return backingFormPage;
-    }
+	/**
+	 * Get the Form backing this dialog page.
+	 *
+	 * @return form
+	 */
+	public Form getBackingFormPage() {
+		return backingFormPage;
+	}
 
-    public void onAboutToShow() {
-        setEnabled(!backingFormPage.hasErrors());
-    }
+	public void onAboutToShow() {
+		setEnabled(!backingFormPage.hasErrors());
+	}
 
-    protected JComponent createControl() {
-        JComponent formControl = backingFormPage.getControl();
-        initPageValidationReporter();
-        return formControl;
-    }
+	@Override
+	protected JComponent createControl() {
+		JComponent formControl = backingFormPage.getControl();
+		initPageValidationReporter();
+		return formControl;
+	}
 
-    protected void initPageValidationReporter() {
-        backingFormPage.newSingleLineResultsReporter(this);
-        backingFormPage.addGuarded(this);
-    }
+	protected void initPageValidationReporter() {
+		backingFormPage.newSingleLineResultsReporter(this);
+		backingFormPage.addGuarded(this);
+	}
 
-    public void setEnabled(boolean enabled) {
-        setPageComplete(enabled);
-    }
+	@Override
+	public void setEnabled(boolean enabled) {
+		setPageComplete(enabled);
+	}
 }

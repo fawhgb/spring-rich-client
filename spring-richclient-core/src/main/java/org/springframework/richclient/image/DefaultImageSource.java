@@ -60,8 +60,8 @@ public class DefaultImageSource implements ImageSource {
 	 * resource paths.
 	 * <p>
 	 * A custom URL protocol {@link Handler handler}will be installed for the
-	 * "image:" protocol. This allows for images in this image source to be
-	 * located using the Java URL classes: <br>
+	 * "image:" protocol. This allows for images in this image source to be located
+	 * using the Java URL classes: <br>
 	 * <code>URL imageUrl = new URL("image:the.image.key")</code>
 	 *
 	 * @param imageResources a map of key-to-image-resources.
@@ -75,7 +75,7 @@ public class DefaultImageSource implements ImageSource {
 	 * resource paths.
 	 *
 	 * @param installUrlHandler should a URL handler be installed.
-	 * @param imageResources a map of key-to-image-resources.
+	 * @param imageResources    a map of key-to-image-resources.
 	 */
 	public DefaultImageSource(boolean installUrlHandler, Map imageResources) {
 		Assert.notNull(imageResources);
@@ -93,13 +93,13 @@ public class DefaultImageSource implements ImageSource {
 		}
 	}
 
+	@Override
 	public Image getImage(String key) {
 		Assert.notNull(key);
 		AwtImageResource resource = getImageResource(key);
 		try {
 			return (Image) imageCache.get(resource);
-		}
-		catch (RuntimeException e) {
+		} catch (RuntimeException e) {
 			if (brokenImageIndicator != null) {
 				return returnBrokenImageIndicator(resource);
 			}
@@ -107,6 +107,7 @@ public class DefaultImageSource implements ImageSource {
 		}
 	}
 
+	@Override
 	public AwtImageResource getImageResource(String key) {
 		Assert.notNull(key);
 		Resource resource = (Resource) imageResources.get(key);
@@ -116,8 +117,7 @@ public class DefaultImageSource implements ImageSource {
 		try {
 			resource.getInputStream();
 			return new AwtImageResource(resource);
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			if (brokenImageIndicatorResource == null) {
 				throw new NoSuchImageResourceException(resource, e);
 			}
@@ -138,8 +138,7 @@ public class DefaultImageSource implements ImageSource {
 	public Image getImageAtLocation(Resource location) {
 		try {
 			return new AwtImageResource(location).getImage();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			if (brokenImageIndicator == null) {
 				throw new NoSuchImageResourceException(location, e);
 			}
@@ -155,27 +154,29 @@ public class DefaultImageSource implements ImageSource {
 		try {
 			brokenImageIndicatorResource = new AwtImageResource(resource);
 			brokenImageIndicator = brokenImageIndicatorResource.getImage();
-		}
-		catch (IOException e) {
+		} catch (IOException e) {
 			brokenImageIndicatorResource = null;
 			throw new NoSuchImageResourceException(resource, e);
 		}
 	}
 
+	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("imageResources", imageResources).toString();
 	}
 
 	private static class ImageCache extends CachingMapDecorator {
+		private static final long serialVersionUID = 1L;
+
 		public ImageCache() {
 			super(true);
 		}
 
+		@Override
 		public Object create(Object resource) {
 			try {
 				return ((AwtImageResource) resource).getImage();
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				throw new NoSuchImageResourceException("No image found at resource '" + resource + '"', e);
 			}
 		}

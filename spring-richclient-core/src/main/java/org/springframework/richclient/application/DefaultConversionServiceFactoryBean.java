@@ -32,9 +32,10 @@ import org.springframework.richclient.convert.support.ListModelConverter;
 import org.springframework.util.StringUtils;
 
 /**
- * A factory bean that produces a conversion service installed with most converters
- * needed by Spring Rich.  Subclasses may extend and customize.  The factory approach
- * here is superior to subclassing as it minimizes conversion service constructor logic.
+ * A factory bean that produces a conversion service installed with most
+ * converters needed by Spring Rich. Subclasses may extend and customize. The
+ * factory approach here is superior to subclassing as it minimizes conversion
+ * service constructor logic.
  *
  * @author Oliver Hutchison
  * @author Keith Donald
@@ -56,14 +57,17 @@ public class DefaultConversionServiceFactoryBean implements FactoryBean {
 		this.formatterFactory = formatterFactory;
 	}
 
+	@Override
 	public Object getObject() throws Exception {
 		return getConversionService();
 	}
 
+	@Override
 	public Class getObjectType() {
 		return ConversionService.class;
 	}
 
+	@Override
 	public boolean isSingleton() {
 		return true;
 	}
@@ -76,7 +80,9 @@ public class DefaultConversionServiceFactoryBean implements FactoryBean {
 	}
 
 	/**
-	 * Creates the conversion service.  Subclasses may override to customize creation.
+	 * Creates the conversion service. Subclasses may override to customize
+	 * creation.
+	 *
 	 * @return the configured conversion service
 	 */
 	protected ConversionService createConversionService() {
@@ -101,17 +107,21 @@ public class DefaultConversionServiceFactoryBean implements FactoryBean {
 			this.allowEmpty = allowEmpty;
 		}
 
+		@Override
 		public Class[] getSourceClasses() {
 			return new Class[] { String.class };
 		}
 
+		@Override
 		public Class[] getTargetClasses() {
 			return new Class[] { Date.class };
 		}
 
+		@Override
 		protected Object doConvert(Object source, Class targetClass, ConversionContext context) throws Exception {
-			return (!allowEmpty || StringUtils.hasText((String) source)) ? getFormatterFactory().getDateTimeFormatter()
-					.parseValue((String) source, Date.class) : null;
+			return (!allowEmpty || StringUtils.hasText((String) source))
+					? getFormatterFactory().getDateTimeFormatter().parseValue((String) source, Date.class)
+					: null;
 		}
 	}
 
@@ -124,14 +134,17 @@ public class DefaultConversionServiceFactoryBean implements FactoryBean {
 			this.allowEmpty = allowEmpty;
 		}
 
+		@Override
 		public Class[] getSourceClasses() {
 			return new Class[] { Date.class };
 		}
 
+		@Override
 		public Class[] getTargetClasses() {
 			return new Class[] { String.class };
 		}
 
+		@Override
 		protected Object doConvert(Object source, Class targetClass, ConversionContext context) throws Exception {
 			return (!allowEmpty || source != null) ? getFormatterFactory().getDateTimeFormatter().formatValue(source)
 					: "";
@@ -147,18 +160,22 @@ public class DefaultConversionServiceFactoryBean implements FactoryBean {
 			this.allowEmpty = allowEmpty;
 		}
 
+		@Override
 		public Class[] getSourceClasses() {
 			return new Class[] { String.class };
 		}
 
+		@Override
 		public Class[] getTargetClasses() {
 			return new Class[] { Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class,
 					BigInteger.class, BigDecimal.class, };
 		}
 
+		@Override
 		protected Object doConvert(Object source, Class targetClass, ConversionContext context) throws Exception {
-			return (!allowEmpty || StringUtils.hasText((String) source)) ? getFormatterFactory().getNumberFormatter(
-					targetClass).parseValue((String) source, targetClass) : null;
+			return (!allowEmpty || StringUtils.hasText((String) source))
+					? getFormatterFactory().getNumberFormatter(targetClass).parseValue((String) source, targetClass)
+					: null;
 		}
 	}
 
@@ -171,18 +188,22 @@ public class DefaultConversionServiceFactoryBean implements FactoryBean {
 			this.allowEmpty = allowEmpty;
 		}
 
+		@Override
 		public Class[] getSourceClasses() {
 			return new Class[] { Byte.class, Short.class, Integer.class, Long.class, Float.class, Double.class,
 					BigInteger.class, BigDecimal.class, };
 		}
 
+		@Override
 		public Class[] getTargetClasses() {
 			return new Class[] { String.class };
 		}
 
+		@Override
 		protected Object doConvert(Object source, Class targetClass, ConversionContext context) throws Exception {
-			return (!allowEmpty || source != null) ? getFormatterFactory().getNumberFormatter(source.getClass())
-					.formatValue(source) : "";
+			return (!allowEmpty || source != null)
+					? getFormatterFactory().getNumberFormatter(source.getClass()).formatValue(source)
+					: "";
 		}
 	}
 
@@ -216,36 +237,32 @@ public class DefaultConversionServiceFactoryBean implements FactoryBean {
 			this.falseString = falseString;
 		}
 
+		@Override
 		public Class[] getSourceClasses() {
 			return new Class[] { String.class };
 		}
 
+		@Override
 		public Class[] getTargetClasses() {
 			return new Class[] { Boolean.class };
 		}
 
+		@Override
 		protected Object doConvert(Object source, Class targetClass, ConversionContext context) throws Exception {
 			String text = (String) source;
 			if (!StringUtils.hasText(text)) {
 				return null;
-			}
-			else if (this.trueString != null && text.equalsIgnoreCase(this.trueString)) {
+			} else if (this.trueString != null && text.equalsIgnoreCase(this.trueString)) {
 				return Boolean.TRUE;
-			}
-			else if (this.falseString != null && text.equalsIgnoreCase(this.falseString)) {
+			} else if (this.falseString != null && text.equalsIgnoreCase(this.falseString)) {
 				return Boolean.FALSE;
-			}
-			else if (this.trueString == null
-					&& (text.equalsIgnoreCase(VALUE_TRUE) || text.equalsIgnoreCase(VALUE_ON)
-							|| text.equalsIgnoreCase(VALUE_YES) || text.equals(VALUE_1))) {
+			} else if (this.trueString == null && (text.equalsIgnoreCase(VALUE_TRUE) || text.equalsIgnoreCase(VALUE_ON)
+					|| text.equalsIgnoreCase(VALUE_YES) || text.equals(VALUE_1))) {
 				return Boolean.TRUE;
-			}
-			else if (this.falseString == null
-					&& (text.equalsIgnoreCase(VALUE_FALSE) || text.equalsIgnoreCase(VALUE_OFF)
-							|| text.equalsIgnoreCase(VALUE_NO) || text.equals(VALUE_0))) {
+			} else if (this.falseString == null && (text.equalsIgnoreCase(VALUE_FALSE)
+					|| text.equalsIgnoreCase(VALUE_OFF) || text.equalsIgnoreCase(VALUE_NO) || text.equals(VALUE_0))) {
 				return Boolean.FALSE;
-			}
-			else {
+			} else {
 				throw new IllegalArgumentException("Invalid boolean value [" + text + "]");
 			}
 		}
@@ -269,26 +286,26 @@ public class DefaultConversionServiceFactoryBean implements FactoryBean {
 			this.falseString = falseString;
 		}
 
+		@Override
 		public Class[] getSourceClasses() {
 			return new Class[] { Boolean.class };
 		}
 
+		@Override
 		public Class[] getTargetClasses() {
 			return new Class[] { String.class };
 		}
 
+		@Override
 		protected Object doConvert(Object source, Class targetClass, ConversionContext context) throws Exception {
 			Boolean bool = (Boolean) source;
 			if (this.trueString != null && bool.booleanValue()) {
 				return trueString;
-			}
-			else if (this.falseString != null && !bool.booleanValue()) {
+			} else if (this.falseString != null && !bool.booleanValue()) {
 				return falseString;
-			}
-			else if (bool.booleanValue()) {
+			} else if (bool.booleanValue()) {
 				return VALUE_YES;
-			}
-			else {
+			} else {
 				return VALUE_NO;
 			}
 		}

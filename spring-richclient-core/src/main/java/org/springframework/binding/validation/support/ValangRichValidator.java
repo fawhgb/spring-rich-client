@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2005 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -58,311 +58,335 @@ import org.springmodules.validation.valang.predicates.GenericTestPredicate;
 /**
  * Implementation of <code>RichValidator</code> that delegates to a
  * <code>ValangValidator</code> for validation.
- *   
+ * 
  * @author Oliver Hutchison
  * @see ValangValidator
  */
 public class ValangRichValidator implements RichValidator {
 
-    //  map to lists of rules effecting a given property 
-    private final Map propertyRules = new CachingMapDecorator(false) {
-        protected Object create(Object key) {
-            return new ArrayList();
-        }
-    };
+	// map to lists of rules effecting a given property
+	private final Map propertyRules = new CachingMapDecorator(false) {
+		private static final long serialVersionUID = 1L;
 
-    private final DefaultValidationResults results = new DefaultValidationResults();
+		@Override
+		protected Object create(Object key) {
+			return new ArrayList();
+		}
+	};
 
-    private final Map validationErrors = new HashMap();
+	private final DefaultValidationResults results = new DefaultValidationResults();
 
-    private final FormModel formModel;
+	private final Map validationErrors = new HashMap();
 
-    private final Collection allRules;
+	private final FormModel formModel;
 
-    private MessageSourceAccessor messageSourceAccessor;
+	private final Collection allRules;
 
-    public ValangRichValidator(FormModel formModel, ValangValidator validator) {
-        this.formModel = formModel;
-        this.allRules = validator.getRules();
-        initPropertyRules();
-    }
+	private MessageSourceAccessor messageSourceAccessor;
 
-    private void initPropertyRules() {
-        for (Iterator i = allRules.iterator(); i.hasNext();) {
-            BasicValidationRule rule = (BasicValidationRule)i.next();
-            Set propertiesUsedByRule = getPropertiesUsedByRule(rule);
-            for (Iterator j = propertiesUsedByRule.iterator(); j.hasNext();) {
-                String propertyName = (String)j.next();
-                ((List)propertyRules.get(propertyName)).add(rule);
-            }
-        }
-    }
+	public ValangRichValidator(FormModel formModel, ValangValidator validator) {
+		this.formModel = formModel;
+		this.allRules = validator.getRules();
+		initPropertyRules();
+	}
 
-    public MessageSourceAccessor getMessageSourceAccessor() {
-        if (messageSourceAccessor == null) {
-            messageSourceAccessor = (MessageSourceAccessor)ApplicationServicesLocator.services().getService(MessageSourceAccessor.class);
-        }
-        return messageSourceAccessor;
-    }
+	private void initPropertyRules() {
+		for (Iterator i = allRules.iterator(); i.hasNext();) {
+			BasicValidationRule rule = (BasicValidationRule) i.next();
+			Set propertiesUsedByRule = getPropertiesUsedByRule(rule);
+			for (Iterator j = propertiesUsedByRule.iterator(); j.hasNext();) {
+				String propertyName = (String) j.next();
+				((List) propertyRules.get(propertyName)).add(rule);
+			}
+		}
+	}
 
-    public void setMessageSourceAccessor(MessageSourceAccessor messageSourceAccessor) {
-        this.messageSourceAccessor = messageSourceAccessor;
-    }
+	public MessageSourceAccessor getMessageSourceAccessor() {
+		if (messageSourceAccessor == null) {
+			messageSourceAccessor = (MessageSourceAccessor) ApplicationServicesLocator.services()
+					.getService(MessageSourceAccessor.class);
+		}
+		return messageSourceAccessor;
+	}
 
-    private Set getPropertiesUsedByRule(BasicValidationRule rule) {
-        PropertiesUsedByRuleCollector collector = new PropertiesUsedByRuleCollector(rule);
-        return collector.getPropertiesUsedByRule();
-    }
+	public void setMessageSourceAccessor(MessageSourceAccessor messageSourceAccessor) {
+		this.messageSourceAccessor = messageSourceAccessor;
+	}
 
-    public ValidationResults validate(Object object) {
-        return validate(object, null);
-    }
+	private Set getPropertiesUsedByRule(BasicValidationRule rule) {
+		PropertiesUsedByRuleCollector collector = new PropertiesUsedByRuleCollector(rule);
+		return collector.getPropertiesUsedByRule();
+	}
 
-    public ValidationResults validate(Object object, String propertyName) {
-        Collection rulesToCheck = getRulesEffectedByProperty(propertyName);
-        for (Iterator i = rulesToCheck.iterator(); i.hasNext();) {
-            checkRule((BasicValidationRule)i.next());
-        }
-        return null;
-    }
+	@Override
+	public ValidationResults validate(Object object) {
+		return validate(object, null);
+	}
 
-    protected Collection getRulesEffectedByProperty(String propertyName) {
-        return (propertyName == null) ? allRules : (Collection)propertyRules.get(propertyName);
-    }
+	@Override
+	public ValidationResults validate(Object object, String propertyName) {
+		Collection rulesToCheck = getRulesEffectedByProperty(propertyName);
+		for (Iterator i = rulesToCheck.iterator(); i.hasNext();) {
+			checkRule((BasicValidationRule) i.next());
+		}
+		return null;
+	}
 
-    private void checkRule(BasicValidationRule rule) {
-        if (rule.getPredicate().evaluate(getSourceObject())) {
-            ruleSatisfied(rule);
-        }
-        else {
-            ruleViolated(rule);
-        }
-    }
+	protected Collection getRulesEffectedByProperty(String propertyName) {
+		return (propertyName == null) ? allRules : (Collection) propertyRules.get(propertyName);
+	}
 
-    protected void ruleSatisfied(BasicValidationRule rule) {
-        ValidationMessage message = (ValidationMessage)validationErrors.remove(rule);
-        if (message != null) {
-            results.removeMessage(message);
-        }
-    }
+	private void checkRule(BasicValidationRule rule) {
+		if (rule.getPredicate().evaluate(getSourceObject())) {
+			ruleSatisfied(rule);
+		} else {
+			ruleViolated(rule);
+		}
+	}
 
-    protected void ruleViolated(BasicValidationRule rule) {
-        ValidationMessage message = getValidationMessage(rule);
-        ValidationMessage oldMessage = (ValidationMessage)validationErrors.get(rule);
-        if (!message.equals(oldMessage)) {
-            results.removeMessage(oldMessage);
-            validationErrors.put(rule, message);
-            results.addMessage(message);
-        }
-    }
+	protected void ruleSatisfied(BasicValidationRule rule) {
+		ValidationMessage message = (ValidationMessage) validationErrors.remove(rule);
+		if (message != null) {
+			results.removeMessage(message);
+		}
+	}
 
-    protected ValidationMessage getValidationMessage(BasicValidationRule rule) {
-        String translatedMessage;
-        String field = rule.getField();
-        String errorMessage = rule.getErrorMessage();
-        String errorKey = rule.getErrorKey();
-        if (StringUtils.hasLength(errorKey)) {
-            Collection errorArgs = rule.getErrorArgs();
-            if (errorArgs != null && !errorArgs.isEmpty()) {
-                Collection arguments = new ArrayList();
-                for (Iterator iter = errorArgs.iterator(); iter.hasNext();) {
-                    arguments.add(((Function)iter.next()).getResult(getSourceObject()));
-                }
-                translatedMessage = getMessageSourceAccessor().getMessage(errorKey, arguments.toArray(), errorMessage);
-            }
-            else {
-                translatedMessage = getMessageSourceAccessor().getMessage(errorKey, errorMessage);
-            }
-        }
-        else {
-            translatedMessage = getMessageSourceAccessor().getMessage(field, errorMessage);
-        }
-        return new DefaultValidationMessage(field, Severity.ERROR, translatedMessage);
-    }
+	protected void ruleViolated(BasicValidationRule rule) {
+		ValidationMessage message = getValidationMessage(rule);
+		ValidationMessage oldMessage = (ValidationMessage) validationErrors.get(rule);
+		if (!message.equals(oldMessage)) {
+			results.removeMessage(oldMessage);
+			validationErrors.put(rule, message);
+			results.addMessage(message);
+		}
+	}
 
-    protected Object getSourceObject() {
-        return new FormModel2BeanWrapperAdapter();
-    }
+	protected ValidationMessage getValidationMessage(BasicValidationRule rule) {
+		String translatedMessage;
+		String field = rule.getField();
+		String errorMessage = rule.getErrorMessage();
+		String errorKey = rule.getErrorKey();
+		if (StringUtils.hasLength(errorKey)) {
+			Collection errorArgs = rule.getErrorArgs();
+			if (errorArgs != null && !errorArgs.isEmpty()) {
+				Collection arguments = new ArrayList();
+				for (Iterator iter = errorArgs.iterator(); iter.hasNext();) {
+					arguments.add(((Function) iter.next()).getResult(getSourceObject()));
+				}
+				translatedMessage = getMessageSourceAccessor().getMessage(errorKey, arguments.toArray(), errorMessage);
+			} else {
+				translatedMessage = getMessageSourceAccessor().getMessage(errorKey, errorMessage);
+			}
+		} else {
+			translatedMessage = getMessageSourceAccessor().getMessage(field, errorMessage);
+		}
+		return new DefaultValidationMessage(field, Severity.ERROR, translatedMessage);
+	}
 
-    /** 
-     *  Visitor that collects the names of all properties that are used by a single Valang
-     *  validation rule. 
-     */
-    private static class PropertiesUsedByRuleCollector {
+	protected Object getSourceObject() {
+		return new FormModel2BeanWrapperAdapter();
+	}
 
-        private static final ReflectiveVisitorHelper reflectiveVisitorHelper = new ReflectiveVisitorHelper();
+	/**
+	 * Visitor that collects the names of all properties that are used by a single
+	 * Valang validation rule.
+	 */
+	private static class PropertiesUsedByRuleCollector {
 
-        private final BasicValidationRule rule;
+		private static final ReflectiveVisitorHelper reflectiveVisitorHelper = new ReflectiveVisitorHelper();
 
-        private Set propertiesUsedByRule;
+		private final BasicValidationRule rule;
 
-        public PropertiesUsedByRuleCollector(BasicValidationRule rule) {
-            this.rule = rule;
-        }
+		private Set propertiesUsedByRule;
 
-        public Set getPropertiesUsedByRule() {
-            if (propertiesUsedByRule == null) {
-                propertiesUsedByRule = new HashSet();
-                doVisit(rule.getPredicate());
-                Collection errorArgs = rule.getErrorArgs();
-                if (errorArgs != null && !errorArgs.isEmpty()) {
-                    for (Iterator iter = errorArgs.iterator(); iter.hasNext();) {
-                        doVisit(iter.next());
-                    }
-                }
-            }
-            return propertiesUsedByRule;
-        }
+		public PropertiesUsedByRuleCollector(BasicValidationRule rule) {
+			this.rule = rule;
+		}
 
-        protected void doVisit(Object value) {
-            reflectiveVisitorHelper.invokeVisit(this, value);
-        }
+		public Set getPropertiesUsedByRule() {
+			if (propertiesUsedByRule == null) {
+				propertiesUsedByRule = new HashSet();
+				doVisit(rule.getPredicate());
+				Collection errorArgs = rule.getErrorArgs();
+				if (errorArgs != null && !errorArgs.isEmpty()) {
+					for (Iterator iter = errorArgs.iterator(); iter.hasNext();) {
+						doVisit(iter.next());
+					}
+				}
+			}
+			return propertiesUsedByRule;
+		}
 
-        void visit(BeanPropertyFunction f) {
-            propertiesUsedByRule.add(f.getField());
-        }
+		protected void doVisit(Object value) {
+			reflectiveVisitorHelper.invokeVisit(this, value);
+		}
 
-        void visitNull() {
-        }
+		void visit(BeanPropertyFunction f) {
+			propertiesUsedByRule.add(f.getField());
+		}
 
-        void visit(Function f) {
-        }
+		void visitNull() {
+		}
 
-        void visit(AbstractFunction f) {
-            Function[] arguments = f.getArguments();
-            for (int i = 0; i < arguments.length; i++) {
-                doVisit(arguments[i]);
-            }
-        }
+		void visit(Function f) {
+		}
 
-        void visit(NotPredicate p) {
-            Assert.isTrue(p.getPredicates().length == 1);
-            doVisit(p.getPredicates()[0]);
-        }
+		void visit(AbstractFunction f) {
+			Function[] arguments = f.getArguments();
+			for (int i = 0; i < arguments.length; i++) {
+				doVisit(arguments[i]);
+			}
+		}
 
-        void visit(AndPredicate p) {
-            for (int i = 0; i < p.getPredicates().length; i++) {
-                doVisit(p.getPredicates()[i]);
-            }
-        }
+		void visit(NotPredicate p) {
+			Assert.isTrue(p.getPredicates().length == 1);
+			doVisit(p.getPredicates()[0]);
+		}
 
-        void visit(OrPredicate p) {
-            for (int i = 0; i < p.getPredicates().length; i++) {
-                doVisit(p.getPredicates()[i]);
-            }
-        }
+		void visit(AndPredicate p) {
+			for (int i = 0; i < p.getPredicates().length; i++) {
+				doVisit(p.getPredicates()[i]);
+			}
+		}
 
-        void visit(GenericTestPredicate p) {
-            doVisit(p.getLeftFunction());
-            doVisit(p.getRightFunction());
-        }
+		void visit(OrPredicate p) {
+			for (int i = 0; i < p.getPredicates().length; i++) {
+				doVisit(p.getPredicates()[i]);
+			}
+		}
 
-        void visit(MapEntryFunction f) {
-            doVisit(f.getMapFunction());
-            doVisit(f.getKeyFunction());
-        }
+		void visit(GenericTestPredicate p) {
+			doVisit(p.getLeftFunction());
+			doVisit(p.getRightFunction());
+		}
 
-        void visit(AbstractMathFunction f) {
-            doVisit(f.getLeftFunction());
-            doVisit(f.getRightFunction());
-        }
-    }
+		void visit(MapEntryFunction f) {
+			doVisit(f.getMapFunction());
+			doVisit(f.getKeyFunction());
+		}
 
-    /**
-     * Adapts the FormModel interface to the BeanWrapper interface
-     * so that the Valang rules evaluator can access the form models 
-     * properties.
-     */
-    private class FormModel2BeanWrapperAdapter implements BeanWrapper {
+		void visit(AbstractMathFunction f) {
+			doVisit(f.getLeftFunction());
+			doVisit(f.getRightFunction());
+		}
+	}
 
-        public Object getPropertyValue(String propertyName) throws BeansException {
-            return formModel.getValueModel(propertyName).getValue();
-        }
+	/**
+	 * Adapts the FormModel interface to the BeanWrapper interface so that the
+	 * Valang rules evaluator can access the form models properties.
+	 */
+	private class FormModel2BeanWrapperAdapter implements BeanWrapper {
 
-        public void setWrappedInstance(Object obj) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public Object getPropertyValue(String propertyName) throws BeansException {
+			return formModel.getValueModel(propertyName).getValue();
+		}
 
-        public Object getWrappedInstance() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public void setWrappedInstance(Object obj) {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public Class getWrappedClass() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public Object getWrappedInstance() {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public void registerCustomEditor(Class requiredType, PropertyEditor propertyEditor) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public Class getWrappedClass() {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public void registerCustomEditor(Class requiredType, String propertyPath, PropertyEditor propertyEditor) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public void registerCustomEditor(Class requiredType, PropertyEditor propertyEditor) {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public PropertyEditor findCustomEditor(Class requiredType, String propertyPath) {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public void registerCustomEditor(Class requiredType, String propertyPath, PropertyEditor propertyEditor) {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public PropertyDescriptor[] getPropertyDescriptors() throws BeansException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public PropertyEditor findCustomEditor(Class requiredType, String propertyPath) {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public PropertyDescriptor getPropertyDescriptor(String propertyName) throws BeansException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public PropertyDescriptor[] getPropertyDescriptors() throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public Class getPropertyType(String propertyName) throws BeansException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public PropertyDescriptor getPropertyDescriptor(String propertyName) throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public boolean isReadableProperty(String propertyName) throws BeansException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public Class getPropertyType(String propertyName) throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public boolean isWritableProperty(String propertyName) throws BeansException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public boolean isReadableProperty(String propertyName) throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public void setPropertyValue(String propertyName, Object value) throws BeansException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public boolean isWritableProperty(String propertyName) throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public void setPropertyValue(PropertyValue pv) throws BeansException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public void setPropertyValue(String propertyName, Object value) throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public void setPropertyValues(Map map) throws BeansException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public void setPropertyValue(PropertyValue pv) throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public void setPropertyValues(PropertyValues pvs) throws BeansException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public void setPropertyValues(Map map) throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public void setPropertyValues(PropertyValues propertyValues, boolean ignoreUnknown) throws BeansException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public void setPropertyValues(PropertyValues pvs) throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public void setPropertyValues(PropertyValues propertyValues, boolean ignoreUnknown, boolean ignoreInvalid)
-                throws BeansException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public void setPropertyValues(PropertyValues propertyValues, boolean ignoreUnknown) throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public void setExtractOldValueForEditor(boolean extractOldValueForEditor){
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public void setPropertyValues(PropertyValues propertyValues, boolean ignoreUnknown, boolean ignoreInvalid)
+				throws BeansException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public boolean isExtractOldValueForEditor() {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public void setExtractOldValueForEditor(boolean extractOldValueForEditor) {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public Object convertIfNecessary(Object object, Class aClass) throws TypeMismatchException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
+		@Override
+		public boolean isExtractOldValueForEditor() {
+			throw new UnsupportedOperationException("Not implemented");
+		}
 
-        public Object convertIfNecessary(Object object, Class aClass, MethodParameter methodParameter)
-                throws TypeMismatchException {
-            throw new UnsupportedOperationException("Not implemented");
-        }
-    }
+		@Override
+		public Object convertIfNecessary(Object object, Class aClass) throws TypeMismatchException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
+
+		@Override
+		public Object convertIfNecessary(Object object, Class aClass, MethodParameter methodParameter)
+				throws TypeMismatchException {
+			throw new UnsupportedOperationException("Not implemented");
+		}
+	}
 }

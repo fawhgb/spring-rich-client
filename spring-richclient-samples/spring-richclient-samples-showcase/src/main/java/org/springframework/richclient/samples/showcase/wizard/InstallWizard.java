@@ -17,11 +17,13 @@ public class InstallWizard extends AbstractWizard {
 		this.licenseResource = licenseResource;
 	}
 
+	@Override
 	public void addPages() {
 		addPage(new SetupLicenseWizardPage(licenseResource));
 		addPage(new DirectoryInputPage());
 	}
 
+	@Override
 	protected boolean onFinish() {
 		return true;
 	}
@@ -31,6 +33,7 @@ public class InstallWizard extends AbstractWizard {
 			super("directoryInputPage");
 		}
 
+		@Override
 		protected JComponent createControl() {
 			JPanel panel = new JPanel();
 			panel.add(new JLabel("directory input"));

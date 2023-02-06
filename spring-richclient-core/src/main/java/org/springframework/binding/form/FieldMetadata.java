@@ -46,8 +46,8 @@ public interface FieldMetadata extends PropertyChangePublisher {
 	Object getUserMetadata(String key);
 
 	/**
-	 * Returns all custom metadata associated with this property in the form of
-	 * a Map.
+	 * Returns all custom metadata associated with this property in the form of a
+	 * Map.
 	 *
 	 * @return Map containing String keys
 	 */
@@ -58,8 +58,8 @@ public interface FieldMetadata extends PropertyChangePublisher {
 	 * <p>
 	 * It's expected that controls bound to this form property will listen for
 	 * changes to this value and if possible modify their display/behaviour to
-	 * reflect the new state. e.g. When this property becomes true a text
-	 * component would grey its self out and prevent any editing.
+	 * reflect the new state. e.g. When this property becomes true a text component
+	 * would grey its self out and prevent any editing.
 	 * <p>
 	 * This value will be propagated up to any descendants.
 	 *
@@ -73,8 +73,8 @@ public interface FieldMetadata extends PropertyChangePublisher {
 	 * A property is read only if any of the following are true:
 	 * <ul>
 	 * <li>It is read only at the PropertyAccessStrategy level</li>
-	 * <li>It is marked as read only by a call to the setReadOnly method of
-	 * this class</li>
+	 * <li>It is marked as read only by a call to the setReadOnly method of this
+	 * class</li>
 	 * <li>It is marked as read only by a call to the setReadOnly method of the
 	 * metadata of any ancestor of the form model which contains this property</li>
 	 * </ul>
@@ -100,11 +100,11 @@ public interface FieldMetadata extends PropertyChangePublisher {
 	 * A property is enabled if all of the following are true:
 	 * <ul>
 	 * <li>The owning form model is enabled</li>
-	 * <li>It has not been marked as disabled by a call to the setEnabled
-	 * method of this class</li>
-	 * <li>It has not been marked as disabled by by a call to the setEnabled
-	 * method of the metadata of any ancestor of the form model which contains
-	 * this property</li>
+	 * <li>It has not been marked as disabled by a call to the setEnabled method of
+	 * this class</li>
+	 * <li>It has not been marked as disabled by by a call to the setEnabled method
+	 * of the metadata of any ancestor of the form model which contains this
+	 * property</li>
 	 * </ul>
 	 */
 	boolean isEnabled();

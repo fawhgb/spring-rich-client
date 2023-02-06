@@ -21,19 +21,22 @@ import org.springframework.richclient.form.binding.BindingFactoryProvider;
 
 /**
  * This provider constructs instances of {@link SwingBindingFactory} on demand.
+ *
  * @author Larry Streepy
  * @see org.springframework.richclient.application.ApplicationServices#getBindingFactory(FormModel)
  * @see org.springframework.richclient.application.ApplicationServices#getBindingFactoryProvider()
  */
 public class SwingBindingFactoryProvider implements BindingFactoryProvider {
 
-    /**
-     * Produce a BindingFactory using the provided form model.
-     * @param formModel Form model on which to construct the BindingFactory
-     * @return BindingFactory
-     */
-    public BindingFactory getBindingFactory(FormModel formModel) {
-        return new SwingBindingFactory(formModel);
-    }
+	/**
+	 * Produce a BindingFactory using the provided form model.
+	 *
+	 * @param formModel Form model on which to construct the BindingFactory
+	 * @return BindingFactory
+	 */
+	@Override
+	public BindingFactory getBindingFactory(FormModel formModel) {
+		return new SwingBindingFactory(formModel);
+	}
 
 }

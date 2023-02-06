@@ -23,10 +23,10 @@ import org.springframework.richclient.command.CommandManager;
 /**
  * Factory for JDesktopPane CommandGroups:
  * <ul>
- * <li>a Window menu CommandGroup: </li>
+ * <li>a Window menu CommandGroup:</li>
  * <li>a context menu CommandGroup: cascade, tile, minimze, separator, all open
  * frames</li>
- * 
+ *
  * @author Peter De Bruycker
  */
 public interface DesktopCommandGroupFactory {

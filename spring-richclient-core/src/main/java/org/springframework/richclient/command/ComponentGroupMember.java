@@ -1,14 +1,13 @@
 package org.springframework.richclient.command;
 
-import org.springframework.richclient.command.config.CommandButtonConfigurer;
-import org.springframework.richclient.util.Assert;
+import java.awt.Component;
+import java.awt.Container;
+import java.util.List;
 
 import javax.swing.AbstractButton;
 
-import java.util.Iterator;
-import java.util.List;
-import java.awt.Component;
-import java.awt.Container;
+import org.springframework.richclient.command.config.CommandButtonConfigurer;
+import org.springframework.richclient.util.Assert;
 
 /**
  * A implementation of the {@link GroupMember} interface that can be associated
@@ -22,6 +21,7 @@ public class ComponentGroupMember extends GroupMember {
 
 	/**
 	 * Creates a new {@code ComponentGroupMember}.
+	 *
 	 * @param component The component that this group member represents.
 	 */
 	public ComponentGroupMember(Component component) {
@@ -31,37 +31,39 @@ public class ComponentGroupMember extends GroupMember {
 
 	/**
 	 * Forwards the enabled flag to the managed component.
+	 *
 	 * @param enabled The enabled flag.
 	 */
+	@Override
 	public void setEnabled(boolean enabled) {
 		component.setEnabled(enabled);
 	}
 
 	/**
-	 * Searches through the component and nested components in order to see if
-	 * the command with supplied id exists in this component.
+	 * Searches through the component and nested components in order to see if the
+	 * command with supplied id exists in this component.
 	 *
 	 * @param commandId The id of the command to be checked for. May be null.
-	 * @return true if the component, or any of its nested components, is a
-	 * command with the given command id.
+	 * @return true if the component, or any of its nested components, is a command
+	 *         with the given command id.
 	 */
+	@Override
 	public boolean managesCommand(String commandId) {
 		if (null != commandId) {
 			return managesCommand(component, commandId);
-		}
-		else {
+		} else {
 			return false;
 		}
 	}
 
 	/**
-	 * Searches through the component and nested components in order to see if
-	 * the command with supplied id exists in this component.
+	 * Searches through the component and nested components in order to see if the
+	 * command with supplied id exists in this component.
 	 *
 	 * @param component The component that should be searched.
 	 * @param commandId The id of the command to be checked for.
-	 * @return true if the component, or any of its nested components, is a
-	 * command with the given command id.
+	 * @return true if the component, or any of its nested components, is a command
+	 *         with the given command id.
 	 */
 	private boolean managesCommand(Component component, String commandId) {
 		if (component instanceof AbstractButton) {
@@ -71,8 +73,7 @@ public class ComponentGroupMember extends GroupMember {
 					return true;
 				}
 			}
-		}
-		else if (component instanceof Container) {
+		} else if (component instanceof Container) {
 			Component[] subComponents = ((Container) component).getComponents();
 			for (int i = 0; i < subComponents.length; ++i) {
 				if (managesCommand(subComponents[i], commandId)) {
@@ -87,6 +88,7 @@ public class ComponentGroupMember extends GroupMember {
 	 * Asks the given container populator to add a component to its underlying
 	 * container.
 	 */
+	@Override
 	protected void fill(GroupContainerPopulator containerPopulator, Object controlFactory,
 			CommandButtonConfigurer buttonConfigurer, List previousButtons) {
 		Assert.required(containerPopulator, "containerPopulator");

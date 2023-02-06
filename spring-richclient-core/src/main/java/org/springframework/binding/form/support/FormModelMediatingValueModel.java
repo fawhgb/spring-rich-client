@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -33,7 +33,7 @@ import org.springframework.richclient.util.EventListenerListHelper;
  * and the derived view value model. Allows for value change event delivery to
  * be disabled.
  * </p>
- * 
+ *
  * <p>
  * Use the provided method {@link #setDeliverValueChangeEvents(boolean)} to
  * enable/disable the event mechanism. This makes it possible to change all
@@ -41,7 +41,7 @@ import org.springframework.richclient.util.EventListenerListHelper;
  * {@link AbstractFormModel}). Events are handled internally by the
  * {@link #dirtyChangeListeners} and the {@link #mediatedValueHolder}.
  * </p>
- * 
+ *
  * <p>
  * As this is also a {@link DirtyTrackingValueModel}, the implementation allows
  * reverting to the original value by using {@link #revertToOriginal()}, which
@@ -49,14 +49,17 @@ import org.springframework.richclient.util.EventListenerListHelper;
  * wrappedValueModel. This originalValue is updated to hold the wrappedValue
  * when using {@link #clearDirty()}.
  * </p>
- * 
- * <p>Small sketch to illustrate the positioning and usage:</p>
+ *
+ * <p>
+ * Small sketch to illustrate the positioning and usage:
+ * </p>
+ *
  * <pre>
  * &lt;setup&gt;
  * External actor -> FormModelMediatingValueModel -> wrappedValueModel
  *                   holds originalValue = ori       wrappedValue = ori
  *                   events = enabled
- * 
+ *
  * &lt;use case&gt;
  * events disabled -> events = disabled            -> wrappedValue = ori
  * write value A   -> delagates to wrappedModel    -> wrappedValue = A
@@ -67,13 +70,13 @@ import org.springframework.richclient.util.EventListenerListHelper;
  * clearDirty      -> originalValue = A            -> wrappedValue = A
  * OR
  * revertToOriginal-> set originalValue on wrapped -> wrappedValue = ori
- *                    update dirty state                  
+ *                    update dirty state
  * </pre>
- * 
+ *
  * @author Oliver Hutchison
  */
-public class FormModelMediatingValueModel extends AbstractValueModelWrapper implements DirtyTrackingValueModel,
-		PropertyChangeListener {
+public class FormModelMediatingValueModel extends AbstractValueModelWrapper
+		implements DirtyTrackingValueModel, PropertyChangeListener {
 
 	/** Holds all propertyChangeListeners that are interested in Dirty changes. */
 	private final EventListenerListHelper dirtyChangeListeners = new EventListenerListHelper(
@@ -99,7 +102,7 @@ public class FormModelMediatingValueModel extends AbstractValueModelWrapper impl
 
 	/**
 	 * Constructor which defaults <code>trackDirty=true</code>.
-	 * 
+	 *
 	 * @param propertyValueModel the ValueModel to mediate.
 	 */
 	public FormModelMediatingValueModel(ValueModel propertyValueModel) {
@@ -108,9 +111,9 @@ public class FormModelMediatingValueModel extends AbstractValueModelWrapper impl
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param propertyValueModel the valueModel to mediate.
-	 * @param trackDirty disable/enable dirty tracking.
+	 * @param trackDirty         disable/enable dirty tracking.
 	 */
 	public FormModelMediatingValueModel(ValueModel propertyValueModel, boolean trackDirty) {
 		super(propertyValueModel);
@@ -120,6 +123,7 @@ public class FormModelMediatingValueModel extends AbstractValueModelWrapper impl
 		this.trackDirty = trackDirty;
 	}
 
+	@Override
 	public void setValueSilently(Object value, PropertyChangeListener listenerToSkip) {
 		super.setValueSilently(value, this);
 		if (deliverValueChangeEvents) {
@@ -129,6 +133,7 @@ public class FormModelMediatingValueModel extends AbstractValueModelWrapper impl
 	}
 
 	// called by the wrapped value model
+	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		originalValue = getValue();
 		if (deliverValueChangeEvents) {
@@ -139,23 +144,21 @@ public class FormModelMediatingValueModel extends AbstractValueModelWrapper impl
 
 	/**
 	 * <p>
-	 * Enable/disable the event mechanism. Makes it possible to control the
-	 * timing of event firing (delay the events).
+	 * Enable/disable the event mechanism. Makes it possible to control the timing
+	 * of event firing (delay the events).
 	 * </p>
-	 * 
+	 *
 	 * <p>
-	 * When disabling, no dirty events will be fired and the mediating
-	 * valueHolder will not set it's value. The latter results in not firing
-	 * other events like valueChangedEvents.
+	 * When disabling, no dirty events will be fired and the mediating valueHolder
+	 * will not set it's value. The latter results in not firing other events like
+	 * valueChangedEvents.
 	 * </p>
 	 * <p>
-	 * When enabling, original (stored) value is compared to the newer value in
-	 * the wrapped model and the necessary events are fired
-	 * (dirty/valueChanged).
+	 * When enabling, original (stored) value is compared to the newer value in the
+	 * wrapped model and the necessary events are fired (dirty/valueChanged).
 	 * <p>
-	 * 
-	 * @param deliverValueChangeEvents boolean to enable/disable event
-	 * mechanism.
+	 *
+	 * @param deliverValueChangeEvents boolean to enable/disable event mechanism.
 	 */
 	public void setDeliverValueChangeEvents(boolean deliverValueChangeEvents) {
 		boolean oldDeliverValueChangeEvents = this.deliverValueChangeEvents;
@@ -166,10 +169,12 @@ public class FormModelMediatingValueModel extends AbstractValueModelWrapper impl
 		}
 	}
 
+	@Override
 	public boolean isDirty() {
 		return trackDirty && getValueChangeDetector().hasValueChanged(originalValue, getValue());
 	}
 
+	@Override
 	public void clearDirty() {
 		if (isDirty()) {
 			originalValue = getValue();
@@ -177,6 +182,7 @@ public class FormModelMediatingValueModel extends AbstractValueModelWrapper impl
 		}
 	}
 
+	@Override
 	public void revertToOriginal() {
 		if (isDirty()) {
 			setValue(originalValue);
@@ -195,70 +201,73 @@ public class FormModelMediatingValueModel extends AbstractValueModelWrapper impl
 	}
 
 	/**
-	 * @param valueChangeDetector set the {@link ValueChangeDetector} to use
-	 * when checking the dirty state.
+	 * @param valueChangeDetector set the {@link ValueChangeDetector} to use when
+	 *                            checking the dirty state.
 	 */
 	public void setValueChangeDetector(ValueChangeDetector valueChangeDetector) {
 		this.valueChangeDetector = valueChangeDetector;
 	}
 
 	/**
-	 * @return a {@link ValueChangeDetector} to use when checking the dirty
-	 * state.
+	 * @return a {@link ValueChangeDetector} to use when checking the dirty state.
 	 */
 	protected ValueChangeDetector getValueChangeDetector() {
 		if (valueChangeDetector == null) {
-			valueChangeDetector = (ValueChangeDetector) ApplicationServicesLocator.services().getService(
-					ValueChangeDetector.class);
+			valueChangeDetector = (ValueChangeDetector) ApplicationServicesLocator.services()
+					.getService(ValueChangeDetector.class);
 		}
 		return valueChangeDetector;
 	}
 
+	@Override
 	public void addValueChangeListener(PropertyChangeListener listener) {
 		mediatedValueHolder.addValueChangeListener(listener);
 	}
 
+	@Override
 	public void removeValueChangeListener(PropertyChangeListener listener) {
 		mediatedValueHolder.removeValueChangeListener(listener);
 	}
 
+	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
+	@Override
 	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		if (DIRTY_PROPERTY.equals(propertyName)) {
 			dirtyChangeListeners.add(listener);
-		}
-		else if (VALUE_PROPERTY.equals(propertyName)) {
+		} else if (VALUE_PROPERTY.equals(propertyName)) {
 			addValueChangeListener(listener);
 		}
 	}
 
+	@Override
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		throw new UnsupportedOperationException("not implemented");
 	}
 
+	@Override
 	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		if (DIRTY_PROPERTY.equals(propertyName)) {
 			dirtyChangeListeners.remove(listener);
-		}
-		else if (VALUE_PROPERTY.equals(propertyName)) {
+		} else if (VALUE_PROPERTY.equals(propertyName)) {
 			removeValueChangeListener(listener);
 		}
 	}
 
 	/**
 	 * Handles the dirty event firing.
-	 * 
+	 *
 	 * @param propertyName implementation only handles DIRTY_PROPERTY.
 	 * @param oldValue
 	 * @param newValue
 	 */
 	protected final void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
 		if (DIRTY_PROPERTY.equals(propertyName)) {
-			PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, Boolean.valueOf(oldValue), Boolean
-					.valueOf(newValue));
+			PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, Boolean.valueOf(oldValue),
+					Boolean.valueOf(newValue));
 			for (Iterator i = dirtyChangeListeners.iterator(); i.hasNext();) {
 				((PropertyChangeListener) i.next()).propertyChange(evt);
 			}

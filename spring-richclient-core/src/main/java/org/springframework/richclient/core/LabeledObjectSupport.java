@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -37,7 +37,7 @@ import org.springframework.util.ObjectUtils;
 /**
  * A convenient super class for objects that can be labeled for display in a
  * GUI.
- * 
+ *
  * @author Keith Donald
  */
 public class LabeledObjectSupport extends ApplicationServicesAccessor implements DescribedElement, VisualizedElement,
@@ -56,12 +56,13 @@ public class LabeledObjectSupport extends ApplicationServicesAccessor implements
 
 	private PropertyChangeSupport propertyChangeSupport;
 
+	@Override
 	public void setLabelInfo(CommandButtonLabelInfo label) {
 		String oldDisplayName = null;
 		if (this.title != null || this.label != null) {
 			oldDisplayName = getDisplayName();
 		}
-		
+
 		int oldMnemonic = getMnemonic();
 		int oldMnemonicIndex = getMnemonicIndex();
 		KeyStroke oldAccelerator = getAccelerator();
@@ -72,18 +73,21 @@ public class LabeledObjectSupport extends ApplicationServicesAccessor implements
 		firePropertyChange("accelerator", oldAccelerator, getAccelerator());
 	}
 
+	@Override
 	public void setCaption(String caption) {
 		String oldValue = caption;
 		this.caption = caption;
 		firePropertyChange(CAPTION_PROPERTY, oldValue, caption);
 	}
 
+	@Override
 	public void setDescription(String description) {
 		String oldValue = this.description;
 		this.description = description;
 		firePropertyChange(DESCRIPTION_PROPERTY, oldValue, description);
 	}
 
+	@Override
 	public void setTitle(String title) {
 		String oldValue = null;
 		if (this.title != null || this.label != null) {
@@ -94,12 +98,14 @@ public class LabeledObjectSupport extends ApplicationServicesAccessor implements
 		firePropertyChange(DISPLAY_NAME_PROPERTY, oldValue, getDisplayName());
 	}
 
+	@Override
 	public void setImage(Image image) {
 		Image oldValue = image;
 		this.image = image;
 		firePropertyChange("image", oldValue, image);
 	}
 
+	@Override
 	public String getDisplayName() {
 		if (title != null) {
 			return title;
@@ -114,42 +120,50 @@ public class LabeledObjectSupport extends ApplicationServicesAccessor implements
 		return label.getText();
 	}
 
+	@Override
 	public String getCaption() {
 		return caption;
 	}
 
+	@Override
 	public String getDescription() {
 		return description;
 	}
 
+	@Override
 	public Image getImage() {
 		return image;
 	}
 
+	@Override
 	public Icon getIcon() {
-		if (image != null)
+		if (image != null) {
 			return new ImageIcon(image);
+		}
 
 		return null;
 	}
 
 	public int getMnemonic() {
-		if (label != null)
+		if (label != null) {
 			return label.getMnemonic();
+		}
 
 		return 0;
 	}
 
 	public int getMnemonicIndex() {
-		if (label != null)
+		if (label != null) {
 			return label.getMnemonicIndex();
+		}
 
 		return 0;
 	}
 
 	public KeyStroke getAccelerator() {
-		if (label != null)
+		if (label != null) {
 			return label.getAccelerator();
+		}
 
 		return null;
 	}
@@ -217,6 +231,7 @@ public class LabeledObjectSupport extends ApplicationServicesAccessor implements
 		return currentValue != proposedValue;
 	}
 
+	@Override
 	public String toString() {
 		return new ToStringCreator(this).toString();
 	}

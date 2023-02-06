@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2005 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,63 +38,73 @@ import org.springframework.util.ObjectUtils;
  * Default implementation of {@link ValidationResultsModel}. Several events are
  * fired when validationResults are set and can be tracked by registering the
  * appropriate listener.
- * 
+ *
  * <p>
  * You can register listeners on:
  * </p>
  * <ul>
- * <li>Changes of the ValidationResults in general. ({@link #addValidationListener(ValidationListener)})</li>
+ * <li>Changes of the ValidationResults in general.
+ * ({@link #addValidationListener(ValidationListener)})</li>
  * <li>Changes of validationResults concerning a specific property of the
  * FormModel. ({@link #addValidationListener(String, ValidationListener)})</li>
- * <li>Specific events concerning errors, warnings and info. ({@link #addPropertyChangeListener(String, PropertyChangeListener) with one of: 
- * ValidationResultsModel#HAS_ERRORS_PROPERTY,
+ * <li>Specific events concerning errors, warnings and info.
+ * ({@link #addPropertyChangeListener(String, PropertyChangeListener) with one
+ * of: ValidationResultsModel#HAS_ERRORS_PROPERTY,
  * ValidationResultsModel#HAS_INFO_PROPERTY or
  * ValidationResultsModel#HAS_WARNINGS_PROPERTY)</li>
  * </ul>
- * 
+ *
  * <p>
  * A child-parent relation can be used to bundle events and results. A listener
  * set on a parent will receive events originating from the child and when
  * polling for messages, childMessages will be available as well. This makes it
  * possible to efficiently couple formModels and their validation aspect and
  * provides a means to bundle validation reporting. When eg using a
- * {@link org.springframework.richclient.form.ValidationResultsReporter}, you have the opportunity to bundle
- * results from various unrelated formModels to report to one end point.</p>
- * 
- * <p>Example:</p>
+ * {@link org.springframework.richclient.form.ValidationResultsReporter}, you
+ * have the opportunity to bundle results from various unrelated formModels to
+ * report to one end point.
+ * </p>
+ *
+ * <p>
+ * Example:
+ * </p>
+ *
  * <pre>
  * DefaultFormModel formModelA = ...
  * DefaultFormModel formModelChildOfA = ...
  * formModelA.addChild(formModelChildOfA);
- * 
+ *
  * DefaultFormModel formModelB = ...
- * 
- * \\ At this stage, the ValidationResultsModel of formModelChildOfA will route results &amp; 
+ *
+ * \\ At this stage, the ValidationResultsModel of formModelChildOfA will route results &amp;
  * \\ events to the ValidationResultsModel of formModelA
- * 
+ *
  * DefaultValidationResultsModel container = new DefaultValidationResultsModel();
  * container.add(formModelA.getValidationResults());
  * container.add(formModelB.getValidationResults());
- * 
+ *
  * new SimpleValidationResultsReporter(container, messagable);
- * 
+ *
  * \\ the reporter will now receive events &amp; results of all formModels and can show messages of each of them
- * 
+ *
  * </pre>
- * 
+ *
  * @see org.springframework.binding.form.support.DefaultFormModel#addChild(org.springframework.binding.form.HierarchicalFormModel)
  * @see org.springframework.richclient.form.SimpleValidationResultsReporter
- * 
+ *
  * @author Oliver Hutchison
  * @author Jan Hoskens
  */
-public class DefaultValidationResultsModel implements ValidationResultsModel, ValidationListener,
-		PropertyChangeListener {
+public class DefaultValidationResultsModel
+		implements ValidationResultsModel, ValidationListener, PropertyChangeListener {
 
 	private final EventListenerListHelper validationListeners = new EventListenerListHelper(ValidationListener.class);
 
 	private final CachingMapDecorator propertyValidationListeners = new CachingMapDecorator() {
 
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		protected Object create(Object propertyName) {
 			return new EventListenerListHelper(ValidationListener.class);
 		}
@@ -102,6 +112,9 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 
 	private final CachingMapDecorator propertyChangeListeners = new CachingMapDecorator() {
 
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		protected Object create(Object propertyName) {
 			return new EventListenerListHelper(PropertyChangeListener.class);
 		}
@@ -134,7 +147,7 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 
 	/**
 	 * Constructor with delegate.
-	 * 
+	 *
 	 * @param delegateFor delegate object.
 	 */
 	public DefaultValidationResultsModel(ValidationResultsModel delegateFor) {
@@ -205,24 +218,23 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 	}
 
 	/**
-	 * @return <code>true</code> if this instance of one of its children has
-	 * errors contained in their results.
+	 * @return <code>true</code> if this instance of one of its children has errors
+	 *         contained in their results.
 	 */
+	@Override
 	public boolean getHasErrors() {
 		return hasErrors;
 	}
 
 	/**
-	 * Revaluate the hasErrors property and fire an event if things have
-	 * changed.
+	 * Revaluate the hasErrors property and fire an event if things have changed.
 	 */
 	private void updateErrors() {
 		boolean oldErrors = hasErrors;
 		hasErrors = false;
 		if (validationResults.getHasErrors()) {
 			hasErrors = true;
-		}
-		else {
+		} else {
 			Iterator childIter = children.iterator();
 			while (childIter.hasNext()) {
 				ValidationResultsModel childModel = (ValidationResultsModel) childIter.next();
@@ -236,9 +248,10 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 	}
 
 	/**
-	 * @return <code>true</code> if this instance of one of its children has
-	 * info contained in their results.
+	 * @return <code>true</code> if this instance of one of its children has info
+	 *         contained in their results.
 	 */
+	@Override
 	public boolean getHasInfo() {
 		return hasInfo;
 	}
@@ -251,8 +264,7 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 		hasInfo = false;
 		if (validationResults.getHasInfo()) {
 			hasInfo = true;
-		}
-		else {
+		} else {
 			Iterator childIter = children.iterator();
 			while (childIter.hasNext()) {
 				ValidationResultsModel childModel = (ValidationResultsModel) childIter.next();
@@ -267,23 +279,22 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 
 	/**
 	 * @return <code>true</code> if this instance of one of its children has
-	 * warnings contained in their results.
+	 *         warnings contained in their results.
 	 */
+	@Override
 	public boolean getHasWarnings() {
 		return hasWarnings;
 	}
 
 	/**
-	 * Revaluate the hasWarnings property and fire an event if things have
-	 * changed.
+	 * Revaluate the hasWarnings property and fire an event if things have changed.
 	 */
 	private void updateWarnings() {
 		boolean oldWarnings = hasWarnings;
 		hasWarnings = false;
 		if (validationResults.getHasWarnings()) {
 			hasWarnings = true;
-		}
-		else {
+		} else {
 			Iterator childIter = children.iterator();
 			while (childIter.hasNext()) {
 				ValidationResultsModel childModel = (ValidationResultsModel) childIter.next();
@@ -296,6 +307,7 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 		firePropertyChange(HAS_WARNINGS_PROPERTY, oldWarnings, hasWarnings);
 	}
 
+	@Override
 	public int getMessageCount() {
 		int count = validationResults.getMessageCount();
 		Iterator childIter = children.iterator();
@@ -306,6 +318,7 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 		return count;
 	}
 
+	@Override
 	public int getMessageCount(Severity severity) {
 		int count = validationResults.getMessageCount(severity);
 		Iterator childIter = children.iterator();
@@ -316,6 +329,7 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 		return count;
 	}
 
+	@Override
 	public int getMessageCount(String propertyName) {
 		int count = validationResults.getMessageCount(propertyName);
 		Iterator childIter = children.iterator();
@@ -326,6 +340,7 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 		return count;
 	}
 
+	@Override
 	public Set getMessages() {
 		Set messages = new HashSet();
 		messages.addAll(validationResults.getMessages());
@@ -337,6 +352,7 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 		return messages;
 	}
 
+	@Override
 	public Set getMessages(Severity severity) {
 		Set messages = new HashSet();
 		messages.addAll(validationResults.getMessages(severity));
@@ -348,6 +364,7 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 		return messages;
 	}
 
+	@Override
 	public Set getMessages(String propertyName) {
 		Set messages = new HashSet();
 		messages.addAll(validationResults.getMessages(propertyName));
@@ -359,34 +376,42 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 		return messages;
 	}
 
+	@Override
 	public void addValidationListener(ValidationListener listener) {
 		validationListeners.add(listener);
 	}
 
+	@Override
 	public void removeValidationListener(ValidationListener listener) {
 		validationListeners.remove(listener);
 	}
 
+	@Override
 	public void addValidationListener(String propertyName, ValidationListener listener) {
 		getValidationListeners(propertyName).add(listener);
 	}
 
+	@Override
 	public void removeValidationListener(String propertyName, ValidationListener listener) {
 		getValidationListeners(propertyName).remove(listener);
 	}
 
+	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		throw new UnsupportedOperationException("This method is not implemented");
 	}
 
+	@Override
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		throw new UnsupportedOperationException("This method is not implemented");
 	}
 
+	@Override
 	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		getPropertyChangeListeners(propertyName).add(listener);
 	}
 
+	@Override
 	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		getPropertyChangeListeners(propertyName).remove(listener);
 	}
@@ -416,8 +441,8 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 		if (oldValue != newValue) {
 			EventListenerListHelper propertyChangeListeners = getPropertyChangeListeners(propertyName);
 			if (propertyChangeListeners.hasListeners()) {
-				PropertyChangeEvent event = new PropertyChangeEvent(delegateFor, propertyName, Boolean
-						.valueOf(oldValue), Boolean.valueOf(newValue));
+				PropertyChangeEvent event = new PropertyChangeEvent(delegateFor, propertyName,
+						Boolean.valueOf(oldValue), Boolean.valueOf(newValue));
 				propertyChangeListeners.fire("propertyChange", event);
 			}
 		}
@@ -427,41 +452,46 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 		return ((EventListenerListHelper) propertyChangeListeners.get(propertyName));
 	}
 
+	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("messages", getMessages()).toString();
 	}
 
 	/**
-	 * Add a validationResultsModel as a child to this one. Attach listeners and
-	 * if it already has messages, fire events.
-	 * 
+	 * Add a validationResultsModel as a child to this one. Attach listeners and if
+	 * it already has messages, fire events.
+	 *
 	 * @param validationResultsModel
 	 */
+	@Override
 	public void add(ValidationResultsModel validationResultsModel) {
 		if (children.add(validationResultsModel)) {
 			validationResultsModel.addValidationListener(this);
 			validationResultsModel.addPropertyChangeListener(HAS_ERRORS_PROPERTY, this);
 			validationResultsModel.addPropertyChangeListener(HAS_WARNINGS_PROPERTY, this);
 			validationResultsModel.addPropertyChangeListener(HAS_INFO_PROPERTY, this);
-			if ((validationResultsModel.getMessageCount() > 0))
+			if ((validationResultsModel.getMessageCount() > 0)) {
 				fireChangedEvents();
+			}
 		}
 	}
 
 	/**
 	 * Remove the given validationResultsModel from the list of children. Remove
 	 * listeners and if it had messages, fire events.
-	 * 
+	 *
 	 * @param validationResultsModel
 	 */
+	@Override
 	public void remove(ValidationResultsModel validationResultsModel) {
 		if (children.remove(validationResultsModel)) {
 			validationResultsModel.removeValidationListener(this);
 			validationResultsModel.removePropertyChangeListener(HAS_ERRORS_PROPERTY, this);
 			validationResultsModel.removePropertyChangeListener(HAS_WARNINGS_PROPERTY, this);
 			validationResultsModel.removePropertyChangeListener(HAS_INFO_PROPERTY, this);
-			if (validationResultsModel.getMessageCount() > 0)
+			if (validationResultsModel.getMessageCount() > 0) {
 				fireChangedEvents();
+			}
 		}
 	}
 
@@ -469,6 +499,7 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 	 * {@link DefaultValidationResultsModel} registers itself as a
 	 * validationListener on it's children to forward the event.
 	 */
+	@Override
 	public void validationResultsChanged(ValidationResults results) {
 		fireValidationResultsChanged();
 	}
@@ -478,12 +509,14 @@ public class DefaultValidationResultsModel implements ValidationResultsModel, Va
 	 * triggers a specific evaluation of the parent property, which will trigger
 	 * events as needed.
 	 */
+	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		if (evt.getPropertyName() == HAS_ERRORS_PROPERTY)
+		if (evt.getPropertyName() == HAS_ERRORS_PROPERTY) {
 			updateErrors();
-		else if (evt.getPropertyName() == HAS_WARNINGS_PROPERTY)
+		} else if (evt.getPropertyName() == HAS_WARNINGS_PROPERTY) {
 			updateWarnings();
-		else if (evt.getPropertyName() == HAS_INFO_PROPERTY)
+		} else if (evt.getPropertyName() == HAS_INFO_PROPERTY) {
 			updateInfo();
+		}
 	}
 }

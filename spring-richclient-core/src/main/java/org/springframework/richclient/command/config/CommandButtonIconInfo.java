@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,10 +30,10 @@ import org.springframework.util.ObjectUtils;
 /**
  * A parameter object consisting of the various icons that may be displayed on a
  * single command button depending on its state.
- * 
+ *
  * <p>
  * The set of states for which this object maintains icons are as follows:
- * 
+ *
  * <ul>
  * <li>default</li>
  * <li>selected</li>
@@ -41,17 +41,17 @@ import org.springframework.util.ObjectUtils;
  * <li>pressed</li>
  * <li>rollover</li>
  * </ul>
- * 
+ *
  * </p>
- * 
+ *
  * @author Keith Donald
- * 
+ *
  */
 public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElement {
 
 	/**
-	 * A {@code CommandButtonIconInfo} instance that can be used for command
-	 * buttons that have no icon information associated with them.
+	 * A {@code CommandButtonIconInfo} instance that can be used for command buttons
+	 * that have no icon information associated with them.
 	 */
 	// FIXME this is a mutable object so we probably shouldn't be reusing the
 	// same instance for
@@ -70,9 +70,9 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	private Icon rolloverIcon;
 
 	/**
-	 * Creates a new {@code CommandButtonIconInfo} with the given icon. No
-	 * optional icons will be associated with this instance.
-	 * 
+	 * Creates a new {@code CommandButtonIconInfo} with the given icon. No optional
+	 * icons will be associated with this instance.
+	 *
 	 * @param icon The main displayable icon.
 	 */
 	public CommandButtonIconInfo(Icon icon) {
@@ -81,10 +81,10 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 
 	/**
 	 * Creates a new {@code CommandButtonIconInfo} with the given icons.
-	 * 
-	 * @param icon The main default icon. May be null.
-	 * @param selectedIcon The icon to be displayed when the command button is
-	 * in a selected state. May be null.
+	 *
+	 * @param icon         The main default icon. May be null.
+	 * @param selectedIcon The icon to be displayed when the command button is in a
+	 *                     selected state. May be null.
 	 */
 	public CommandButtonIconInfo(Icon icon, Icon selectedIcon) {
 		this.icon = icon;
@@ -93,12 +93,12 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 
 	/**
 	 * Creates a new {@code CommandButtonIconInfo} with the given icons.
-	 * 
-	 * @param icon The main default icon. May be null.
-	 * @param selectedIcon The icon to be displayed when the command button is
-	 * in a selected state.
+	 *
+	 * @param icon         The main default icon. May be null.
+	 * @param selectedIcon The icon to be displayed when the command button is in a
+	 *                     selected state.
 	 * @param rolloverIcon The icon to be displayed when the mouse pointer rolls
-	 * over the command button. May be null.
+	 *                     over the command button. May be null.
 	 */
 	public CommandButtonIconInfo(Icon icon, Icon selectedIcon, Icon rolloverIcon) {
 		this.icon = icon;
@@ -108,16 +108,16 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 
 	/**
 	 * Creates a new {@code CommandButtonIconInfo} with the given icons.
-	 * 
-	 * @param icon The main default icon. May be null.
-	 * @param selectedIcon The icon to be displayed when the command button is
-	 * in a selected state.
+	 *
+	 * @param icon         The main default icon. May be null.
+	 * @param selectedIcon The icon to be displayed when the command button is in a
+	 *                     selected state.
 	 * @param rolloverIcon The icon to be displayed when the mouse pointer rolls
-	 * over the command button. May be null.
-	 * @param disabledIcon The icon to be displayed when the command button is
-	 * in a disabled state. May be null.
-	 * @param pressedIcon The icon to be displayed when the command button is in
-	 * a pressed state. May be null.
+	 *                     over the command button. May be null.
+	 * @param disabledIcon The icon to be displayed when the command button is in a
+	 *                     disabled state. May be null.
+	 * @param pressedIcon  The icon to be displayed when the command button is in a
+	 *                     pressed state. May be null.
 	 */
 	public CommandButtonIconInfo(Icon icon, Icon selectedIcon, Icon rolloverIcon, Icon disabledIcon, Icon pressedIcon) {
 		this.icon = icon;
@@ -128,13 +128,13 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	}
 
 	/**
-	 * Configures the given command button with the icon values from this
-	 * instance.
-	 * 
+	 * Configures the given command button with the icon values from this instance.
+	 *
 	 * @param button The button to be configured with icons. Must not be null.
-	 * 
+	 *
 	 * @throws IllegalArgumentException if {@code button} is null.
 	 */
+	@Override
 	public AbstractButton configure(AbstractButton button) {
 		Assert.notNull(button, "The button to configure is required");
 
@@ -150,10 +150,11 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	/**
 	 * Returns the image from the main default icon of this instance if it is
 	 * actually an instance of an {@link ImageIcon}.
-	 * 
-	 * @return The image from the main default icon, or null if there is no
-	 * default icon or it is not an {@link ImageIcon}.
+	 *
+	 * @return The image from the main default icon, or null if there is no default
+	 *         icon or it is not an {@link ImageIcon}.
 	 */
+	@Override
 	public Image getImage() {
 		if (getIcon() instanceof ImageIcon) {
 			return ((ImageIcon) getIcon()).getImage();
@@ -165,6 +166,7 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Icon getIcon() {
 		return icon;
 	}
@@ -172,7 +174,7 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	/**
 	 * Returns the icon to be displayed when the command button is in a disabled
 	 * state.
-	 * 
+	 *
 	 * @return The icon for the command button in disabled state, or null.
 	 */
 	public Icon getDisabledIcon() {
@@ -182,7 +184,7 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	/**
 	 * Returns the icon to be displayed when the command button is in a pressed
 	 * state.
-	 * 
+	 *
 	 * @return The icon for the command button in pressed state, or null.
 	 */
 	public Icon getPressedIcon() {
@@ -192,9 +194,9 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	/**
 	 * Returns the icon to be displayed when the mouse pointer rolls over the
 	 * command button.
-	 * 
+	 *
 	 * @return The icon for the command button when rolled over by the mouse
-	 * pointer, or null.
+	 *         pointer, or null.
 	 */
 	public Icon getRolloverIcon() {
 		return rolloverIcon;
@@ -203,7 +205,7 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	/**
 	 * Returns the icon to be displayed when the command button is in a selected
 	 * state.
-	 * 
+	 *
 	 * @return The icon for the command button in selected state, or null.
 	 */
 	public Icon getSelectedIcon() {
@@ -212,7 +214,7 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 
 	/**
 	 * Sets the main default icon for the command button.
-	 * 
+	 *
 	 * @param icon The main default icon for the command button. May be null.
 	 */
 	public void setIcon(Icon icon) {
@@ -220,44 +222,37 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	}
 
 	/**
-	 * Sets the icon to be displayed when the command button is in a disabled
-	 * state.
-	 * 
-	 * @param disabledIcon The icon for the button in a disabled state. May be
-	 * null.
+	 * Sets the icon to be displayed when the command button is in a disabled state.
+	 *
+	 * @param disabledIcon The icon for the button in a disabled state. May be null.
 	 */
 	public void setDisabledIcon(Icon disabledIcon) {
 		this.disabledIcon = disabledIcon;
 	}
 
 	/**
-	 * Sets the icon to be displayed when the command button is in a pressed
-	 * state.
-	 * 
-	 * @param pressedIcon The icon for the button in a pressed state. May be
-	 * null.
+	 * Sets the icon to be displayed when the command button is in a pressed state.
+	 *
+	 * @param pressedIcon The icon for the button in a pressed state. May be null.
 	 */
 	public void setPressedIcon(Icon pressedIcon) {
 		this.pressedIcon = pressedIcon;
 	}
 
 	/**
-	 * Sets the icon to be displayed when the mouse pointer rolls over the
-	 * command button.
-	 * 
-	 * @param rolloverIcon The icon for the button in a rolled over. May be
-	 * null.
+	 * Sets the icon to be displayed when the mouse pointer rolls over the command
+	 * button.
+	 *
+	 * @param rolloverIcon The icon for the button in a rolled over. May be null.
 	 */
 	public void setRolloverIcon(Icon rolloverIcon) {
 		this.rolloverIcon = rolloverIcon;
 	}
 
 	/**
-	 * Sets the icon to be displayed when the command button is in a pressed
-	 * state.
-	 * 
-	 * @param selectedIcon The icon for the button in a pressed state. May be
-	 * null.
+	 * Sets the icon to be displayed when the command button is in a pressed state.
+	 *
+	 * @param selectedIcon The icon for the button in a pressed state. May be null.
 	 */
 	public void setSelectedIcon(Icon selectedIcon) {
 		this.selectedIcon = selectedIcon;
@@ -266,6 +261,7 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String toString() {
 		return new ToStringCreator(this).toString();
 	}
@@ -273,6 +269,7 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof CommandButtonIconInfo)) {
 			return false;
@@ -288,6 +285,7 @@ public class CommandButtonIconInfo implements ButtonConfigurer, VisualizedElemen
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public int hashCode() {
 		int hash = 1;
 		hash = hash * 31 + (icon == null ? 0 : icon.hashCode());

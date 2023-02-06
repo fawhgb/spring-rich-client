@@ -8,8 +8,8 @@ import org.springframework.util.Assert;
  * <p>
  * This class provides a singleton model for accessing the configured
  * ApplicationServices object. Create your {@link ApplicationServices} and load
- * them into the locator within your Spring context to make the services available
- * throughout the application.
+ * them into the locator within your Spring context to make the services
+ * available throughout the application.
  * </p>
  *
  * <pre>
@@ -83,8 +83,8 @@ public class ApplicationServicesLocator {
 	}
 
 	/**
-	 * Convenience method to get the ApplicationServices by querying the
-	 * currently loaded ApplicationServicesLocator.
+	 * Convenience method to get the ApplicationServices by querying the currently
+	 * loaded ApplicationServicesLocator.
 	 */
 	public static ApplicationServices services() {
 		return instance().getApplicationServices();

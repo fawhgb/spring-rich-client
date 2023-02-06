@@ -14,54 +14,59 @@ import org.springframework.richclient.wizard.WizardDialog;
  * @author Keith Donald
  */
 public class SetupWizard extends AbstractWizard implements ActionCommandExecutor {
-    private WizardDialog wizardDialog;
+	private WizardDialog wizardDialog;
 
-    private SetupLicenseWizardPage licensePage = new SetupLicenseWizardPage();
+	private SetupLicenseWizardPage licensePage = new SetupLicenseWizardPage();
 
-    public SetupWizard() {
-        super("setup");
-    }
+	public SetupWizard() {
+		super("setup");
+	}
 
-    public void setLicenseTextLocation(Resource location) {
-        licensePage.setLicenseTextLocation(location);
-    }
+	public void setLicenseTextLocation(Resource location) {
+		licensePage.setLicenseTextLocation(location);
+	}
 
-    public void execute() {
-        if (wizardDialog == null) {
-            wizardDialog = new SetupWizardDialog(this);
-            wizardDialog.setPreferredSize(new Dimension(500, 300));
-        }
-        wizardDialog.showDialog();
-    }
+	@Override
+	public void execute() {
+		if (wizardDialog == null) {
+			wizardDialog = new SetupWizardDialog(this);
+			wizardDialog.setPreferredSize(new Dimension(500, 300));
+		}
+		wizardDialog.showDialog();
+	}
 
-    public void addPages() {
-        addPage(new SetupIntroWizardPage());
-        addPage(licensePage);
-    }
+	@Override
+	public void addPages() {
+		addPage(new SetupIntroWizardPage());
+		addPage(licensePage);
+	}
 
-    public boolean onFinish() {
-        return true;
-    }
+	@Override
+	public boolean onFinish() {
+		return true;
+	}
 
-    public boolean onCancel() {
-        if (cancelConfirmed()) {
-            // TODO use org.springframework.richclient.application.Application.close(b, i) instead (if initialized?)
-            System.exit(1);
-        }
-        return false;
-    }
+	@Override
+	public boolean onCancel() {
+		if (cancelConfirmed()) {
+			// TODO use org.springframework.richclient.application.Application.close(b, i)
+			// instead (if initialized?)
+			System.exit(1);
+		}
+		return false;
+	}
 
-    protected boolean cancelConfirmed() {
-        return JOptionPane.showConfirmDialog(wizardDialog.getDialog(), getCancelMessage(), getCancelTitle(),
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.NO_OPTION;
-    }
+	protected boolean cancelConfirmed() {
+		return JOptionPane.showConfirmDialog(wizardDialog.getDialog(), getCancelMessage(), getCancelTitle(),
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.NO_OPTION;
+	}
 
-    protected String getCancelTitle() {
-        return getMessage("setup.cancel.title");
-    }
+	protected String getCancelTitle() {
+		return getMessage("setup.cancel.title");
+	}
 
-    protected String getCancelMessage() {
-        return getMessage("setup.cancel.message");
-    }
+	protected String getCancelMessage() {
+		return getMessage("setup.cancel.message");
+	}
 
 }

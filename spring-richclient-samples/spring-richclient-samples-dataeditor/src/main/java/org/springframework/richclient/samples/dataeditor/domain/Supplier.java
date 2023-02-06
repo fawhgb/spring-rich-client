@@ -1,82 +1,69 @@
 package org.springframework.richclient.samples.dataeditor.domain;
 
-public class Supplier implements Comparable<Supplier>
-{
-    private String name;
+public class Supplier implements Comparable<Supplier> {
+	private String name;
 
-    private String contactName;
+	private String contactName;
 
-    private String telephoneNumber;
+	private String telephoneNumber;
 
-    private String faxNumber;
+	private String faxNumber;
 
-    private String emailAddress;
+	private String emailAddress;
 
-    public Supplier()
-    {
-    }
+	public Supplier() {
+	}
 
-    public Supplier(String contactName, String emailAddress, String faxNumber, String name, String telephoneNumber)
-    {
-        this.contactName = contactName;
-        this.emailAddress = emailAddress;
-        this.faxNumber = faxNumber;
-        this.name = name;
-        this.telephoneNumber = telephoneNumber;
-    }
+	public Supplier(String contactName, String emailAddress, String faxNumber, String name, String telephoneNumber) {
+		this.contactName = contactName;
+		this.emailAddress = emailAddress;
+		this.faxNumber = faxNumber;
+		this.name = name;
+		this.telephoneNumber = telephoneNumber;
+	}
 
-    public String getContactName()
-    {
-        return contactName;
-    }
+	public String getContactName() {
+		return contactName;
+	}
 
-    public void setContactName(String contactName)
-    {
-        this.contactName = contactName;
-    }
+	public void setContactName(String contactName) {
+		this.contactName = contactName;
+	}
 
-    public String getEmailAddress()
-    {
-        return emailAddress;
-    }
+	public String getEmailAddress() {
+		return emailAddress;
+	}
 
-    public void setEmailAddress(String emailAddress)
-    {
-        this.emailAddress = emailAddress;
-    }
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
 
-    public String getFaxNumber()
-    {
-        return faxNumber;
-    }
+	public String getFaxNumber() {
+		return faxNumber;
+	}
 
-    public void setFaxNumber(String faxNumber)
-    {
-        this.faxNumber = faxNumber;
-    }
-    
-    public String getName()
-    {
-        return name;
-    }
+	public void setFaxNumber(String faxNumber) {
+		this.faxNumber = faxNumber;
+	}
 
-    public void setName(String name)
-    {
-        this.name = name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public String getTelephoneNumber()
-    {
-        return telephoneNumber;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public void setTelephoneNumber(String telephoneNumber)
-    {
-        this.telephoneNumber = telephoneNumber;
-    }
+	public String getTelephoneNumber() {
+		return telephoneNumber;
+	}
 
-    public int compareTo(Supplier supplier)
-    {
-        return getName().compareTo(supplier.getName());
-    }
+	public void setTelephoneNumber(String telephoneNumber) {
+		this.telephoneNumber = telephoneNumber;
+	}
+
+	@Override
+	public int compareTo(Supplier supplier) {
+		return getName().compareTo(supplier.getName());
+	}
 }

@@ -21,8 +21,8 @@ import org.springframework.binding.convert.ConversionExecutor;
 import org.springframework.binding.value.DerivedValueModel;
 import org.springframework.binding.value.ValueChangeDetector;
 import org.springframework.binding.value.ValueModel;
-import org.springframework.rules.closure.Closure;
 import org.springframework.richclient.application.ApplicationServicesLocator;
+import org.springframework.rules.closure.Closure;
 
 /**
  * A value model wrapper that supports converting the wrapped value to and from
@@ -43,8 +43,8 @@ public class TypeConverter extends AbstractValueModelWrapper implements DerivedV
 	 * Convenience constructor using conversionExecutors.
 	 *
 	 * @param wrappedModel the inner valueModel
-	 * @param convertTo conversion to use when setting a value.
-	 * @param convertFrom conversion to use when getting a value.
+	 * @param convertTo    conversion to use when setting a value.
+	 * @param convertFrom  conversion to use when getting a value.
 	 *
 	 * @see #TypeConverter(ValueModel, Closure, Closure)
 	 */
@@ -56,8 +56,8 @@ public class TypeConverter extends AbstractValueModelWrapper implements DerivedV
 	 * Constructor which uses Closure blocks to convert between values.
 	 *
 	 * @param wrappedModel the inner valueModel
-	 * @param convertTo Closure to execute when setting a value.
-	 * @param convertFrom Closure to execute when getting a value.
+	 * @param convertTo    Closure to execute when setting a value.
+	 * @param convertFrom  Closure to execute when getting a value.
 	 */
 	public TypeConverter(ValueModel wrappedModel, Closure convertTo, Closure convertFrom) {
 		super(wrappedModel);
@@ -68,12 +68,15 @@ public class TypeConverter extends AbstractValueModelWrapper implements DerivedV
 	/**
 	 * {@inheritDoc}
 	 *
-	 * Value from inner model will be converted using the supplied convertFrom closure.
+	 * Value from inner model will be converted using the supplied convertFrom
+	 * closure.
 	 */
+	@Override
 	public Object getValue() throws IllegalArgumentException {
 		return convertFrom.call(super.getValue());
 	}
 
+	@Override
 	public void setValueSilently(Object value, PropertyChangeListener listenerToSkip) throws IllegalArgumentException {
 		// only set the convertTo value if the convertFrom value has changed
 		if (getValueChangeDetector().hasValueChanged(getValue(), value)) {
@@ -81,10 +84,12 @@ public class TypeConverter extends AbstractValueModelWrapper implements DerivedV
 		}
 	}
 
+	@Override
 	public ValueModel[] getSourceValueModels() {
 		return new ValueModel[] { getWrappedValueModel() };
 	}
 
+	@Override
 	public boolean isReadOnly() {
 		return false;
 	}
@@ -95,8 +100,8 @@ public class TypeConverter extends AbstractValueModelWrapper implements DerivedV
 
 	protected ValueChangeDetector getValueChangeDetector() {
 		if (valueChangeDetector == null) {
-			valueChangeDetector = (ValueChangeDetector) ApplicationServicesLocator.services().getService(
-					ValueChangeDetector.class);
+			valueChangeDetector = (ValueChangeDetector) ApplicationServicesLocator.services()
+					.getService(ValueChangeDetector.class);
 		}
 		return valueChangeDetector;
 	}
@@ -112,6 +117,7 @@ public class TypeConverter extends AbstractValueModelWrapper implements DerivedV
 			this.conversionExecutor = conversionExecutor;
 		}
 
+		@Override
 		public Object call(Object argument) {
 			return conversionExecutor.execute(argument);
 		}

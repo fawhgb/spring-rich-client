@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2006 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -30,14 +30,14 @@ import org.springframework.util.Assert;
 /**
  * A {@code BeanFactoryPostProcessor} that notifies a specified
  * {@link ProgressMonitor} of progress made while loading a bean factory.
- * 
+ *
  * <p>
  * The messages sent to the progress monitor can be internationalized by
  * providing a {@link MessageSource} to the constructor of this class. Note that
  * if a {@link MessageSource} is provided it must already be initialized in
  * order for it to successfully retrieve messages.
  * </p>
- * 
+ *
  * <p>
  * The progress monitor will be notified once prior to initializing the beans in
  * the bean factory and once for each singleton bean before it is initialized.
@@ -47,12 +47,12 @@ import org.springframework.util.Assert;
  * message source is provided, default messages (in English) will be used
  * instead.
  * </p>
- * 
+ *
  * @author Kevin Stembridge
  * @since 0.3.0
- * 
+ *
  * @see ProgressMonitor
- * 
+ *
  */
 public class ProgressMonitoringBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
@@ -77,15 +77,16 @@ public class ProgressMonitoringBeanFactoryPostProcessor implements BeanFactoryPo
 	private final String loadingAppContextMessage;
 
 	/**
-	 * Creates a new {@code ProgressMonitoringBeanFactoryPostProcessor} that
-	 * will report the progress of loading the beans in a bean factory to the
-	 * given progress monitor, optionally providing internationalized messages.
-	 * 
-	 * @param progressMonitor The progress monitor that will be notified of
-	 * progress while processing the bean factory.
-	 * @param messageSource The message source that will be used to resolve
-	 * messages to be displayed by the progress monitor. May be null.
-	 * 
+	 * Creates a new {@code ProgressMonitoringBeanFactoryPostProcessor} that will
+	 * report the progress of loading the beans in a bean factory to the given
+	 * progress monitor, optionally providing internationalized messages.
+	 *
+	 * @param progressMonitor The progress monitor that will be notified of progress
+	 *                        while processing the bean factory.
+	 * @param messageSource   The message source that will be used to resolve
+	 *                        messages to be displayed by the progress monitor. May
+	 *                        be null.
+	 *
 	 * @throws IllegalArgumentException if {@code progressMonitor} is null.
 	 */
 	public ProgressMonitoringBeanFactoryPostProcessor(ProgressMonitor progressMonitor, MessageSource messageSource) {
@@ -99,11 +100,12 @@ public class ProgressMonitoringBeanFactoryPostProcessor implements BeanFactoryPo
 	}
 
 	/**
-	 * Notifies this instance's associated progress monitor of progress made
-	 * while processing the given bean factory.
-	 * 
+	 * Notifies this instance's associated progress monitor of progress made while
+	 * processing the given bean factory.
+	 *
 	 * @param beanFactory the bean factory that is to be processed.
 	 */
+	@Override
 	public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) throws BeansException {
 
 		if (beanFactory == null) {
@@ -157,6 +159,7 @@ public class ProgressMonitoringBeanFactoryPostProcessor implements BeanFactoryPo
 		/**
 		 * A default implementation that performs no operation on the bean.
 		 */
+		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			return bean;
 		}
@@ -164,6 +167,7 @@ public class ProgressMonitoringBeanFactoryPostProcessor implements BeanFactoryPo
 		/**
 		 * {@inheritDoc}
 		 */
+		@Override
 		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 
 			if (logger.isTraceEnabled()) {

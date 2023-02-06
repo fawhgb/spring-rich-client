@@ -11,7 +11,7 @@ import org.springframework.binding.form.FormModel;
 
 /**
  * Binds a <cod>Date</code> to a <code>JXDatePicker</code>
- * 
+ *
  * @author Peter De Bruycker
  */
 public class JXDatePickerDateFieldBinding extends AbstractDateFieldBinding {
@@ -23,30 +23,35 @@ public class JXDatePickerDateFieldBinding extends AbstractDateFieldBinding {
 		this.datePicker = datePicker;
 	}
 
+	@Override
 	protected void valueModelChanged(Object newValue) {
 		datePicker.setDate((Date) newValue);
 	}
 
+	@Override
 	protected JComponent doBindControl() {
 		datePicker.setDate((Date) getValue());
 
 		if (getDateFormat() != null) {
-			datePicker.setFormats(new String[] {getDateFormat()});
+			datePicker.setFormats(new String[] { getDateFormat() });
 		}
 
 		datePicker.addPropertyChangeListener("date", new PropertyChangeListener() {
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				controlValueChanged(datePicker.getDate());
 			}
 		});
-		
+
 		return datePicker;
 	}
 
+	@Override
 	protected void enabledChanged() {
 		datePicker.setEnabled(isEnabled());
 	}
 
+	@Override
 	protected void readOnlyChanged() {
 		datePicker.setEditable(!isReadOnly());
 	}

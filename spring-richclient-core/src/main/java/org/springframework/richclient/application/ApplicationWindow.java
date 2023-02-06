@@ -28,34 +28,34 @@ import org.springframework.richclient.command.CommandManager;
  * single page (content pane), and status bar.
  */
 public interface ApplicationWindow {
-    public int getNumber();
+	public int getNumber();
 
-    public ApplicationPage getPage();
+	public ApplicationPage getPage();
 
-    public CommandManager getCommandManager();
+	public CommandManager getCommandManager();
 
-    public Iterator getSharedCommands();
+	public Iterator getSharedCommands();
 
-    public CommandGroup getMenuBar();
+	public CommandGroup getMenuBar();
 
-    public CommandGroup getToolBar();
+	public CommandGroup getToolBar();
 
-    public StatusBar getStatusBar();
+	public StatusBar getStatusBar();
 
-    public JFrame getControl();
+	public JFrame getControl();
 
-    public void showPage(String pageDescriptorId);
+	public void showPage(String pageDescriptorId);
 
-    public void showPage(PageDescriptor pageDescriptor);
+	public void showPage(PageDescriptor pageDescriptor);
 
-    public void showPage(ApplicationPage page);
+	public void showPage(ApplicationPage page);
 
-    public boolean close();
+	public boolean close();
 
-    public void setWindowManager(WindowManager windowManager);
+	public void setWindowManager(WindowManager windowManager);
 
-    public void addPageListener(PageListener listener);
+	public void addPageListener(PageListener listener);
 
-    public void removePageListener(PageListener listener);
+	public void removePageListener(PageListener listener);
 
 }

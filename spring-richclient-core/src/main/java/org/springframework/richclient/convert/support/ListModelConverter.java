@@ -15,62 +15,66 @@
  */
 package org.springframework.richclient.convert.support;
 
-import org.springframework.binding.convert.ConversionContext;
-import org.springframework.binding.convert.support.AbstractConverter;
-import org.springframework.binding.value.support.ListListModel;
-import org.springframework.core.ReflectiveVisitorHelper;
-
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.swing.ListModel;
+
+import org.springframework.binding.convert.ConversionContext;
+import org.springframework.binding.convert.support.AbstractConverter;
+import org.springframework.binding.value.support.ListListModel;
+import org.springframework.core.ReflectiveVisitorHelper;
+
 /**
  * @author Mathias Broekelmann
- * 
+ *
  */
 public class ListModelConverter extends AbstractConverter {
 
-    private static final Class[] TARGET_CLASSES = new Class[] { ListModel.class };
+	private static final Class[] TARGET_CLASSES = new Class[] { ListModel.class };
 
-    private static final Class[] SOURCE_CLASSES = new Class[] { Collection.class, List.class, Object[].class,
-            ListModel.class, Object.class };
+	private static final Class[] SOURCE_CLASSES = new Class[] { Collection.class, List.class, Object[].class,
+			ListModel.class, Object.class };
 
-    private final ReflectiveVisitorHelper visitorHelper = new ReflectiveVisitorHelper();
+	private final ReflectiveVisitorHelper visitorHelper = new ReflectiveVisitorHelper();
 
-    protected Object doConvert(Object sourceValue, Class targetClass, ConversionContext context) throws Exception {
-        return visitorHelper.invokeVisit(this, sourceValue);
-    }
+	@Override
+	protected Object doConvert(Object sourceValue, Class targetClass, ConversionContext context) throws Exception {
+		return visitorHelper.invokeVisit(this, sourceValue);
+	}
 
-    public Class[] getSourceClasses() {
-        return SOURCE_CLASSES;
-    }
+	@Override
+	public Class[] getSourceClasses() {
+		return SOURCE_CLASSES;
+	}
 
-    public Class[] getTargetClasses() {
-        return TARGET_CLASSES;
-    }
+	@Override
+	public Class[] getTargetClasses() {
+		return TARGET_CLASSES;
+	}
 
-    ListModel visit(ListModel listModel) {
-        return listModel;
-    }
+	ListModel visit(ListModel listModel) {
+		return listModel;
+	}
 
-    ListModel visit(List list) {
-        return new ListListModel(list);
-    }
+	ListModel visit(List list) {
+		return new ListListModel(list);
+	}
 
-    ListModel visit(Collection collection) {
-        return visit(new ArrayList(collection));
-    }
+	ListModel visit(Collection collection) {
+		return visit(new ArrayList(collection));
+	}
 
-    ListModel visit(Object[] array) {
-        return visit(Arrays.asList(array));
-    }
+	ListModel visit(Object[] array) {
+		return visit(Arrays.asList(array));
+	}
 
-    ListModel visit(Object object) {
-        if(object instanceof Object[]) {
-            return visit((Object[])object);
-        }
-        return visit(new Object[] { object });
-    }
+	ListModel visit(Object object) {
+		if (object instanceof Object[]) {
+			return visit((Object[]) object);
+		}
+		return visit(new Object[] { object });
+	}
 }

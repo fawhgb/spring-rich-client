@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -30,73 +30,73 @@ import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Size;
 
 public class ButtonBarGroupContainerPopulator extends SimpleGroupContainerPopulator {
-    private ColumnSpec columnSpec;
+	private ColumnSpec columnSpec;
 
-    private ButtonBarBuilder builder;
+	private ButtonBarBuilder builder;
 
-    private List buttons = new ArrayList();
+	private List buttons = new ArrayList();
 
-    public ButtonBarGroupContainerPopulator() {
-        super(new JPanel());
-        builder = new ButtonBarBuilder((JPanel)getContainer());
-    }
+	public ButtonBarGroupContainerPopulator() {
+		super(new JPanel());
+		builder = new ButtonBarBuilder((JPanel) getContainer());
+	}
 
-    public void setMinimumButtonSize(Size minimumSize) {
-        this.columnSpec = new ColumnSpec(minimumSize);
-    }
+	public void setMinimumButtonSize(Size minimumSize) {
+		this.columnSpec = new ColumnSpec(minimumSize);
+	}
 
-    public void setColumnSpec(final ColumnSpec columnSpec)
-    {
-        this.columnSpec = columnSpec;
-    }
-    
-    public void setRowSpec(final RowSpec rowSpec)
-    {
-        if (rowSpec != null)
-            builder.getLayout().setRowSpec(1, rowSpec);
-    }
-    
-    public JPanel getButtonBar() {
-        return builder.getPanel();
-    }
+	public void setColumnSpec(final ColumnSpec columnSpec) {
+		this.columnSpec = columnSpec;
+	}
 
-    public void add(Component c) {
-        buttons.add(c);
-    }
+	public void setRowSpec(final RowSpec rowSpec) {
+		if (rowSpec != null) {
+			builder.getLayout().setRowSpec(1, rowSpec);
+		}
+	}
 
-    public void addSeparator() {
-        buttons.add(CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE);
-    }
+	public JPanel getButtonBar() {
+		return builder.getPanel();
+	}
 
-    public void onPopulated() {
-        builder.addGlue();
-        int length = buttons.size();
-        for (int i = 0; i < length; i++) {
-            Object o = buttons.get(i);
-            if (o instanceof String && o == CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE) {
-                builder.addUnrelatedGap();
-            }
-            else if (o instanceof AbstractButton) {
-                AbstractButton button = (AbstractButton)o;
-                if (this.columnSpec != null) {
-                    addCustomGridded(button);
-                }
-                else {
-                    builder.addGridded(button);
-                }
-                if (i < buttons.size() - 1) {
-                    builder.addRelatedGap();
-                }
-            }
-        }
-    }
+	@Override
+	public void add(Component c) {
+		buttons.add(c);
+	}
 
-    private void addCustomGridded(AbstractButton button) {
-        builder.getLayout().appendColumn(this.columnSpec);
-        builder.getLayout().addGroupedColumn(builder.getColumn());
-        button.putClientProperty("jgoodies.isNarrow", Boolean.TRUE);
-        builder.add(button);
-        builder.nextColumn();
-    }
+	@Override
+	public void addSeparator() {
+		buttons.add(CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE);
+	}
+
+	@Override
+	public void onPopulated() {
+		builder.addGlue();
+		int length = buttons.size();
+		for (int i = 0; i < length; i++) {
+			Object o = buttons.get(i);
+			if (o instanceof String && o == CommandGroupFactoryBean.SEPARATOR_MEMBER_CODE) {
+				builder.addUnrelatedGap();
+			} else if (o instanceof AbstractButton) {
+				AbstractButton button = (AbstractButton) o;
+				if (this.columnSpec != null) {
+					addCustomGridded(button);
+				} else {
+					builder.addGridded(button);
+				}
+				if (i < buttons.size() - 1) {
+					builder.addRelatedGap();
+				}
+			}
+		}
+	}
+
+	private void addCustomGridded(AbstractButton button) {
+		builder.getLayout().appendColumn(this.columnSpec);
+		builder.getLayout().addGroupedColumn(builder.getColumn());
+		button.putClientProperty("jgoodies.isNarrow", Boolean.TRUE);
+		builder.add(button);
+		builder.nextColumn();
+	}
 
 }

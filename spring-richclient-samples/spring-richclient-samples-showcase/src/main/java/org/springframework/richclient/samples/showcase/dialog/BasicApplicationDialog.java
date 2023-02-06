@@ -25,6 +25,7 @@ import org.springframework.richclient.dialog.ApplicationDialog;
  */
 public class BasicApplicationDialog extends ApplicationDialog {
 
+	@Override
 	protected JComponent createDialogContentPane() {
 		JPanel contentPane = new JPanel();
 		JLabel label = new JLabel(getMessage("basicApplicationDialog.content.label"));
@@ -32,6 +33,7 @@ public class BasicApplicationDialog extends ApplicationDialog {
 		return contentPane;
 	}
 
+	@Override
 	protected boolean onFinish() {
 		return true;
 	}

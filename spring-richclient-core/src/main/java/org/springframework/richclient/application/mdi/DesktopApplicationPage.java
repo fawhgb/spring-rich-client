@@ -15,18 +15,27 @@
  */
 package org.springframework.richclient.application.mdi;
 
-import org.springframework.richclient.application.*;
-import org.springframework.richclient.application.mdi.contextmenu.DesktopCommandGroupFactory;
-import org.springframework.richclient.application.support.AbstractApplicationPage;
-import org.springframework.richclient.util.Assert;
-import org.springframework.richclient.util.PopupMenuMouseListener;
-
-import javax.swing.*;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
 import java.beans.PropertyVetoException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.JComponent;
+import javax.swing.JDesktopPane;
+import javax.swing.JInternalFrame;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.WindowConstants;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+
+import org.springframework.richclient.application.ApplicationWindow;
+import org.springframework.richclient.application.PageComponent;
+import org.springframework.richclient.application.PageDescriptor;
+import org.springframework.richclient.application.PageLayoutBuilder;
+import org.springframework.richclient.application.ViewDescriptor;
+import org.springframework.richclient.application.mdi.contextmenu.DesktopCommandGroupFactory;
+import org.springframework.richclient.application.support.AbstractApplicationPage;
+import org.springframework.richclient.util.PopupMenuMouseListener;
 
 /**
  * @author Peter De Bruycker
@@ -39,28 +48,30 @@ public class DesktopApplicationPage extends AbstractApplicationPage implements P
 
 	private int dragMode;
 
-    private boolean scrollable = true;
+	private boolean scrollable = true;
 
-    private final DesktopCommandGroupFactory desktopCommandGroupFactory;
+	private final DesktopCommandGroupFactory desktopCommandGroupFactory;
 
 	public DesktopApplicationPage(ApplicationWindow window, PageDescriptor pageDescriptor, int dragMode,
 			DesktopCommandGroupFactory desktopCommandGroupFactory) {
 		super(window, pageDescriptor);
 		this.desktopCommandGroupFactory = desktopCommandGroupFactory;
 
-		Assert.isTrue(dragMode == JDesktopPane.LIVE_DRAG_MODE || dragMode == JDesktopPane.OUTLINE_DRAG_MODE,
+		org.springframework.util.Assert.isTrue(
+				dragMode == JDesktopPane.LIVE_DRAG_MODE || dragMode == JDesktopPane.OUTLINE_DRAG_MODE,
 				"dragMode must be JDesktopPane.LIVE_DRAG_MODE or JDesktopPane.OUTLINE_DRAG_MODE");
 
 		this.dragMode = dragMode;
 	}
 
-    public void setScrollable(boolean scrollable) {
-        if (isControlCreated()) {
-            throw new IllegalStateException("scrollable-property can only be set before creation of control");
-        }
-        this.scrollable = scrollable;
-    }
+	public void setScrollable(boolean scrollable) {
+		if (isControlCreated()) {
+			throw new IllegalStateException("scrollable-property can only be set before creation of control");
+		}
+		this.scrollable = scrollable;
+	}
 
+	@Override
 	protected boolean giveFocusTo(PageComponent pageComponent) {
 		if (getActiveComponent() == pageComponent) {
 			return true;
@@ -77,18 +88,19 @@ public class DesktopApplicationPage extends AbstractApplicationPage implements P
 			}
 
 			frame.setSelected(true);
-		}
-		catch (PropertyVetoException e) {
+		} catch (PropertyVetoException e) {
 			// ignore
 		}
 
 		return pageComponent.getControl().requestFocusInWindow();
 	}
 
+	@Override
 	public void addView(String viewDescriptorId) {
 		showView(viewDescriptorId);
 	}
 
+	@Override
 	protected void doAddPageComponent(PageComponent pageComponent) {
 		JInternalFrame frame = createInternalFrame(pageComponent);
 
@@ -98,17 +110,19 @@ public class DesktopApplicationPage extends AbstractApplicationPage implements P
 
 	protected JInternalFrame createInternalFrame(final PageComponent pageComponent) {
 		JInternalFrame internalFrame = new JInternalFrame(pageComponent.getDisplayName());
-		internalFrame.setDefaultCloseOperation(JInternalFrame.DO_NOTHING_ON_CLOSE);
+		internalFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
 		configureFrame(pageComponent, internalFrame);
 
 		keepFrameDetails(pageComponent, internalFrame);
 
 		internalFrame.addInternalFrameListener(new InternalFrameAdapter() {
+			@Override
 			public void internalFrameClosing(InternalFrameEvent e) {
 				close(pageComponent);
 			}
 
+			@Override
 			public void internalFrameActivated(InternalFrameEvent e) {
 				if (!e.getInternalFrame().isIcon()) {
 					setActiveComponent(pageComponent);
@@ -121,14 +135,15 @@ public class DesktopApplicationPage extends AbstractApplicationPage implements P
 		return internalFrame;
 	}
 
-    /**
-     * Having this method allows subclasses to enrich/wrap the internal frame, for instance with a visible resizer.
-     */
-    protected void keepFrameDetails(final PageComponent pageComponent, JInternalFrame internalFrame) {
-        frames.put(pageComponent, internalFrame);
-    }
+	/**
+	 * Having this method allows subclasses to enrich/wrap the internal frame, for
+	 * instance with a visible resizer.
+	 */
+	protected void keepFrameDetails(final PageComponent pageComponent, JInternalFrame internalFrame) {
+		frames.put(pageComponent, internalFrame);
+	}
 
-    protected void configureFrame(PageComponent component, JInternalFrame frame) {
+	protected void configureFrame(PageComponent component, JInternalFrame frame) {
 		if (component.getIcon() != null) {
 			frame.setFrameIcon(component.getIcon());
 		}
@@ -140,8 +155,7 @@ public class DesktopApplicationPage extends AbstractApplicationPage implements P
 			frame.setMaximizable(desktopViewDescriptor.isMaximizable());
 			frame.setIconifiable(desktopViewDescriptor.isIconifiable());
 			frame.setClosable(desktopViewDescriptor.isClosable());
-		}
-		else {
+		} else {
 			frame.setResizable(true);
 			frame.setMaximizable(true);
 			frame.setIconifiable(true);
@@ -153,6 +167,7 @@ public class DesktopApplicationPage extends AbstractApplicationPage implements P
 		return (JInternalFrame) frames.get(pageComponent);
 	}
 
+	@Override
 	protected void doRemovePageComponent(PageComponent pageComponent) {
 		// not used
 		JInternalFrame frame = getInternalFrame(pageComponent);
@@ -162,35 +177,38 @@ public class DesktopApplicationPage extends AbstractApplicationPage implements P
 		}
 	}
 
+	@Override
 	protected JComponent createControl() {
 		control = createDesktopPane();
 		control.setDragMode(dragMode);
 
 		getPageDescriptor().buildInitialLayout(this);
 
-        if (scrollable) {
-            return new JScrollPane(control);
-        } else {
-            return control;
-        }
+		if (scrollable) {
+			return new JScrollPane(control);
+		} else {
+			return control;
+		}
 	}
-	
-    protected JDesktopPane createDesktopPane() {
-        final JDesktopPane control;
-        if (scrollable) {
-            control = new ScrollingDesktopPane();
-        } else {
-            control = new JDesktopPane();
-        }
-        control.addMouseListener(new PopupMenuMouseListener() {
-            protected JPopupMenu getPopupMenu() {
-                return desktopCommandGroupFactory.createContextMenuCommandGroup(getWindow().getCommandManager(),
-                        control).createPopupMenu();
-            }
-        });
-        return control; 
-    }
 
+	protected JDesktopPane createDesktopPane() {
+		final JDesktopPane control;
+		if (scrollable) {
+			control = new ScrollingDesktopPane();
+		} else {
+			control = new JDesktopPane();
+		}
+		control.addMouseListener(new PopupMenuMouseListener() {
+			@Override
+			protected JPopupMenu getPopupMenu() {
+				return desktopCommandGroupFactory
+						.createContextMenuCommandGroup(getWindow().getCommandManager(), control).createPopupMenu();
+			}
+		});
+		return control;
+	}
+
+	@Override
 	protected void updatePageComponentProperties(PageComponent pageComponent) {
 		JInternalFrame frame = getInternalFrame(pageComponent);
 
@@ -204,6 +222,7 @@ public class DesktopApplicationPage extends AbstractApplicationPage implements P
 	/**
 	 * Overridden so it will leave iconified frames iconified.
 	 */
+	@Override
 	protected void setActiveComponent() {
 		// getAllFrames returns the frames in z-order (i.e. the first one in the
 		// list is the last one used)
@@ -213,8 +232,7 @@ public class DesktopApplicationPage extends AbstractApplicationPage implements P
 			if (!frame.isIcon()) {
 				try {
 					frame.setSelected(true);
-				}
-				catch (PropertyVetoException ignore) {
+				} catch (PropertyVetoException ignore) {
 
 				}
 				break;

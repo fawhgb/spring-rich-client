@@ -13,10 +13,10 @@ import org.springframework.util.Assert;
 
 /**
  * <code>ComboBoxEditor</code> that wraps another editor, but performs
- * conversion between <code>CodedEnum</code> s and <code>String</code>s.
- * <br/>It wraps another <code>ComboBoxEditor</code> to avoid visual
- * differences between the default editor and this editor.
- * 
+ * conversion between <code>CodedEnum</code> s and <code>String</code>s. <br/>
+ * It wraps another <code>ComboBoxEditor</code> to avoid visual differences
+ * between the default editor and this editor.
+ *
  * @author peter.de.bruycker
  */
 public class LabeledEnumComboBoxEditor implements ComboBoxEditor {
@@ -29,10 +29,9 @@ public class LabeledEnumComboBoxEditor implements ComboBoxEditor {
 
 	/**
 	 * Constructs a new <code>CodedEnumComboBoxEditor</code> instance.
-	 * 
-	 * @param messageSource the <code>MessageSource</code> to use for
-	 *        conversion
-	 * @param editor the <code>ComboBoxEditor</code> to use internally
+	 *
+	 * @param messageSource the <code>MessageSource</code> to use for conversion
+	 * @param editor        the <code>ComboBoxEditor</code> to use internally
 	 */
 	public LabeledEnumComboBoxEditor(MessageSource messageSource, ComboBoxEditor editor) {
 		Assert.notNull(editor, "Editor cannot be null");
@@ -43,6 +42,7 @@ public class LabeledEnumComboBoxEditor implements ComboBoxEditor {
 	/**
 	 * @see javax.swing.ComboBoxEditor#selectAll()
 	 */
+	@Override
 	public void selectAll() {
 		inner.selectAll();
 	}
@@ -50,6 +50,7 @@ public class LabeledEnumComboBoxEditor implements ComboBoxEditor {
 	/**
 	 * @see javax.swing.ComboBoxEditor#getEditorComponent()
 	 */
+	@Override
 	public Component getEditorComponent() {
 		return inner.getEditorComponent();
 	}
@@ -57,6 +58,7 @@ public class LabeledEnumComboBoxEditor implements ComboBoxEditor {
 	/**
 	 * @see javax.swing.ComboBoxEditor#addActionListener(java.awt.event.ActionListener)
 	 */
+	@Override
 	public void addActionListener(ActionListener l) {
 		inner.addActionListener(l);
 	}
@@ -64,6 +66,7 @@ public class LabeledEnumComboBoxEditor implements ComboBoxEditor {
 	/**
 	 * @see javax.swing.ComboBoxEditor#removeActionListener(java.awt.event.ActionListener)
 	 */
+	@Override
 	public void removeActionListener(ActionListener l) {
 		inner.removeActionListener(l);
 	}
@@ -71,6 +74,7 @@ public class LabeledEnumComboBoxEditor implements ComboBoxEditor {
 	/**
 	 * @see javax.swing.ComboBoxEditor#getItem()
 	 */
+	@Override
 	public Object getItem() {
 		return current;
 	}
@@ -78,17 +82,16 @@ public class LabeledEnumComboBoxEditor implements ComboBoxEditor {
 	/**
 	 * @see javax.swing.ComboBoxEditor#setItem(java.lang.Object)
 	 */
+	@Override
 	public void setItem(Object anObject) {
 		current = anObject;
 		if (anObject != null) {
 			if (messages != null && anObject instanceof MessageSourceResolvable) {
-				inner.setItem(messages.getMessage((MessageSourceResolvable)anObject, Locale.getDefault()));
+				inner.setItem(messages.getMessage((MessageSourceResolvable) anObject, Locale.getDefault()));
+			} else {
+				inner.setItem(((LabeledEnum) anObject).getLabel());
 			}
-			else {
-				inner.setItem(((LabeledEnum)anObject).getLabel());
-			}
-		}
-		else {
+		} else {
 			inner.setItem(null);
 		}
 	}

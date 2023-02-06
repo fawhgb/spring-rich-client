@@ -37,23 +37,24 @@ public class HibernateRulesMessageInterpolator implements MessageInterpolator {
 	 * Spring context.
 	 */
 	private void initializeMessageSourceAccessor() {
-		this.messageSourceAccessor = (MessageSourceAccessor) ApplicationServicesLocator.services().getService(
-				MessageSourceAccessor.class);
+		this.messageSourceAccessor = (MessageSourceAccessor) ApplicationServicesLocator.services()
+				.getService(MessageSourceAccessor.class);
 	}
 
 	/**
 	 * Retrieve the message for the validator.
 	 */
+	@Override
 	public String interpolate(String message, Validator validator, MessageInterpolator defaultInterpolator) {
 		if (annotationMessage != null && annotationMessage.equals(message)) {
 			// short cut
 			return interpolateMessage;
-		}
-		else {
+		} else {
 			message = message.replaceAll("[\\{\\}]", "");
 			String string = null;
-			string = messageSourceAccessor != null ? messageSourceAccessor.getMessage(message, new Object[0], Locale
-					.getDefault()) : null;
+			string = messageSourceAccessor != null
+					? messageSourceAccessor.getMessage(message, new Object[0], Locale.getDefault())
+					: null;
 			if (StringUtils.isEmpty(string)) {
 				log.info("Message not found in messageSourceAccessor (it may not exist), "
 						+ "trying Hibernate default messages");

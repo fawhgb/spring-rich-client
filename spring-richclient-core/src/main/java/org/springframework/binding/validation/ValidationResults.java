@@ -52,14 +52,13 @@ public interface ValidationResults {
 	int getMessageCount();
 
 	/**
-	 * Returns the total number of validation messages of the specified
-	 * Severity.
+	 * Returns the total number of validation messages of the specified Severity.
 	 */
 	int getMessageCount(Severity severity);
 
 	/**
-	 * Returns the total number of validation messages that apply to the
-	 * specified property name.
+	 * Returns the total number of validation messages that apply to the specified
+	 * property name.
 	 */
 	int getMessageCount(String propertyName);
 

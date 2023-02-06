@@ -33,77 +33,91 @@ import org.springframework.util.Assert;
 /**
  * {@link ViewDescriptor} implementation for internal purposes (mostly testing).
  * <p>
- * This class accepts an existing {@link View} instance, and returns this in the {@link #createPageComponent()} method.
+ * This class accepts an existing {@link View} instance, and returns this in the
+ * {@link #createPageComponent()} method.
  * <p>
  * Normally you should never use this class directly.
- * 
+ *
  * @author Peter De Bruycker
  */
 public class SimpleViewDescriptor implements ViewDescriptor {
 
-    private View view;
-    private String id;
-    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+	private View view;
+	private String id;
+	private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
-    public SimpleViewDescriptor(String id, View view) {
-        Assert.notNull(view, "view cannot be null");
+	public SimpleViewDescriptor(String id, View view) {
+		Assert.notNull(view, "view cannot be null");
 
-        this.id = id;
-        this.view = view;
-        
-        view.setDescriptor(this);
-    }
+		this.id = id;
+		this.view = view;
 
-    public ActionCommand createShowViewCommand(ApplicationWindow window) {
-        return new ShowViewCommand(this, window);
-    }
+		view.setDescriptor(this);
+	}
 
-    public CommandButtonLabelInfo getShowViewCommandLabel() {
-        return new CommandButtonLabelInfo(getDisplayName());
-    }
+	@Override
+	public ActionCommand createShowViewCommand(ApplicationWindow window) {
+		return new ShowViewCommand(this, window);
+	}
 
-    public PageComponent createPageComponent() {
-        return view;
-    }
+	@Override
+	public CommandButtonLabelInfo getShowViewCommandLabel() {
+		return new CommandButtonLabelInfo(getDisplayName());
+	}
 
-    public String getId() {
-        return id;
-    }
+	@Override
+	public PageComponent createPageComponent() {
+		return view;
+	}
 
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
-    }
+	@Override
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(listener);
+	}
 
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(listener);
-    }
+	@Override
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+	}
 
-    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
-        propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
-    }
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(listener);
+	}
 
-    public String getCaption() {
-        return id;
-    }
+	@Override
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+	}
 
-    public String getDescription() {
-        return id;
-    }
+	@Override
+	public String getCaption() {
+		return id;
+	}
 
-    public String getDisplayName() {
-        return id;
-    }
+	@Override
+	public String getDescription() {
+		return id;
+	}
 
-    public Icon getIcon() {
-        return null;
-    }
+	@Override
+	public String getDisplayName() {
+		return id;
+	}
 
-    public Image getImage() {
-        return null;
-    }
+	@Override
+	public Icon getIcon() {
+		return null;
+	}
+
+	@Override
+	public Image getImage() {
+		return null;
+	}
 
 }

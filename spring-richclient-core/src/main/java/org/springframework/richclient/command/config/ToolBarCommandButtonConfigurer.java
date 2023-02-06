@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2007 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,7 +18,7 @@ package org.springframework.richclient.command.config;
 import java.awt.Insets;
 
 import javax.swing.AbstractButton;
-import javax.swing.JButton;
+import javax.swing.SwingConstants;
 
 import org.springframework.richclient.command.AbstractCommand;
 import org.springframework.richclient.image.ShadowedIcon;
@@ -26,7 +26,8 @@ import org.springframework.richclient.image.ShadowedIcon;
 /**
  * Custom <code>CommandButtonConfigurer</code> for buttons on the toolbar.
  * <p>
- * Configurable Properties: <table border="1">
+ * Configurable Properties:
+ * <table border="1">
  * <tr>
  * <td><b>Property</b></td>
  * <td><b>Default</b></td>
@@ -40,8 +41,8 @@ import org.springframework.richclient.image.ShadowedIcon;
  * <tr>
  * <td><code>textBelowIcon</code></td>
  * <td>true</td>
- * <td>indicates whether the text is shown below the icon (as is default in
- * most applications)</td>
+ * <td>indicates whether the text is shown below the icon (as is default in most
+ * applications)</td>
  * </tr>
  * <tr>
  * <td><code>enableShadow</code></td>
@@ -50,7 +51,7 @@ import org.springframework.richclient.image.ShadowedIcon;
  * icon attached, no shadow effect is applied</td>
  * </tr>
  * </table>
- * 
+ *
  * @author Keith Donald
  * @author Peter De Bruycker
  */
@@ -85,12 +86,13 @@ public class ToolBarCommandButtonConfigurer extends DefaultCommandButtonConfigur
 		return showText;
 	}
 
+	@Override
 	public void configure(AbstractButton button, AbstractCommand command, CommandFaceDescriptor faceDescriptor) {
 		super.configure(button, command, faceDescriptor);
 
 		if (textBelowIcon) {
-			button.setHorizontalTextPosition(JButton.CENTER);
-			button.setVerticalTextPosition(JButton.BOTTOM);
+			button.setHorizontalTextPosition(SwingConstants.CENTER);
+			button.setVerticalTextPosition(SwingConstants.BOTTOM);
 		}
 
 		if (!showText) {

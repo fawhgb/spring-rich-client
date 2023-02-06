@@ -19,11 +19,16 @@ import java.io.IOException;
 
 /**
  * Converts {@link IOException} to a runtime exception.
- * 
+ *
  * @author Peter De Bruycker
  */
 public class ScriptIOException extends BaseScriptException {
-    public ScriptIOException(String msg, IOException e) {
-        super(msg, e);
-    }
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public ScriptIOException(String msg, IOException e) {
+		super(msg, e);
+	}
 }

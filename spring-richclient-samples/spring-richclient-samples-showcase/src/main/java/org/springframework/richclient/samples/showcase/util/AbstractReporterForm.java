@@ -51,6 +51,7 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 	/**
 	 * Set the textArea to write messages to.
 	 */
+	@Override
 	public void setMessageArea(JTextArea messageArea) {
 		this.messageArea = messageArea;
 	}
@@ -74,8 +75,8 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 	}
 
 	/**
-	 * Print all the values from the valueModels in the formModel. Default
-	 * behaviour is to iterate over all fields and print their value.
+	 * Print all the values from the valueModels in the formModel. Default behaviour
+	 * is to iterate over all fields and print their value.
 	 */
 	public StringBuilder getFieldsDetails(StringBuilder builder, FormModel formModel) {
 		builder.append("[FIELDS " + formModel.getId() + "] ");
@@ -100,6 +101,7 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 		if (printFormObjectCommand == null) {
 			printFormObjectCommand = new ActionCommand(getPrintFormObjectCommandFaceDescriptorId()) {
 
+				@Override
 				protected void doExecuteCommand() {
 					getMessageArea().append(getFormObjectDetails(new StringBuilder(), getFormModel()).toString());
 				}
@@ -113,6 +115,7 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 		if (printFieldsCommand == null) {
 			printFieldsCommand = new ActionCommand(getPrintFieldsCommandFaceDescriptorId()) {
 
+				@Override
 				protected void doExecuteCommand() {
 					getMessageArea().append(getFieldsDetails(new StringBuilder(), getFormModel()).toString());
 				}
@@ -126,6 +129,7 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 		if (printFormModelCommand == null) {
 			printFormModelCommand = new ActionCommand(getPrintFormModelCommandFaceDescriptorId()) {
 
+				@Override
 				protected void doExecuteCommand() {
 					getMessageArea().append(getFormModelDetails(new StringBuilder(), getFormModel()).toString());
 				}
@@ -149,7 +153,7 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 				}
 			};
 			readOnlyCommand.setSelected(getFormModel().isReadOnly());
-			getFormModel().addPropertyChangeListener(FormModel.READONLY_PROPERTY,readOnlyCommand);
+			getFormModel().addPropertyChangeListener(FormModel.READONLY_PROPERTY, readOnlyCommand);
 			getCommandConfigurer().configure(readOnlyCommand);
 		}
 		return readOnlyCommand;
@@ -169,7 +173,7 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 				}
 			};
 			enableCommand.setSelected(getFormModel().isEnabled());
-			getFormModel().addPropertyChangeListener(FormModel.ENABLED_PROPERTY,enableCommand);
+			getFormModel().addPropertyChangeListener(FormModel.ENABLED_PROPERTY, enableCommand);
 			getCommandConfigurer().configure(enableCommand);
 		}
 		return enableCommand;
@@ -189,7 +193,7 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 				}
 			};
 			validatingCommand.setSelected(getFormModel().isValidating());
-			getFormModel().addPropertyChangeListener(ValidatingFormModel.VALIDATING_PROPERTY,validatingCommand);
+			getFormModel().addPropertyChangeListener(ValidatingFormModel.VALIDATING_PROPERTY, validatingCommand);
 			getCommandConfigurer().configure(validatingCommand);
 		}
 		return validatingCommand;
@@ -214,9 +218,10 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 		return logFormModelPropertyChangeCommand;
 	}
 
+	@Override
 	public AbstractCommand[] getReporterCommands() {
-		return new AbstractCommand[] { getPrintFormObjectCommand(), getPrintFormModelCommand(),
-				getPrintFieldsCommand(), getCommitCommand(), getNewFormObjectCommand(), getRevertCommand(),
+		return new AbstractCommand[] { getPrintFormObjectCommand(), getPrintFormModelCommand(), getPrintFieldsCommand(),
+				getCommitCommand(), getNewFormObjectCommand(), getRevertCommand(),
 				getLogFormModelPropertyChangeCommand() };
 	}
 
@@ -235,8 +240,8 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 		formModel.removePropertyChangeListener(FormModel.DIRTY_PROPERTY, formModelPropertyChangeListener);
 		formModel.removePropertyChangeListener(FormModel.ENABLED_PROPERTY, formModelPropertyChangeListener);
 		formModel.removePropertyChangeListener(FormModel.READONLY_PROPERTY, formModelPropertyChangeListener);
-		formModel
-				.removePropertyChangeListener(ValidatingFormModel.VALIDATING_PROPERTY, formModelPropertyChangeListener);
+		formModel.removePropertyChangeListener(ValidatingFormModel.VALIDATING_PROPERTY,
+				formModelPropertyChangeListener);
 	}
 
 	protected String getPrintFormObjectCommandFaceDescriptorId() {
@@ -267,19 +272,23 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 		return "reporterForm.logFormModelPropertyChangeCommand";
 	}
 
+	@Override
 	protected String getCommitCommandFaceDescriptorId() {
 		return "reporterForm.commitCommand";
 	}
 
+	@Override
 	protected String getRevertCommandFaceDescriptorId() {
 		return "reporterForm.revertCommand";
 	}
 
+	@Override
 	protected String getNewFormObjectCommandId() {
 		return "reporterForm.newCommand";
 	}
 
-	public static abstract class StateSynchronizingToggleCommand extends ToggleCommand implements PropertyChangeListener {
+	public static abstract class StateSynchronizingToggleCommand extends ToggleCommand
+			implements PropertyChangeListener {
 
 		private boolean isSynchronizing = false;
 
@@ -289,20 +298,23 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 
 		@Override
 		protected final void onSelection() {
-			if (!isSynchronizing)
+			if (!isSynchronizing) {
 				doOnSelection();
+			}
 		}
 
 		@Override
 		protected final void onDeselection() {
-			if (!isSynchronizing)
+			if (!isSynchronizing) {
 				doOnDeselection();
+			}
 		}
 
 		protected abstract void doOnSelection();
 
 		protected abstract void doOnDeselection();
 
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			isSynchronizing = true;
 			setSelected((Boolean) evt.getNewValue());
@@ -312,14 +324,16 @@ public abstract class AbstractReporterForm extends AbstractForm implements Repor
 
 	protected class LogPropertyChangeListener implements PropertyChangeListener {
 
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			getMessageArea().append("[EVENT");
-			if (evt.getSource() instanceof FormModel)
-				getMessageArea().append(" " + ((FormModel)evt.getSource()).getId());
+			if (evt.getSource() instanceof FormModel) {
+				getMessageArea().append(" " + ((FormModel) evt.getSource()).getId());
+			}
 			getMessageArea().append("] property = " + evt.getPropertyName());
 			getMessageArea().append(", oldValue = " + evt.getOldValue());
 			getMessageArea().append(", newValue = " + evt.getNewValue());
 			getMessageArea().append("\n");
 		}
-	};
+	}
 }

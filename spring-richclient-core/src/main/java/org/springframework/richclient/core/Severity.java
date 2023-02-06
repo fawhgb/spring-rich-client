@@ -49,9 +49,9 @@ public class Severity extends ShortCodedLabeledEnum {
 	 * Constructor.
 	 *
 	 * @param magnitude how does it relate to other {@link Severity} levels, a
-	 * higher magnitude means more severe.
-	 * @param label label to associate with, may be used to access resources
-	 * like messages/icons.
+	 *                  higher magnitude means more severe.
+	 * @param label     label to associate with, may be used to access resources
+	 *                  like messages/icons.
 	 */
 	protected Severity(int magnitude, String label) {
 		super(magnitude, label);

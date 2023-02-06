@@ -30,6 +30,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
+import javax.swing.JFormattedTextField.AbstractFormatterFactory;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
@@ -43,7 +44,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-import javax.swing.JFormattedTextField.AbstractFormatterFactory;
 import javax.swing.table.TableModel;
 
 import org.apache.commons.logging.Log;
@@ -99,6 +99,7 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 		this.messages = new MessageSourceAccessor(messageSource);
@@ -136,13 +137,13 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 
 	/**
 	 * Returns the resolver used for enumerations. Uses the
-	 * {@link ApplicationServicesLocator} to find one if no resolver is
-	 * explicitly set.
+	 * {@link ApplicationServicesLocator} to find one if no resolver is explicitly
+	 * set.
 	 */
 	protected LabeledEnumResolver getEnumResolver() {
 		if (enumResolver == null) {
-			enumResolver = (LabeledEnumResolver) ApplicationServicesLocator.services().getService(
-					LabeledEnumResolver.class);
+			enumResolver = (LabeledEnumResolver) ApplicationServicesLocator.services()
+					.getService(LabeledEnumResolver.class);
 		}
 		return enumResolver;
 	}
@@ -150,6 +151,7 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public JLabel createLabel(String labelKey) {
 		JLabel label = createNewLabel();
 		getLabelInfo(getRequiredMessage(labelKey)).configureLabel(label);
@@ -159,6 +161,7 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public JLabel createLabel(String[] labelKeys) {
 		JLabel label = createNewLabel();
 		getLabelInfo(getRequiredMessage(labelKeys)).configureLabel(label);
@@ -168,6 +171,7 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public JLabel createLabel(String labelKey, Object[] arguments) {
 		JLabel label = createNewLabel();
 		getLabelInfo(getRequiredMessage(labelKey, arguments)).configureLabel(label);
@@ -186,8 +190,8 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	}
 
 	/**
-	 * Get the message for the given key. Don't throw an exception if it's not
-	 * found but return a default value.
+	 * Get the message for the given key. Don't throw an exception if it's not found
+	 * but return a default value.
 	 *
 	 * @param messageKey Key to lookup the message.
 	 * @return the message found in the resources or a default message.
@@ -197,8 +201,8 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	}
 
 	/**
-	 * Get the message for the given key. Don't throw an exception if it's not
-	 * found but return a default value.
+	 * Get the message for the given key. Don't throw an exception if it's not found
+	 * but return a default value.
 	 *
 	 * @param messageKeys The keys to use when looking for the message.
 	 * @return the message found in the resources or a default message.
@@ -206,14 +210,17 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	protected String getRequiredMessage(final String[] messageKeys) {
 		MessageSourceResolvable resolvable = new MessageSourceResolvable() {
 
+			@Override
 			public String[] getCodes() {
 				return messageKeys;
 			}
 
+			@Override
 			public Object[] getArguments() {
 				return null;
 			}
 
+			@Override
 			public String getDefaultMessage() {
 				if (messageKeys.length > 0) {
 					return messageKeys[0];
@@ -226,13 +233,13 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 
 	/**
 	 * Returns the messageSourceAccessor. Uses the
-	 * {@link ApplicationServicesLocator} to find one if no accessor is
-	 * explicitly set.
+	 * {@link ApplicationServicesLocator} to find one if no accessor is explicitly
+	 * set.
 	 */
 	private MessageSourceAccessor getMessages() {
 		if (messages == null) {
-			messages = (MessageSourceAccessor) ApplicationServicesLocator.services().getService(
-					MessageSourceAccessor.class);
+			messages = (MessageSourceAccessor) ApplicationServicesLocator.services()
+					.getService(MessageSourceAccessor.class);
 		}
 		return messages;
 	}
@@ -240,6 +247,7 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public JLabel createLabel(String labelKey, ValueModel[] argumentValueHolders) {
 		return new LabelTextRefresher(labelKey, argumentValueHolders).getLabel();
 	}
@@ -271,6 +279,7 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 			return label;
 		}
 
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			updateLabel();
 		}
@@ -289,30 +298,33 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 		try {
 			String message = getMessages().getMessage(messageKey, args);
 			return message;
-		}
-		catch (NoSuchMessageException e) {
+		} catch (NoSuchMessageException e) {
 			return messageKey;
 		}
 	}
 
+	@Override
 	public JLabel createTitleLabel(String labelKey) {
-		return com.jgoodies.forms.factories.DefaultComponentFactory.getInstance().createTitle(
-				getRequiredMessage(labelKey));
+		return com.jgoodies.forms.factories.DefaultComponentFactory.getInstance()
+				.createTitle(getRequiredMessage(labelKey));
 	}
 
+	@Override
 	public JComponent createTitledBorderFor(String labelKey, JComponent component) {
-		component.setBorder(BorderFactory.createCompoundBorder(BorderFactory
-				.createTitledBorder(getRequiredMessage(labelKey)), GuiStandardUtils
-				.createEvenlySpacedBorder(UIConstants.ONE_SPACE)));
+		component.setBorder(
+				BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(getRequiredMessage(labelKey)),
+						GuiStandardUtils.createEvenlySpacedBorder(UIConstants.ONE_SPACE)));
 		return component;
 	}
 
+	@Override
 	public JLabel createLabelFor(String labelKey, JComponent component) {
 		JLabel label = createNewLabel();
 		getLabelInfo(getRequiredMessage(labelKey)).configureLabelFor(label, component);
 		return label;
 	}
 
+	@Override
 	public JLabel createLabelFor(String[] labelKeys, JComponent component) {
 		JLabel label = createNewLabel();
 		getLabelInfo(getRequiredMessage(labelKeys)).configureLabelFor(label, component);
@@ -323,6 +335,7 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 		return new JLabel();
 	}
 
+	@Override
 	public JButton createButton(String labelKey) {
 		return (JButton) getButtonLabelInfo(getRequiredMessage(labelKey)).configure(getButtonFactory().createButton());
 	}
@@ -338,14 +351,17 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 		return buttonFactory;
 	}
 
+	@Override
 	public JComponent createLabeledSeparator(String labelKey) {
 		return createLabeledSeparator(labelKey, Alignment.LEFT);
 	}
 
+	@Override
 	public JCheckBox createCheckBox(String labelKey) {
 		return (JCheckBox) getButtonLabelInfo(getRequiredMessage(labelKey)).configure(createNewCheckBox());
 	}
 
+	@Override
 	public JCheckBox createCheckBox(String[] labelKeys) {
 		return (JCheckBox) getButtonLabelInfo(getRequiredMessage(labelKeys)).configure(createNewCheckBox());
 	}
@@ -354,10 +370,12 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 		return new JCheckBox();
 	}
 
+	@Override
 	public JToggleButton createToggleButton(String labelKey) {
 		return (JToggleButton) getButtonLabelInfo(getRequiredMessage(labelKey)).configure(createNewToggleButton());
 	}
 
+	@Override
 	public JToggleButton createToggleButton(String[] labelKeys) {
 		return (JToggleButton) getButtonLabelInfo(getRequiredMessage(labelKeys)).configure(createNewToggleButton());
 	}
@@ -368,8 +386,12 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.springframework.richclient.factory.ComponentFactory#createRadioButton(java.lang.String)
+	 *
+	 * @see
+	 * org.springframework.richclient.factory.ComponentFactory#createRadioButton(
+	 * java.lang.String)
 	 */
+	@Override
 	public JRadioButton createRadioButton(String labelKey) {
 		return (JRadioButton) getButtonLabelInfo(getRequiredMessage(labelKey)).configure(createNewRadioButton());
 	}
@@ -378,10 +400,12 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 		return new JRadioButton();
 	}
 
+	@Override
 	public JRadioButton createRadioButton(String[] labelKeys) {
 		return (JRadioButton) getButtonLabelInfo(getRequiredMessage(labelKeys)).configure(createNewRadioButton());
 	}
 
+	@Override
 	public JMenuItem createMenuItem(String labelKey) {
 		return (JMenuItem) getButtonLabelInfo(getRequiredMessage(labelKey))
 				.configure(getMenuFactory().createMenuItem());
@@ -394,30 +418,36 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 		return menuFactory;
 	}
 
+	@Override
 	public JComponent createLabeledSeparator(String labelKey, Alignment alignment) {
-		return com.jgoodies.forms.factories.DefaultComponentFactory.getInstance().createSeparator(
-				getRequiredMessage(labelKey), ((Number) alignment.getCode()).intValue());
+		return com.jgoodies.forms.factories.DefaultComponentFactory.getInstance()
+				.createSeparator(getRequiredMessage(labelKey), ((Number) alignment.getCode()).intValue());
 	}
 
+	@Override
 	public JList createList() {
 		return new JList();
 	}
 
+	@Override
 	public JComboBox createComboBox() {
 		return new JComboBox();
 	}
 
+	@Override
 	public JComboBox createComboBox(Class enumType) {
 		JComboBox comboBox = createComboBox();
 		configureForEnum(comboBox, enumType);
 		return comboBox;
 	}
 
+	@Override
 	public JComboBox createListValueModelComboBox(ValueModel selectedItemValueModel,
 			ValueModel selectableItemsListHolder, String renderedPropertyPath) {
 		return null;
 	}
 
+	@Override
 	public void configureForEnum(JComboBox comboBox, Class enumType) {
 		Collection enumValues = getEnumResolver().getLabeledEnumSet(enumType);
 		if (logger.isDebugEnabled()) {
@@ -451,17 +481,20 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	 * @see JTextField
 	 */
 	public void setTextFieldColumns(int columns) {
-		if (columns < 0)
+		if (columns < 0) {
 			throw new IllegalArgumentException("text field columns must not be lower than 0. Value was: " + columns);
+		}
 		this.textFieldColumns = columns;
 	}
 
+	@Override
 	public JFormattedTextField createFormattedTextField(AbstractFormatterFactory formatterFactory) {
 		PatchedJFormattedTextField patchedJFormattedTextField = new PatchedJFormattedTextField(formatterFactory);
 		configureTextField(patchedJFormattedTextField);
 		return patchedJFormattedTextField;
 	}
 
+	@Override
 	public JTextField createTextField() {
 		JTextField textField = new JTextField();
 		configureTextField(textField);
@@ -477,16 +510,19 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 		textField.setColumns(getTextFieldColumns());
 	}
 
+	@Override
 	public JPasswordField createPasswordField() {
 		JPasswordField passwordField = new JPasswordField();
 		configureTextField(passwordField);
 		return passwordField;
 	}
 
+	@Override
 	public JTextArea createTextArea() {
 		return new JTextArea();
 	}
 
+	@Override
 	public JTextArea createTextArea(int rows, int columns) {
 		JTextArea textArea = createTextArea();
 		textArea.setRows(rows);
@@ -494,14 +530,17 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 		return textArea;
 	}
 
+	@Override
 	public JTextArea createTextAreaAsLabel() {
 		return GuiStandardUtils.textAreaAsLabel(createTextArea());
 	}
 
+	@Override
 	public JTabbedPane createTabbedPane() {
 		return new JTabbedPane();
 	}
 
+	@Override
 	public void addConfiguredTab(JTabbedPane tabbedPane, String labelKey, JComponent tabComponent) {
 		org.springframework.richclient.core.LabelInfo info = getLabelInfo(getRequiredMessage(labelKey));
 		tabbedPane.addTab(info.getText(), tabComponent);
@@ -512,22 +551,27 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 		tabbedPane.setToolTipTextAt(tabIndex, getCaption(labelKey));
 	}
 
+	@Override
 	public JScrollPane createScrollPane() {
 		return new JScrollPane();
 	}
 
+	@Override
 	public JScrollPane createScrollPane(Component view) {
 		return new JScrollPane(view);
 	}
 
+	@Override
 	public JScrollPane createScrollPane(Component view, int vsbPolicy, int hsbPolicy) {
 		return new JScrollPane(view, vsbPolicy, hsbPolicy);
 	}
 
+	@Override
 	public JPanel createPanel() {
 		return new JPanel();
 	}
 
+	@Override
 	public JPanel createPanel(LayoutManager layoutManager) {
 		return new JPanel(layoutManager);
 	}
@@ -545,8 +589,8 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	}
 
 	/**
-	 * Returns the icon source. Uses the {@link ApplicationServicesLocator} to
-	 * find one if none was set explicitly.
+	 * Returns the icon source. Uses the {@link ApplicationServicesLocator} to find
+	 * one if none was set explicitly.
 	 */
 	private IconSource getIconSource() {
 		if (iconSource == null) {
@@ -556,12 +600,13 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	}
 
 	/**
-	 * Construct a JTable with a default model It will delegate the creation to
-	 * a TableFactory if it exists.
+	 * Construct a JTable with a default model It will delegate the creation to a
+	 * TableFactory if it exists.
 	 *
 	 * @param model the table model
 	 * @return The new table.
 	 */
+	@Override
 	public JTable createTable() {
 		return (tableFactory != null) ? tableFactory.createTable() : new JTable();
 	}
@@ -573,15 +618,16 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	 * @param model the table model
 	 * @return The new table.
 	 */
+	@Override
 	public JTable createTable(TableModel model) {
 		return (tableFactory != null) ? tableFactory.createTable(model) : new JTable(model);
 	}
 
 	/**
 	 * Allow configuration via XML of a table factory. A simple interface for
-	 * creating JTable object, this allows the developer to create an
-	 * application specific table factory where, say, each tables have a set of
-	 * renderers installed, are sortable, etc.
+	 * creating JTable object, this allows the developer to create an application
+	 * specific table factory where, say, each tables have a set of renderers
+	 * installed, are sortable, etc.
 	 *
 	 * @param tableFactory the table factory to use
 	 */
@@ -592,6 +638,7 @@ public class DefaultComponentFactory implements ComponentFactory, MessageSourceA
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public JComponent createToolBar() {
 		JToolBar toolBar = new JToolBar();
 

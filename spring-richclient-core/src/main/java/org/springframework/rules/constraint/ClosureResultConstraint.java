@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -16,12 +16,11 @@
 package org.springframework.rules.constraint;
 
 import org.springframework.rules.closure.Closure;
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.util.Assert;
 
 /**
  * Tests the result returned from evaluating a closure closure.
- * 
+ *
  * @author Keith Donald
  */
 public class ClosureResultConstraint implements Constraint {
@@ -32,11 +31,9 @@ public class ClosureResultConstraint implements Constraint {
 	/**
 	 * Creates a ClosureResultConstraint that tests the result returned from
 	 * evaulating the specified unary closure.
-	 * 
-	 * @param closure
-	 *            The closure to test.
-	 * @param constraint
-	 *            The predicate that will test the closure return value.
+	 *
+	 * @param closure    The closure to test.
+	 * @param constraint The predicate that will test the closure return value.
 	 */
 	public ClosureResultConstraint(Closure closure, Constraint constraint) {
 		Assert.notNull(closure, "closure is required");
@@ -46,11 +43,12 @@ public class ClosureResultConstraint implements Constraint {
 	}
 
 	/**
-	 * Tests the result returned by evaluating the specified argument against
-	 * the configured closure.
-	 * 
+	 * Tests the result returned by evaluating the specified argument against the
+	 * configured closure.
+	 *
 	 * @see Constraint#test(java.lang.Object)
 	 */
+	@Override
 	public boolean test(Object argument) {
 		Object returnValue = closure.call(argument);
 		return this.constraint.test(returnValue);
@@ -64,6 +62,7 @@ public class ClosureResultConstraint implements Constraint {
 		return constraint;
 	}
 
+	@Override
 	public String toString() {
 		return "[" + closure.toString() + " " + constraint.toString() + "]";
 	}

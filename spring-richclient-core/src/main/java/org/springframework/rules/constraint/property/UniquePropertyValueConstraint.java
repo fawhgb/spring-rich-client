@@ -25,6 +25,8 @@ import org.springframework.binding.support.BeanPropertyAccessStrategy;
 import org.springframework.rules.constraint.AbstractConstraint;
 
 public class UniquePropertyValueConstraint extends AbstractConstraint implements PropertyConstraint {
+	private static final long serialVersionUID = 1L;
+
 	private String propertyName;
 
 	private Map distinctValueTable;
@@ -33,49 +35,50 @@ public class UniquePropertyValueConstraint extends AbstractConstraint implements
 		this.propertyName = propertyName;
 	}
 
+	@Override
 	public String getPropertyName() {
 		return propertyName;
 	}
 
+	@Override
 	public boolean isDependentOn(String propertyName) {
 		return getPropertyName().equals(propertyName);
 	}
-	
+
+	@Override
 	public boolean isCompoundRule() {
 		return false;
 	}
 
-
 	/**
-	 * Returns <code>true</code> if each domain object in the provided collection has a unique
-	 * value for the configured property.
+	 * Returns <code>true</code> if each domain object in the provided collection
+	 * has a unique value for the configured property.
 	 */
+	@Override
 	public boolean test(Object o) {
-		Collection domainObjects = (Collection)o;
-		distinctValueTable = new HashMap((int)(domainObjects.size() * .75));
+		Collection domainObjects = (Collection) o;
+		distinctValueTable = new HashMap((int) (domainObjects.size() * .75));
 		Iterator it = domainObjects.iterator();
 		MutablePropertyAccessStrategy accessor = null;
 		while (it.hasNext()) {
 			Object domainObject = it.next();
 			if (accessor == null) {
 				accessor = createPropertyAccessStrategy(domainObject);
-			}
-			else {
+			} else {
 				accessor.getDomainObjectHolder().setValue(domainObject);
 			}
 			Object propertyValue = accessor.getPropertyValue(propertyName);
 			Integer hashCode;
 			if (propertyValue == null) {
 				hashCode = new Integer(0);
-			}
-			else {
+			} else {
 				hashCode = new Integer(propertyValue.hashCode());
 			}
 			if (distinctValueTable.containsKey(hashCode)) {
 				return false;
 			}
 
-            distinctValueTable.put(hashCode, propertyValue);
+			distinctValueTable.put(hashCode, propertyValue);
 		}
 		return true;
 	}

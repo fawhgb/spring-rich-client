@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -19,26 +19,30 @@ import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.application.PageComponentListener;
 
 public class PageComponentListenerAdapter implements PageComponentListener {
-    private PageComponent activeComponent;
+	private PageComponent activeComponent;
 
-    public PageComponent getActiveComponent() {
-        return activeComponent;
-    }
+	public PageComponent getActiveComponent() {
+		return activeComponent;
+	}
 
-    public void componentOpened(PageComponent component) {
+	@Override
+	public void componentOpened(PageComponent component) {
 
-    }
+	}
 
-    public void componentFocusGained(PageComponent component) {
-        this.activeComponent = component;
-    }
+	@Override
+	public void componentFocusGained(PageComponent component) {
+		this.activeComponent = component;
+	}
 
-    public void componentFocusLost(PageComponent component) {
-        this.activeComponent = null;
-    }
+	@Override
+	public void componentFocusLost(PageComponent component) {
+		this.activeComponent = null;
+	}
 
-    public void componentClosed(PageComponent component) {
+	@Override
+	public void componentClosed(PageComponent component) {
 
-    }
+	}
 
 }

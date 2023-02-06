@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -19,14 +19,15 @@ import org.springframework.richclient.application.Application;
 
 public class NewWindowCommand extends ApplicationWindowAwareCommand {
 
-    private static final String ID = "newWindowCommand";
+	private static final String ID = "newWindowCommand";
 
-    public NewWindowCommand() {
-        super(ID);
-    }
+	public NewWindowCommand() {
+		super(ID);
+	}
 
-    protected void doExecuteCommand() {
-        Application.instance().openWindow(getApplicationWindow().getPage().getId());
-    }
+	@Override
+	protected void doExecuteCommand() {
+		Application.instance().openWindow(getApplicationWindow().getPage().getId());
+	}
 
 }

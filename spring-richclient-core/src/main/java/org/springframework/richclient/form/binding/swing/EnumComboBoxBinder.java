@@ -12,8 +12,10 @@ import org.springframework.richclient.list.TextValueListRenderer;
 import org.springframework.util.Assert;
 
 /**
- * Binds a Tiger enum in a combobox and supports i18n.<br/> The i18n key of an enum is the full classname + "." +
- * enumfield.<br/> For example:<br/> x.y.Season.WINTER = Winter<br/>
+ * Binds a Tiger enum in a combobox and supports i18n.<br/>
+ * The i18n key of an enum is the full classname + "." + enumfield.<br/>
+ * For example:<br/>
+ * x.y.Season.WINTER = Winter<br/>
  * <p>
  * configuration happens like this:
  * </p>
@@ -38,88 +40,97 @@ import org.springframework.util.Assert;
  */
 public class EnumComboBoxBinder extends ComboBoxBinder {
 
-    public EnumComboBoxBinder() {
-        super();
-    }
+	public EnumComboBoxBinder() {
+		super();
+	}
 
-    protected AbstractListBinding createListBinding(JComponent control, FormModel formModel, String formPropertyPath) {
-        ComboBoxBinding binding = (ComboBoxBinding) super.createListBinding(control, formModel, formPropertyPath);
-        binding.setSelectableItems(createEnumSelectableItems(formModel, formPropertyPath));
-        MessageSourceAccessor messageSourceAccessor = getMessages();
-        binding.setRenderer(new EnumListRenderer(messageSourceAccessor));
-        binding.setEditor(new EnumComboBoxEditor(messageSourceAccessor, binding.getEditor()));
-        return binding;
-    }
+	@Override
+	protected AbstractListBinding createListBinding(JComponent control, FormModel formModel, String formPropertyPath) {
+		ComboBoxBinding binding = (ComboBoxBinding) super.createListBinding(control, formModel, formPropertyPath);
+		binding.setSelectableItems(createEnumSelectableItems(formModel, formPropertyPath));
+		MessageSourceAccessor messageSourceAccessor = getMessages();
+		binding.setRenderer(new EnumListRenderer(messageSourceAccessor));
+		binding.setEditor(new EnumComboBoxEditor(messageSourceAccessor, binding.getEditor()));
+		return binding;
+	}
 
-    protected Enum[] createEnumSelectableItems(FormModel formModel, String formPropertyPath) {
-        Class propertyType = getPropertyType(formModel, formPropertyPath);
-        Class<Enum> enumPropertyType = propertyType;
-        return enumPropertyType.getEnumConstants();
-    }
+	protected Enum[] createEnumSelectableItems(FormModel formModel, String formPropertyPath) {
+		Class propertyType = getPropertyType(formModel, formPropertyPath);
+		Class<Enum> enumPropertyType = propertyType;
+		return enumPropertyType.getEnumConstants();
+	}
 
-    public class EnumListRenderer extends TextValueListRenderer {
+	public class EnumListRenderer extends TextValueListRenderer {
 
-        private MessageSourceAccessor messageSourceAccessor;
+		private static final long serialVersionUID = 1L;
+		private MessageSourceAccessor messageSourceAccessor;
 
-        public EnumListRenderer(MessageSourceAccessor messageSourceAccessor) {
-            this.messageSourceAccessor = messageSourceAccessor;
-        }
+		public EnumListRenderer(MessageSourceAccessor messageSourceAccessor) {
+			this.messageSourceAccessor = messageSourceAccessor;
+		}
 
-        protected String getTextValue(Object value) {
-            if (value == null) {
-                return "";
-            }
-            Enum valueEnum = (Enum) value;
-            Class<? extends Enum> valueClass = valueEnum.getClass();
-            return messageSourceAccessor.getMessage(valueClass.getName() + "." + valueEnum.name());
-        }
+		@Override
+		protected String getTextValue(Object value) {
+			if (value == null) {
+				return "";
+			}
+			Enum valueEnum = (Enum) value;
+			Class<? extends Enum> valueClass = valueEnum.getClass();
+			return messageSourceAccessor.getMessage(valueClass.getName() + "." + valueEnum.name());
+		}
 
-    }
+	}
 
-    public class EnumComboBoxEditor implements ComboBoxEditor {
+	public class EnumComboBoxEditor implements ComboBoxEditor {
 
-        private Object current;
+		private Object current;
 
-        private MessageSourceAccessor messageSourceAccessor;
+		private MessageSourceAccessor messageSourceAccessor;
 
-        private ComboBoxEditor inner;
+		private ComboBoxEditor inner;
 
-        public EnumComboBoxEditor(MessageSourceAccessor messageSourceAccessor, ComboBoxEditor editor) {
-            Assert.notNull(editor, "Editor cannot be null");
-            this.inner = editor;
-            this.messageSourceAccessor = messageSourceAccessor;
-        }
+		public EnumComboBoxEditor(MessageSourceAccessor messageSourceAccessor, ComboBoxEditor editor) {
+			Assert.notNull(editor, "Editor cannot be null");
+			this.inner = editor;
+			this.messageSourceAccessor = messageSourceAccessor;
+		}
 
-        public void selectAll() {
-            inner.selectAll();
-        }
+		@Override
+		public void selectAll() {
+			inner.selectAll();
+		}
 
-        public Component getEditorComponent() {
-            return inner.getEditorComponent();
-        }
+		@Override
+		public Component getEditorComponent() {
+			return inner.getEditorComponent();
+		}
 
-        public void addActionListener(ActionListener l) {
-            inner.addActionListener(l);
-        }
+		@Override
+		public void addActionListener(ActionListener l) {
+			inner.addActionListener(l);
+		}
 
-        public void removeActionListener(ActionListener l) {
-            inner.removeActionListener(l);
-        }
+		@Override
+		public void removeActionListener(ActionListener l) {
+			inner.removeActionListener(l);
+		}
 
-        public Object getItem() {
-            return current;
-        }
+		@Override
+		public Object getItem() {
+			return current;
+		}
 
-        public void setItem(Object value) {
-            current = value;
-            if (value != null) {
-                Enum valueEnum = (Enum) value;
-                Class<? extends Enum> valueClass = valueEnum.getClass();
-                inner.setItem(messageSourceAccessor.getMessage(valueClass.getName() + "." + valueEnum.name()));
-            } else {
-                inner.setItem(null);
-            }
-        }
-    }
+		@Override
+		public void setItem(Object value) {
+			current = value;
+			if (value != null) {
+				Enum valueEnum = (Enum) value;
+				Class<? extends Enum> valueClass = valueEnum.getClass();
+				inner.setItem(messageSourceAccessor.getMessage(valueClass.getName() + "." + valueEnum.name()));
+			} else {
+				inner.setItem(null);
+			}
+		}
+	}
 
 }

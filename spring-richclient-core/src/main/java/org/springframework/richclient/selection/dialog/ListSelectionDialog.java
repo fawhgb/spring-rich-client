@@ -35,9 +35,8 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.swing.EventListModel;
 
 /**
- * A <code>ListSelectionDialog</code> can be used to select an item from a
- * list.
- * 
+ * A <code>ListSelectionDialog</code> can be used to select an item from a list.
+ *
  * @author Peter De Bruycker
  */
 public class ListSelectionDialog extends AbstractSelectionDialog {
@@ -51,7 +50,7 @@ public class ListSelectionDialog extends AbstractSelectionDialog {
 	public ListSelectionDialog(String title, List items) {
 		this(title, null, GlazedLists.eventList(items));
 	}
-	
+
 	public ListSelectionDialog(String title, Window parent, List items) {
 		this(title, parent, GlazedLists.eventList(items));
 	}
@@ -60,7 +59,7 @@ public class ListSelectionDialog extends AbstractSelectionDialog {
 		super(title, parent);
 		this.items = items;
 	}
-	
+
 	public void setRenderer(ListCellRenderer renderer) {
 		Assert.notNull(renderer, "Renderer cannot be null.");
 		Assert.isTrue(!isControlCreated(), "Install the renderer before the control is created.");
@@ -68,6 +67,7 @@ public class ListSelectionDialog extends AbstractSelectionDialog {
 		this.renderer = renderer;
 	}
 
+	@Override
 	protected JComponent createSelectionComponent() {
 		list = getComponentFactory().createList();
 		list.setModel(new EventListModel(items));
@@ -78,6 +78,7 @@ public class ListSelectionDialog extends AbstractSelectionDialog {
 
 			private int lastIndex = -1;
 
+			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				if (e.getValueIsAdjusting()) {
 					return;
@@ -96,6 +97,7 @@ public class ListSelectionDialog extends AbstractSelectionDialog {
 		});
 
 		list.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					getFinishCommand().execute();
@@ -116,6 +118,7 @@ public class ListSelectionDialog extends AbstractSelectionDialog {
 		return new JScrollPane(list);
 	}
 
+	@Override
 	protected Object getSelectedObject() {
 		return items.get(list.getSelectedIndex());
 	}

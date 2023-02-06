@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2006 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -23,7 +23,9 @@ import org.springframework.richclient.samples.simple.domain.ContactDataStore;
 import org.springframework.richclient.table.support.AbstractObjectTable;
 
 /**
- * This class provides a concrete implementation of a table showing {@link Contact} objects.
+ * This class provides a concrete implementation of a table showing
+ * {@link Contact} objects.
+ *
  * @author lstreepy
  */
 public class ContactTable extends AbstractObjectTable {
@@ -40,6 +42,7 @@ public class ContactTable extends AbstractObjectTable {
 		this.dataStore = dataStore;
 	}
 
+	@Override
 	protected void configureTable(JTable table) {
 		// Adjust the table column widths
 		TableColumnModel tcm = table.getColumnModel();
@@ -52,15 +55,18 @@ public class ContactTable extends AbstractObjectTable {
 	}
 
 	/**
-	 * Provide the initial data for the table. Note that this is hard coded for this sample. You would normally access a
-	 * persistent store, or some other source to get the data for the table.
+	 * Provide the initial data for the table. Note that this is hard coded for this
+	 * sample. You would normally access a persistent store, or some other source to
+	 * get the data for the table.
 	 */
+	@Override
 	protected Object[] getDefaultInitialData() {
 		return dataStore.getAllContacts();
 	}
 
 	/**
 	 * Get the array of selected Contact objects in the table.
+	 *
 	 * @return array of Contacts, zero length if nothing is selected
 	 */
 	public Contact[] getSelectedContacts() {
@@ -73,6 +79,6 @@ public class ContactTable extends AbstractObjectTable {
 	}
 
 	public Contact getSelectedContact() {
-		return (Contact) getSelectedContacts()[0];
+		return getSelectedContacts()[0];
 	}
 }

@@ -30,17 +30,18 @@ public class PropertyPresent extends AbstractPropertyConstraint {
 	/**
 	 * Constructs a property present predicate for the specified property.
 	 *
-	 * @param propertyName
-	 *            The bean property name.
+	 * @param propertyName The bean property name.
 	 */
 	public PropertyPresent(String propertyName) {
 		super(propertyName);
 	}
 
+	@Override
 	protected boolean test(PropertyAccessStrategy domainObjectAccessStrategy) {
 		return Required.instance().test(domainObjectAccessStrategy.getPropertyValue(getPropertyName()));
 	}
 
+	@Override
 	public String toString() {
 		return "required if '" + getPropertyName() + "' present";
 	}

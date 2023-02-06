@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -41,60 +41,59 @@ public abstract class PreferencePage extends AbstractDialogPage {
 		super(id);
 	}
 
-    public PreferencePage(String id, boolean autoconfigure) {
-        super(id, autoconfigure);
-    }
+	public PreferencePage(String id, boolean autoconfigure) {
+		super(id, autoconfigure);
+	}
 
-    /**
+	/**
 	 * @return array containing "Restore defaults" and "Apply" commands
 	 */
 	protected ActionCommand[] getCommands() {
 		return new ActionCommand[] { getRestoreDefaultsCommand(), getApplyCommand() };
 	}
 
-    /**
-     * Will create "Apply" command if it doesn't exist yet
-     * 
-     * @return apply command.
-     */
-    protected ActionCommand getApplyCommand()
-    {
-        if (applyCommand == null) {
-            applyCommand = new ActionCommand("applyCommand") {
-    			public void doExecuteCommand() {
-    				onApply();
-    			}
-    		};
-        }
-        return applyCommand;
-    }
-
-    /**
-     * Will create "Restore Defaults" command if it doesn't exist yet
-     * 
-     * @return restore defaults command.
-     */
-    protected ActionCommand getRestoreDefaultsCommand()
-    {
-        if (restoreDefaultsCommand == null){
-            restoreDefaultsCommand = new ActionCommand("restoreDefaultsCommand") {
-    			public void doExecuteCommand() {
-    				onDefaults();
-    			}
-    		};
-        }
-        return restoreDefaultsCommand;
-    }
+	/**
+	 * Will create "Apply" command if it doesn't exist yet
+	 * 
+	 * @return apply command.
+	 */
+	protected ActionCommand getApplyCommand() {
+		if (applyCommand == null) {
+			applyCommand = new ActionCommand("applyCommand") {
+				@Override
+				public void doExecuteCommand() {
+					onApply();
+				}
+			};
+		}
+		return applyCommand;
+	}
 
 	/**
-	 * Creates two commands "Restore defaults" and "Apply" for this page,
-	 * layouts them on the panel.
+	 * Will create "Restore Defaults" command if it doesn't exist yet
 	 * 
+	 * @return restore defaults command.
+	 */
+	protected ActionCommand getRestoreDefaultsCommand() {
+		if (restoreDefaultsCommand == null) {
+			restoreDefaultsCommand = new ActionCommand("restoreDefaultsCommand") {
+				@Override
+				public void doExecuteCommand() {
+					onDefaults();
+				}
+			};
+		}
+		return restoreDefaultsCommand;
+	}
+
+	/**
+	 * Creates two commands "Restore defaults" and "Apply" for this page, layouts
+	 * them on the panel.
+	 *
 	 * @return panel containing "Restore defaults" and "Apply" commands
 	 */
 	protected JComponent createButtons() {
-		CommandGroup commandGroup = CommandGroup.createCommandGroup(null,
-				getCommands());
+		CommandGroup commandGroup = CommandGroup.createCommandGroup(null, getCommands());
 		JComponent buttonBar = commandGroup.createButtonBar();
 		GuiStandardUtils.attachDialogBorder(buttonBar);
 
@@ -103,6 +102,7 @@ public abstract class PreferencePage extends AbstractDialogPage {
 
 	protected abstract JComponent createContents();
 
+	@Override
 	protected JComponent createControl() {
 		GridBagLayoutBuilder builder = new GridBagLayoutBuilder();
 
@@ -132,8 +132,8 @@ public abstract class PreferencePage extends AbstractDialogPage {
 	}
 
 	/**
-	 * Must store the preference values in the PreferenceStore. Does not save
-	 * the PreferenceStore. Subclasses should override this method.
+	 * Must store the preference values in the PreferenceStore. Does not save the
+	 * PreferenceStore. Subclasses should override this method.
 	 */
 	protected void onApply() {
 		onFinish();
@@ -166,6 +166,7 @@ public abstract class PreferencePage extends AbstractDialogPage {
 		preferenceDialog = dialog;
 	}
 
+	@Override
 	public void setPageComplete(boolean pageComplete) {
 		if (applyCommand != null) {
 			applyCommand.setEnabled(pageComplete);

@@ -13,8 +13,7 @@ import org.springframework.context.MessageSourceResolvable;
 /**
  * @author Keith Donald
  */
-public class TypeResolvableSupport implements TypeResolvable,
-		MessageSourceResolvable {
+public class TypeResolvableSupport implements TypeResolvable, MessageSourceResolvable {
 
 	private String type;
 
@@ -26,6 +25,7 @@ public class TypeResolvableSupport implements TypeResolvable,
 		setType(type);
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}
@@ -34,14 +34,17 @@ public class TypeResolvableSupport implements TypeResolvable,
 		this.type = type;
 	}
 
+	@Override
 	public Object[] getArguments() {
 		return null;
 	}
 
+	@Override
 	public String[] getCodes() {
-		return new String[]{type};
+		return new String[] { type };
 	}
 
+	@Override
 	public String getDefaultMessage() {
 		return type;
 	}

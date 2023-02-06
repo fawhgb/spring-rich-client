@@ -24,12 +24,12 @@ import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 
 import org.springframework.binding.form.FormModel;
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.richclient.application.ApplicationServicesLocator;
 import org.springframework.richclient.factory.ComponentFactory;
 import org.springframework.richclient.form.binding.Binding;
 import org.springframework.richclient.form.binding.BindingFactory;
-import org.springframework.richclient.form.binding.swing.ComboBoxBinder;
+import org.springframework.richclient.form.binding.swing.AbstractListBinder;
+import org.springframework.rules.constraint.Constraint;
 import org.springframework.util.Assert;
 
 /**
@@ -59,8 +59,8 @@ public abstract class AbstractFormBuilder {
 	}
 
 	/**
-	 * Returns the {@link FormComponentInterceptor} that will be used when
-	 * creating a component with this builder.
+	 * Returns the {@link FormComponentInterceptor} that will be used when creating
+	 * a component with this builder.
 	 */
 	protected FormComponentInterceptor getFormComponentInterceptor() {
 		if (interceptor == null) {
@@ -83,13 +83,12 @@ public abstract class AbstractFormBuilder {
 	}
 
 	/**
-	 * Returns the {@link ComponentFactory} that delivers all the visual
-	 * components.
+	 * Returns the {@link ComponentFactory} that delivers all the visual components.
 	 */
 	protected ComponentFactory getComponentFactory() {
 		if (componentFactory == null) {
-			componentFactory = (ComponentFactory) ApplicationServicesLocator.services().getService(
-					ComponentFactory.class);
+			componentFactory = (ComponentFactory) ApplicationServicesLocator.services()
+					.getService(ComponentFactory.class);
 		}
 		return componentFactory;
 	}
@@ -120,8 +119,8 @@ public abstract class AbstractFormBuilder {
 	 * Create a binding by looking up the appropriate registered binding.
 	 *
 	 * @param fieldName the name of the property to bind.
-	 * @return the {@link Binding} for the property which provides a component
-	 * that is bound to the valueModel of the property.
+	 * @return the {@link Binding} for the property which provides a component that
+	 *         is bound to the valueModel of the property.
 	 */
 	protected Binding createDefaultBinding(String fieldName) {
 		return getBindingFactory().createBinding(fieldName);
@@ -133,8 +132,8 @@ public abstract class AbstractFormBuilder {
 	 *
 	 * @param fieldName the name of the property to bind.
 	 * @param component the component to bind to the property.
-	 * @return the {@link Binding} that binds the component to the valuemodel of
-	 * the property.
+	 * @return the {@link Binding} that binds the component to the valuemodel of the
+	 *         property.
 	 */
 	protected Binding createBinding(String fieldName, JComponent component) {
 		return getBindingFactory().bindControl(component, fieldName);
@@ -142,15 +141,15 @@ public abstract class AbstractFormBuilder {
 
 	/**
 	 * Create a binding that uses the given component instead of its default
-	 * component. Additionally providing a context which is used by the binding
-	 * to allow custom settings.
+	 * component. Additionally providing a context which is used by the binding to
+	 * allow custom settings.
 	 *
 	 * @param fieldName the name of the property to bind.
 	 * @param component the component to bind to the property.
-	 * @param context a map of with additional settings providing a specific
-	 * context.
-	 * @return the {@link Binding} that binds the component to the valuemodel of
-	 * the property.
+	 * @param context   a map of with additional settings providing a specific
+	 *                  context.
+	 * @return the {@link Binding} that binds the component to the valuemodel of the
+	 *         property.
 	 */
 	protected Binding createBinding(String fieldName, JComponent component, Map context) {
 		return getBindingFactory().bindControl(component, fieldName, context);
@@ -161,12 +160,12 @@ public abstract class AbstractFormBuilder {
 	 * implementation creates a {@link JComboBox}
 	 *
 	 * @param fieldName the name of the field for the selector
-	 * @param filter an optional filter constraint
+	 * @param filter    an optional filter constraint
 	 * @return the component to use for a selector, not null
 	 */
 	protected JComponent createSelector(String fieldName, Constraint filter) {
 		Map context = new HashMap();
-		context.put(ComboBoxBinder.FILTER_KEY, filter);
+		context.put(AbstractListBinder.FILTER_KEY, filter);
 		return getBindingFactory().createBinding(JComboBox.class, fieldName).getControl();
 	}
 
@@ -205,8 +204,7 @@ public abstract class AbstractFormBuilder {
 	 * Create a label for the property.
 	 *
 	 * @param fieldName the name of the property.
-	 * @param component the component of the property which is related to the
-	 * label.
+	 * @param component the component of the property which is related to the label.
 	 * @return a {@link JLabel} for the property.
 	 */
 	protected JLabel createLabelFor(String fieldName, JComponent component) {

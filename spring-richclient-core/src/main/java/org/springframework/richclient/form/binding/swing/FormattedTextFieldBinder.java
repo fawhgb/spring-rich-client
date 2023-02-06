@@ -31,20 +31,22 @@ import org.springframework.util.Assert;
  */
 public class FormattedTextFieldBinder extends AbstractBinder {
 
-    public static final String FORMATTER_FACTORY_KEY = "formatterFactory";
+	public static final String FORMATTER_FACTORY_KEY = "formatterFactory";
 
-    public FormattedTextFieldBinder(Class requiredSourceClass) {
-        super(requiredSourceClass, new String[] {FORMATTER_FACTORY_KEY});
-    }
+	public FormattedTextFieldBinder(Class requiredSourceClass) {
+		super(requiredSourceClass, new String[] { FORMATTER_FACTORY_KEY });
+	}
 
-    protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, Map context) {
-        Assert.isTrue(control instanceof JFormattedTextField, "Control must be an instance of JFormattedTextField.");
-        return new FormattedTextFieldBinding((JFormattedTextField)control, formModel, formPropertyPath,
-                getRequiredSourceClass());
-    }
+	@Override
+	protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, Map context) {
+		Assert.isTrue(control instanceof JFormattedTextField, "Control must be an instance of JFormattedTextField.");
+		return new FormattedTextFieldBinding((JFormattedTextField) control, formModel, formPropertyPath,
+				getRequiredSourceClass());
+	}
 
-    protected JComponent createControl(Map context) {
-        return getComponentFactory().createFormattedTextField(
-                (AbstractFormatterFactory)context.get(FORMATTER_FACTORY_KEY));
-    }
+	@Override
+	protected JComponent createControl(Map context) {
+		return getComponentFactory()
+				.createFormattedTextField((AbstractFormatterFactory) context.get(FORMATTER_FACTORY_KEY));
+	}
 }

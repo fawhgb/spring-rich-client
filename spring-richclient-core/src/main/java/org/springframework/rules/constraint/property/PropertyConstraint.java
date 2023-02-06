@@ -21,9 +21,10 @@ public interface PropertyConstraint extends Constraint {
 	public String getPropertyName();
 
 	/**
-	 * Returns <code>true</code> if this property constraint is dependent on
-	 * the provided propertyName for test evaluation; that is, it should be retested
+	 * Returns <code>true</code> if this property constraint is dependent on the
+	 * provided propertyName for test evaluation; that is, it should be retested
 	 * when propertyName changes.
+	 *
 	 * @param propertyName
 	 * @return true or false
 	 */
@@ -31,6 +32,7 @@ public interface PropertyConstraint extends Constraint {
 
 	/**
 	 * Does this property constraint effect more than one property?
+	 *
 	 * @return true if yes, false otherwise
 	 */
 	public boolean isCompoundRule();

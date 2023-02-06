@@ -32,50 +32,50 @@ import org.springframework.richclient.form.binding.support.AbstractBinder;
  */
 public class EnumRadioButtonBinder extends AbstractBinder {
 
-    private boolean nullable = false;
+	private boolean nullable = false;
 
-    /**
-     * Creates a new binder
-     */
-    public EnumRadioButtonBinder() {
-        super(Enum.class);
-    }
+	/**
+	 * Creates a new binder
+	 */
+	public EnumRadioButtonBinder() {
+		super(Enum.class);
+	}
 
-    @Override
-    protected JComponent createControl(Map context) {
-        return new JPanel();
-    }
+	@Override
+	protected JComponent createControl(Map context) {
+		return new JPanel();
+	}
 
-    /**
-     * Sets whether this control can contain a <code>null</code> value
-     *
-     * @param nullable <code>true</code> if the binder needs to contain a
-     * <code>null</code> value
-     */
-    public void setNullable(boolean nullable) {
-        this.nullable = nullable;
-    }
+	/**
+	 * Sets whether this control can contain a <code>null</code> value
+	 *
+	 * @param nullable <code>true</code> if the binder needs to contain a
+	 *                 <code>null</code> value
+	 */
+	public void setNullable(boolean nullable) {
+		this.nullable = nullable;
+	}
 
-    @Override
-    protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, Map context) {
-        EnumRadioButtonBinding binding = new EnumRadioButtonBinding((JPanel) control, formModel, formPropertyPath,
-                getPropertyType(formModel, formPropertyPath), getSelectableEnumsList(formModel, formPropertyPath));
-        return binding;
+	@Override
+	protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, Map context) {
+		EnumRadioButtonBinding binding = new EnumRadioButtonBinding((JPanel) control, formModel, formPropertyPath,
+				getPropertyType(formModel, formPropertyPath), getSelectableEnumsList(formModel, formPropertyPath));
+		return binding;
 
-    }
+	}
 
-    /**
-     * Adds the <code>null</code> value if this binder is nullable.
-     */
-    private List<Enum> getSelectableEnumsList(FormModel formModel, String formPropertyPath) {
-        List<Enum> out = new ArrayList<Enum>();
-        if (nullable) {
-            out.add(null);
-        }
-        for (Enum e : ((Class<Enum>) getPropertyType(formModel, formPropertyPath)).getEnumConstants()) {
-            out.add(e);
-        }
-        return out;
-    }
+	/**
+	 * Adds the <code>null</code> value if this binder is nullable.
+	 */
+	private List<Enum> getSelectableEnumsList(FormModel formModel, String formPropertyPath) {
+		List<Enum> out = new ArrayList<Enum>();
+		if (nullable) {
+			out.add(null);
+		}
+		for (Enum e : ((Class<Enum>) getPropertyType(formModel, formPropertyPath)).getEnumConstants()) {
+			out.add(e);
+		}
+		return out;
+	}
 
 }

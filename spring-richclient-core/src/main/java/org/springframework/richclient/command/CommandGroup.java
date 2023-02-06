@@ -15,9 +15,22 @@
  */
 package org.springframework.richclient.command;
 
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import com.jgoodies.forms.layout.Size;
+import java.awt.Component;
+import java.awt.Container;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.AbstractButton;
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.border.Border;
+import javax.swing.event.EventListenerList;
+
 import org.springframework.richclient.application.ApplicationServicesLocator;
 import org.springframework.richclient.command.config.CommandButtonConfigurer;
 import org.springframework.richclient.command.config.CommandConfigurer;
@@ -34,13 +47,9 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.event.EventListenerList;
-import java.awt.*;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import com.jgoodies.forms.layout.Size;
 
 /**
  * Implementation of an {@link AbstractCommand} that groups a collection of
@@ -121,7 +130,7 @@ public class CommandGroup extends AbstractCommand {
 		return createCommandGroup(null, members, false, null);
 	}
 
-    /**
+	/**
 	 * Create a command group which holds all the given members.
 	 *
 	 * @param members members to add to the group.
@@ -131,7 +140,7 @@ public class CommandGroup extends AbstractCommand {
 		return createCommandGroup(null, members.toArray(), false, null);
 	}
 
-    /**
+	/**
 	 * Create a command group which holds all the given members.
 	 *
 	 * @param groupId the id to configure the group.
@@ -142,7 +151,7 @@ public class CommandGroup extends AbstractCommand {
 		return createCommandGroup(groupId, members, false, null);
 	}
 
-    /**
+	/**
 	 * Create a command group which holds all the given members.
 	 *
 	 * @param groupId the id to configure the group.
@@ -156,8 +165,8 @@ public class CommandGroup extends AbstractCommand {
 	/**
 	 * Create a command group which holds all the given members.
 	 *
-	 * @param groupId the id to configure the group.
-	 * @param members members to add to the group.
+	 * @param groupId    the id to configure the group.
+	 * @param members    members to add to the group.
 	 * @param configurer the configurer to use.
 	 * @return a {@link CommandGroup} which contains all the members.
 	 */
@@ -180,9 +189,9 @@ public class CommandGroup extends AbstractCommand {
 
 	/**
 	 * Creates a command group, configuring the group using the ObjectConfigurer
-	 * service (pulling visual configuration properties from an external
-	 * source). This method will also auto-configure contained Command members
-	 * that have not yet been configured.
+	 * service (pulling visual configuration properties from an external source).
+	 * This method will also auto-configure contained Command members that have not
+	 * yet been configured.
 	 *
 	 * @param groupId id to configure this commandGroup.
 	 * @param members members to add to the group.
@@ -235,18 +244,19 @@ public class CommandGroup extends AbstractCommand {
 
 	/**
 	 * Enable/disable the entire group.
-	 * 
+	 *
 	 * @param enabled enable/disable this group.
 	 */
+	@Override
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
-		for (Iterator members = getMemberList().iterator(); members.hasNext();)
-		{
-		    GroupMember groupMember = (GroupMember)members.next();
-		    groupMember.setEnabled(enabled);
+		for (Iterator members = getMemberList().iterator(); members.hasNext();) {
+			GroupMember groupMember = (GroupMember) members.next();
+			groupMember.setEnabled(enabled);
 		}
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		super.setVisible(visible);
 		getMemberList().setContainersVisible(visible);
@@ -261,10 +271,7 @@ public class CommandGroup extends AbstractCommand {
 	}
 
 	public void add(AbstractCommand command, boolean rebuild) {
-		if (command == null) {
-			return;
-		}
-		if (contains(command)) {
+		if ((command == null) || contains(command)) {
 			return;
 		}
 		getMemberList().append(new SimpleGroupMember(this, command));
@@ -365,15 +372,15 @@ public class CommandGroup extends AbstractCommand {
 	}
 
 	/**
-	 * Search for and return the command contained by this group with the
-	 * specified path. Nested paths should be deliniated by the "/" character;
-	 * for example, "fileGroup/newGroup/simpleFileCommand". The returned command
-	 * may be a group or an action command.
+	 * Search for and return the command contained by this group with the specified
+	 * path. Nested paths should be deliniated by the "/" character; for example,
+	 * "fileGroup/newGroup/simpleFileCommand". The returned command may be a group
+	 * or an action command.
 	 *
-	 * @param memberPath the path of the command, with nested levels deliniated
-	 * by the "/" path separator.
-	 * @return the command at the specified member path, or <code>null</code>
-	 * if no was command found.
+	 * @param memberPath the path of the command, with nested levels deliniated by
+	 *                   the "/" path separator.
+	 * @return the command at the specified member path, or <code>null</code> if no
+	 *         was command found.
 	 */
 	public AbstractCommand find(String memberPath) {
 		if (logger.isDebugEnabled()) {
@@ -387,8 +394,7 @@ public class CommandGroup extends AbstractCommand {
 			if (i < paths.length - 1) {
 				// must be a nested group
 				currentGroup = currentGroup.findCommandGroupMember(memberId);
-			}
-			else {
+			} else {
 				// is last path element; can be a group or action
 				return currentGroup.findCommandMember(memberId);
 			}
@@ -410,14 +416,15 @@ public class CommandGroup extends AbstractCommand {
 				return member.getCommand();
 			}
 		}
-		logger.warn("No command with id '" + commandId + "' is nested within this group (" + getId()
-				+ "); returning null");
+		logger.warn(
+				"No command with id '" + commandId + "' is nested within this group (" + getId() + "); returning null");
 		return null;
 	}
 
 	/**
 	 * Executes all the members of this group.
 	 */
+	@Override
 	public void execute() {
 		Iterator it = memberList.iterator();
 		while (it.hasNext()) {
@@ -442,13 +449,15 @@ public class CommandGroup extends AbstractCommand {
 		}
 	}
 
+	@Override
 	public AbstractButton createButton(String faceDescriptorId, ButtonFactory buttonFactory,
 			CommandButtonConfigurer buttonConfigurer) {
 		return createButton(getDefaultFaceDescriptorId(), buttonFactory, getMenuFactory(), buttonConfigurer);
 	}
 
 	public AbstractButton createButton(ButtonFactory buttonFactory, MenuFactory menuFactory) {
-		return createButton(getDefaultFaceDescriptorId(), buttonFactory, menuFactory, getPullDownMenuButtonConfigurer());
+		return createButton(getDefaultFaceDescriptorId(), buttonFactory, menuFactory,
+				getPullDownMenuButtonConfigurer());
 	}
 
 	public AbstractButton createButton(String faceDescriptorId, ButtonFactory buttonFactory, MenuFactory menuFactory) {
@@ -474,6 +483,7 @@ public class CommandGroup extends AbstractCommand {
 		return getCommandServices().getPullDownMenuButtonConfigurer();
 	}
 
+	@Override
 	public JMenuItem createMenuItem(String faceDescriptorId, MenuFactory factory,
 			CommandButtonConfigurer buttonConfigurer) {
 		JMenu menu = factory.createMenu();
@@ -525,8 +535,8 @@ public class CommandGroup extends AbstractCommand {
 	}
 
 	/**
-	 * Create a button bar with buttons for all the commands in this group. Adds
-	 * a border top and bottom of 2 spaces.
+	 * Create a button bar with buttons for all the commands in this group. Adds a
+	 * border top and bottom of 2 spaces.
 	 *
 	 * @param minimumButtonSize if null, then there is no minimum size
 	 *
@@ -539,9 +549,9 @@ public class CommandGroup extends AbstractCommand {
 	/**
 	 * Create a button bar with buttons for all the commands in this.
 	 *
-	 * @param columnSpec Custom columnSpec for each column containing a button,
-	 * can be <code>null</code>.
-	 * @param rowSpec Custom rowspec for the buttonbar, can be <code>null</code>.
+	 * @param columnSpec Custom columnSpec for each column containing a button, can
+	 *                   be <code>null</code>.
+	 * @param rowSpec    Custom rowspec for the buttonbar, can be <code>null</code>.
 	 * @return never null
 	 */
 	public JComponent createButtonBar(final ColumnSpec columnSpec, final RowSpec rowSpec) {
@@ -552,7 +562,7 @@ public class CommandGroup extends AbstractCommand {
 	 * Create a button bar with buttons for all the commands in this.
 	 *
 	 * @param minimumButtonSize if null, then there is no minimum size
-	 * @param border if null, then don't use a border
+	 * @param border            if null, then don't use a border
 	 *
 	 * @return never null
 	 */
@@ -563,10 +573,10 @@ public class CommandGroup extends AbstractCommand {
 	/**
 	 * Create a button bar with buttons for all the commands in this.
 	 *
-	 * @param columnSpec Custom columnSpec for each column containing a button,
-	 * can be <code>null</code>.
-	 * @param rowSpec Custom rowspec for the buttonbar, can be <code>null</code>.
-	 * @param border if null, then don't use a border
+	 * @param columnSpec Custom columnSpec for each column containing a button, can
+	 *                   be <code>null</code>.
+	 * @param rowSpec    Custom rowspec for the buttonbar, can be <code>null</code>.
+	 * @param border     if null, then don't use a border
 	 *
 	 * @return never null
 	 */
@@ -588,8 +598,8 @@ public class CommandGroup extends AbstractCommand {
 	}
 
 	/**
-	 * Create a button stack with buttons for all the commands. Adds a border
-	 * left and right of 2 spaces.
+	 * Create a button stack with buttons for all the commands. Adds a border left
+	 * and right of 2 spaces.
 	 *
 	 * @param minimumButtonSize Minimum size of the buttons (can be null)
 	 * @return never null
@@ -602,8 +612,8 @@ public class CommandGroup extends AbstractCommand {
 	 * Create a button stack with buttons for all the commands.
 	 *
 	 * @param minimumButtonSize Minimum size of the buttons (can be
-	 * <code>null</code>)
-	 * @param border Border to set around the stack.
+	 *                          <code>null</code>)
+	 * @param border            Border to set around the stack.
 	 * @return never null
 	 */
 	public JComponent createButtonStack(final Size minimumButtonSize, final Border border) {
@@ -613,10 +623,9 @@ public class CommandGroup extends AbstractCommand {
 	/**
 	 * Create a button stack with buttons for all the commands.
 	 *
-	 * @param columnSpec Custom columnSpec for the stack, can be
-	 * <code>null</code>.
-	 * @param rowSpec Custom rowspec for each row containing a button can be
-	 * <code>null</code>.
+	 * @param columnSpec Custom columnSpec for the stack, can be <code>null</code>.
+	 * @param rowSpec    Custom rowspec for each row containing a button can be
+	 *                   <code>null</code>.
 	 * @return never null
 	 */
 	public JComponent createButtonStack(final ColumnSpec columnSpec, final RowSpec rowSpec) {
@@ -626,11 +635,10 @@ public class CommandGroup extends AbstractCommand {
 	/**
 	 * Create a button stack with buttons for all the commands.
 	 *
-	 * @param columnSpec Custom columnSpec for the stack, can be
-	 * <code>null</code>.
-	 * @param rowSpec Custom rowspec for each row containing a button can be
-	 * <code>null</code>.
-	 * @param border Border to set around the stack.
+	 * @param columnSpec Custom columnSpec for the stack, can be <code>null</code>.
+	 * @param rowSpec    Custom rowspec for each row containing a button can be
+	 *                   <code>null</code>.
+	 * @param border     Border to set around the stack.
 	 * @return never null
 	 */
 	public JComponent createButtonStack(final ColumnSpec columnSpec, final RowSpec rowSpec, final Border border) {
@@ -642,8 +650,8 @@ public class CommandGroup extends AbstractCommand {
 	}
 
 	/**
-	 * Create a container with the given GroupContainerPopulator which will hold
-	 * the members of this group.
+	 * Create a container with the given GroupContainerPopulator which will hold the
+	 * members of this group.
 	 *
 	 * @param groupContainerPopulator
 	 */
@@ -655,8 +663,7 @@ public class CommandGroup extends AbstractCommand {
 			if (member.getCommand() instanceof CommandGroup) {
 				member.fill(groupContainerPopulator, getButtonFactory(), getPullDownMenuButtonConfigurer(),
 						Collections.EMPTY_LIST);
-			}
-			else {
+			} else {
 				member.fill(groupContainerPopulator, getButtonFactory(), getDefaultButtonConfigurer(),
 						Collections.EMPTY_LIST);
 			}

@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -43,11 +43,11 @@ import org.springframework.richclient.util.WindowUtils;
  */
 public class TableUtils {
 
-    public static void scrollToRow(JTable table, int row) {
+	public static void scrollToRow(JTable table, int row) {
 		if (!(table.getParent() instanceof JViewport)) {
 			return;
 		}
-		JViewport viewport = (JViewport)table.getParent();
+		JViewport viewport = (JViewport) table.getParent();
 		// This rectangle is relative to the table where the
 		// northwest corner of cell (0,0) is always (0,0).
 		Rectangle rect = table.getCellRect(row, 0, true);
@@ -102,7 +102,7 @@ public class TableUtils {
 
 	/**
 	 * Calculates the preferred width of a table column based on the header.
-	 * 
+	 *
 	 * @param table
 	 * @return the preferred table width
 	 */
@@ -113,75 +113,73 @@ public class TableUtils {
 	}
 
 	/**
-	 * Returns the innermost table model associated with this table; if layers
-	 * of table model filters are wrapping it.
+	 * Returns the innermost table model associated with this table; if layers of
+	 * table model filters are wrapping it.
 	 */
 	public static TableModel getUnfilteredTableModel(JTable table) {
 		return getUnfilteredTableModel(table.getModel());
 	}
 
-    /**
-     * resizes the column widths to optimally fit the row data.
-     * <p>
-     * this method only tests the first row (if it exists) 
-     * @param table the table whose columns should be resized, not null
-     */
-    public static void sizeColumnsToFitRowData(JTable table) {
-        sizeColumnsToFitRowData(table, 1);
-    }
+	/**
+	 * resizes the column widths to optimally fit the row data.
+	 * <p>
+	 * this method only tests the first row (if it exists)
+	 *
+	 * @param table the table whose columns should be resized, not null
+	 */
+	public static void sizeColumnsToFitRowData(JTable table) {
+		sizeColumnsToFitRowData(table, 1);
+	}
 
-    /**
-     * resizes the column widths to optimally fit the row data.
-     * 
-     * @param table
-     *            the table whose columns should be resized, not null
-     * @param maxNumberOfRows
-     *            specifies the maximum number of rows to evaluate the column widths. If it is lower or equals 0 all rows
-     *            will be evaluated
-     */
-    public static void sizeColumnsToFitRowData(JTable table, int maxNumberOfRows) {
+	/**
+	 * resizes the column widths to optimally fit the row data.
+	 * 
+	 * @param table           the table whose columns should be resized, not null
+	 * @param maxNumberOfRows specifies the maximum number of rows to evaluate the
+	 *                        column widths. If it is lower or equals 0 all rows
+	 *                        will be evaluated
+	 */
+	public static void sizeColumnsToFitRowData(JTable table, int maxNumberOfRows) {
 		if (table.getRowCount() > 0) {
-            int rowSize = maxNumberOfRows <= 0 ? table.getRowCount() : Math
-                    .min(maxNumberOfRows, table.getRowCount());
+			int rowSize = maxNumberOfRows <= 0 ? table.getRowCount() : Math.min(maxNumberOfRows, table.getRowCount());
 			for (int col = 0, colSize = table.getColumnCount(); col < colSize; col++) {
-                int width = 0;
-                TableColumn column = table.getColumnModel().getColumn(col);
-                TableCellRenderer r = table.getColumnModel().getColumn(col).getCellRenderer();
-                for (int row = 0; row < rowSize; row++) {
-                    Object val = table.getValueAt(row, col);
-    				if (r == null) {
-    					if (val != null) {
-    						r = table.getDefaultRenderer(val.getClass());
-    					}
-    				}
-    				if (r != null) {
-    					Component c = r
-                                .getTableCellRendererComponent(table, val, false, false, row, col);
-    					int cWidth = c.getPreferredSize().width;
-                        if(cWidth > width) {
-                            width = cWidth;
-                        }
-    				}
-    			}
-                column.setPreferredWidth(width + UIConstants.ONE_SPACE);
-                column.setWidth(column.getPreferredWidth());
+				int width = 0;
+				TableColumn column = table.getColumnModel().getColumn(col);
+				TableCellRenderer r = table.getColumnModel().getColumn(col).getCellRenderer();
+				for (int row = 0; row < rowSize; row++) {
+					Object val = table.getValueAt(row, col);
+					if (r == null) {
+						if (val != null) {
+							r = table.getDefaultRenderer(val.getClass());
+						}
+					}
+					if (r != null) {
+						Component c = r.getTableCellRendererComponent(table, val, false, false, row, col);
+						int cWidth = c.getPreferredSize().width;
+						if (cWidth > width) {
+							width = cWidth;
+						}
+					}
+				}
+				column.setPreferredWidth(width + UIConstants.ONE_SPACE);
+				column.setWidth(column.getPreferredWidth());
 			}
 		}
-		int width = Math.min(table.getColumnModel().getTotalColumnWidth(), (int)(WindowUtils.getScreenWidth() * .75));
+		int width = Math.min(table.getColumnModel().getTotalColumnWidth(), (int) (WindowUtils.getScreenWidth() * .75));
 		table.setPreferredScrollableViewportSize(new Dimension(width, 300));
 	}
 
 	public static TableModel getUnfilteredTableModel(TableModel tableModel) {
 		if (tableModel instanceof AbstractTableModelFilter) {
-			return getUnfilteredTableModel(((AbstractTableModelFilter)tableModel).getFilteredModel());
+			return getUnfilteredTableModel(((AbstractTableModelFilter) tableModel).getFilteredModel());
 		}
 		return tableModel;
 	}
 
 	/**
-	 * Workaround for a very annoying bug in jtable where an editing cell value
-	 * does not get committed on focus lost.
-	 * 
+	 * Workaround for a very annoying bug in jtable where an editing cell value does
+	 * not get committed on focus lost.
+	 *
 	 * @param table
 	 */
 	public static void stopCellEditing(JTable table) {

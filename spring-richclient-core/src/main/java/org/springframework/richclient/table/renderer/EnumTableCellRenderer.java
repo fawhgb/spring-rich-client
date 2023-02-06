@@ -10,7 +10,7 @@ import org.springframework.context.support.MessageSourceAccessor;
 /**
  * TableCellRenderer which looks up messages by using the class and name of the
  * Enum as a messageKey.
- * 
+ *
  * @author Xavier Breton
  */
 public class EnumTableCellRenderer extends DefaultTableCellRenderer {
@@ -21,7 +21,7 @@ public class EnumTableCellRenderer extends DefaultTableCellRenderer {
 
 	/**
 	 * Constructor.
-	 * 
+	 *
 	 * @param messageSourceAccesor containing the messages for the Enums.
 	 */
 	public EnumTableCellRenderer(MessageSourceAccessor messageSourceAccesor) {
@@ -31,7 +31,8 @@ public class EnumTableCellRenderer extends DefaultTableCellRenderer {
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings( "unchecked")
+	@Override
+	@SuppressWarnings("unchecked")
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 			int row, int column) {
 		if (value instanceof Enum) {

@@ -21,61 +21,61 @@ import java.beans.PropertyChangeListener;
 import org.springframework.binding.form.FormModel;
 
 /**
- * A helper implementation for binding to custom controls.  
- * 
+ * A helper implementation for binding to custom controls.
+ *
  * @author Oliver Hutchison
  */
 public abstract class CustomBinding extends AbstractBinding {
 
-    private final ValueModelChangeHandler valueModelChangeHandler;
+	private final ValueModelChangeHandler valueModelChangeHandler;
 
-    /** Possible forced read-only. */
-    private boolean readOnly = false;
+	/** Possible forced read-only. */
+	private boolean readOnly = false;
 
-    protected CustomBinding(FormModel formModel, String formPropertyPath, Class requiredSourceClass) {
-        super(formModel, formPropertyPath, requiredSourceClass);
-        valueModelChangeHandler = new ValueModelChangeHandler();
-        getValueModel().addValueChangeListener(valueModelChangeHandler);
-    }
+	protected CustomBinding(FormModel formModel, String formPropertyPath, Class requiredSourceClass) {
+		super(formModel, formPropertyPath, requiredSourceClass);
+		valueModelChangeHandler = new ValueModelChangeHandler();
+		getValueModel().addValueChangeListener(valueModelChangeHandler);
+	}
 
-    /**
-     * Called when the underlying property's value model value changes. 
-     */
-    protected abstract void valueModelChanged(Object newValue);
-    
-    /**
-     * Should be called when the bound component's value changes. 
-     */
-    protected final void controlValueChanged(Object newValue) {
-        getValueModel().setValueSilently(newValue, valueModelChangeHandler);
-    }
+	/**
+	 * Called when the underlying property's value model value changes.
+	 */
+	protected abstract void valueModelChanged(Object newValue);
 
-    private class ValueModelChangeHandler implements PropertyChangeListener {
-        public void propertyChange(PropertyChangeEvent evt) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Notifying binding of value model value changed");
-            }
-            valueModelChanged(getValue());
-        }
-    }
+	/**
+	 * Should be called when the bound component's value changes.
+	 */
+	protected final void controlValueChanged(Object newValue) {
+		getValueModel().setValueSilently(newValue, valueModelChangeHandler);
+	}
 
-    /**
-     * Force this binding to be readonly, whatever the metaInfo.
-     *
-     * @param readOnly <code>true</code> if only read-access should be allowed.
-     */
-    public void setReadOnly(boolean readOnly)
-    {
-        this.readOnly = readOnly;
-        readOnlyChanged();
-    }
+	private class ValueModelChangeHandler implements PropertyChangeListener {
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Notifying binding of value model value changed");
+			}
+			valueModelChanged(getValue());
+		}
+	}
 
-    /**
-     * We were using an override to check the setter's visibility on the backing object.
-     */
-    @Override
-    protected boolean isReadOnly()
-    {
-        return this.readOnly || super.isReadOnly();
-    }
+	/**
+	 * Force this binding to be readonly, whatever the metaInfo.
+	 *
+	 * @param readOnly <code>true</code> if only read-access should be allowed.
+	 */
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+		readOnlyChanged();
+	}
+
+	/**
+	 * We were using an override to check the setter's visibility on the backing
+	 * object.
+	 */
+	@Override
+	protected boolean isReadOnly() {
+		return this.readOnly || super.isReadOnly();
+	}
 }

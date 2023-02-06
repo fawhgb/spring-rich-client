@@ -20,9 +20,9 @@ import org.springframework.rules.constraint.Constraint;
 import org.springframework.util.Assert;
 
 /**
- * A constraint that returns the result of a <code>boolean</code>
- * expression that tests a variable bean property value against a predicate
- * (constraint). For example: <code>pet.age is required</code>
+ * A constraint that returns the result of a <code>boolean</code> expression
+ * that tests a variable bean property value against a predicate (constraint).
+ * For example: <code>pet.age is required</code>
  *
  * @author Keith Donald
  */
@@ -33,10 +33,8 @@ public class PropertyValueConstraint extends AbstractPropertyConstraint implemen
 	/**
 	 * Creates a BeanPropertyValueConstraint.
 	 *
-	 * @param propertyName
-	 *            The constrained property.
-	 * @param valueConstraint
-	 *            The property value constraint (tester).
+	 * @param propertyName    The constrained property.
+	 * @param valueConstraint The property value constraint (tester).
 	 */
 	public PropertyValueConstraint(String propertyName, Constraint valueConstraint) {
 		super(propertyName);
@@ -46,6 +44,7 @@ public class PropertyValueConstraint extends AbstractPropertyConstraint implemen
 		this.valueConstraint = valueConstraint;
 	}
 
+	@Override
 	protected boolean test(PropertyAccessStrategy domainObjectAccessStrategy) {
 		return valueConstraint.test(domainObjectAccessStrategy.getPropertyValue(getPropertyName()));
 	}
@@ -54,6 +53,7 @@ public class PropertyValueConstraint extends AbstractPropertyConstraint implemen
 		return valueConstraint;
 	}
 
+	@Override
 	public String toString() {
 		return valueConstraint.toString();
 	}

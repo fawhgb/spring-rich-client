@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2008 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -30,73 +30,75 @@ import com.vlsolutions.swing.docking.DockingConstants.Hide;
  */
 public class ViewDescriptorDockable implements Dockable {
 
-    private ViewDescriptor viewDescriptor;
+	private ViewDescriptor viewDescriptor;
 
-    private PageComponent pageComponent;
+	private PageComponent pageComponent;
 
-    private DockKey dockKey;
+	private DockKey dockKey;
 
-    public ViewDescriptorDockable(ViewDescriptor viewDescriptor) {
-        this(viewDescriptor, null);
-    }
+	public ViewDescriptorDockable(ViewDescriptor viewDescriptor) {
+		this(viewDescriptor, null);
+	}
 
-    public ViewDescriptorDockable(ViewDescriptor viewDescriptor,
-            PageComponent pageComponent) {
-        this.viewDescriptor = viewDescriptor;
-        this.pageComponent = pageComponent;
-        this.dockKey = new DockKey(viewDescriptor.getId());
+	public ViewDescriptorDockable(ViewDescriptor viewDescriptor, PageComponent pageComponent) {
+		this.viewDescriptor = viewDescriptor;
+		this.pageComponent = pageComponent;
+		this.dockKey = new DockKey(viewDescriptor.getId());
 
-        dockKey.setName(viewDescriptor.getDisplayName());
-        dockKey.setTooltip(viewDescriptor.getCaption());
-        dockKey.setIcon(viewDescriptor.getIcon());
+		dockKey.setName(viewDescriptor.getDisplayName());
+		dockKey.setTooltip(viewDescriptor.getCaption());
+		dockKey.setIcon(viewDescriptor.getIcon());
 
-        boolean autoHideEnabled = VLDockingViewDescriptor.DEFAULT_AUTOHIDEENABLED;
-        Hide autoHideBorder = VLDockingViewDescriptor.DEFAULT_AUTOHIDEBORDER;
-        boolean closeEnabled = VLDockingViewDescriptor.DEFAULT_CLOSEENABLED;
-        boolean floatEnabled = VLDockingViewDescriptor.DEFAULT_FLOATENABLED;
-        boolean maximizeEnabled = VLDockingViewDescriptor.DEFAULT_MAXIMIZEENABLED;
+		boolean autoHideEnabled = VLDockingViewDescriptor.DEFAULT_AUTOHIDEENABLED;
+		Hide autoHideBorder = VLDockingViewDescriptor.DEFAULT_AUTOHIDEBORDER;
+		boolean closeEnabled = VLDockingViewDescriptor.DEFAULT_CLOSEENABLED;
+		boolean floatEnabled = VLDockingViewDescriptor.DEFAULT_FLOATENABLED;
+		boolean maximizeEnabled = VLDockingViewDescriptor.DEFAULT_MAXIMIZEENABLED;
 
-        if (viewDescriptor instanceof VLDockingViewDescriptor) {
-            VLDockingViewDescriptor dockingViewDescriptor = (VLDockingViewDescriptor) viewDescriptor;
-            autoHideEnabled = dockingViewDescriptor.isAutoHideEnabled();
-            autoHideBorder = dockingViewDescriptor.getAutoHideBorder();
-            closeEnabled = dockingViewDescriptor.isCloseEnabled();
-            floatEnabled = dockingViewDescriptor.isFloatEnabled();
-            maximizeEnabled = dockingViewDescriptor.isMaximizeEnabled();
-        }
-        dockKey.setAutoHideEnabled(autoHideEnabled);
-        dockKey.setAutoHideBorder(autoHideBorder);
-        dockKey.setCloseEnabled(closeEnabled);
-        dockKey.setFloatEnabled(floatEnabled);
-        dockKey.setMaximizeEnabled(maximizeEnabled);
-    }
+		if (viewDescriptor instanceof VLDockingViewDescriptor) {
+			VLDockingViewDescriptor dockingViewDescriptor = (VLDockingViewDescriptor) viewDescriptor;
+			autoHideEnabled = dockingViewDescriptor.isAutoHideEnabled();
+			autoHideBorder = dockingViewDescriptor.getAutoHideBorder();
+			closeEnabled = dockingViewDescriptor.isCloseEnabled();
+			floatEnabled = dockingViewDescriptor.isFloatEnabled();
+			maximizeEnabled = dockingViewDescriptor.isMaximizeEnabled();
+		}
+		dockKey.setAutoHideEnabled(autoHideEnabled);
+		dockKey.setAutoHideBorder(autoHideBorder);
+		dockKey.setCloseEnabled(closeEnabled);
+		dockKey.setFloatEnabled(floatEnabled);
+		dockKey.setMaximizeEnabled(maximizeEnabled);
+	}
 
-    public PageComponent getPageComponent() {
-        if (pageComponent == null)
-            pageComponent = viewDescriptor.createPageComponent();
-        return pageComponent;
-    }
+	public PageComponent getPageComponent() {
+		if (pageComponent == null) {
+			pageComponent = viewDescriptor.createPageComponent();
+		}
+		return pageComponent;
+	}
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.vlsolutions.swing.docking.Dockable#getComponent()
-     */
-    public Component getComponent() {
-        return getPageComponent().getControl();
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see com.vlsolutions.swing.docking.Dockable#getComponent()
+	 */
+	@Override
+	public Component getComponent() {
+		return getPageComponent().getControl();
+	}
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see com.vlsolutions.swing.docking.Dockable#getDockKey()
-     */
-    public DockKey getDockKey() {
-        return dockKey;
-    }
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see com.vlsolutions.swing.docking.Dockable#getDockKey()
+	 */
+	@Override
+	public DockKey getDockKey() {
+		return dockKey;
+	}
 
-    public String toString() {
-        return new ToStringCreator(this).append("viewDescriptor",
-                viewDescriptor.getId()).toString();
-    }
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("viewDescriptor", viewDescriptor.getId()).toString();
+	}
 }

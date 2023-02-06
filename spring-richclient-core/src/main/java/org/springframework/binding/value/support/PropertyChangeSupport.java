@@ -57,17 +57,16 @@ public final class PropertyChangeSupport implements Serializable {
 	}
 
 	/**
-	 * Add a PropertyChangeListener to the listener list. The listener is
-	 * registered for all properties.
+	 * Add a PropertyChangeListener to the listener list. The listener is registered
+	 * for all properties.
 	 *
 	 * @param listener The PropertyChangeListener to be added
 	 */
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		if (listener instanceof PropertyChangeListenerProxy) {
 			PropertyChangeListenerProxy proxy = (PropertyChangeListenerProxy) listener;
-			addPropertyChangeListener(proxy.getPropertyName(), (PropertyChangeListener) proxy.getListener());
-		}
-		else {
+			addPropertyChangeListener(proxy.getPropertyName(), proxy.getListener());
+		} else {
 			if (listeners == null) {
 				listeners = new EventListenerList();
 			}
@@ -84,9 +83,8 @@ public final class PropertyChangeSupport implements Serializable {
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		if (listener instanceof PropertyChangeListenerProxy) {
 			PropertyChangeListenerProxy proxy = (PropertyChangeListenerProxy) listener;
-			removePropertyChangeListener(proxy.getPropertyName(), (PropertyChangeListener) proxy.getListener());
-		}
-		else {
+			removePropertyChangeListener(proxy.getPropertyName(), proxy.getListener());
+		} else {
 			if (listeners == null) {
 				return;
 			}
@@ -98,12 +96,12 @@ public final class PropertyChangeSupport implements Serializable {
 	 * Returns an array of all the listeners that were added to the
 	 * SwingPropertyChangeSupport object with addPropertyChangeListener().
 	 * <p>
-	 * If some listeners have been added with a named property, then the
-	 * returned array will be a mixture of PropertyChangeListeners and
+	 * If some listeners have been added with a named property, then the returned
+	 * array will be a mixture of PropertyChangeListeners and
 	 * <code>PropertyChangeListenerProxy</code>s. If the calling method is
-	 * interested in distinguishing the listeners then it must test each element
-	 * to see if it's a <code>PropertyChangeListenerProxy</code> perform the
-	 * cast and examine the parameter.
+	 * interested in distinguishing the listeners then it must test each element to
+	 * see if it's a <code>PropertyChangeListenerProxy</code> perform the cast and
+	 * examine the parameter.
 	 *
 	 * <pre>
 	 * PropertyChangeListener[] listeners = support.getPropertyChangeListeners();
@@ -120,8 +118,8 @@ public final class PropertyChangeSupport implements Serializable {
 	 *
 	 * @see java.beans.PropertyChangeListenerProxy
 	 * @see java.beans.PropertyChangeSupport#getPropertyChangeListeners
-	 * @return all of the <code>PropertyChangeListener</code> s added or an
-	 * empty array if no listeners have been added
+	 * @return all of the <code>PropertyChangeListener</code> s added or an empty
+	 *         array if no listeners have been added
 	 * @since 1.4
 	 */
 	public PropertyChangeListener[] getPropertyChangeListeners() {
@@ -148,12 +146,11 @@ public final class PropertyChangeSupport implements Serializable {
 	}
 
 	/**
-	 * Add a PropertyChangeListener for a specific property. The listener will
-	 * be invoked only when a call on firePropertyChange names that specific
-	 * property.
+	 * Add a PropertyChangeListener for a specific property. The listener will be
+	 * invoked only when a call on firePropertyChange names that specific property.
 	 *
 	 * @param propertyName The name of the property to listen on.
-	 * @param listener The PropertyChangeListener to be added
+	 * @param listener     The PropertyChangeListener to be added
 	 */
 	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		if (children == null) {
@@ -171,7 +168,7 @@ public final class PropertyChangeSupport implements Serializable {
 	 * Remove a PropertyChangeListener for a specific property.
 	 *
 	 * @param propertyName The name of the property that was listened on.
-	 * @param listener The PropertyChangeListener to be removed
+	 * @param listener     The PropertyChangeListener to be removed
 	 */
 	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		if (children == null) {
@@ -188,8 +185,8 @@ public final class PropertyChangeSupport implements Serializable {
 	 * Returns an array of all the listeners which have been associated with the
 	 * named property.
 	 *
-	 * @return all of the <code>PropertyChangeListeners</code> associated with
-	 * the named property or an empty array if no listeners have been added
+	 * @return all of the <code>PropertyChangeListeners</code> associated with the
+	 *         named property or an empty array if no listeners have been added
 	 */
 	public PropertyChangeListener[] getPropertyChangeListeners(String propertyName) {
 		List returnList = new ArrayList();
@@ -204,22 +201,20 @@ public final class PropertyChangeSupport implements Serializable {
 	}
 
 	/**
-	 * Report a bound property update to any registered listeners. No event is
-	 * fired if old and new are equal and non-null.
+	 * Report a bound property update to any registered listeners. No event is fired
+	 * if old and new are equal and non-null.
 	 *
-	 * @param propertyName The programmatic name of the property that was
-	 * changed.
-	 * @param oldValue The old value of the property.
-	 * @param newValue The new value of the property.
+	 * @param propertyName The programmatic name of the property that was changed.
+	 * @param oldValue     The old value of the property.
+	 * @param newValue     The new value of the property.
 	 */
 	public void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
 		firePropertyChange(new PropertyChangeEvent(source, propertyName, oldValue, newValue));
 	}
 
 	/**
-	 * Fire an existing PropertyChangeEvent to any registered listeners. No
-	 * event is fired if the given event's old and new values are equal and
-	 * non-null.
+	 * Fire an existing PropertyChangeEvent to any registered listeners. No event is
+	 * fired if the given event's old and new values are equal and non-null.
 	 *
 	 * @param evt The PropertyChangeEvent object.
 	 */

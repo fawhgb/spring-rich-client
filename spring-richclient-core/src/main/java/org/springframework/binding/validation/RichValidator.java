@@ -29,8 +29,8 @@ public interface RichValidator extends Validator {
 	 *
 	 * @param object the object to validate (may be an implementation of
 	 * @link org.springframework.binding.PropertyAccessStrategy)
-	 * @param property the name of the only property that has changed since the
-	 * last call to validate.
+	 * @param property the name of the only property that has changed since the last
+	 *                 call to validate.
 	 * @return the results on the validation
 	 */
 	ValidationResults validate(Object object, String property);

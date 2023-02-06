@@ -34,7 +34,7 @@ public class TableMemento implements Memento {
 		if (!StringUtils.hasText(key)) {
 			key = table.getName();
 		}
-		
+
 		this.table = table;
 		this.key = key;
 	}
@@ -43,6 +43,7 @@ public class TableMemento implements Memento {
 		this(table, null);
 	}
 
+	@Override
 	public void saveState(Settings settings) {
 		saveSelectedRows(settings);
 		saveColumnOrder(settings);
@@ -90,6 +91,7 @@ public class TableMemento implements Memento {
 		}
 	}
 
+	@Override
 	public void restoreState(Settings settings) {
 		restoreColumnOrder(settings);
 		restoreColumnWidths(settings);
@@ -185,14 +187,11 @@ public class TableMemento implements Memento {
 	}
 
 	/**
-	 * Returns the position of the column for the given model index. The model
-	 * index remains constant, but the position changes as the columns are
-	 * moved.
-	 * 
-	 * @param table
-	 *            the table
-	 * @param modelIndex
-	 *            the modelIndex
+	 * Returns the position of the column for the given model index. The model index
+	 * remains constant, but the position changes as the columns are moved.
+	 *
+	 * @param table      the table
+	 * @param modelIndex the modelIndex
 	 * @return the position
 	 */
 	private static int getPosition(JTable table, int modelIndex) {

@@ -22,10 +22,15 @@ package org.springframework.rules.constraint;
  */
 public abstract class LogicalOperator extends Operator {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * The <code>AND</code> operator
 	 */
 	public static final LogicalOperator AND = new LogicalOperator("and", "&&") {
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		public CompoundConstraint createConstraint() {
 			return new And();
 		}
@@ -35,21 +40,27 @@ public abstract class LogicalOperator extends Operator {
 	 * The <code>OR</code> operator
 	 */
 	public static final LogicalOperator OR = new LogicalOperator("or", "||") {
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		public CompoundConstraint createConstraint() {
 			return new Or();
 		}
 	};
 
-  /**
-   * The <code>XOR</code> operator
-   */
-  public static final LogicalOperator XOR = new LogicalOperator("xor", "^") {
-    public CompoundConstraint createConstraint() {
-      return new XOr();
-    }
-  };
+	/**
+	 * The <code>XOR</code> operator
+	 */
+	public static final LogicalOperator XOR = new LogicalOperator("xor", "^") {
+		private static final long serialVersionUID = 1L;
 
-  private LogicalOperator(String code, String symbol) {
+		@Override
+		public CompoundConstraint createConstraint() {
+			return new XOr();
+		}
+	};
+
+	private LogicalOperator(String code, String symbol) {
 		super(code, symbol);
 	}
 

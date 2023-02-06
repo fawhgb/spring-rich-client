@@ -19,11 +19,16 @@ import javax.script.ScriptException;
 
 /**
  * Converts {@link ScriptException} to a runtime exception.
- * 
+ *
  * @author Peter De Bruycker
  */
 public class ScriptExecutionException extends BaseScriptException {
-    public ScriptExecutionException(String message, ScriptException cause) {
-        super(message, cause);
-    }
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public ScriptExecutionException(String message, ScriptException cause) {
+		super(message, cause);
+	}
 }

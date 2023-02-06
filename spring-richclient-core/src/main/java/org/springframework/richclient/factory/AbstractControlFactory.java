@@ -47,19 +47,19 @@ public abstract class AbstractControlFactory extends ApplicationServicesAccessor
 	}
 
 	/**
-	 * Returns true (the default) if this factory is to create a single instance
-	 * of its control.
+	 * Returns true (the default) if this factory is to create a single instance of
+	 * its control.
 	 *
-	 * @return <code>true</code> if this factory returns a singleton instance
-	 * of its control.
+	 * @return <code>true</code> if this factory returns a singleton instance of its
+	 *         control.
 	 */
 	protected final boolean isSingleton() {
 		return singleton;
 	}
 
 	/**
-	 * Sets the flag that determines if this factory is to create a single
-	 * instance of its control. By default, this flag is true.
+	 * Sets the flag that determines if this factory is to create a single instance
+	 * of its control. By default, this flag is true.
 	 *
 	 * @param singleton The singleton flag.
 	 */
@@ -72,11 +72,12 @@ public abstract class AbstractControlFactory extends ApplicationServicesAccessor
 	 *
 	 * <p>
 	 * This implementation is a template method, calling the abstract
-	 * {@link #createControl()} method if operating in non-singleton mode or if
-	 * the control has not yet been created when operating in singleton mode.
+	 * {@link #createControl()} method if operating in non-singleton mode or if the
+	 * control has not yet been created when operating in singleton mode.
 	 * </p>
 	 *
 	 */
+	@Override
 	public final JComponent getControl() {
 		if (isSingleton()) {
 			if (this.control == null) {
@@ -90,11 +91,11 @@ public abstract class AbstractControlFactory extends ApplicationServicesAccessor
 
 	/**
 	 * Returns true if the control for this factory has been created. If this
-	 * factory is set to non-singleton mode, this method will always return
-	 * false even if an instance of the control has previously been created.
+	 * factory is set to non-singleton mode, this method will always return false
+	 * even if an instance of the control has previously been created.
 	 *
-	 * @return <code>true</code> if operating in singleton mode and an instance of the
-	 * control has already been created, false otherwise.
+	 * @return <code>true</code> if operating in singleton mode and an instance of
+	 *         the control has already been created, false otherwise.
 	 */
 	public final boolean isControlCreated() {
 		if (isSingleton()) {
@@ -105,8 +106,8 @@ public abstract class AbstractControlFactory extends ApplicationServicesAccessor
 	}
 
 	/**
-	 * Creates an instance of the control produced by this factory if operating
-	 * in singleton mode and the control instance has not already been created.
+	 * Creates an instance of the control produced by this factory if operating in
+	 * singleton mode and the control instance has not already been created.
 	 */
 	protected void createControlIfNecessary() {
 		if (isSingleton() && this.control == null) {
@@ -115,8 +116,8 @@ public abstract class AbstractControlFactory extends ApplicationServicesAccessor
 	}
 
 	/**
-	 * Subclasses must override this method to create a new instance of the
-	 * control that this factory produces.
+	 * Subclasses must override this method to create a new instance of the control
+	 * that this factory produces.
 	 *
 	 * @return The newly created control, never null.
 	 */

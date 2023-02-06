@@ -28,248 +28,254 @@ import org.springframework.binding.convert.ConversionException;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.core.ReflectiveVisitorHelper;
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.richclient.form.binding.support.AbstractBinding;
 import org.springframework.richclient.list.AbstractFilteredListModel;
 import org.springframework.richclient.list.FilteredListModel;
 import org.springframework.richclient.list.SortedListModel;
+import org.springframework.rules.constraint.Constraint;
 import org.springframework.util.Assert;
 
 /**
  * @author Mathias Broekelmann
- * 
+ *
  */
 public abstract class AbstractListBinding extends AbstractBinding {
 
-    private JComponent component;
+	private JComponent component;
 
-    final ReflectiveVisitorHelper visitorHelper = new ReflectiveVisitorHelper();
+	final ReflectiveVisitorHelper visitorHelper = new ReflectiveVisitorHelper();
 
-    private final SelectableItemsVisitor selectableItemsVisitor = new SelectableItemsVisitor();
+	private final SelectableItemsVisitor selectableItemsVisitor = new SelectableItemsVisitor();
 
-    private Object selectableItems;
+	private Object selectableItems;
 
-    private final FilterConstraint filterConstraint = new FilterConstraint();
+	private final FilterConstraint filterConstraint = new FilterConstraint();
 
-    private final BindingComparator bindingComparator = new BindingComparator();
+	private final BindingComparator bindingComparator = new BindingComparator();
 
-    private ListModel bindingModel;
+	private ListModel bindingModel;
 
-    private AbstractFilteredListModel filteredModel;
+	private AbstractFilteredListModel filteredModel;
 
-    public AbstractListBinding(JComponent component, FormModel formModel, String formPropertyPath,
-            Class requiredSourceClass) {
-        super(formModel, formPropertyPath, requiredSourceClass);
-        this.component = component;
-    }
+	public AbstractListBinding(JComponent component, FormModel formModel, String formPropertyPath,
+			Class requiredSourceClass) {
+		super(formModel, formPropertyPath, requiredSourceClass);
+		this.component = component;
+	}
 
-    protected void enabledChanged() {
-        component.setEnabled(!isReadOnly() && isEnabled());
-    }
+	@Override
+	protected void enabledChanged() {
+		component.setEnabled(!isReadOnly() && isEnabled());
+	}
 
-    protected void readOnlyChanged() {
-        enabledChanged();
-    }
+	@Override
+	protected void readOnlyChanged() {
+		enabledChanged();
+	}
 
-    public Object getSelectableItems() {
-        return selectableItems;
-    }
+	public Object getSelectableItems() {
+		return selectableItems;
+	}
 
-    public JComponent getComponent() {
-        return component;
-    }
+	public JComponent getComponent() {
+		return component;
+	}
 
-    public final void setSelectableItems(Object selectableItems) {
-        Assert.notNull(selectableItems);
-        if (!selectableItems.equals(this.selectableItems)) {
-            this.selectableItems = selectableItems;
-            selectableItemsChanged();
-        }
-    }
+	public final void setSelectableItems(Object selectableItems) {
+		Assert.notNull(selectableItems);
+		if (!selectableItems.equals(this.selectableItems)) {
+			this.selectableItems = selectableItems;
+			selectableItemsChanged();
+		}
+	}
 
-    public final void setComparator(Comparator comparator) {
-        bindingComparator.setComparator(comparator);
-    }
+	public final void setComparator(Comparator comparator) {
+		bindingComparator.setComparator(comparator);
+	}
 
-    public Comparator getComparator() {
-        return bindingComparator.getComparator();
-    }
+	public Comparator getComparator() {
+		return bindingComparator.getComparator();
+	}
 
-    public final void setFilter(Constraint filter) {
-        filterConstraint.setFilter(filter);
-    }
+	public final void setFilter(Constraint filter) {
+		filterConstraint.setFilter(filter);
+	}
 
-    protected final JComponent doBindControl() {
-        doBindControl(getBindingModel());
-        return getComponent();
-    }
+	@Override
+	protected final JComponent doBindControl() {
+		doBindControl(getBindingModel());
+		return getComponent();
+	}
 
-    protected abstract void doBindControl(ListModel bindingModel);
+	protected abstract void doBindControl(ListModel bindingModel);
 
-    protected void selectableItemsChanged() {
-        if (filteredModel != null) {
-            filteredModel.setFilteredModel(createModel());
-        }
-    }
+	protected void selectableItemsChanged() {
+		if (filteredModel != null) {
+			filteredModel.setFilteredModel(createModel());
+		}
+	}
 
-    protected ListModel createModel() {
-        return (ListModel) visitorHelper.invokeVisit(selectableItemsVisitor, selectableItems);
-    }
+	protected ListModel createModel() {
+		return (ListModel) visitorHelper.invokeVisit(selectableItemsVisitor, selectableItems);
+	}
 
-    protected AbstractFilteredListModel getFilteredModel() {
-        if (filteredModel == null) {
-            filteredModel = createFilteredModel(createModel(), filterConstraint);
-        }
-        return filteredModel;
-    }
+	protected AbstractFilteredListModel getFilteredModel() {
+		if (filteredModel == null) {
+			filteredModel = createFilteredModel(createModel(), filterConstraint);
+		}
+		return filteredModel;
+	}
 
-    protected ListModel getBindingModel() {
-        if (bindingModel == null) {
-            bindingModel = createSortedListModel(getFilteredModel(), bindingComparator);
-        }
-        return bindingModel;
-    }
+	protected ListModel getBindingModel() {
+		if (bindingModel == null) {
+			bindingModel = createSortedListModel(getFilteredModel(), bindingComparator);
+		}
+		return bindingModel;
+	}
 
-    protected ListModel createSortedListModel(ListModel listModel, Comparator comparator) {
-        return new SortedListModel(listModel, comparator);
-    }
+	protected ListModel createSortedListModel(ListModel listModel, Comparator comparator) {
+		return new SortedListModel(listModel, comparator);
+	}
 
-    protected AbstractFilteredListModel createFilteredModel(ListModel model, Constraint constraint) {
-        return new FilteredListModel(model, constraint);
-    }
+	protected AbstractFilteredListModel createFilteredModel(ListModel model, Constraint constraint) {
+		return new FilteredListModel(model, constraint);
+	}
 
-    /**
-     * Converts the given object value into the given targetClass
-     * 
-     * @param value
-     *            the value to convert
-     * @param targetClass
-     *            the target class to convert the value to
-     * @return the converted value
-     * 
-     * @throws ConversionException
-     *             if the value can not be converted
-     */
-    protected Object convertValue(Object value, Class targetClass) throws ConversionException {
-        Assert.notNull(value);
-        Assert.notNull(targetClass);
-        return getConversionService().getConversionExecutor(value.getClass(), targetClass).execute(value);
-    }
+	/**
+	 * Converts the given object value into the given targetClass
+	 * 
+	 * @param value       the value to convert
+	 * @param targetClass the target class to convert the value to
+	 * @return the converted value
+	 * 
+	 * @throws ConversionException if the value can not be converted
+	 */
+	protected Object convertValue(Object value, Class targetClass) throws ConversionException {
+		Assert.notNull(value);
+		Assert.notNull(targetClass);
+		return getConversionService().getConversionExecutor(value.getClass(), targetClass).execute(value);
+	}
 
-    protected abstract ListModel getDefaultModel();
+	protected abstract ListModel getDefaultModel();
 
-    public Constraint getFilter() {
-        return filterConstraint.getFilter();
-    }
+	public Constraint getFilter() {
+		return filterConstraint.getFilter();
+	}
 
-    class SelectableItemsVisitor {
+	class SelectableItemsVisitor {
 
-        ListModel visit(ValueModel valueModel) {
-            Assert.notNull(valueModel.getValue(),
-                    "value of ValueModel must not be null. Use an empty Collection or Array");
-            ListModel model = (ListModel) visitorHelper.invokeVisit(this, valueModel.getValue());
-            return new ValueModelFilteredListModel(model, valueModel);
-        }
+		ListModel visit(ValueModel valueModel) {
+			Assert.notNull(valueModel.getValue(),
+					"value of ValueModel must not be null. Use an empty Collection or Array");
+			ListModel model = (ListModel) visitorHelper.invokeVisit(this, valueModel.getValue());
+			return new ValueModelFilteredListModel(model, valueModel);
+		}
 
-        ListModel visit(Object object) {
-            return (ListModel) convertValue(object, ListModel.class);
-        }
+		ListModel visit(Object object) {
+			return (ListModel) convertValue(object, ListModel.class);
+		}
 
-        ListModel visitNull() {
-            return getDefaultModel();
-        }
-    }
+		ListModel visitNull() {
+			return getDefaultModel();
+		}
+	}
 
-    class ValueModelFilteredListModel extends AbstractFilteredListModel implements PropertyChangeListener {
+	class ValueModelFilteredListModel extends AbstractFilteredListModel implements PropertyChangeListener {
 
-        private final ValueModel valueModel;
+		private static final long serialVersionUID = 1L;
+		private final ValueModel valueModel;
 
-        public ValueModelFilteredListModel(ListModel model, ValueModel valueModel) {
-            super(model);
-            this.valueModel = valueModel;
-            valueModel.addValueChangeListener(this);
-        }
+		public ValueModelFilteredListModel(ListModel model, ValueModel valueModel) {
+			super(model);
+			this.valueModel = valueModel;
+			valueModel.addValueChangeListener(this);
+		}
 
-        public void propertyChange(PropertyChangeEvent evt) {
-            setFilteredModel((ListModel) visitorHelper.invokeVisit(selectableItemsVisitor, valueModel.getValue()));
-        }
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			setFilteredModel((ListModel) visitorHelper.invokeVisit(selectableItemsVisitor, valueModel.getValue()));
+		}
 
-    }
+	}
 
-    class FilterConstraint extends Observable implements Constraint, Observer {
+	class FilterConstraint extends Observable implements Constraint, Observer {
 
-        private Constraint filter;
+		private Constraint filter;
 
-        public boolean test(Object argument) {
-            if (filter != null) {
-                return filter.test(argument);
-            }
-            return true;
-        }
+		@Override
+		public boolean test(Object argument) {
+			if (filter != null) {
+				return filter.test(argument);
+			}
+			return true;
+		}
 
-        public Constraint getFilter() {
-            return filter;
-        }
+		public Constraint getFilter() {
+			return filter;
+		}
 
-        public void setFilter(Constraint filter) {
-            if (filter != this.filter || (filter != null && !filter.equals(this.filter))) {
-                if (this.filter instanceof Observable) {
-                    ((Observable) this.filter).deleteObserver(this);
-                }
-                this.filter = filter;
-                if (filter instanceof Observable) {
-                    ((Observable) this.filter).addObserver(this);
-                }
-                update();
-            }
-        }
+		public void setFilter(Constraint filter) {
+			if (filter != this.filter || (filter != null && !filter.equals(this.filter))) {
+				if (this.filter instanceof Observable) {
+					((Observable) this.filter).deleteObserver(this);
+				}
+				this.filter = filter;
+				if (filter instanceof Observable) {
+					((Observable) this.filter).addObserver(this);
+				}
+				update();
+			}
+		}
 
-        public void update() {
-            setChanged();
-            notifyObservers();
-        }
+		public void update() {
+			setChanged();
+			notifyObservers();
+		}
 
-        public void update(Observable o, Object arg) {
-            update();
-        }
-    }
+		@Override
+		public void update(Observable o, Object arg) {
+			update();
+		}
+	}
 
-    class BindingComparator extends Observable implements Comparator, Observer {
+	class BindingComparator extends Observable implements Comparator, Observer {
 
-        private Comparator comparator;
+		private Comparator comparator;
 
-        public int compare(Object o1, Object o2) {
-            if (comparator != null) {
-                return comparator.compare(o1, o2);
-            }
-            return 0;
-        }
+		@Override
+		public int compare(Object o1, Object o2) {
+			if (comparator != null) {
+				return comparator.compare(o1, o2);
+			}
+			return 0;
+		}
 
-        public void setComparator(Comparator comparator) {
-            if (comparator != this.comparator || (comparator != null && !comparator.equals(this.comparator))) {
-                if (this.comparator instanceof Observable) {
-                    ((Observable) this.comparator).deleteObserver(this);
-                }
-                this.comparator = comparator;
-                if (comparator instanceof Observable) {
-                    ((Observable) this.comparator).addObserver(this);
-                }
-                update();
-            }
-        }
+		public void setComparator(Comparator comparator) {
+			if (comparator != this.comparator || (comparator != null && !comparator.equals(this.comparator))) {
+				if (this.comparator instanceof Observable) {
+					((Observable) this.comparator).deleteObserver(this);
+				}
+				this.comparator = comparator;
+				if (comparator instanceof Observable) {
+					((Observable) this.comparator).addObserver(this);
+				}
+				update();
+			}
+		}
 
-        public Comparator getComparator() {
-            return comparator;
-        }
+		public Comparator getComparator() {
+			return comparator;
+		}
 
-        void update() {
-            setChanged();
-            notifyObservers();
-        }
+		void update() {
+			setChanged();
+			notifyObservers();
+		}
 
-        public void update(Observable o, Object arg) {
-            update();
-        }
+		@Override
+		public void update(Observable o, Object arg) {
+			update();
+		}
 
-    }
+	}
 }

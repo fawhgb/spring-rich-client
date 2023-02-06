@@ -1,7 +1,5 @@
 package org.springframework.binding.form;
 
-public interface VetoableCommitListener
-{
-    public boolean proceedWithCommit(FormModel formModel);
+public interface VetoableCommitListener {
+	public boolean proceedWithCommit(FormModel formModel);
 }
-

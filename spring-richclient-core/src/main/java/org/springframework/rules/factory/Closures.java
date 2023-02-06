@@ -16,16 +16,16 @@
 package org.springframework.rules.factory;
 
 import org.springframework.rules.closure.Closure;
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.closure.support.AlgorithmsAccessor;
 import org.springframework.rules.closure.support.ClosureChain;
 import org.springframework.rules.closure.support.IfBlock;
+import org.springframework.rules.constraint.Constraint;
 import org.springframework.util.Assert;
 
 /**
  * A factory for easing the construction and composition of closure (blocks of
  * executable code).
- * 
+ *
  * @author Keith Donald
  */
 public class Closures extends AlgorithmsAccessor {

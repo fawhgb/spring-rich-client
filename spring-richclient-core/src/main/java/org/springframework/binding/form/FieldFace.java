@@ -35,27 +35,30 @@ public interface FieldFace extends DescribedElement, VisualizedElement {
 	 * The name of the property in human readable form, typically used for
 	 * validation messages.
 	 */
+	@Override
 	String getDisplayName();
 
 	/**
 	 * A short caption describing the property, typically used for tool tips.
 	 */
+	@Override
 	String getCaption();
 
 	/**
 	 * A longer caption describing the property.
 	 */
+	@Override
 	String getDescription();
 
 	/**
-	 * The text, mnemonic and mnemonicIndex for any labels created for the
-	 * property.
+	 * The text, mnemonic and mnemonicIndex for any labels created for the property.
 	 */
 	LabelInfo getLabelInfo();
 
 	/**
 	 * The icon that is used for any labels created for this property.
 	 */
+	@Override
 	Icon getIcon();
 
 	/**

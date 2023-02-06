@@ -20,15 +20,15 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.springframework.rules.closure.Closure;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.rules.closure.Closure;
 
 /**
  * A chain of closures that evaluate their results in a ordered sequence.
  * <p>
  * For example, declaring
- * <code>new ClosureChain() { f1, f2, f3 }.call(fooArg)</code> will trigger
- * the evaluation of <code>f1</code> first, it's result will be passed to
+ * <code>new ClosureChain() { f1, f2, f3 }.call(fooArg)</code> will trigger the
+ * evaluation of <code>f1</code> first, it's result will be passed to
  * <code>f2</code> for evaluation, and f2's result will be passed to
  * <code>f3</code> for evaluation. The final f3 result will be returned to the
  * caller.
@@ -93,6 +93,7 @@ public class ClosureChain implements Closure {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Object call(Object argument) {
 		Object result = argument;
 		Iterator it = iterator();
@@ -106,6 +107,7 @@ public class ClosureChain implements Closure {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("closureChain", closures).toString();
 	}

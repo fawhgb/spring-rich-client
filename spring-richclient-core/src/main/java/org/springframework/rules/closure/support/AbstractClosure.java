@@ -30,6 +30,8 @@ import org.springframework.rules.closure.Closure;
  */
 public abstract class AbstractClosure extends AlgorithmsAccessor implements Closure, Serializable {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Execute this closure for each element in the provided collection.
 	 *
@@ -40,8 +42,7 @@ public abstract class AbstractClosure extends AlgorithmsAccessor implements Clos
 	}
 
 	/**
-	 * Execute this closure for each element traversable via the provided
-	 * iterator.
+	 * Execute this closure for each element traversable via the provided iterator.
 	 *
 	 * @param it The iterator
 	 */

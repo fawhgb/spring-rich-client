@@ -10,6 +10,8 @@ import org.springframework.richclient.exceptionhandling.MessagesDialogExceptionH
  */
 public class MessagesDialogException extends RuntimeException {
 
+	private static final long serialVersionUID = 1L;
+
 	public MessagesDialogException() {
 		this("Some message");
 	}

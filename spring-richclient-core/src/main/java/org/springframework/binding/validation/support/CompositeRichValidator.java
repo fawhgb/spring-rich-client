@@ -2,7 +2,6 @@ package org.springframework.binding.validation.support;
 
 import org.springframework.binding.validation.RichValidator;
 import org.springframework.binding.validation.ValidationResults;
-import org.springframework.richclient.util.Assert;
 
 /**
  * This {@link RichValidator} allows combining several {@link RichValidator}s.
@@ -18,22 +17,22 @@ public class CompositeRichValidator implements RichValidator {
 	private RichValidator[] validators;
 
 	/**
-	 * Convenient creation of {@link CompositeRichValidator} using two
-	 * validators.
+	 * Convenient creation of {@link CompositeRichValidator} using two validators.
 	 */
 	public CompositeRichValidator(RichValidator validator1, RichValidator validator2) {
 		this(new RichValidator[] { validator1, validator2 });
 	}
 
 	/**
-	 * Create a {@link CompositeRichValidator} that combines all the results
-	 * from the given validators.
+	 * Create a {@link CompositeRichValidator} that combines all the results from
+	 * the given validators.
 	 */
 	public CompositeRichValidator(RichValidator[] validators) {
-		Assert.notNull(validators);
+		org.springframework.util.Assert.notNull(validators);
 		this.validators = validators;
 	}
 
+	@Override
 	public ValidationResults validate(Object object, String property) {
 		DefaultValidationResults results = new DefaultValidationResults();
 		for (int i = 0; i < validators.length; ++i) {
@@ -42,6 +41,7 @@ public class CompositeRichValidator implements RichValidator {
 		return results;
 	}
 
+	@Override
 	public ValidationResults validate(Object object) {
 		DefaultValidationResults results = new DefaultValidationResults();
 		for (int i = 0; i < validators.length; ++i) {

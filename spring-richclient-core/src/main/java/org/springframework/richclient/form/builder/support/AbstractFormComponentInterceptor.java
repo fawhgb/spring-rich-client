@@ -1,6 +1,6 @@
 /*
  * Copyright 2004 (C) Our Community Pty. Ltd. All Rights Reserved
- * 
+ *
  * $Id$
  */
 
@@ -17,7 +17,7 @@ import org.springframework.util.Assert;
  * Abstract base for
  * {@link org.springframework.richclient.form.builder.FormComponentInterceptorFactory}
  * with formModel handling.
- * 
+ *
  * @author oliverh
  */
 public abstract class AbstractFormComponentInterceptor implements FormComponentInterceptor {
@@ -37,18 +37,19 @@ public abstract class AbstractFormComponentInterceptor implements FormComponentI
 		return formModel;
 	}
 
+	@Override
 	public void processLabel(String propertyName, JComponent label) {
 	}
 
+	@Override
 	public void processComponent(String propertyName, JComponent component) {
 	}
 
 	/**
 	 * Check for JScrollPane.
-	 * 
+	 *
 	 * @param component
-	 * @return the component itself, or the inner component if it was a
-	 * JScrollPane.
+	 * @return the component itself, or the inner component if it was a JScrollPane.
 	 */
 	protected JComponent getInnerComponent(JComponent component) {
 		if (component instanceof JScrollPane) {

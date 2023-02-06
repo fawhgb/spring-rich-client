@@ -24,9 +24,9 @@ import org.springframework.core.enums.ShortCodedLabeledEnum;
  */
 public class ProcessStatus extends ShortCodedLabeledEnum {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    /** Process created. */
+	/** Process created. */
 	public static final ProcessStatus CREATED = new ProcessStatus(0, "Created");
 
 	/** Process is running. */

@@ -64,38 +64,37 @@ public abstract class AbstractNestedMemberPropertyAccessor extends AbstractMembe
 	public Object getTarget() {
 		if (parentPropertyAccessor != null && basePropertyName != null) {
 			return parentPropertyAccessor.getPropertyValue(basePropertyName);
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
 
+	@Override
 	public Class getTargetClass() {
 		if (parentPropertyAccessor != null) {
 			return parentPropertyAccessor.getPropertyType(basePropertyName);
-		}
-		else {
+		} else {
 			return super.getTargetClass();
 		}
 	}
 
+	@Override
 	public boolean isReadableProperty(String propertyPath) {
 		if (PropertyAccessorUtils.isNestedProperty(propertyPath)) {
 			String baseProperty = getBasePropertyName(propertyPath);
 			String childPropertyPath = getChildPropertyPath(propertyPath);
 			if (!super.isReadableProperty(baseProperty)) {
 				return false;
-			}
-			else {
+			} else {
 				return ((PropertyAccessor) childPropertyAccessors.get(baseProperty))
 						.isReadableProperty(childPropertyPath);
 			}
-		}
-		else {
+		} else {
 			return super.isReadableProperty(propertyPath);
 		}
 	}
 
+	@Override
 	public boolean isWritableProperty(String propertyPath) {
 		if (PropertyAccessorUtils.isNestedProperty(propertyPath)) {
 			String baseProperty = getBasePropertyName(propertyPath);
@@ -103,58 +102,55 @@ public abstract class AbstractNestedMemberPropertyAccessor extends AbstractMembe
 			return super.isReadableProperty(baseProperty)
 					&& ((PropertyAccessor) childPropertyAccessors.get(baseProperty))
 							.isWritableProperty(childPropertyPath);
-		}
-		else {
+		} else {
 			return super.isWritableProperty(propertyPath);
 		}
 	}
 
+	@Override
 	public Class getPropertyType(String propertyPath) {
 		if (PropertyAccessorUtils.isNestedProperty(propertyPath)) {
 			String baseProperty = getBasePropertyName(propertyPath);
 			String childPropertyPath = getChildPropertyPath(propertyPath);
 			return ((PropertyAccessor) childPropertyAccessors.get(baseProperty)).getPropertyType(childPropertyPath);
-		}
-		else {
+		} else {
 			return super.getPropertyType(propertyPath);
 		}
 	}
 
+	@Override
 	public Object getPropertyValue(String propertyPath) {
 		if (PropertyAccessorUtils.isNestedProperty(propertyPath)) {
 			String baseProperty = getBasePropertyName(propertyPath);
 			String childPropertyPath = getChildPropertyPath(propertyPath);
 			return ((PropertyAccessor) childPropertyAccessors.get(baseProperty)).getPropertyValue(childPropertyPath);
-		}
-		else if (isStrictNullHandlingEnabled() && getTarget() == null) {
+		} else if (isStrictNullHandlingEnabled() && getTarget() == null) {
 			throw new NullValueInNestedPathException(getTargetClass(), propertyPath);
-		}
-		else {
+		} else {
 			return super.getPropertyValue(propertyPath);
 		}
 	}
 
+	@Override
 	public void setPropertyValue(String propertyPath, Object value) {
 		if (PropertyAccessorUtils.isNestedProperty(propertyPath)) {
 			String baseProperty = getBasePropertyName(propertyPath);
 			String childPropertyPath = getChildPropertyPath(propertyPath);
 			((PropertyAccessor) childPropertyAccessors.get(baseProperty)).setPropertyValue(childPropertyPath, value);
-		}
-		else if (isStrictNullHandlingEnabled() && getTarget() == null) {
+		} else if (isStrictNullHandlingEnabled() && getTarget() == null) {
 			throw new NullValueInNestedPathException(getTargetClass(), propertyPath);
-		}
-		else {
+		} else {
 			super.setPropertyValue(propertyPath, value);
 		}
 	}
 
 	protected String getBasePropertyName(String propertyPath) {
-		int index = PropertyAccessorUtils.getFirstNestedPropertySeparatorIndex(propertyPath);
+		int index = org.springframework.beans.PropertyAccessorUtils.getFirstNestedPropertySeparatorIndex(propertyPath);
 		return index == -1 ? propertyPath : propertyPath.substring(0, index);
 	}
 
 	protected String getChildPropertyPath(String propertyPath) {
-		int index = PropertyAccessorUtils.getFirstNestedPropertySeparatorIndex(propertyPath);
+		int index = org.springframework.beans.PropertyAccessorUtils.getFirstNestedPropertySeparatorIndex(propertyPath);
 		if (index == -1) {
 			return "";
 		}
@@ -173,6 +169,9 @@ public abstract class AbstractNestedMemberPropertyAccessor extends AbstractMembe
 
 	private class ChildPropertyAccessorCache extends CachingMapDecorator {
 
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		protected Object create(Object propertyName) {
 			return createChildPropertyAccessor((String) propertyName);
 		}

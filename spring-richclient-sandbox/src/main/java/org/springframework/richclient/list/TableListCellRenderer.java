@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2006 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -40,262 +40,282 @@ import org.springframework.util.Assert;
  * ListCellRenderer which renders table cells in a list cell.
  * <p>
  * can be used in a {@link JComboBox} to render a table as a popup.
- * 
+ *
  * @author Mathias Broekelmann
- * 
+ *
  */
 public class TableListCellRenderer extends JTable implements ListCellRenderer {
 
-    protected static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
+	private static final long serialVersionUID = 1L;
 
-    private static final Border SAFE_NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
+	protected static Border noFocusBorder = new EmptyBorder(1, 1, 1, 1);
 
-    private ListCellRenderer cellRenderer = new DefaultListCellRenderer();
+	private static final Border SAFE_NO_FOCUS_BORDER = new EmptyBorder(1, 1, 1, 1);
 
-    private final JPanel headerPanel = new JPanel(new BorderLayout(0, 0));
+	private ListCellRenderer cellRenderer = new DefaultListCellRenderer();
 
-    private static class TableListCellRendererModel implements TableModel {
+	private final JPanel headerPanel = new JPanel(new BorderLayout(0, 0));
 
-        private int row;
+	private static class TableListCellRendererModel implements TableModel {
 
-        private TableListModel listModel;
+		private int row;
 
-        public TableListCellRendererModel(TableListModel model) {
-            listModel = model;
-        }
+		private TableListModel listModel;
 
-        /**
-         * @return the listModel
-         */
-        public TableListModel getListModel() {
-            return listModel;
-        }
+		public TableListCellRendererModel(TableListModel model) {
+			listModel = model;
+		}
 
-        public void setListModel(TableListModel model) {
-            listModel = model;
-        }
+		/**
+		 * @return the listModel
+		 */
+		public TableListModel getListModel() {
+			return listModel;
+		}
 
-        public int getRowCount() {
-            return 1;
-        }
+		public void setListModel(TableListModel model) {
+			listModel = model;
+		}
 
-        public void setRow(int row) {
-            this.row = row;
-        }
+		@Override
+		public int getRowCount() {
+			return 1;
+		}
 
-        public Object getValueAt(int aRow, int aColumn) {
-            return listModel.getValueAt(row, aColumn);
-        }
+		public void setRow(int row) {
+			this.row = row;
+		}
 
-        public boolean isCellEditable(int row, int column) {
-            return false;
-        }
+		@Override
+		public Object getValueAt(int aRow, int aColumn) {
+			return listModel.getValueAt(row, aColumn);
+		}
 
-        public int getColumnCount() {
-            return listModel.getColumnCount();
-        }
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			return false;
+		}
 
-        public void addTableModelListener(TableModelListener l) {
-        }
+		@Override
+		public int getColumnCount() {
+			return listModel.getColumnCount();
+		}
 
-        public Class getColumnClass(int columnIndex) {
-            return listModel.getColumnClass(columnIndex);
-        }
+		@Override
+		public void addTableModelListener(TableModelListener l) {
+		}
 
-        public String getColumnName(int columnIndex) {
-            return listModel.getColumnName(columnIndex);
-        }
+		@Override
+		public Class getColumnClass(int columnIndex) {
+			return listModel.getColumnClass(columnIndex);
+		}
 
-        public void removeTableModelListener(TableModelListener l) {
-        }
+		@Override
+		public String getColumnName(int columnIndex) {
+			return listModel.getColumnName(columnIndex);
+		}
 
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        }
+		@Override
+		public void removeTableModelListener(TableModelListener l) {
+		}
 
-    }
+		@Override
+		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		}
 
-    public TableListCellRenderer() {
-        this(new DefaultTableListModel());
-    }
+	}
 
-    public TableListCellRenderer(TableListModel model) {
-        this(model, null);
-    }
+	public TableListCellRenderer() {
+		this(new DefaultTableListModel());
+	}
 
-    public TableListCellRenderer(TableListModel model, TableColumnModel columnModel) {
-        super(new TableListCellRendererModel(model), columnModel);
-        setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        setOpaque(true);
-        setBorder(getNoFocusBorder());
-        headerPanel.add(getTableHeader(), BorderLayout.NORTH);
-    }
+	public TableListCellRenderer(TableListModel model) {
+		this(model, null);
+	}
 
-    public TableListModel getTableListModel() {
-        return getTableListCellRendererModel().getListModel();
-    }
+	public TableListCellRenderer(TableListModel model, TableColumnModel columnModel) {
+		super(new TableListCellRendererModel(model), columnModel);
+		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		setOpaque(true);
+		setBorder(getNoFocusBorder());
+		headerPanel.add(getTableHeader(), BorderLayout.NORTH);
+	}
 
-    public void setTableListModel(TableListModel model) {
-        getTableListCellRendererModel().setListModel(model);
-    }
+	public TableListModel getTableListModel() {
+		return getTableListCellRendererModel().getListModel();
+	}
 
-    public void setModel(TableModel dataModel) {
-        Assert.isInstanceOf(TableListCellRendererModel.class, dataModel);
-        super.setModel(dataModel);
-    }
+	public void setTableListModel(TableListModel model) {
+		getTableListCellRendererModel().setListModel(model);
+	}
 
-    private TableListCellRendererModel getTableListCellRendererModel() {
-        return (TableListCellRendererModel) super.getModel();
-    }
+	@Override
+	public void setModel(TableModel dataModel) {
+		Assert.isInstanceOf(TableListCellRendererModel.class, dataModel);
+		super.setModel(dataModel);
+	}
 
-    private static Border getNoFocusBorder() {
-        if (System.getSecurityManager() != null) {
-            return SAFE_NO_FOCUS_BORDER;
-        } else {
-            return noFocusBorder;
-        }
-    }
+	private TableListCellRendererModel getTableListCellRendererModel() {
+		return (TableListCellRendererModel) super.getModel();
+	}
 
-    public void setTableHeader(JTableHeader tableHeader) {
-        super.setTableHeader(tableHeader);
-        if (headerPanel != null) {
-            if (tableHeader == null)
-                headerPanel.removeAll();
-            else
-                headerPanel.add(tableHeader, BorderLayout.NORTH);
-        }
-    }
+	private static Border getNoFocusBorder() {
+		if (System.getSecurityManager() != null) {
+			return SAFE_NO_FOCUS_BORDER;
+		} else {
+			return noFocusBorder;
+		}
+	}
 
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
-            boolean cellHasFocus) {
-        if (index == -1) {
-            Component comp = cellRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            return comp;
-        }
-        getTableListCellRendererModel().setRow(index);
+	@Override
+	public void setTableHeader(JTableHeader tableHeader) {
+		super.setTableHeader(tableHeader);
+		if (headerPanel != null) {
+			if (tableHeader == null) {
+				headerPanel.removeAll();
+			} else {
+				headerPanel.add(tableHeader, BorderLayout.NORTH);
+			}
+		}
+	}
 
-        setComponentOrientation(list.getComponentOrientation());
-        if (isSelected) {
-            setBackground(list.getSelectionBackground());
-            setForeground(list.getSelectionForeground());
-        } else {
-            setBackground(list.getBackground());
-            setForeground(list.getForeground());
-        }
+	@Override
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+			boolean cellHasFocus) {
+		if (index == -1) {
+			Component comp = cellRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			return comp;
+		}
+		getTableListCellRendererModel().setRow(index);
 
-        setEnabled(list.isEnabled());
-        setFont(list.getFont());
+		setComponentOrientation(list.getComponentOrientation());
+		if (isSelected) {
+			setBackground(list.getSelectionBackground());
+			setForeground(list.getSelectionForeground());
+		} else {
+			setBackground(list.getBackground());
+			setForeground(list.getForeground());
+		}
 
-        Border border = null;
-        if (cellHasFocus) {
-            if (isSelected) {
-                border = UIManager.getBorder("List.focusSelectedCellHighlightBorder");
-            }
-            if (border == null) {
-                border = UIManager.getBorder("List.focusCellHighlightBorder");
-            }
-        } else {
-            border = getNoFocusBorder();
-        }
-        setBorder(border);
+		setEnabled(list.isEnabled());
+		setFont(list.getFont());
 
-        if (index == 0) {
-            headerPanel.add(this);
-            return headerPanel;
-        }
+		Border border = null;
+		if (cellHasFocus) {
+			if (isSelected) {
+				border = UIManager.getBorder("List.focusSelectedCellHighlightBorder");
+			}
+			if (border == null) {
+				border = UIManager.getBorder("List.focusCellHighlightBorder");
+			}
+		} else {
+			border = getNoFocusBorder();
+		}
+		setBorder(border);
 
-        return this;
-    }
+		if (index == 0) {
+			headerPanel.add(this);
+			return headerPanel;
+		}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void validate() {
-    }
-    
-    /**
-     * Overridden for performance reasons.
-     */
-    protected void validateTree() {
-    }
+		return this;
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void revalidate() {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void validate() {
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void repaint(long tm, int x, int y, int width, int height) {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	protected void validateTree() {
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void repaint(Rectangle r) {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void revalidate() {
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    protected void firePropertyChange(String propertyName, Object oldValue,
-        Object newValue) {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void repaint(long tm, int x, int y, int width, int height) {
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void firePropertyChange(String propertyName, byte oldValue,
-        byte newValue) {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void repaint(Rectangle r) {
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void firePropertyChange(String propertyName, char oldValue,
-        char newValue) {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void firePropertyChange(String propertyName, short oldValue,
-        short newValue) {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void firePropertyChange(String propertyName, byte oldValue, byte newValue) {
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void firePropertyChange(String propertyName, int oldValue,
-        int newValue) {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void firePropertyChange(String propertyName, char oldValue, char newValue) {
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void firePropertyChange(String propertyName, long oldValue,
-        long newValue) {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void firePropertyChange(String propertyName, short oldValue, short newValue) {
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void firePropertyChange(String propertyName, float oldValue,
-        float newValue) {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void firePropertyChange(String propertyName, int oldValue, int newValue) {
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void firePropertyChange(String propertyName, double oldValue,
-        double newValue) {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void firePropertyChange(String propertyName, long oldValue, long newValue) {
+	}
 
-    /**
-     * Overridden for performance reasons.
-     */
-    public void firePropertyChange(String propertyName, boolean oldValue,
-        boolean newValue) {
-    }
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void firePropertyChange(String propertyName, float oldValue, float newValue) {
+	}
+
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void firePropertyChange(String propertyName, double oldValue, double newValue) {
+	}
+
+	/**
+	 * Overridden for performance reasons.
+	 */
+	@Override
+	public void firePropertyChange(String propertyName, boolean oldValue, boolean newValue) {
+	}
 }

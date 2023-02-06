@@ -22,5 +22,5 @@ public interface ButtonConfigurer {
 	 * @param button The button that needs to be configured.
 	 * @return the configured button.
 	 */
-    public AbstractButton configure(AbstractButton button);
+	public AbstractButton configure(AbstractButton button);
 }

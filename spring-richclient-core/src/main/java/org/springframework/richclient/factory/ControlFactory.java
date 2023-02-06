@@ -25,9 +25,8 @@ import javax.swing.JComponent;
 public interface ControlFactory {
 
 	/**
-	 * Returns the control that this factory is responsible for producing.
-	 * Depending on the implementation, this control may or not be a singleton
-	 * instance.
+	 * Returns the control that this factory is responsible for producing. Depending
+	 * on the implementation, this control may or not be a singleton instance.
 	 *
 	 * @return The control, never <code>null</code>.
 	 */

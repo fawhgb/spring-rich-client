@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -25,7 +25,7 @@ import java.awt.Window;
 
 /**
  * Utility functions for manipulating the display of windows.
- * 
+ *
  * @author Keith Donald
  */
 public class WindowUtils {
@@ -35,7 +35,7 @@ public class WindowUtils {
 
 	/**
 	 * Return the system screen size.
-	 * 
+	 *
 	 * @return The dimension of the system screen size.
 	 */
 	public static Dimension getScreenSize() {
@@ -43,9 +43,9 @@ public class WindowUtils {
 	}
 
 	/**
-	 * Return the centering point on the screen for the object with the
-	 * specified dimension.
-	 * 
+	 * Return the centering point on the screen for the object with the specified
+	 * dimension.
+	 *
 	 * @param dimension the dimension of an object
 	 * @return The centering point on the screen for that object.
 	 */
@@ -62,7 +62,7 @@ public class WindowUtils {
 
 	/**
 	 * Pack the window, center it on the screen, and set the window visible.
-	 * 
+	 *
 	 * @param window the window to center and show.
 	 */
 	public static void centerOnScreenAndSetVisible(Window window) {
@@ -74,13 +74,13 @@ public class WindowUtils {
 	/**
 	 * Take the window and center it on the screen.
 	 * <p>
-	 * This works around a bug in setLocationRelativeTo(...): it currently does
-	 * not take multiple monitors into accounts on all operating systems.
-	 * 
+	 * This works around a bug in setLocationRelativeTo(...): it currently does not
+	 * take multiple monitors into accounts on all operating systems.
+	 *
 	 * @param window the window to center
 	 */
 	public static void centerOnScreen(Window window) {
-		Assert.notNull(window, "window cannot be null");
+		org.springframework.util.Assert.notNull(window, "window cannot be null");
 
 		// This works around a bug in setLocationRelativeTo(...): it currently
 		// does not take multiple monitors into accounts on all operating
@@ -95,8 +95,7 @@ public class WindowUtils {
 			final int x = screenBounds.x + ((screenBounds.width - windowSize.width) / 2);
 			final int y = screenBounds.y + ((screenBounds.height - windowSize.height) / 2);
 			window.setLocation(x, y);
-		}
-		catch (Throwable t) {
+		} catch (Throwable t) {
 			window.setLocationRelativeTo(window);
 		}
 	}
@@ -104,7 +103,7 @@ public class WindowUtils {
 	/**
 	 * Pack the window, center it relative to it's parent, and set the window
 	 * visible.
-	 * 
+	 *
 	 * @param window the window to center and show.
 	 */
 	public static void centerOnParentAndSetVisible(Window window) {
@@ -112,11 +111,11 @@ public class WindowUtils {
 		centerOnParent(window, window.getParent());
 		window.setVisible(true);
 	}
-	
+
 	/**
-	 * Center the window relative to it's parent. If the parent is null, or not showing,
-	 * the window will be centered on the screen
-	 * 
+	 * Center the window relative to it's parent. If the parent is null, or not
+	 * showing, the window will be centered on the screen
+	 *
 	 * @param window the window to center
 	 * @param parent the parent
 	 */
@@ -125,24 +124,23 @@ public class WindowUtils {
 			// call our own centerOnScreen so we work around bug in
 			// setLocationRelativeTo(null)
 			centerOnScreen(window);
-		}
-		else {
+		} else {
 			window.setLocationRelativeTo(parent);
 		}
 	}
 
 	/**
-	 * Return a <code>Dimension</code> whose size is defined not in terms of
-	 * pixels, but in terms of a given percent of the screen's width and height.
-	 * 
+	 * Return a <code>Dimension</code> whose size is defined not in terms of pixels,
+	 * but in terms of a given percent of the screen's width and height.
+	 *
 	 * <P>
-	 * Use to set the preferred size of a component to a certain percentage of
-	 * the screen.
-	 * 
-	 * @param percentWidth percentage width of the screen, in range
-	 * <code>1..100</code>.
+	 * Use to set the preferred size of a component to a certain percentage of the
+	 * screen.
+	 *
+	 * @param percentWidth  percentage width of the screen, in range
+	 *                      <code>1..100</code>.
 	 * @param percentHeight percentage height of the screen, in range
-	 * <code>1..100</code>.
+	 *                      <code>1..100</code>.
 	 */
 	public static final Dimension getDimensionFromPercent(int percentWidth, int percentHeight) {
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

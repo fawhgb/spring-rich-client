@@ -1,8 +1,7 @@
 package org.springframework.richclient.taskpane;
 
-import javax.swing.*;
+import javax.swing.ImageIcon;
 
-public interface IconGenerator<T>
-{
-    public ImageIcon generateIcon(T forObject);
+public interface IconGenerator<T> {
+	public ImageIcon generateIcon(T forObject);
 }

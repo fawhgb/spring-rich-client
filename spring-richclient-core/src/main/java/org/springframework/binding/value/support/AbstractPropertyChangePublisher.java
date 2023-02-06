@@ -23,6 +23,7 @@ public abstract class AbstractPropertyChangePublisher implements PropertyChangeP
 
 	private transient VetoableChangeSupport vetoSupport;
 
+	@Override
 	public final void addPropertyChangeListener(PropertyChangeListener listener) {
 		if (listener == null) {
 			return;
@@ -33,6 +34,7 @@ public abstract class AbstractPropertyChangePublisher implements PropertyChangeP
 		changeSupport.addPropertyChangeListener(listener);
 	}
 
+	@Override
 	public final void removePropertyChangeListener(PropertyChangeListener listener) {
 		if (listener == null || changeSupport == null) {
 			return;
@@ -40,6 +42,7 @@ public abstract class AbstractPropertyChangePublisher implements PropertyChangeP
 		changeSupport.removePropertyChangeListener(listener);
 	}
 
+	@Override
 	public final void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		if (listener == null) {
 			return;
@@ -50,6 +53,7 @@ public abstract class AbstractPropertyChangePublisher implements PropertyChangeP
 		changeSupport.addPropertyChangeListener(propertyName, listener);
 	}
 
+	@Override
 	public final void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		if (listener == null || changeSupport == null) {
 			return;

@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,21 +18,21 @@ package org.springframework.richclient.command.config;
 import org.springframework.richclient.command.AbstractCommand;
 
 /**
- * An interface to be implemented by classes that are responsible for configuring 
- * {@link AbstractCommand} instances.
- * 
+ * An interface to be implemented by classes that are responsible for
+ * configuring {@link AbstractCommand} instances.
+ *
  * @author Keith Donald
  */
 public interface CommandConfigurer {
-    
-    /**
-     * Configures the given command.
-     *
-     * @param command The command to be configured. Must not be null.
-     * @return The configured command.
-     * 
-     * @throws IllegalArgumentException if {@code command} is null.
-     */
-    public AbstractCommand configure(AbstractCommand command);
-    
+
+	/**
+	 * Configures the given command.
+	 *
+	 * @param command The command to be configured. Must not be null.
+	 * @return The configured command.
+	 * 
+	 * @throws IllegalArgumentException if {@code command} is null.
+	 */
+	public AbstractCommand configure(AbstractCommand command);
+
 }

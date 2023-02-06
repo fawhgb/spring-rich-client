@@ -41,9 +41,9 @@ import org.springframework.rules.reporting.PropertyResults;
 /**
  * <p>
  * Implementation of a {@link RichValidator} which will check the formObject
- * against rules found in a {@link RulesSource}. This {@link RulesSource} can
- * be specifically supplied, which allows multiple rulesSources, or can be
- * globally defined in the Application Context. In the latter case the
+ * against rules found in a {@link RulesSource}. This {@link RulesSource} can be
+ * specifically supplied, which allows multiple rulesSources, or can be globally
+ * defined in the Application Context. In the latter case the
  * {@link RulesValidator} will look for the specific {@link RulesSource} type in
  * the context.
  * </p>
@@ -79,8 +79,8 @@ public class RulesValidator implements RichValidator, ObjectNameResolver {
 
 	/**
 	 * Creates a RulesValidator for the given formModel. When no RulesSource is
-	 * given, a default/global RulesSource is retrieved by the
-	 * ApplicationServices class.
+	 * given, a default/global RulesSource is retrieved by the ApplicationServices
+	 * class.
 	 *
 	 * @see org.springframework.richclient.application.ApplicationServices#getRulesSource()
 	 */
@@ -89,21 +89,21 @@ public class RulesValidator implements RichValidator, ObjectNameResolver {
 	}
 
 	/**
-	 * Create a RulesValidator which uses the supplied RulesSource on the
-	 * FormModel.
+	 * Create a RulesValidator which uses the supplied RulesSource on the FormModel.
 	 */
 	public RulesValidator(FormModel formModel, RulesSource rulesSource) {
 		this.formModel = formModel;
 		this.rulesSource = rulesSource;
 		validationResultsCollector = new BeanValidationResultsCollector(new FormModelPropertyAccessStrategy(formModel));
-		MessageTranslatorFactory factory = (MessageTranslatorFactory) ApplicationServicesLocator.services().getService(
-				MessageTranslatorFactory.class);
+		MessageTranslatorFactory factory = (MessageTranslatorFactory) ApplicationServicesLocator.services()
+				.getService(MessageTranslatorFactory.class);
 		messageTranslator = factory.createTranslator(this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ValidationResults validate(Object object) {
 		return validate(object, null);
 	}
@@ -111,6 +111,7 @@ public class RulesValidator implements RichValidator, ObjectNameResolver {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ValidationResults validate(Object object, String propertyName) {
 		// Forms can have different types of objects, so when type of object
 		// changes, messages that are already listed on the previous type must
@@ -126,16 +127,14 @@ public class RulesValidator implements RichValidator, ObjectNameResolver {
 			if (propertyName != null) {
 				PropertyConstraint validationRule = propertyConstraintProvider.getPropertyConstraint(propertyName);
 				checkRule(validationRule);
-			}
-			else {
+			} else {
 				for (Iterator fieldNamesIter = formModel.getFieldNames().iterator(); fieldNamesIter.hasNext();) {
 					PropertyConstraint validationRule = propertyConstraintProvider
 							.getPropertyConstraint((String) fieldNamesIter.next());
 					checkRule(validationRule);
 				}
 			}
-		}
-		else {
+		} else {
 			if (getRulesSource() != null) {
 				rules = getRulesSource().getRules(objectClass, getRulesContextId());
 				if (rules != null) {
@@ -145,14 +144,12 @@ public class RulesValidator implements RichValidator, ObjectNameResolver {
 							if (formModel.hasValueModel(validationRule.getPropertyName())) {
 								checkRule(validationRule);
 							}
-						}
-						else if (validationRule.isDependentOn(propertyName)) {
+						} else if (validationRule.isDependentOn(propertyName)) {
 							checkRule(validationRule);
 						}
 					}
 				}
-			}
-			else {
+			} else {
 				logger.debug("No rules source has been configured; "
 						+ "please set a valid reference to enable rules-based validation.");
 			}
@@ -161,15 +158,15 @@ public class RulesValidator implements RichValidator, ObjectNameResolver {
 	}
 
 	private void checkRule(PropertyConstraint validationRule) {
-		if (validationRule == null)
+		if (validationRule == null) {
 			return;
+		}
 		BeanValidationResultsCollector resultsCollector = takeResultsCollector();
 		PropertyResults results = resultsCollector.collectPropertyResults(validationRule);
 		returnResultsCollector(resultsCollector);
 		if (results == null) {
 			constraintSatisfied(validationRule);
-		}
-		else {
+		} else {
 			constraintViolated(validationRule, results);
 		}
 	}
@@ -204,8 +201,7 @@ public class RulesValidator implements RichValidator, ObjectNameResolver {
 		BeanValidationResultsCollector resultsCollector = validationResultsCollector;
 		if (resultsCollector != null) {
 			validationResultsCollector = null;
-		}
-		else {
+		} else {
 			resultsCollector = new BeanValidationResultsCollector(new FormModelPropertyAccessStrategy(formModel));
 		}
 		return resultsCollector;
@@ -226,6 +222,7 @@ public class RulesValidator implements RichValidator, ObjectNameResolver {
 	 * Set the rules context id. This is passed in the call to
 	 * {@link RulesSource#getRules(Class, String)} to allow for context specific
 	 * rules.
+	 *
 	 * @param rulesContextId
 	 */
 	public void setRulesContextId(String rulesContextId) {
@@ -235,6 +232,7 @@ public class RulesValidator implements RichValidator, ObjectNameResolver {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String resolveObjectName(String objectName) {
 		return formModel.getFieldFace(objectName).getDisplayName();
 	}

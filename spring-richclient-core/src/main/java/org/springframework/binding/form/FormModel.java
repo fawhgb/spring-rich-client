@@ -75,8 +75,8 @@ public interface FormModel extends PropertyChangePublisher, Authorizable {
 	String getId();
 
 	/**
-	 * Returns the object currently backing this form. This object is held by
-	 * the FormObjectHolder.
+	 * Returns the object currently backing this form. This object is held by the
+	 * FormObjectHolder.
 	 */
 	Object getFormObject();
 
@@ -86,27 +86,26 @@ public interface FormModel extends PropertyChangePublisher, Authorizable {
 	void setFormObject(Object formObject);
 
 	/**
-	 * Returns the value model which holds the object currently backing this
-	 * form.
+	 * Returns the value model which holds the object currently backing this form.
 	 */
 	ValueModel getFormObjectHolder();
 
 	/**
-	 * Returns a value model that holds the value of the specified form
-	 * property.
+	 * Returns a value model that holds the value of the specified form property.
 	 *
 	 * @throws InvalidPropertyException if the form has no such property
 	 */
 	ValueModel getValueModel(String formProperty);
 
 	/**
-	 * Returns a type converting value model for the given form property. The
-	 * type of the value returned from the returned value model is guaranteed to
-	 * be of class targetClass.
+	 * Returns a type converting value model for the given form property. The type
+	 * of the value returned from the returned value model is guaranteed to be of
+	 * class targetClass.
 	 *
 	 * @throws InvalidPropertyException if the form has no such property
-	 * @throws IllegalArgumentException if no suitable converter from the
-	 * original property class to the targetClass can be found
+	 * @throws IllegalArgumentException if no suitable converter from the original
+	 *                                  property class to the targetClass can be
+	 *                                  found
 	 */
 	ValueModel getValueModel(String formProperty, Class targetClass);
 
@@ -124,15 +123,14 @@ public interface FormModel extends PropertyChangePublisher, Authorizable {
 	/**
 	 * Register converters for a given property name.
 	 *
-	 * @param propertyName name of property on which to register converters
-	 * @param toConverter Convert from source to target type
+	 * @param propertyName  name of property on which to register converters
+	 * @param toConverter   Convert from source to target type
 	 * @param fromConverter Convert from target to source type
 	 */
 	void registerPropertyConverter(String propertyName, Converter toConverter, Converter fromConverter);
 
 	/**
-	 * Returns true if the form has a value model for the provided property
-	 * name.
+	 * Returns true if the form has a value model for the provided property name.
 	 */
 	boolean hasValueModel(String formProperty);
 
@@ -146,17 +144,17 @@ public interface FormModel extends PropertyChangePublisher, Authorizable {
 	void commit();
 
 	/**
-	 * Reverts any dirty value models back to the original values that were
-	 * loaded from the current form backing object since last call to either
-	 * commit or revert or since the last change of the form backing object.
+	 * Reverts any dirty value models back to the original values that were loaded
+	 * from the current form backing object since last call to either commit or
+	 * revert or since the last change of the form backing object.
 	 */
 	void revert();
 
 	/**
-	 * Reset the form by replacing the form object with a newly instantiated
-	 * object of the type of the current form object. Note that this may lead to
-	 * NPE's if the newly created object has null sub-objects and this form
-	 * references any of these objects.
+	 * Reset the form by replacing the form object with a newly instantiated object
+	 * of the type of the current form object. Note that this may lead to NPE's if
+	 * the newly created object has null sub-objects and this form references any of
+	 * these objects.
 	 */
 	void reset();
 
@@ -166,18 +164,17 @@ public interface FormModel extends PropertyChangePublisher, Authorizable {
 	boolean isBuffered();
 
 	/**
-	 * Returns true if any of the value models holding properties of this form
-	 * have been modified since the last call to either commit or revert or
-	 * since the last change of the form backing object.
+	 * Returns true if any of the value models holding properties of this form have
+	 * been modified since the last call to either commit or revert or since the
+	 * last change of the form backing object.
 	 */
 	boolean isDirty();
 
 	/**
 	 * A form can be enabled/disabled which reflects a global state on the
-	 * associated valueModels and their metaData. It may be viewed as enabling
-	 * the visual representatives of the valuemodels. All user related
-	 * interaction should be disabled. This is usually viewed as a grey-out of
-	 * the visual form.
+	 * associated valueModels and their metaData. It may be viewed as enabling the
+	 * visual representatives of the valuemodels. All user related interaction
+	 * should be disabled. This is usually viewed as a grey-out of the visual form.
 	 *
 	 * Returns <code>true</code> if this form is enabled.
 	 */
@@ -185,9 +182,9 @@ public interface FormModel extends PropertyChangePublisher, Authorizable {
 
 	/**
 	 * A form can be set as readOnly which reflects a global state on the
-	 * valueModels and their metaData. A form may be enabled and readonly when
-	 * all values are accessible, but not changeable. A form can be seen as not
-	 * readOnly if some visual representatives of the valuemodels are set to
+	 * valueModels and their metaData. A form may be enabled and readonly when all
+	 * values are accessible, but not changeable. A form can be seen as not readOnly
+	 * if some visual representatives of the valuemodels are set to
 	 * editable/changeable.
 	 *
 	 * @return <code>true</code> if this form is readOnly.
@@ -202,8 +199,8 @@ public interface FormModel extends PropertyChangePublisher, Authorizable {
 	boolean isCommittable();
 
 	/**
-	 * Adds the specified listener to the list if listeners notified when a
-	 * commit happens.
+	 * Adds the specified listener to the list if listeners notified when a commit
+	 * happens.
 	 */
 	void addCommitListener(CommitListener listener);
 

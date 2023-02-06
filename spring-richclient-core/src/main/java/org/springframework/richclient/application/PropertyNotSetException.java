@@ -28,12 +28,12 @@ public class PropertyNotSetException extends ConfigurationException {
 	private static final long serialVersionUID = 6848949416219396182L;
 
 	/**
-	 * Throws an instance of this exception if the given {@code propertyValue}
-	 * is null.
+	 * Throws an instance of this exception if the given {@code propertyValue} is
+	 * null.
 	 *
 	 * @param propertyValue The value of the property.
-	 * @param propertyName The name of the property.
-	 * @param beanClass The class on which the property is supposed to be set.
+	 * @param propertyName  The name of the property.
+	 * @param beanClass     The class on which the property is supposed to be set.
 	 *
 	 * @throws PropertyNotSetException if {@code propertyValue} is null.
 	 */
@@ -50,11 +50,11 @@ public class PropertyNotSetException extends ConfigurationException {
 	private final String propertyName;
 
 	/**
-	 * Creates a new {@code PropertyNotSetException} with the specified bean
-	 * class and property name.
+	 * Creates a new {@code PropertyNotSetException} with the specified bean class
+	 * and property name.
 	 *
-	 * @param beanClass The class of the JavaBean that has an uninitialized
-	 * property.
+	 * @param beanClass    The class of the JavaBean that has an uninitialized
+	 *                     property.
 	 * @param propertyName The name of the property that has not been set.
 	 */
 	public PropertyNotSetException(Class beanClass, String propertyName) {
@@ -72,6 +72,7 @@ public class PropertyNotSetException extends ConfigurationException {
 
 	/**
 	 * Returns the class of the JavaBean that has the uninitialized property.
+	 *
 	 * @return Returns the value of the beanClass field.
 	 */
 	public Class getBeanClass() {
@@ -80,6 +81,7 @@ public class PropertyNotSetException extends ConfigurationException {
 
 	/**
 	 * Returns the name of the property that has not been set.
+	 *
 	 * @return Returns the value of the propertyName field.
 	 */
 	public String getPropertyName() {

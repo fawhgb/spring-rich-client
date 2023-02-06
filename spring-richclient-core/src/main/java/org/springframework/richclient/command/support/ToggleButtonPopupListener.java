@@ -31,63 +31,72 @@ import javax.swing.event.PopupMenuListener;
  * @author Keith Donald
  */
 public class ToggleButtonPopupListener implements PopupMenuListener, ItemListener, MouseListener {
-    private AbstractButton button;
+	private AbstractButton button;
 
-    private JPopupMenu menu;
+	private JPopupMenu menu;
 
-    private boolean buttonWasPressed;
+	private boolean buttonWasPressed;
 
-    /**
-     * Attach the menu to the button with a {@link ToggleButtonPopupListener}.
-     *
-     * @param button Button the menu should be attached to.
-     * @param menu The menu to attach to the button.
-     */
-    public static void bind(AbstractButton button, JPopupMenu menu) {
-        new ToggleButtonPopupListener(button, menu);
-    }
+	/**
+	 * Attach the menu to the button with a {@link ToggleButtonPopupListener}.
+	 *
+	 * @param button Button the menu should be attached to.
+	 * @param menu   The menu to attach to the button.
+	 */
+	public static void bind(AbstractButton button, JPopupMenu menu) {
+		new ToggleButtonPopupListener(button, menu);
+	}
 
-    private ToggleButtonPopupListener(AbstractButton button, JPopupMenu menu) {
-        this.button = button;
-        this.menu = menu;
-        button.addItemListener(this);
-        menu.addPopupMenuListener(this);
-        button.addMouseListener(this);
-    }
+	private ToggleButtonPopupListener(AbstractButton button, JPopupMenu menu) {
+		this.button = button;
+		this.menu = menu;
+		button.addItemListener(this);
+		menu.addPopupMenuListener(this);
+		button.addMouseListener(this);
+	}
 
-    public void itemStateChanged(ItemEvent e) {
-        if (button.isSelected()) {
-            menu.show(button, 0, button.getHeight());
-        }
-    }
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		if (button.isSelected()) {
+			menu.show(button, 0, button.getHeight());
+		}
+	}
 
-    public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-        if (!buttonWasPressed) {
-            button.setSelected(false);
-        }
-    }
+	@Override
+	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+		if (!buttonWasPressed) {
+			button.setSelected(false);
+		}
+	}
 
-    public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+	@Override
+	public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
 
-    }
+	}
 
-    public void popupMenuCanceled(PopupMenuEvent e) {
-    }
+	@Override
+	public void popupMenuCanceled(PopupMenuEvent e) {
+	}
 
-    public void mousePressed(MouseEvent e) {
-        buttonWasPressed = true;
-    }
+	@Override
+	public void mousePressed(MouseEvent e) {
+		buttonWasPressed = true;
+	}
 
-    public void mouseReleased(MouseEvent e) {
-        buttonWasPressed = false;
-    }
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		buttonWasPressed = false;
+	}
 
-    public void mouseClicked(MouseEvent e) {
-    }
+	@Override
+	public void mouseClicked(MouseEvent e) {
+	}
 
-    public void mouseEntered(MouseEvent e) {
-    }
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	}
 
-    public void mouseExited(MouseEvent e) {
-    }
+	@Override
+	public void mouseExited(MouseEvent e) {
+	}
 }

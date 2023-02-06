@@ -49,9 +49,9 @@ import org.springframework.rules.support.DefaultRulesSource;
  * required context id. Like this: <code>
  * RulesValidator validator = myValidatingFormModel.getValidator();
  * validator.setRulesContextId( "mySpecialFormId" );
- * </code>
- * Along with this you will need to register your rules using the context id.
- * See {@link DefaultRulesSource#addRules(String, org.springframework.rules.Rules)}.
+ * </code> Along with this you will need to register your rules using the
+ * context id. See
+ * {@link DefaultRulesSource#addRules(String, org.springframework.rules.Rules)}.
  *
  * @author Keith Donald
  * @author Oliver Hutchison
@@ -109,13 +109,14 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 	}
 
 	/**
-	 * Initialization of DefaultFormModel. Adds a listener on the Enabled
-	 * property in order to switch validating state on or off. When disabling a
-	 * formModel, no validation will happen.
+	 * Initialization of DefaultFormModel. Adds a listener on the Enabled property
+	 * in order to switch validating state on or off. When disabling a formModel, no
+	 * validation will happen.
 	 */
 	protected void init() {
 		addPropertyChangeListener(ENABLED_PROPERTY, new PropertyChangeListener() {
 
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				validatingUpdated();
 			}
@@ -128,17 +129,18 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isValidating() {
 		if (validating && isEnabled()) {
-			if (getParent() instanceof ValidatingFormModel)
-			{
-				return ((ValidatingFormModel)getParent()).isValidating();
+			if (getParent() instanceof ValidatingFormModel) {
+				return ((ValidatingFormModel) getParent()).isValidating();
 			}
 			return true;
-	    }
+		}
 		return false;
 	}
 
+	@Override
 	public void setValidating(boolean validating) {
 		this.validating = validating;
 		validatingUpdated();
@@ -149,8 +151,7 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 		if (hasChanged(oldValidating, validating)) {
 			if (validating) {
 				validate();
-			}
-			else {
+			} else {
 				validationResultsModel.clearAllValidationResults();
 			}
 			oldValidating = validating;
@@ -158,9 +159,11 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 		}
 	}
 
+	@Override
 	public void addChild(HierarchicalFormModel child) {
-		if (child.getParent() == this)
+		if (child.getParent() == this) {
 			return;
+		}
 
 		super.addChild(child);
 		if (child instanceof ValidatingFormModel) {
@@ -169,6 +172,7 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 		}
 	}
 
+	@Override
 	public void removeChild(HierarchicalFormModel child) {
 		if (child instanceof ValidatingFormModel) {
 			getValidationResults().remove(((ValidatingFormModel) child).getValidationResults());
@@ -183,15 +187,16 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 	 * Additionally the {@link DefaultFormModel} adds the event:
 	 *
 	 * <ul>
-	 * <li><em>Has errors event:</em> if the validation results model
-	 * contains errors, the form model error state should be revised as well as
-	 * the committable state.</li>
+	 * <li><em>Has errors event:</em> if the validation results model contains
+	 * errors, the form model error state should be revised as well as the
+	 * committable state.</li>
 	 * </ul>
 	 *
-	 * Note that we see the {@link ValidationResultsModel} as a child model of
-	 * the {@link DefaultFormModel} as the result model is bundled together with
-	 * the value models.
+	 * Note that we see the {@link ValidationResultsModel} as a child model of the
+	 * {@link DefaultFormModel} as the result model is bundled together with the
+	 * value models.
 	 */
+	@Override
 	protected void childStateChanged(PropertyChangeEvent evt) {
 		super.childStateChanged(evt);
 		if (ValidationResultsModel.HAS_ERRORS_PROPERTY.equals(evt.getPropertyName())) {
@@ -199,6 +204,7 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 		}
 	}
 
+	@Override
 	public void setParent(HierarchicalFormModel parent) {
 		super.setParent(parent);
 		if (parent instanceof ValidatingFormModel) {
@@ -212,11 +218,12 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 	 * Additionally the {@link DefaultFormModel} adds the event:
 	 *
 	 * <ul>
-	 * <li><em>Validating state:</em> if validating is disabled on parent,
-	 * child should not validate as well. If parent is set to validating the
-	 * child's former validating state should apply.</li>
+	 * <li><em>Validating state:</em> if validating is disabled on parent, child
+	 * should not validate as well. If parent is set to validating the child's
+	 * former validating state should apply.</li>
 	 * </ul>
 	 */
+	@Override
 	protected void parentStateChanged(PropertyChangeEvent evt) {
 		super.parentStateChanged(evt);
 		if (ValidatingFormModel.VALIDATING_PROPERTY.equals(evt.getPropertyName())) {
@@ -224,6 +231,7 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 		}
 	}
 
+	@Override
 	public void removeParent() {
 		if (getParent() instanceof ValidatingFormModel) {
 			getParent().removePropertyChangeListener(ValidatingFormModel.VALIDATING_PROPERTY, parentStateChangeHandler);
@@ -231,10 +239,12 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 		super.removeParent();
 	}
 
+	@Override
 	public ValidationResultsModel getValidationResults() {
 		return validationResultsModel;
 	}
 
+	@Override
 	public boolean getHasErrors() {
 		return validationResultsModel.getHasErrors();
 	}
@@ -248,12 +258,14 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 		}
 	}
 
+	@Override
 	public void validate() {
 		if (isValidating()) {
 			validateAfterPropertyChanged(null);
 		}
 	}
 
+	@Override
 	public Validator getValidator() {
 		if (validator == null) {
 			setValidator(new RulesValidator(this));
@@ -268,18 +280,21 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 	 * Setting a validator will trigger a validate of the current object.
 	 * </p>
 	 */
+	@Override
 	public void setValidator(Validator validator) {
 		Assert.required(validator, "validator");
 		this.validator = validator;
 		validate();
 	}
 
+	@Override
 	public boolean isCommittable() {
 		final boolean superIsCommittable = super.isCommittable();
 		final boolean hasNoErrors = !getValidationResults().getHasErrors();
 		return superIsCommittable && hasNoErrors;
 	}
 
+	@Override
 	protected ValueModel preProcessNewValueModel(String formProperty, ValueModel formValueModel) {
 		if (!(formValueModel instanceof ValidatingFormValueModel)) {
 			return new ValidatingFormValueModel(formProperty, formValueModel, true);
@@ -287,15 +302,18 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 		return formValueModel;
 	}
 
+	@Override
 	protected void postProcessNewValueModel(String formProperty, ValueModel valueModel) {
 		validateAfterPropertyChanged(formProperty);
 	}
 
+	@Override
 	protected ValueModel preProcessNewConvertingValueModel(String formProperty, Class targetClass,
 			ValueModel formValueModel) {
 		return new ValidatingFormValueModel(formProperty, formValueModel, false);
 	}
 
+	@Override
 	protected void postProcessNewConvertingValueModel(String formProperty, Class targetClass, ValueModel valueModel) {
 	}
 
@@ -305,20 +323,20 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 
 	/**
 	 *
-	 * @param formProperty the name of the only property that has changed since
-	 * the last call to validateAfterPropertyChange or <code>null</code> if
-	 * this is not known/available.
+	 * @param formProperty the name of the only property that has changed since the
+	 *                     last call to validateAfterPropertyChange or
+	 *                     <code>null</code> if this is not known/available.
 	 */
 	protected void validateAfterPropertyChanged(String formProperty) {
 		if (isValidating()) {
 			Validator validator = getValidator();
 			if (validator != null) {
-				DefaultValidationResults validationResults = new DefaultValidationResults(bindingErrorMessages.values());
+				DefaultValidationResults validationResults = new DefaultValidationResults(
+						bindingErrorMessages.values());
 				if (formProperty != null && validator instanceof RichValidator) {
-					validationResults.addAllMessages(((RichValidator) validator)
-							.validate(getFormObject(), formProperty));
-				}
-				else {
+					validationResults
+							.addAllMessages(((RichValidator) validator).validate(getFormObject(), formProperty));
+				} else {
 					validationResults.addAllMessages(validator.validate(getFormObject()));
 				}
 				validationResults.addAllMessages(additionalValidationResults);
@@ -343,6 +361,7 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 		}
 	}
 
+	@Override
 	public void raiseValidationMessage(ValidationMessage validationMessage) {
 		additionalValidationResults.addMessage(validationMessage);
 		if (isValidating()) {
@@ -350,6 +369,7 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 		}
 	}
 
+	@Override
 	public void clearValidationMessage(ValidationMessage validationMessage) {
 		additionalValidationResults.removeMessage(validationMessage);
 		if (isValidating()) {
@@ -366,10 +386,11 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 		this.bindingErrorMessageProvider = bindingErrorMessageProvider;
 	}
 
+	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("id", getId()).append("buffered", isBuffered()).append("enabled",
-				isEnabled()).append("dirty", isDirty()).append("validating", isValidating()).append(
-				"validationResults", getValidationResults()).toString();
+		return new ToStringCreator(this).append("id", getId()).append("buffered", isBuffered())
+				.append("enabled", isEnabled()).append("dirty", isDirty()).append("validating", isValidating())
+				.append("validationResults", getValidationResults()).toString();
 	}
 
 	protected class ValidatingFormValueModel extends AbstractValueModelWrapper {
@@ -383,8 +404,7 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 			if (validateOnChange) {
 				this.valueChangeHander = new ValueChangeHandler();
 				addValueChangeListener(valueChangeHander);
-			}
-			else {
+			} else {
 				this.valueChangeHander = null;
 			}
 		}
@@ -393,6 +413,7 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 			return formProperty;
 		}
 
+		@Override
 		public void setValueSilently(Object value, PropertyChangeListener listenerToSkip) {
 			try {
 				if (logger.isDebugEnabled()) {
@@ -403,18 +424,17 @@ public class DefaultFormModel extends AbstractFormModel implements ValidatingFor
 				}
 				super.setValueSilently(value, listenerToSkip);
 				clearBindingError(this);
-			}
-			catch (ConversionException ce) {
+			} catch (ConversionException ce) {
 				logger.warn("Conversion exception occurred setting value", ce);
 				raiseBindingError(this, value, ce);
-			}
-			catch (PropertyAccessException pae) {
+			} catch (PropertyAccessException pae) {
 				logger.warn("Type Mismatch Exception occurred setting value", pae);
 				raiseBindingError(this, value, pae);
 			}
 		}
 
 		public class ValueChangeHandler implements PropertyChangeListener {
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				formPropertyValueChanged(formProperty);
 			}

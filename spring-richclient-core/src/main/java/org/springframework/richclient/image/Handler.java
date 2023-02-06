@@ -57,8 +57,8 @@ import org.springframework.util.StringUtils;
  * handler.</li>
  * <li>the factory can be set only once, if set twice an exception will be
  * thrown. This was the initial error of this issue.</li>
- * <li>you need to supply this system parameter at startup. The static method
- * in the image Handler can only be used if no URL was created before and the
+ * <li>you need to supply this system parameter at startup. The static method in
+ * the image Handler can only be used if no URL was created before and the
  * system parameter wasn't read yet.</li>
  * </ol>
  *
@@ -92,8 +92,8 @@ public class Handler extends URLStreamHandler {
 	private static ImageSource urlHandlerImageSource;
 
 	/**
-	 * Installs this class as a handler for the "image:" protocol. Images will
-	 * be resolved from the provided image source.
+	 * Installs this class as a handler for the "image:" protocol. Images will be
+	 * resolved from the provided image source.
 	 */
 	public static void installImageUrlHandler(ImageSource urlHandlerImageSource) {
 		Assert.notNull(urlHandlerImageSource);
@@ -111,15 +111,13 @@ public class Handler extends URLStreamHandler {
 			String orgSpringFrameworkRichclientString = "org.springframework.richclient";
 			if (packagePrefixList == null || packagePrefixList.equals("")) {
 				newPackagePrefixList = orgSpringFrameworkRichclientString;
-			}
-			else if (("|" + packagePrefixList + "|").indexOf("|" + orgSpringFrameworkRichclientString + "|") < 0) {
+			} else if (("|" + packagePrefixList + "|").indexOf("|" + orgSpringFrameworkRichclientString + "|") < 0) {
 				newPackagePrefixList = packagePrefixList + "|" + orgSpringFrameworkRichclientString;
 			}
 			if (newPackagePrefixList != null) {
 				System.setProperty("java.protocol.handler.pkgs", newPackagePrefixList);
 			}
-		}
-		catch (SecurityException e) {
+		} catch (SecurityException e) {
 			logger.warn("Unable to install image URL handler", e);
 			Handler.urlHandlerImageSource = null;
 		}
@@ -131,29 +129,26 @@ public class Handler extends URLStreamHandler {
 	public Handler() {
 	}
 
+	@Override
 	protected URLConnection openConnection(URL url) throws IOException {
 		if (!StringUtils.hasText(url.getPath())) {
 			throw new MalformedURLException("must provide an image key.");
-		}
-		else if (StringUtils.hasText(url.getHost())) {
+		} else if (StringUtils.hasText(url.getHost())) {
 			throw new MalformedURLException("host part should be empty.");
-		}
-		else if (url.getPort() != -1) {
+		} else if (url.getPort() != -1) {
 			throw new MalformedURLException("port part should be empty.");
-		}
-		else if (StringUtils.hasText(url.getQuery())) {
+		} else if (StringUtils.hasText(url.getQuery())) {
 			throw new MalformedURLException("query part should be empty.");
-		}
-		else if (StringUtils.hasText(url.getRef())) {
+		} else if (StringUtils.hasText(url.getRef())) {
 			throw new MalformedURLException("ref part should be empty.");
-		}
-		else if (StringUtils.hasText(url.getUserInfo())) {
+		} else if (StringUtils.hasText(url.getUserInfo())) {
 			throw new MalformedURLException("user info part should be empty.");
 		}
 		urlHandlerImageSource.getImage(url.getPath());
 		Resource image = urlHandlerImageSource.getImageResource(url.getPath());
-		if (image != null)
+		if (image != null) {
 			return image.getURL().openConnection();
+		}
 
 		throw new IOException("null image returned for key [" + url.getFile() + "].");
 	}

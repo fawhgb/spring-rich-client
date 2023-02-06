@@ -15,13 +15,14 @@
  */
 package org.springframework.rules.factory;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.closure.support.AlgorithmsAccessor;
+import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.constraint.property.PropertyConstraint;
 import org.springframework.util.Assert;
 
 /**
- * Helper class for creating and composing constraints for a single domain object property.
+ * Helper class for creating and composing constraints for a single domain
+ * object property.
  *
  * @author Keith Donald
  */

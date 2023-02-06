@@ -30,7 +30,7 @@ import org.springframework.richclient.dialog.Messagable;
  * Adds basic functionality to deal with Validation. Guards and messageReceivers
  * can be added to the {@link ValidationResultsModel} of the
  * {@link ValidatingFormModel}.
- * 
+ *
  * @author oliverh
  */
 public abstract class ValidationInterceptor extends AbstractFormComponentInterceptor {
@@ -46,11 +46,11 @@ public abstract class ValidationInterceptor extends AbstractFormComponentInterce
 	}
 
 	/**
-	 * Register a messageReceiver on a specific property. To keep things in
-	 * sync, it also triggers a first time check. (validationResultsModel can
-	 * already be populated)
-	 * 
-	 * @param propertyName property to listen for.
+	 * Register a messageReceiver on a specific property. To keep things in sync, it
+	 * also triggers a first time check. (validationResultsModel can already be
+	 * populated)
+	 *
+	 * @param propertyName    property to listen for.
 	 * @param messageReceiver message capable component.
 	 * @return {@link ValidationListener} created during the process.
 	 */
@@ -63,12 +63,12 @@ public abstract class ValidationInterceptor extends AbstractFormComponentInterce
 	}
 
 	/**
-	 * Register a guarded object on a specific property. To keep things in sync,
-	 * it also triggers a first time check. (validationResultsModel can already
-	 * be populated)
-	 * 
+	 * Register a guarded object on a specific property. To keep things in sync, it
+	 * also triggers a first time check. (validationResultsModel can already be
+	 * populated)
+	 *
 	 * @param propertyName property to listen for.
-	 * @param guarded component that needs guarding.
+	 * @param guarded      component that needs guarding.
 	 * @return {@link ValidationListener} created during the process.
 	 */
 	protected ValidationListener registerGuarded(String propertyName, Guarded guarded) {
@@ -79,8 +79,8 @@ public abstract class ValidationInterceptor extends AbstractFormComponentInterce
 	}
 
 	/**
-	 * {@link ValidationListener} that will handle validation messages of the
-	 * given property.
+	 * {@link ValidationListener} that will handle validation messages of the given
+	 * property.
 	 */
 	private static class MessagableValidationListener implements ValidationListener {
 		private final String propertyName;
@@ -92,12 +92,12 @@ public abstract class ValidationInterceptor extends AbstractFormComponentInterce
 			this.messageReceiver = messageReceiver;
 		}
 
+		@Override
 		public void validationResultsChanged(ValidationResults results) {
 			if (results.getMessageCount(propertyName) > 0) {
 				ValidationMessage message = getNewestMessage(results);
 				messageReceiver.setMessage(message);
-			}
-			else {
+			} else {
 				messageReceiver.setMessage(null);
 			}
 		}
@@ -128,6 +128,7 @@ public abstract class ValidationInterceptor extends AbstractFormComponentInterce
 			this.guarded = guarded;
 		}
 
+		@Override
 		public void validationResultsChanged(ValidationResults results) {
 			guarded.setEnabled(results.getMessageCount(propertyName) == 0);
 		}

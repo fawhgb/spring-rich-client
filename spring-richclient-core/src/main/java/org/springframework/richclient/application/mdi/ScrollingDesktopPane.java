@@ -28,55 +28,57 @@ import javax.swing.JInternalFrame;
  * left or bottom, providing the MDIDesktopPane is in a ScrollPane.
  */
 public class ScrollingDesktopPane extends JDesktopPane {
+	private static final long serialVersionUID = 1L;
+
 	private static int FRAME_OFFSET = 20;
 
-    private ScrollingDesktopManager manager;
+	private ScrollingDesktopManager manager;
 
-    public ScrollingDesktopPane() {
-        manager = new ScrollingDesktopManager(this);
-        setDesktopManager(manager);
-    }
+	public ScrollingDesktopPane() {
+		manager = new ScrollingDesktopManager(this);
+		setDesktopManager(manager);
+	}
 
-    public void setBounds(int x, int y, int w, int h) {
-        super.setBounds(x, y, w, h);
-        checkDesktopSize();
-    }
+	@Override
+	public void setBounds(int x, int y, int w, int h) {
+		super.setBounds(x, y, w, h);
+		checkDesktopSize();
+	}
 
-    public Component add(JInternalFrame frame) {
-        JInternalFrame[] array = getAllFrames();
-        Point p;
+	public Component add(JInternalFrame frame) {
+		JInternalFrame[] array = getAllFrames();
+		Point p;
 
-        Component retval = super.add(frame);
-        checkDesktopSize();
-        if (array.length > 0) {
-            p = array[0].getLocation();
-            p.x = p.x + FRAME_OFFSET;
-            p.y = p.y + FRAME_OFFSET;
-        }
-        else {
-            p = new Point(0, 0);
-        }
-        frame.setLocation(p.x, p.y);
+		Component retval = super.add(frame);
+		checkDesktopSize();
+		if (array.length > 0) {
+			p = array[0].getLocation();
+			p.x = p.x + FRAME_OFFSET;
+			p.y = p.y + FRAME_OFFSET;
+		} else {
+			p = new Point(0, 0);
+		}
+		frame.setLocation(p.x, p.y);
 
-        moveToFront(frame);
-        frame.setVisible(true);
-        try {
-            frame.setSelected(true);
-        }
-        catch (PropertyVetoException e) {
-            frame.toBack();
-        }
-        return retval;
-    }
+		moveToFront(frame);
+		frame.setVisible(true);
+		try {
+			frame.setSelected(true);
+		} catch (PropertyVetoException e) {
+			frame.toBack();
+		}
+		return retval;
+	}
 
-    public void remove(Component c) {
-        super.remove(c);
-        checkDesktopSize();
-    }
+	@Override
+	public void remove(Component c) {
+		super.remove(c);
+		checkDesktopSize();
+	}
 
-    private void checkDesktopSize() {
-        if (getParent() != null && isVisible()) {
-            manager.resizeDesktop();
-        }
-    }
+	private void checkDesktopSize() {
+		if (getParent() != null && isVisible()) {
+			manager.resizeDesktop();
+		}
+	}
 }

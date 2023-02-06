@@ -21,22 +21,20 @@ import org.springframework.richclient.core.DescribedElement;
 import org.springframework.richclient.core.VisualizedElement;
 
 public interface PageDescriptor extends DescribedElement, VisualizedElement {
-    public String getId();
+	public String getId();
 
-    public void buildInitialLayout(PageLayoutBuilder pageLayout);
+	public void buildInitialLayout(PageLayoutBuilder pageLayout);
 
-    /**
-     * Create a command that when executed, will attempt to show the
-     * page component described by this descriptor in the provided
-     * application window.
-     *
-     * @param window The window
-     *
-     * @return The show page component command.
-     */
-    public ActionCommand createShowPageCommand(ApplicationWindow window);
+	/**
+	 * Create a command that when executed, will attempt to show the page component
+	 * described by this descriptor in the provided application window.
+	 *
+	 * @param window The window
+	 *
+	 * @return The show page component command.
+	 */
+	public ActionCommand createShowPageCommand(ApplicationWindow window);
 
-    public CommandButtonLabelInfo getShowPageCommandLabel();
-
+	public CommandButtonLabelInfo getShowPageCommandLabel();
 
 }

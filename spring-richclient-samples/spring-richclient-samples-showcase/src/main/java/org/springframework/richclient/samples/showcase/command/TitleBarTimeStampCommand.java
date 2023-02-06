@@ -26,8 +26,9 @@ public class TitleBarTimeStampCommand extends ApplicationWindowAwareCommand {
 		Calendar currentTime = Calendar.getInstance();
 		String title = getApplicationWindow().getControl().getTitle();
 		int pos = title.indexOf(TIMESTAMP_PREFIX);
-		if (pos != -1)
+		if (pos != -1) {
 			title = title.substring(0, pos);
+		}
 		title += TIMESTAMP_PREFIX + format.format(currentTime.getTime()) + TIMESTAMP_POSTFIX;
 		getApplicationWindow().getControl().setTitle(title);
 	}

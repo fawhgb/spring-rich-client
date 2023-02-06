@@ -19,64 +19,66 @@ import org.springframework.richclient.wizard.WizardPage;
  */
 public class SetupWizardDialog extends WizardDialog {
 
-    private Container pageControlBackup;
+	private Container pageControlBackup;
 
-    private GradientPanel firstPageControl;
+	private GradientPanel firstPageControl;
 
-    private ActionCommand nextCommand;
+	private ActionCommand nextCommand;
 
-    public SetupWizardDialog(Wizard wizard) {
-        super(wizard);
-        this.setTitle(getApplicationName());
-        this.setResizable(false);
-    }
+	public SetupWizardDialog(Wizard wizard) {
+		super(wizard);
+		this.setTitle(getApplicationName());
+		this.setResizable(false);
+	}
 
-    protected JComponent createDialogContentPane() {
-        createFirstPageControl();
-        return super.createDialogContentPane();
-    }
+	@Override
+	protected JComponent createDialogContentPane() {
+		createFirstPageControl();
+		return super.createDialogContentPane();
+	}
 
-    protected JComponent createFirstPageControl() {
-        firstPageControl = new GradientPanel();
-        firstPageControl.setLayout(new BorderLayout());
-        firstPageControl.add(createFirstPageButtonBar(), BorderLayout.SOUTH);
-        return firstPageControl;
-    }
+	protected JComponent createFirstPageControl() {
+		firstPageControl = new GradientPanel();
+		firstPageControl.setLayout(new BorderLayout());
+		firstPageControl.add(createFirstPageButtonBar(), BorderLayout.SOUTH);
+		return firstPageControl;
+	}
 
-    protected JComponent createFirstPageButtonBar() {
-        CommandGroup dialogCommandGroup = CommandGroup.createCommandGroup(null, getIntroPageCommandGroupMembers());
-        JComponent buttonBar = dialogCommandGroup.createButtonBar();
-        GuiStandardUtils.attachDialogBorder(buttonBar);
-        buttonBar.setOpaque(false);
-        return buttonBar;
-    }
+	protected JComponent createFirstPageButtonBar() {
+		CommandGroup dialogCommandGroup = CommandGroup.createCommandGroup(null, getIntroPageCommandGroupMembers());
+		JComponent buttonBar = dialogCommandGroup.createButtonBar();
+		GuiStandardUtils.attachDialogBorder(buttonBar);
+		buttonBar.setOpaque(false);
+		return buttonBar;
+	}
 
-    protected Object[] getIntroPageCommandGroupMembers() {
-        nextCommand = new ActionCommand("nextCommand") {
-            public void doExecuteCommand() {
-                onNext();
-            }
-        };
+	protected Object[] getIntroPageCommandGroupMembers() {
+		nextCommand = new ActionCommand("nextCommand") {
+			@Override
+			public void doExecuteCommand() {
+				onNext();
+			}
+		};
 
-        return new AbstractCommand[] { nextCommand, getCancelCommand() };
-    }
+		return new AbstractCommand[] { nextCommand, getCancelCommand() };
+	}
 
-    public void showPage(WizardPage page) {
-        if (page.getPreviousPage() == null) {
-            // is intro page? --> better way to find it out?
-            super.showPage(page);
-            pageControlBackup = getDialogContentPane();
-            firstPageControl.add(page.getControl(), BorderLayout.CENTER);
-            this.getDialog().setContentPane(firstPageControl);
-        }
-        else {
-            if (pageControlBackup != null) {
-                getDialog().setContentPane(pageControlBackup);
-                //stop adding the content pane in future
-                pageControlBackup = null;
-            }
-            super.showPage(page);
-        }
-    }
+	@Override
+	public void showPage(WizardPage page) {
+		if (page.getPreviousPage() == null) {
+			// is intro page? --> better way to find it out?
+			super.showPage(page);
+			pageControlBackup = getDialogContentPane();
+			firstPageControl.add(page.getControl(), BorderLayout.CENTER);
+			this.getDialog().setContentPane(firstPageControl);
+		} else {
+			if (pageControlBackup != null) {
+				getDialog().setContentPane(pageControlBackup);
+				// stop adding the content pane in future
+				pageControlBackup = null;
+			}
+			super.showPage(page);
+		}
+	}
 
 }

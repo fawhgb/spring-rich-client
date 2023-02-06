@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -17,17 +17,18 @@ package org.springframework.rules.constraint;
 
 import java.util.Comparator;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.Assert;
 
 /**
  * A range whose edges are defined by a minimum Comparable and a maximum
  * Comparable.
- * 
+ *
  * @author Keith Donald
  */
 public final class Range extends AbstractConstraint {
+	private static final long serialVersionUID = 1L;
+
 	private Object min;
 
 	private Object max;
@@ -37,28 +38,21 @@ public final class Range extends AbstractConstraint {
 	private Constraint rangeConstraint;
 
 	/**
-	 * Creates a range with the specified <code>Comparable</code> min and max
-	 * edges.
-	 * 
-	 * @param min
-	 *            the low edge of the range
-	 * @param max
-	 *            the high edge of the range
+	 * Creates a range with the specified <code>Comparable</code> min and max edges.
+	 *
+	 * @param min the low edge of the range
+	 * @param max the high edge of the range
 	 */
 	public Range(Comparable min, Comparable max) {
 		this(min, max, true);
 	}
 
 	/**
-	 * Creates a range with the specified <code>Comparable</code> min and max
-	 * edges.
-	 * 
-	 * @param min
-	 *            the low edge of the range
-	 * @param max
-	 *            the high edge of the range
-	 * @param inclusive
-	 *            the range is inclusive?
+	 * Creates a range with the specified <code>Comparable</code> min and max edges.
+	 *
+	 * @param min       the low edge of the range
+	 * @param max       the high edge of the range
+	 * @param inclusive the range is inclusive?
 	 */
 	public Range(Comparable min, Comparable max, boolean inclusive) {
 		commonAssert(min, max);
@@ -66,12 +60,11 @@ public final class Range extends AbstractConstraint {
 		Constraint maximum;
 		this.inclusive = inclusive;
 		if (this.inclusive) {
-			Assert.isTrue(LessThanEqualTo.instance().test(min, max), "Minimum " + min
-					+ " must be less than or equal to maximum " + max);
+			Assert.isTrue(LessThanEqualTo.instance().test(min, max),
+					"Minimum " + min + " must be less than or equal to maximum " + max);
 			minimum = gte(min);
 			maximum = lte(max);
-		}
-		else {
+		} else {
 			Assert.isTrue(LessThan.instance().test(min, max), "Minimum " + min + " must be less than maximum " + max);
 			minimum = gt(min);
 			maximum = lt(max);
@@ -83,13 +76,10 @@ public final class Range extends AbstractConstraint {
 
 	/**
 	 * Creates a range with the specified min and max edges.
-	 * 
-	 * @param min
-	 *            the low edge of the range
-	 * @param max
-	 *            the high edge of the range
-	 * @param comparator
-	 *            the comparator to use to perform value comparisons
+	 *
+	 * @param min        the low edge of the range
+	 * @param max        the high edge of the range
+	 * @param comparator the comparator to use to perform value comparisons
 	 */
 	public Range(Object min, Object max, Comparator comparator) {
 		this(min, max, comparator, true);
@@ -97,13 +87,10 @@ public final class Range extends AbstractConstraint {
 
 	/**
 	 * Creates a range with the specified min and max edges.
-	 * 
-	 * @param min
-	 *            the low edge of the range
-	 * @param max
-	 *            the high edge of the range
-	 * @param comparator
-	 *            the comparator to use to perform value comparisons
+	 *
+	 * @param min        the low edge of the range
+	 * @param max        the high edge of the range
+	 * @param comparator the comparator to use to perform value comparisons
 	 */
 	public Range(Object min, Object max, Comparator comparator, boolean inclusive) {
 		commonAssert(min, max);
@@ -111,14 +98,13 @@ public final class Range extends AbstractConstraint {
 		Constraint maximum;
 		this.inclusive = inclusive;
 		if (this.inclusive) {
-			Assert.isTrue(LessThanEqualTo.instance(comparator).test(min, max), "Minimum " + min
-					+ " must be less than or equal to maximum " + max);
+			Assert.isTrue(LessThanEqualTo.instance(comparator).test(min, max),
+					"Minimum " + min + " must be less than or equal to maximum " + max);
 			minimum = bind(GreaterThanEqualTo.instance(comparator), min);
 			maximum = bind(LessThanEqualTo.instance(comparator), max);
-		}
-		else {
-			Assert.isTrue(LessThan.instance(comparator).test(min, max), "Minimum " + min
-					+ " must be less than maximum " + max);
+		} else {
+			Assert.isTrue(LessThan.instance(comparator).test(min, max),
+					"Minimum " + min + " must be less than maximum " + max);
 			minimum = bind(GreaterThan.instance(comparator), min);
 			maximum = bind(LessThan.instance(comparator), max);
 		}
@@ -188,13 +174,15 @@ public final class Range extends AbstractConstraint {
 
 	/**
 	 * Test if the specified argument falls within the established range.
-	 * 
+	 *
 	 * @see Constraint#test(java.lang.Object)
 	 */
+	@Override
 	public boolean test(Object argument) {
 		return this.rangeConstraint.test(argument);
 	}
 
+	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("rangeConstraint", rangeConstraint).toString();
 	}

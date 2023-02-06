@@ -54,15 +54,14 @@ import org.springframework.richclient.command.support.GlobalCommandIds;
 /**
  * Helper class that decorates a <code>JTextComponent</code> with a standard
  * popup menu. Support for undo/redo is also provided.
- * 
+ *
  * @author Oliver Hutchison
  */
 public class TextComponentPopup extends MouseAdapter implements FocusListener, CaretListener, UndoableEditListener {
 
 	/**
-	 * Delay in ms between updates of the paste commands status. We only update
-	 * the paste command's status occasionally as this is a quite expensive
-	 * operation.
+	 * Delay in ms between updates of the paste commands status. We only update the
+	 * paste command's status occasionally as this is a quite expensive operation.
 	 */
 	private static final int PAST_REFRESH_TIMER_DELAY = 100;
 
@@ -103,6 +102,7 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 		this.textComponent = textComponent;
 		this.resetUndoHistoryTrigger = resetUndoHistoryTrigger;
 		this.updatePasteStatusTimer = new Timer(PAST_REFRESH_TIMER_DELAY, new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				updatePasteStatus();
 			}
@@ -121,11 +121,13 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 		textComponent.getDocument().addUndoableEditListener(this);
 		if (resetUndoHistoryTrigger != null) {
 			CommitTriggerListener resetUndoHistoryHandler = new CommitTriggerListener() {
+				@Override
 				public void commit() {
 					undoManager.discardAllEdits();
 					updateUndoRedoState();
 				}
 
+				@Override
 				public void revert() {
 				}
 			};
@@ -141,8 +143,7 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 				localCommandManager = new DefaultCommandManager();
 			}
 			commandManager = localCommandManager;
-		}
-		else {
+		} else {
 			commandManager = appWindow.getCommandManager();
 		}
 		for (int i = 0; i < COMMANDS.length; i++) {
@@ -168,6 +169,7 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 	/**
 	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
 	 */
+	@Override
 	public void mousePressed(MouseEvent evt) {
 		maybeShowPopup(evt);
 	}
@@ -175,6 +177,7 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 	/**
 	 * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
 	 */
+	@Override
 	public void mouseReleased(MouseEvent evt) {
 		maybeShowPopup(evt);
 	}
@@ -186,32 +189,38 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 		}
 	}
 
+	@Override
 	public void caretUpdate(CaretEvent e) {
 		updateState();
 	}
 
+	@Override
 	public void focusGained(FocusEvent e) {
 		updateState();
 		registerCommandExecutors();
 	}
 
+	@Override
 	public void focusLost(FocusEvent e) {
 		if (!e.isTemporary()) {
 			unregisterCommandExecutors();
 		}
 	}
 
+	@Override
 	public void undoableEditHappened(UndoableEditEvent e) {
 		undoManager.addEdit(e.getEdit());
 		updateUndoRedoState();
 	}
 
 	private JPopupMenu createPopup() {
-		if (textComponent instanceof JPasswordField)
+		if (textComponent instanceof JPasswordField) {
 			return getPasswordCommandGroup().createPopupMenu();
+		}
 
-		if (isEditable())
+		if (isEditable()) {
 			return getEditableCommandGroup().createPopupMenu();
+		}
 
 		return getReadOnlyCommandGroup().createPopupMenu();
 	}
@@ -224,8 +233,7 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 		cut.setEnabled(hasSelection && isEditable);
 		if (isEditable) {
 			scheduleUpdatePasteStatus();
-		}
-		else {
+		} else {
 			paste.setEnabled(false);
 		}
 		updateUndoRedoState();
@@ -262,17 +270,13 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 	 */
 	private boolean canPasteFromClipboard() {
 		try {
-			return textComponent.getTransferHandler().canImport(
-					textComponent,
-					Toolkit.getDefaultToolkit().getSystemClipboard().getContents(textComponent)
-							.getTransferDataFlavors());
-		}
-		catch (IllegalStateException e) {
+			return textComponent.getTransferHandler().canImport(textComponent, Toolkit.getDefaultToolkit()
+					.getSystemClipboard().getContents(textComponent).getTransferDataFlavors());
+		} catch (IllegalStateException e) {
 			/*
-			 * as the javadoc of Clipboard.getContents state: the
-			 * IllegalStateException can be thrown when the clipboard is not
-			 * available (i.e. in use by another application), so we return
-			 * false.
+			 * as the javadoc of Clipboard.getContents state: the IllegalStateException can
+			 * be thrown when the clipboard is not available (i.e. in use by another
+			 * application), so we return false.
 			 */
 			return false;
 		}
@@ -285,8 +289,7 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 	protected CommandGroup getEditableCommandGroup() {
 		CommandGroup editGroup = getCommandManager().getCommandGroup("textEditMenu");
 		if (editGroup == null) {
-			editGroup = getCommandManager().createCommandGroup(
-					"textEditMenu",
+			editGroup = getCommandManager().createCommandGroup("textEditMenu",
 					new Object[] { GlobalCommandIds.UNDO, GlobalCommandIds.REDO, "separator", GlobalCommandIds.CUT,
 							GlobalCommandIds.COPY, GlobalCommandIds.PASTE, "separator", GlobalCommandIds.SELECT_ALL });
 		}
@@ -332,44 +335,50 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 	}
 
 	private class UndoCommandExecutor extends AbstractActionCommandExecutor {
+		@Override
 		public void execute() {
 			undoManager.undo();
 		}
 	}
 
 	private class RedoCommandExecutor extends AbstractActionCommandExecutor {
+		@Override
 		public void execute() {
 			undoManager.redo();
 		}
 	}
 
 	private class CutCommandExecutor extends AbstractActionCommandExecutor {
+		@Override
 		public void execute() {
 			textComponent.cut();
 		}
 	}
 
 	private class CopyCommandExecutor extends AbstractActionCommandExecutor {
+		@Override
 		public void execute() {
 			textComponent.copy();
 		}
 	}
 
 	private class PasteCommandExecutor extends AbstractActionCommandExecutor {
+		@Override
 		public void execute() {
 			textComponent.paste();
 		}
 	}
 
 	private class SelectAllCommandExecutor extends AbstractActionCommandExecutor {
+		@Override
 		public void execute() {
 			textComponent.selectAll();
 		}
 	}
 
 	/**
-	 * We need this class since keymaps are shared in jvm This class is a 100%
-	 * copy of the jdk class {@link JTextComponent#DefaultKeymap
+	 * We need this class since keymaps are shared in jvm This class is a 100% copy
+	 * of the jdk class {@link JTextComponent#DefaultKeymap
 	 */
 	public static class DefaultKeymap implements Keymap {
 
@@ -388,11 +397,12 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 		}
 
 		/**
-		 * Fetch the default action to fire if a key is typed (ie a KEY_TYPED
-		 * KeyEvent is received) and there is no binding for it. Typically this
-		 * would be some action that inserts text so that the keymap doesn't
-		 * require an action for each possible key.
+		 * Fetch the default action to fire if a key is typed (ie a KEY_TYPED KeyEvent
+		 * is received) and there is no binding for it. Typically this would be some
+		 * action that inserts text so that the keymap doesn't require an action for
+		 * each possible key.
 		 */
+		@Override
 		public Action getDefaultAction() {
 			if (defaultAction != null) {
 				return defaultAction;
@@ -403,14 +413,17 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 		/**
 		 * Set the default action to fire if a key is typed.
 		 */
+		@Override
 		public void setDefaultAction(Action a) {
 			defaultAction = a;
 		}
 
+		@Override
 		public String getName() {
 			return nm;
 		}
 
+		@Override
 		public Action getAction(KeyStroke key) {
 			Action a = (Action) bindings.get(key);
 			if ((a == null) && (parent != null)) {
@@ -419,6 +432,7 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 			return a;
 		}
 
+		@Override
 		public KeyStroke[] getBoundKeyStrokes() {
 			KeyStroke[] keys = new KeyStroke[bindings.size()];
 			int i = 0;
@@ -428,6 +442,7 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 			return keys;
 		}
 
+		@Override
 		public Action[] getBoundActions() {
 			Action[] actions = new Action[bindings.size()];
 			int i = 0;
@@ -437,6 +452,7 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 			return actions;
 		}
 
+		@Override
 		public KeyStroke[] getKeyStrokesForAction(Action a) {
 			if (a == null) {
 				return null;
@@ -475,12 +491,10 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 								keyStrokes.addElement(pStrokes[counter]);
 							}
 						}
-					}
-					else if (rCount == 0) {
+					} else if (rCount == 0) {
 						if (keyStrokes == null) {
 							retValue = pStrokes;
-						}
-						else {
+						} else {
 							retValue = new KeyStroke[keyStrokes.size() + pStrokes.length];
 							keyStrokes.copyInto(retValue);
 							System.arraycopy(pStrokes, 0, retValue, keyStrokes.size(), pStrokes.length);
@@ -496,34 +510,40 @@ public class TextComponentPopup extends MouseAdapter implements FocusListener, C
 			return retValue;
 		}
 
+		@Override
 		public boolean isLocallyDefined(KeyStroke key) {
 			return bindings.containsKey(key);
 		}
 
+		@Override
 		public void addActionForKeyStroke(KeyStroke key, Action a) {
 			bindings.put(key, a);
 		}
 
+		@Override
 		public void removeKeyStrokeBinding(KeyStroke key) {
 			bindings.remove(key);
 		}
 
+		@Override
 		public void removeBindings() {
 			bindings.clear();
 		}
 
+		@Override
 		public Keymap getResolveParent() {
 			return parent;
 		}
 
+		@Override
 		public void setResolveParent(Keymap parent) {
 			this.parent = parent;
 		}
 
 		/**
-		 * String representation of the keymap... potentially a very long
-		 * string.
+		 * String representation of the keymap... potentially a very long string.
 		 */
+		@Override
 		public String toString() {
 			return "Keymap[" + nm + "]" + bindings;
 		}

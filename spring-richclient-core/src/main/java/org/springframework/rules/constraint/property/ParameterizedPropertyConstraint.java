@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,15 +15,15 @@
  */
 package org.springframework.rules.constraint.property;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.closure.BinaryConstraint;
+import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.constraint.ParameterizedBinaryConstraint;
 
 /**
- * A constraint that returns the result of a <code>boolean</code>
- * expression that tests a variable bean property value against a constant
- * parameter value. For example: <code>pet.age > 5</code>
- * 
+ * A constraint that returns the result of a <code>boolean</code> expression
+ * that tests a variable bean property value against a constant parameter value.
+ * For example: <code>pet.age > 5</code>
+ *
  * @author Keith Donald
  */
 public class ParameterizedPropertyConstraint implements PropertyConstraint {
@@ -31,13 +31,11 @@ public class ParameterizedPropertyConstraint implements PropertyConstraint {
 
 	/**
 	 * Creates a BeanPropertyExpressionTester.
-	 * 
-	 * @param propertyName
-	 *            The property participating in the expression.
-	 * @param expression
-	 *            The expression predicate (tester).
-	 * @param parameter
-	 *            The constant parameter value participating in the expression.
+	 *
+	 * @param propertyName The property participating in the expression.
+	 * @param expression   The expression predicate (tester).
+	 * @param parameter    The constant parameter value participating in the
+	 *                     expression.
 	 */
 	public ParameterizedPropertyConstraint(String propertyName, BinaryConstraint expression, Object parameter) {
 		this(propertyName, new ParameterizedBinaryConstraint(expression, parameter));
@@ -47,14 +45,17 @@ public class ParameterizedPropertyConstraint implements PropertyConstraint {
 		this.parameterizedExpression = new PropertyValueConstraint(propertyName, parameterizedExpression);
 	}
 
+	@Override
 	public String getPropertyName() {
 		return parameterizedExpression.getPropertyName();
 	}
 
+	@Override
 	public boolean isDependentOn(String propertyName) {
 		return parameterizedExpression.isDependentOn(propertyName);
 	}
 
+	@Override
 	public boolean isCompoundRule() {
 		return parameterizedExpression.isCompoundRule();
 	}
@@ -68,19 +69,21 @@ public class ParameterizedPropertyConstraint implements PropertyConstraint {
 	}
 
 	private ParameterizedBinaryConstraint getParameterizedBinaryConstraint() {
-		return (ParameterizedBinaryConstraint)this.parameterizedExpression.getConstraint();
+		return (ParameterizedBinaryConstraint) this.parameterizedExpression.getConstraint();
 	}
 
 	/**
 	 * Tests the value of the configured propertyName for this bean against the
 	 * configured parameter value using the configured binary predicate.
-	 * 
+	 *
 	 * @see org.springframework.rules.constraint.Constraint#test(java.lang.Object)
 	 */
+	@Override
 	public boolean test(Object bean) {
 		return parameterizedExpression.test(bean);
 	}
 
+	@Override
 	public String toString() {
 		return getPropertyName() + " " + parameterizedExpression.toString();
 	}

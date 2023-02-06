@@ -16,8 +16,8 @@
 package org.springframework.rules.closure.support;
 
 import org.springframework.rules.closure.Closure;
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.closure.ElementGenerator;
+import org.springframework.rules.constraint.Constraint;
 
 /**
  * Base superclass for process templates.
@@ -44,8 +44,8 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 	/**
 	 * Constructor.
 	 *
-	 * @param runOnce <code>true</code> if this ElementGenerator may only be
-	 * run once (will throw an Exception if called more than once).
+	 * @param runOnce <code>true</code> if this ElementGenerator may only be run
+	 *                once (will throw an Exception if called more than once).
 	 */
 	protected AbstractElementGenerator(boolean runOnce) {
 		this.runOnce = runOnce;
@@ -70,6 +70,7 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean allTrue(Constraint constraint) {
 		WhileTrueController controller = new WhileTrueController(this, constraint);
 		run(controller);
@@ -79,6 +80,7 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean anyTrue(Constraint constraint) {
 		return findFirst(constraint, null) != null;
 	}
@@ -86,8 +88,10 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ElementGenerator findAll(final Constraint constraint) {
 		return new AbstractElementGenerator(this) {
+			@Override
 			public void run(final Closure closure) {
 				getWrappedTemplate().run(new IfBlock(constraint, closure));
 			}
@@ -97,6 +101,7 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Object findFirst(Constraint constraint) {
 		return findFirst(constraint, null);
 	}
@@ -104,6 +109,7 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Object findFirst(Constraint constraint, Object defaultIfNoneFound) {
 		ObjectFinder finder = new ObjectFinder(this, constraint);
 		run(finder);
@@ -134,6 +140,7 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 	/**
 	 * Stop the generator.
 	 */
+	@Override
 	public void stop() throws IllegalStateException {
 		if (this.wrappedGenerator != null) {
 			wrappedGenerator.stop();
@@ -142,9 +149,9 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 	}
 
 	/**
-	 * Run a block of code (Closure) until a specific test (Constraint) is
-	 * passed.
+	 * Run a block of code (Closure) until a specific test (Constraint) is passed.
 	 */
+	@Override
 	public void runUntil(Closure templateCallback, final Constraint constraint) {
 		run(new UntilTrueController(this, templateCallback, constraint));
 	}
@@ -152,8 +159,8 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 	/**
 	 * Reset the ElementGenerator if possible.
 	 *
-	 * @throws UnsupportedOperationException if this ElementGenerator was a
-	 * runOnce instance.
+	 * @throws UnsupportedOperationException if this ElementGenerator was a runOnce
+	 *                                       instance.
 	 */
 	protected void reset() {
 		if (this.status == ProcessStatus.STOPPED || this.status == ProcessStatus.COMPLETED) {
@@ -183,19 +190,20 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public abstract void run(Closure templateCallback);
 
 	/**
 	 * When the passed object returns false for the given constraint, the
-	 * ElementGenerator will be stopped. Afterwards the {@link #allTrue()}
-	 * method can be used to check if all objects passed the test.
+	 * ElementGenerator will be stopped. Afterwards the {@link #allTrue()} method
+	 * can be used to check if all objects passed the test.
 	 */
 	private static class WhileTrueController extends Block {
 		private static final long serialVersionUID = 1L;
 
 		/**
-		 * The ElementGenerator that spawns the elements and that will be
-		 * stopped when the constraint returns false.
+		 * The ElementGenerator that spawns the elements and that will be stopped when
+		 * the constraint returns false.
 		 */
 		private ElementGenerator template;
 
@@ -203,16 +211,15 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 		private Constraint constraint;
 
 		/**
-		 * Stores the outcome: true if all handled objects passed the
-		 * constraint.
+		 * Stores the outcome: true if all handled objects passed the constraint.
 		 */
 		private boolean allTrue = true;
 
 		/**
 		 * Constructor.
 		 *
-		 * @param template the ElementGenerator that spawns the elements and
-		 * that will be stopped if an object fails the constraint.
+		 * @param template   the ElementGenerator that spawns the elements and that will
+		 *                   be stopped if an object fails the constraint.
 		 * @param constraint the constraint to test against.
 		 */
 		public WhileTrueController(ElementGenerator template, Constraint constraint) {
@@ -223,6 +230,7 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 		/**
 		 * {@inheritDoc}
 		 */
+		@Override
 		protected void handle(Object o) {
 			if (!this.constraint.test(o)) {
 				this.allTrue = false;
@@ -239,22 +247,22 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 	}
 
 	/**
-	 * Each passed object will be tested against a Constraint. If returning
-	 * true, the ElementGenerator will be stopped. If false, the given Closure
-	 * will be executed with the object and the ElementGenerator will continue.
+	 * Each passed object will be tested against a Constraint. If returning true,
+	 * the ElementGenerator will be stopped. If false, the given Closure will be
+	 * executed with the object and the ElementGenerator will continue.
 	 */
 	private static class UntilTrueController extends Block {
 		private static final long serialVersionUID = 1L;
 
 		/**
-		 * The ElementGenerator that spawns the element and that will be stopped
-		 * when the constraint returns true.
+		 * The ElementGenerator that spawns the element and that will be stopped when
+		 * the constraint returns true.
 		 */
 		private ElementGenerator template;
 
 		/**
-		 * The closure that has to be executed on all objects until the
-		 * constraint returns true.
+		 * The closure that has to be executed on all objects until the constraint
+		 * returns true.
 		 */
 		private Closure templateCallback;
 
@@ -266,11 +274,11 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 		/**
 		 * Constructor.
 		 *
-		 * @param template ElementGenerator that spawns the elements and that
-		 * will be stopped if the constraint returns true.
+		 * @param template         ElementGenerator that spawns the elements and that
+		 *                         will be stopped if the constraint returns true.
 		 * @param templateCallback Closure-code executed on each passed object.
-		 * @param constraint constraint that will stop the ElementGenerator if
-		 * returning true.
+		 * @param constraint       constraint that will stop the ElementGenerator if
+		 *                         returning true.
 		 */
 		public UntilTrueController(ElementGenerator template, Closure templateCallback, Constraint constraint) {
 			this.template = template;
@@ -281,11 +289,11 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 		/**
 		 * {@inheritDoc}
 		 */
+		@Override
 		protected void handle(Object o) {
 			if (this.constraint.test(o)) {
 				this.template.stop();
-			}
-			else {
+			} else {
 				this.templateCallback.call(o);
 			}
 		}
@@ -293,15 +301,15 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 
 	/**
 	 * Will check each passed object against a constraint and call stop if the
-	 * constraint returns true. The Object which passed the test will be the
-	 * saved for retrieval.
+	 * constraint returns true. The Object which passed the test will be the saved
+	 * for retrieval.
 	 */
 	private static class ObjectFinder extends Block {
 		private static final long serialVersionUID = 1L;
 
 		/**
-		 * The generator that spawns the elements and that will be stopped when
-		 * the specified element is found.
+		 * The generator that spawns the elements and that will be stopped when the
+		 * specified element is found.
 		 */
 		private ElementGenerator generator;
 
@@ -309,16 +317,15 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 		private Constraint constraint;
 
 		/**
-		 * The object that passed the test in the constraint or null if not
-		 * found.
+		 * The object that passed the test in the constraint or null if not found.
 		 */
 		private Object foundObject;
 
 		/**
 		 * Constructor.
 		 *
-		 * @param generator the generator which spawns the elements and that
-		 * must be stopped when the element is found.
+		 * @param generator  the generator which spawns the elements and that must be
+		 *                   stopped when the element is found.
 		 * @param constraint the constraint to test against.
 		 */
 		public ObjectFinder(ElementGenerator generator, Constraint constraint) {
@@ -329,6 +336,7 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 		/**
 		 * {@inheritDoc}
 		 */
+		@Override
 		protected void handle(Object o) {
 			if (this.constraint.test(o)) {
 				foundObject = o;
@@ -344,8 +352,8 @@ public abstract class AbstractElementGenerator implements ElementGenerator {
 		}
 
 		/**
-		 * @return the object that complies with the constraint or
-		 * <code>null</code> if not found.
+		 * @return the object that complies with the constraint or <code>null</code> if
+		 *         not found.
 		 */
 		public Object getFoundObject() {
 			return foundObject;

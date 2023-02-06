@@ -8,5 +8,5 @@ import javax.swing.JComponent;
  * to userInputEvents only.
  */
 public interface UserInputListener {
-    public void update(JComponent source);
+	public void update(JComponent source);
 }

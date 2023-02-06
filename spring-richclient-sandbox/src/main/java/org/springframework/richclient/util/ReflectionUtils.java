@@ -28,16 +28,16 @@ import java.lang.reflect.Modifier;
  */
 public class ReflectionUtils extends org.springframework.util.ReflectionUtils {
 
-   public static void makeAccessible(Member member) {
-       if (!Modifier.isPublic(member.getModifiers()) ||
-               !Modifier.isPublic(member.getDeclaringClass().getModifiers())) {
-           if (member instanceof Field) {
-               ((Field)member).setAccessible(true);
-           } else if (member instanceof Constructor) {
-               ((Constructor)member).setAccessible(true);
-           } else if (member instanceof Method) {
-               ((Method)member).setAccessible(true);
-           }
-       }
-   }
+	public static void makeAccessible(Member member) {
+		if (!Modifier.isPublic(member.getModifiers())
+				|| !Modifier.isPublic(member.getDeclaringClass().getModifiers())) {
+			if (member instanceof Field) {
+				((Field) member).setAccessible(true);
+			} else if (member instanceof Constructor) {
+				((Constructor) member).setAccessible(true);
+			} else if (member instanceof Method) {
+				((Method) member).setAccessible(true);
+			}
+		}
+	}
 }

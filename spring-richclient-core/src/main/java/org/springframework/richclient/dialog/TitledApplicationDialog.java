@@ -30,8 +30,8 @@ import org.springframework.richclient.core.Message;
 import org.springframework.richclient.image.config.ImageConfigurable;
 import org.springframework.richclient.util.GuiStandardUtils;
 
-public abstract class TitledApplicationDialog extends ApplicationDialog implements Messagable, ImageConfigurable,
-		DescriptionConfigurable {
+public abstract class TitledApplicationDialog extends ApplicationDialog
+		implements Messagable, ImageConfigurable, DescriptionConfigurable {
 	private TitlePane titlePane = new TitlePane();
 
 	private Message description = new DefaultMessage("Title pane description");
@@ -52,10 +52,12 @@ public abstract class TitledApplicationDialog extends ApplicationDialog implemen
 		super(title, parent, closeAction);
 	}
 
+	@Override
 	public void setCaption(String shortDescription) {
 		throw new UnsupportedOperationException("What can I do with a caption?");
 	}
 
+	@Override
 	public void setDescription(String description) {
 		this.description = new DefaultMessage(description);
 		setMessage(this.description);
@@ -77,6 +79,7 @@ public abstract class TitledApplicationDialog extends ApplicationDialog implemen
 		return titlePane.getImage();
 	}
 
+	@Override
 	public void setImage(Image image) {
 		setTitlePaneImage(image);
 	}
@@ -85,11 +88,11 @@ public abstract class TitledApplicationDialog extends ApplicationDialog implemen
 		return titlePane.getMessage();
 	}
 
+	@Override
 	public void setMessage(Message message) {
 		if (message == null || DefaultMessage.EMPTY_MESSAGE.equals(message)) {
 			titlePane.setMessage(getDescription());
-		}
-		else {
+		} else {
 			titlePane.setMessage(message);
 		}
 	}
@@ -109,12 +112,12 @@ public abstract class TitledApplicationDialog extends ApplicationDialog implemen
 			pageControl.add(contentPane);
 			pageControl.revalidate();
 			pageControl.repaint();
-		}
-		else {
+		} else {
 			throw new IllegalStateException("Cannot set content pane until control is created");
 		}
 	}
 
+	@Override
 	protected void addDialogComponents() {
 		JComponent dialogContentPane = createDialogContentPane();
 		getDialog().getContentPane().add(dialogContentPane, BorderLayout.CENTER);
@@ -124,13 +127,13 @@ public abstract class TitledApplicationDialog extends ApplicationDialog implemen
 	/**
 	 * {@inheritDoc}
 	 *
-	 * Creates an additional panel at the top containing a title/message area.
-	 * This can be used in conjunction with validation reporters to show the
-	 * most recent error or to simply show a title and a description of the
-	 * current Dialog.
+	 * Creates an additional panel at the top containing a title/message area. This
+	 * can be used in conjunction with validation reporters to show the most recent
+	 * error or to simply show a title and a description of the current Dialog.
 	 *
 	 * Use {@link #createTitledDialogContentPane()} to add your custom components.
 	 */
+	@Override
 	protected JComponent createDialogContentPane() {
 		pageControl = new JPanel(new BorderLayout());
 		JPanel titlePaneContainer = new JPanel(new BorderLayout());
@@ -156,23 +159,28 @@ public abstract class TitledApplicationDialog extends ApplicationDialog implemen
 	/**
 	 * Dispose of the dialog content.
 	 */
+	@Override
 	protected void disposeDialogContentPane() {
 		contentPane = null;
 		pageControl = null;
 	}
 
+	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		titlePane.addPropertyChangeListener(listener);
 	}
 
+	@Override
 	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		titlePane.addPropertyChangeListener(propertyName, listener);
 	}
 
+	@Override
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		titlePane.removePropertyChangeListener(listener);
 	}
 
+	@Override
 	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		titlePane.removePropertyChangeListener(propertyName, listener);
 	}

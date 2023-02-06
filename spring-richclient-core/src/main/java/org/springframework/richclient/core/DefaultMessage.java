@@ -40,114 +40,118 @@ import org.springframework.util.ObjectUtils;
  */
 public class DefaultMessage implements Message, Serializable {
 
-    private static final long serialVersionUID = -6524078363891514995L;
+	private static final long serialVersionUID = -6524078363891514995L;
 
 	private final long timestamp;
 
-    private final String message;
+	private final String message;
 
-    private final Severity severity;
+	private final Severity severity;
 
-    /**
-     * A convenience instance representing an empty message. i.e. The message text
-     * is empty and there is no associated severity.
-     */
-    public static final DefaultMessage EMPTY_MESSAGE = new DefaultMessage("", null);
+	/**
+	 * A convenience instance representing an empty message. i.e. The message text
+	 * is empty and there is no associated severity.
+	 */
+	public static final DefaultMessage EMPTY_MESSAGE = new DefaultMessage("", null);
 
-    /**
-     * Creates a new {@code DefaultMessage} with the given text and a default
-     * severity of {@link Severity#INFO}.
-     *
-     * @param text The message text.
-     */
-    public DefaultMessage(String text) {
-        this(text, Severity.INFO);
-    }
+	/**
+	 * Creates a new {@code DefaultMessage} with the given text and a default
+	 * severity of {@link Severity#INFO}.
+	 *
+	 * @param text The message text.
+	 */
+	public DefaultMessage(String text) {
+		this(text, Severity.INFO);
+	}
 
-    /**
-     * Creates a new {@code DefaultMessage} with the given text and severity.
-     *
-     * @param message The message text.
-     * @param severity The severity of the message. May be null.
-     */
-    public DefaultMessage(String message, Severity severity) {
-        if (message == null) {
-            message = "";
-        }
-        this.timestamp = System.currentTimeMillis();
-        this.message = message;
-        this.severity = severity;
-    }
+	/**
+	 * Creates a new {@code DefaultMessage} with the given text and severity.
+	 *
+	 * @param message  The message text.
+	 * @param severity The severity of the message. May be null.
+	 */
+	public DefaultMessage(String message, Severity severity) {
+		if (message == null) {
+			message = "";
+		}
+		this.timestamp = System.currentTimeMillis();
+		this.message = message;
+		this.severity = severity;
+	}
 
-    public long getTimestamp() {
-        return timestamp;
-    }
+	@Override
+	public long getTimestamp() {
+		return timestamp;
+	}
 
-    public String getMessage() {
-        return message;
-    }
+	@Override
+	public String getMessage() {
+		return message;
+	}
 
-    public Severity getSeverity() {
-        return severity;
-    }
+	@Override
+	public Severity getSeverity() {
+		return severity;
+	}
 
-    /**
-     * Renders this message on the given GUI component. This implementation only
-     * supports components of type {@link JTextComponent} or {@link JLabel}.
-     *
-     * @throws IllegalArgumentException if {@code component} is not a {@link JTextComponent}
-     * or a {@link JLabel}.
-     */
-    public void renderMessage(JComponent component) {
-        if (component instanceof JTextComponent) {
-            ((JTextComponent)component).setText(getMessage());
-        }
-        else if (component instanceof JLabel) {
-            JLabel label = (JLabel)component;
-            label.setText(LabelUtils.htmlBlock(getMessage()));
-            label.setIcon(getIcon());
-        }
-        else {
-            throw new IllegalArgumentException("Unsupported component type " + component);
-        }
-    }
+	/**
+	 * Renders this message on the given GUI component. This implementation only
+	 * supports components of type {@link JTextComponent} or {@link JLabel}.
+	 *
+	 * @throws IllegalArgumentException if {@code component} is not a
+	 *                                  {@link JTextComponent} or a {@link JLabel}.
+	 */
+	@Override
+	public void renderMessage(JComponent component) {
+		if (component instanceof JTextComponent) {
+			((JTextComponent) component).setText(getMessage());
+		} else if (component instanceof JLabel) {
+			JLabel label = (JLabel) component;
+			label.setText(LabelUtils.htmlBlock(getMessage()));
+			label.setIcon(getIcon());
+		} else {
+			throw new IllegalArgumentException("Unsupported component type " + component);
+		}
+	}
 
-    /**
-     * Returns the icon associated with this instance's severity. The icon is
-     * expected to be retrieved using a key {@code severity.&lt;SEVERITY_LABEL&gt;}.
-     *
-     * @return The icon associated with this instance's severity, or null if the
-     * instance has no specified severity, or the icon could not be found.
-     *
-     * @see Severity#getLabel()
-     * @see IconSource#getIcon(String)
-     */
-    public Icon getIcon() {
-        if (severity == null) {
-            return null;
-        }
-        try {
-            IconSource iconSource = (IconSource)ApplicationServicesLocator.services().getService(IconSource.class);
-            return iconSource.getIcon("severity." + severity.getLabel());
-        }
-        catch (NoSuchImageResourceException e) {
-            return null;
-        }
-    }
+	/**
+	 * Returns the icon associated with this instance's severity. The icon is
+	 * expected to be retrieved using a key {@code severity.&lt;SEVERITY_LABEL&gt;}.
+	 *
+	 * @return The icon associated with this instance's severity, or null if the
+	 *         instance has no specified severity, or the icon could not be found.
+	 *
+	 * @see Severity#getLabel()
+	 * @see IconSource#getIcon(String)
+	 */
+	public Icon getIcon() {
+		if (severity == null) {
+			return null;
+		}
+		try {
+			IconSource iconSource = (IconSource) ApplicationServicesLocator.services().getService(IconSource.class);
+			return iconSource.getIcon("severity." + severity.getLabel());
+		} catch (NoSuchImageResourceException e) {
+			return null;
+		}
+	}
 
-    public boolean equals(Object o) {
-        if (!(o instanceof DefaultMessage)) {
-            return false;
-        }
-        DefaultMessage other = (DefaultMessage)o;
-        return this.message.equals(other.message) && ObjectUtils.nullSafeEquals(this.severity, other.severity);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof DefaultMessage)) {
+			return false;
+		}
+		DefaultMessage other = (DefaultMessage) o;
+		return this.message.equals(other.message) && ObjectUtils.nullSafeEquals(this.severity, other.severity);
+	}
 
-    public int hashCode() {
-        return message.hashCode() + (severity != null ? severity.hashCode() : 0);
-    }
+	@Override
+	public int hashCode() {
+		return message.hashCode() + (severity != null ? severity.hashCode() : 0);
+	}
 
-    public String toString() {
-        return new ToStringCreator(this).append("message", message).append("severity", severity).toString();
-    }
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("message", message).append("severity", severity).toString();
+	}
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -28,360 +28,383 @@ import org.springframework.richclient.util.EventListenerListHelper;
 import org.springframework.util.Assert;
 
 /**
- * A convenience implementation of the {@link Wizard} interface. This abstract class provides the 
- * following basic wizard functionaliy:
- * 
+ * A convenience implementation of the {@link Wizard} interface. This abstract
+ * class provides the following basic wizard functionaliy:
+ *
  * <ul>
  * <li>Adding and removing pages from the wizard.</li>
  * <li>Stepping forward and back through the wizard pages.</li>
  * <li>Adding and removing wizard listeners.</li>
- * <li>Notifying listeners of events such as {@code cancel} and {@code finish}.</li>
- * <li>Provides access to application services via its superclass, {@link ApplicationServicesAccessor}.</li>
+ * <li>Notifying listeners of events such as {@code cancel} and
+ * {@code finish}.</li>
+ * <li>Provides access to application services via its superclass,
+ * {@link ApplicationServicesAccessor}.</li>
  * </ul>
- * 
- * 
+ *
+ *
  * @author Keith Donald
  */
 public abstract class AbstractWizard extends ApplicationServicesAccessor implements Wizard, TitleConfigurable {
-    
-    /** The key that will be used to retrieve the default page image icon for the wizard. */
-    public static final String DEFAULT_IMAGE_KEY = "wizard.pageIcon";
 
-    private String wizardId;
+	/**
+	 * The key that will be used to retrieve the default page image icon for the
+	 * wizard.
+	 */
+	public static final String DEFAULT_IMAGE_KEY = "wizard.pageIcon";
 
-    private String title;
+	private String wizardId;
 
-    private boolean forcePreviousAndNextButtons;
+	private String title;
 
-    private List pages = new ArrayList(6);
+	private boolean forcePreviousAndNextButtons;
 
-    private WizardContainer container;
+	private List pages = new ArrayList(6);
 
-    private EventListenerListHelper listeners = new EventListenerListHelper(WizardListener.class);
+	private WizardContainer container;
 
-    private boolean autoConfigureChildPages = true;
+	private EventListenerListHelper listeners = new EventListenerListHelper(WizardListener.class);
 
-    /**
-     * Creates a new uninitialized {@code AbstractWizard}.
-     */
-    public AbstractWizard() {
-        this(null);
-    }
+	private boolean autoConfigureChildPages = true;
 
-    /**
-     * Creates a new {@code AbstractWizard} with the given identifier.
-     *
-     * @param wizardId The id used to identify this wizard. 
-     */
-    public AbstractWizard(String wizardId) {
-        this.wizardId = wizardId;
-    }
+	/**
+	 * Creates a new uninitialized {@code AbstractWizard}.
+	 */
+	public AbstractWizard() {
+		this(null);
+	}
 
-    /**
-     * Returns this wizard's identifier.
-     * 
-     * @return the identifier of this wizard, may be null.
-     */
-    public String getId() {
-        return wizardId;
-    }
+	/**
+	 * Creates a new {@code AbstractWizard} with the given identifier.
+	 *
+	 * @param wizardId The id used to identify this wizard.
+	 */
+	public AbstractWizard(String wizardId) {
+		this.wizardId = wizardId;
+	}
 
-    /**
-     * Sets the flag that determines whether or not wizard pages will be configured as they are 
-     * added to this wizard.
-     *
-     * @param autoConfigure
-     */
-    public void setAutoConfigureChildPages(boolean autoConfigure) {
-        this.autoConfigureChildPages = autoConfigure;
-    }
+	/**
+	 * Returns this wizard's identifier.
+	 * 
+	 * @return the identifier of this wizard, may be null.
+	 */
+	@Override
+	public String getId() {
+		return wizardId;
+	}
 
-    /**
-     * Controls whether the wizard needs Previous and Next buttons even if it
-     * currently contains only one page.
-     * <p>
-     * This flag should be set on wizards where the first wizard page adds
-     * follow-on wizard pages based on user input.
-     * </p>
-     * 
-     * @param b
-     *            <code>true</code> to always show Next and Previous buttons,
-     *            and <code>false</code> to suppress Next and Previous buttons
-     *            for single page wizards
-     */
-    public void setForcePreviousAndNextButtons(boolean b) {
-        this.forcePreviousAndNextButtons = b;
-    }
+	/**
+	 * Sets the flag that determines whether or not wizard pages will be configured
+	 * as they are added to this wizard.
+	 *
+	 * @param autoConfigure
+	 */
+	public void setAutoConfigureChildPages(boolean autoConfigure) {
+		this.autoConfigureChildPages = autoConfigure;
+	}
 
-    /**
-     * Returns the window title for the container that host this wizard.
-     * 
-     * @return the wizard title, may be null.
-     */
-    public String getTitle() {
-        return title;
-    }
+	/**
+	 * Controls whether the wizard needs Previous and Next buttons even if it
+	 * currently contains only one page.
+	 * <p>
+	 * This flag should be set on wizards where the first wizard page adds follow-on
+	 * wizard pages based on user input.
+	 * </p>
+	 * 
+	 * @param b <code>true</code> to always show Next and Previous buttons, and
+	 *          <code>false</code> to suppress Next and Previous buttons for single
+	 *          page wizards
+	 */
+	public void setForcePreviousAndNextButtons(boolean b) {
+		this.forcePreviousAndNextButtons = b;
+	}
 
-    /**
-     * Sets the window title for the container that hosts this page to the given
-     * string.
-     * 
-     * @param newTitle
-     *            the window title for the container
-     */
-    public void setTitle(String newTitle) {
-        this.title = newTitle;
-    }
+	/**
+	 * Returns the window title for the container that host this wizard.
+	 * 
+	 * @return the wizard title, may be null.
+	 */
+	@Override
+	public String getTitle() {
+		return title;
+	}
 
-    /**
-     * Returns the component that contains this wizard.
-     * 
-     * @return the wizard container.
-     */
-    public WizardContainer getContainer() {
-        return container;
-    }
+	/**
+	 * Sets the window title for the container that hosts this page to the given
+	 * string.
+	 * 
+	 * @param newTitle the window title for the container
+	 */
+	@Override
+	public void setTitle(String newTitle) {
+		this.title = newTitle;
+	}
 
-    /**
-     * Sets the component that contains this wizard.
-     * 
-     * @param container the container to set
-     */
-    public void setContainer(WizardContainer container) {
-        this.container = container;
-    }
+	/**
+	 * Returns the component that contains this wizard.
+	 * 
+	 * @return the wizard container.
+	 */
+	@Override
+	public WizardContainer getContainer() {
+		return container;
+	}
 
-    /**
-     * Adds a new page to this wizard. The page is inserted at the end of the
-     * page list.
-     * 
-     * @param page
-     *            the new page
-     */
-    public void addPage(WizardPage page) {
-        addPage(getId(), page);
-    }
+	/**
+	 * Sets the component that contains this wizard.
+	 * 
+	 * @param container the container to set
+	 */
+	@Override
+	public void setContainer(WizardContainer container) {
+		this.container = container;
+	}
 
-    /**
-     * Adds a new page to this wizard. The page is inserted at the end of the
-     * page list.
-     * 
-     * @param wizardConfigurationKey
-     *            the parent configuration key of the page, used for
-     *            configuration, by default this wizard's id *
-     * @param page
-     *            the new page
-     */
-    protected void addPage(String wizardConfigurationKey, WizardPage page) {
-        pages.add(page);
-        page.setWizard(this);
-        if (autoConfigureChildPages) {
-            String key = ((wizardConfigurationKey != null) ? wizardConfigurationKey + "." : "") + page.getId();
-            getObjectConfigurer().configure(page, key);
-        }
-    }
+	/**
+	 * Adds a new page to this wizard. The page is inserted at the end of the page
+	 * list.
+	 * 
+	 * @param page the new page
+	 */
+	public void addPage(WizardPage page) {
+		addPage(getId(), page);
+	}
 
-    /**
-     * Adds a new page to this wizard. The page is created by wrapping the form in a 
-     * {@link FormBackedWizardPage} and appending it to the end of the page list.
-     * 
-     * @param formPage The form page to be added to the wizard.
-     * @return the newly created wizard page that wraps the given form. 
-     * 
-     * @throws IllegalArgumentException if {@code formPage} is null.
-     */
-    public WizardPage addForm(Form formPage) {
-        Assert.notNull(formPage, "The form page cannot be null");
-        WizardPage page = new FormBackedWizardPage(formPage, !autoConfigureChildPages);
-        addPage(page);
-        return page;
-    }
+	/**
+	 * Adds a new page to this wizard. The page is inserted at the end of the page
+	 * list.
+	 * 
+	 * @param wizardConfigurationKey the parent configuration key of the page, used
+	 *                               for configuration, by default this wizard's id
+	 *                               *
+	 * @param page                   the new page
+	 */
+	protected void addPage(String wizardConfigurationKey, WizardPage page) {
+		pages.add(page);
+		page.setWizard(this);
+		if (autoConfigureChildPages) {
+			String key = ((wizardConfigurationKey != null) ? wizardConfigurationKey + "." : "") + page.getId();
+			getObjectConfigurer().configure(page, key);
+		}
+	}
 
-    /**
-     * Removes the given page from this wizard.
-     * 
-     * @param page The page to be removed.
-     */
-    public void removePage(WizardPage page) {
-        if (pages.remove(page)) {
-            page.setWizard(null);
-        }
-    }
+	/**
+	 * Adds a new page to this wizard. The page is created by wrapping the form in a
+	 * {@link FormBackedWizardPage} and appending it to the end of the page list.
+	 * 
+	 * @param formPage The form page to be added to the wizard.
+	 * @return the newly created wizard page that wraps the given form.
+	 * 
+	 * @throws IllegalArgumentException if {@code formPage} is null.
+	 */
+	public WizardPage addForm(Form formPage) {
+		Assert.notNull(formPage, "The form page cannot be null");
+		WizardPage page = new FormBackedWizardPage(formPage, !autoConfigureChildPages);
+		addPage(page);
+		return page;
+	}
 
-    /**
-     * This implementation of {@link Wizard#addPages()} does nothing. Subclasses should override 
-     * this method if extra pages need to be added before the wizard is displayed. New pages should 
-     * be added by calling {@link #addPage(WizardPage)}.
-     */
-    public void addPages() {
-        //do nothing
-    }
+	/**
+	 * Removes the given page from this wizard.
+	 * 
+	 * @param page The page to be removed.
+	 */
+	public void removePage(WizardPage page) {
+		if (pages.remove(page)) {
+			page.setWizard(null);
+		}
+	}
 
-    /**
-     * Returns true if all the pages of this wizard have been completed.
-     * 
-     */
-    public boolean canFinish() {
-        // Default implementation is to check if all pages are complete.
-        for (int i = 0; i < pages.size(); i++) {
-            if (!((WizardPage)pages.get(i)).isPageComplete())
-                return false;
-        }
-        return true;
-    }
+	/**
+	 * This implementation of {@link Wizard#addPages()} does nothing. Subclasses
+	 * should override this method if extra pages need to be added before the wizard
+	 * is displayed. New pages should be added by calling
+	 * {@link #addPage(WizardPage)}.
+	 */
+	@Override
+	public void addPages() {
+		// do nothing
+	}
 
-    /**
-     * Returns the image stored under the key {@value #DEFAULT_IMAGE_KEY}.
-     *
-     * @see ImageSource#getImage(String)
-     */
-    public Image getDefaultPageImage() {
-        return getImageSource().getImage(DEFAULT_IMAGE_KEY);
-    }
+	/**
+	 * Returns true if all the pages of this wizard have been completed.
+	 * 
+	 */
+	@Override
+	public boolean canFinish() {
+		// Default implementation is to check if all pages are complete.
+		for (int i = 0; i < pages.size(); i++) {
+			if (!((WizardPage) pages.get(i)).isPageComplete()) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public WizardPage getNextPage(WizardPage page) {
-        int index = pages.indexOf(page);
-        if (index == pages.size() - 1 || index == -1) {
-            // last page or page not found
-            return null;
-        }
-        return (WizardPage)pages.get(index + 1);
-    }
+	/**
+	 * Returns the image stored under the key {@value #DEFAULT_IMAGE_KEY}.
+	 *
+	 * @see ImageSource#getImage(String)
+	 */
+	@Override
+	public Image getDefaultPageImage() {
+		return getImageSource().getImage(DEFAULT_IMAGE_KEY);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public WizardPage getPage(String pageId) {
-        Iterator it = pages.iterator();
-        while (it.hasNext()) {
-            WizardPage page = (WizardPage)it.next();
-            if (page.getId().equals(pageId)) {
-                return page;
-            }
-        }
-        return null;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public WizardPage getNextPage(WizardPage page) {
+		int index = pages.indexOf(page);
+		if (index == pages.size() - 1 || index == -1) {
+			// last page or page not found
+			return null;
+		}
+		return (WizardPage) pages.get(index + 1);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public int getPageCount() {
-        return pages.size();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public WizardPage getPage(String pageId) {
+		Iterator it = pages.iterator();
+		while (it.hasNext()) {
+			WizardPage page = (WizardPage) it.next();
+			if (page.getId().equals(pageId)) {
+				return page;
+			}
+		}
+		return null;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public WizardPage[] getPages() {
-        return (WizardPage[])pages.toArray(new WizardPage[pages.size()]);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getPageCount() {
+		return pages.size();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public WizardPage getPreviousPage(WizardPage page) {
-        int index = pages.indexOf(page);
-        if (index == 0 || index == -1) {
-            // first page or page not found
-            return null;
-        }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public WizardPage[] getPages() {
+		return (WizardPage[]) pages.toArray(new WizardPage[pages.size()]);
+	}
 
-        logger.debug("Returning previous page...");
-        return (WizardPage)pages.get(index - 1);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public WizardPage getPreviousPage(WizardPage page) {
+		int index = pages.indexOf(page);
+		if (index == 0 || index == -1) {
+			// first page or page not found
+			return null;
+		}
 
-    /**
-     * {@inheritDoc}
-     */
-    public WizardPage getStartingPage() {
-        if (pages.size() == 0) {
-            return null;
-        }
-        return (WizardPage)pages.get(0);
-    }
+		logger.debug("Returning previous page...");
+		return (WizardPage) pages.get(index - 1);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean needsPreviousAndNextButtons() {
-        return forcePreviousAndNextButtons || pages.size() > 1;
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public WizardPage getStartingPage() {
+		if (pages.size() == 0) {
+			return null;
+		}
+		return (WizardPage) pages.get(0);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void addWizardListener(WizardListener wizardListener) {
-        listeners.add(wizardListener);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean needsPreviousAndNextButtons() {
+		return forcePreviousAndNextButtons || pages.size() > 1;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public void removeWizardListener(WizardListener wizardListener) {
-        listeners.remove(wizardListener);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void addWizardListener(WizardListener wizardListener) {
+		listeners.add(wizardListener);
+	}
 
-    /**
-     * Fires an {@code onPerformFinish} event to all listeners.
-     */
-    protected void fireFinishedPerformed(boolean result) {
-        listeners.fire("onPerformFinish", this, Boolean.valueOf(result));
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void removeWizardListener(WizardListener wizardListener) {
+		listeners.remove(wizardListener);
+	}
 
-    /**
-     * Fires an {@code onPerformCancel} event to all listeners.
-     */
-    protected void fireCancelPerformed(boolean result) {
-        listeners.fire("onPerformCancel", this, Boolean.valueOf(result));
-    }
+	/**
+	 * Fires an {@code onPerformFinish} event to all listeners.
+	 */
+	protected void fireFinishedPerformed(boolean result) {
+		listeners.fire("onPerformFinish", this, Boolean.valueOf(result));
+	}
 
-    /**
-     * Performs any required processing when the wizard receives a finish request, and then fires
-     * an appropriate event to any wizard listeners listening to this wizard.
-     * 
-     * @return {@code true} to indicate that the finish request was accepted, {@code false} to 
-     * indicate that it was refused.
-     */
-    public boolean performFinish() {
-        boolean result = onFinish();
-        fireFinishedPerformed(result);
-        return result;
-    }
+	/**
+	 * Fires an {@code onPerformCancel} event to all listeners.
+	 */
+	protected void fireCancelPerformed(boolean result) {
+		listeners.fire("onPerformCancel", this, Boolean.valueOf(result));
+	}
 
-    /**
-     * Performs any required processing when the wizard is cancelled, and then fires an appropriate 
-     * event to any wizard listeners listening to this wizard.
-     * 
-     * @return {@code true} to indicate that the cancel request was accepted, {@code false} to 
-     * indicate that it was refused.
-     */
-    public boolean performCancel() {
-        boolean result = onCancel();
-        fireCancelPerformed(result);
-        return result;
-    }
+	/**
+	 * Performs any required processing when the wizard receives a finish request,
+	 * and then fires an appropriate event to any wizard listeners listening to this
+	 * wizard.
+	 * 
+	 * @return {@code true} to indicate that the finish request was accepted,
+	 *         {@code false} to indicate that it was refused.
+	 */
+	@Override
+	public boolean performFinish() {
+		boolean result = onFinish();
+		fireFinishedPerformed(result);
+		return result;
+	}
 
-    /**
-     * Subclasses must implement this method to perform any processing when the wizard receives a 
-     * finish request.
-     * 
-     * @return {@code true} to indicate that the finish request was accepted, {@code false} to 
-     * indicate that it was refused.
-     */
-    protected abstract boolean onFinish();
+	/**
+	 * Performs any required processing when the wizard is cancelled, and then fires
+	 * an appropriate event to any wizard listeners listening to this wizard.
+	 * 
+	 * @return {@code true} to indicate that the cancel request was accepted,
+	 *         {@code false} to indicate that it was refused.
+	 */
+	@Override
+	public boolean performCancel() {
+		boolean result = onCancel();
+		fireCancelPerformed(result);
+		return result;
+	}
 
-    /**
-     * Subclasses can override this method to perform processing when the wizard receives a cancel
-     * request. This default implementation always returns true.
-     * 
-     * @returrn {@code true} to indicate that the cancel request was accepted, {@code false} to 
-     * indicate that it was refused.
-     */
-    protected boolean onCancel() {
-        return true;
-    }
+	/**
+	 * Subclasses must implement this method to perform any processing when the
+	 * wizard receives a finish request.
+	 * 
+	 * @return {@code true} to indicate that the finish request was accepted,
+	 *         {@code false} to indicate that it was refused.
+	 */
+	protected abstract boolean onFinish();
+
+	/**
+	 * Subclasses can override this method to perform processing when the wizard
+	 * receives a cancel request. This default implementation always returns true.
+	 * 
+	 * @returrn {@code true} to indicate that the cancel request was accepted,
+	 *          {@code false} to indicate that it was refused.
+	 */
+	protected boolean onCancel() {
+		return true;
+	}
 
 }

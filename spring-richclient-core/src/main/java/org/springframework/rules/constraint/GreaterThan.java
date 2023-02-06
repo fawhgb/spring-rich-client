@@ -17,7 +17,6 @@ package org.springframework.rules.constraint;
 
 import java.util.Comparator;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.closure.BinaryConstraint;
 
 /**
@@ -57,10 +56,12 @@ public class GreaterThan extends ComparisonBinaryPredicate implements BinaryCons
 		super(comparator);
 	}
 
+	@Override
 	protected boolean testCompareResult(int result) {
 		return result > 0;
 	}
 
+	@Override
 	public String toString() {
 		return RelationalOperator.GREATER_THAN.toString();
 	}

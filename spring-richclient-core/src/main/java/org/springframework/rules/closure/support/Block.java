@@ -24,19 +24,22 @@ package org.springframework.rules.closure.support;
  */
 public abstract class Block extends AbstractClosure {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * {@inheritDoc}
 	 *
 	 * @return allways <code>null</code>, only code is executed.
 	 */
+	@Override
 	public final Object call(Object argument) {
 		handle(argument);
 		return null;
 	}
 
 	/**
-	 * Method to override in block subclasses that return no result: this method
-	 * is intended encapsulate the block's processing.
+	 * Method to override in block subclasses that return no result: this method is
+	 * intended encapsulate the block's processing.
 	 *
 	 * @param argument the argument to process
 	 */

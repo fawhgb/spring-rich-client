@@ -31,39 +31,41 @@ import org.springframework.util.Assert;
  */
 public class LabeledEnumComboBoxBinder extends ComboBoxBinder {
 
-    private LabeledEnumResolver enumResolver;
+	private LabeledEnumResolver enumResolver;
 
-    public LabeledEnumComboBoxBinder() {
-        super(new String[] { COMPARATOR_KEY, RENDERER_KEY, EDITOR_KEY, FILTER_KEY });
-    }
+	public LabeledEnumComboBoxBinder() {
+		super(new String[] { COMPARATOR_KEY, RENDERER_KEY, EDITOR_KEY, FILTER_KEY });
+	}
 
-    protected AbstractListBinding createListBinding(JComponent control, FormModel formModel, String formPropertyPath) {
-        Assert.isInstanceOf(JComboBox.class, control, formPropertyPath);
-        return new LabeledEnumComboBoxBinding((JComboBox) control, formModel, formPropertyPath);
-    }
+	@Override
+	protected AbstractListBinding createListBinding(JComponent control, FormModel formModel, String formPropertyPath) {
+		Assert.isInstanceOf(JComboBox.class, control, formPropertyPath);
+		return new LabeledEnumComboBoxBinding((JComboBox) control, formModel, formPropertyPath);
+	}
 
-    protected void applyContext(AbstractListBinding binding, Map context) {
-        super.applyContext(binding, context);
-        binding.setSelectableItems(createEnumSelectableItemsHolder(binding.getFormModel(), binding.getProperty()));
-    }
+	@Override
+	protected void applyContext(AbstractListBinding binding, Map context) {
+		super.applyContext(binding, context);
+		binding.setSelectableItems(createEnumSelectableItemsHolder(binding.getFormModel(), binding.getProperty()));
+	}
 
-    protected Collection createEnumSelectableItemsHolder(FormModel formModel, String formPropertyPath) {
-        Collection enumCollection = getLabeledEnumResolver().getLabeledEnumSet(
-                getPropertyType(formModel, formPropertyPath));
-        Assert.notNull(enumCollection, "Unable to resolve enums for class '"
-                + getPropertyType(formModel, formPropertyPath).getName() + "'.");
-        return enumCollection;
-    }
+	protected Collection createEnumSelectableItemsHolder(FormModel formModel, String formPropertyPath) {
+		Collection enumCollection = getLabeledEnumResolver()
+				.getLabeledEnumSet(getPropertyType(formModel, formPropertyPath));
+		Assert.notNull(enumCollection,
+				"Unable to resolve enums for class '" + getPropertyType(formModel, formPropertyPath).getName() + "'.");
+		return enumCollection;
+	}
 
-    public LabeledEnumResolver getLabeledEnumResolver() {
-        if (enumResolver == null) {
-            enumResolver = (LabeledEnumResolver) ApplicationServicesLocator.services().getService(
-                    LabeledEnumResolver.class);
-        }
-        return enumResolver;
-    }
+	public LabeledEnumResolver getLabeledEnumResolver() {
+		if (enumResolver == null) {
+			enumResolver = (LabeledEnumResolver) ApplicationServicesLocator.services()
+					.getService(LabeledEnumResolver.class);
+		}
+		return enumResolver;
+	}
 
-    public void setEnumResolver(LabeledEnumResolver enumResolver) {
-        this.enumResolver = enumResolver;
-    }
+	public void setEnumResolver(LabeledEnumResolver enumResolver) {
+		this.enumResolver = enumResolver;
+	}
 }

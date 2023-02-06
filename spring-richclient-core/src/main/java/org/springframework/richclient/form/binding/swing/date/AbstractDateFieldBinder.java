@@ -23,7 +23,7 @@ import org.springframework.richclient.form.binding.support.AbstractBinder;
 
 /**
  * Abstract base class for <code>java.util.Date</code> binders.
- * 
+ *
  * @author Peter De Bruycker
  */
 public abstract class AbstractDateFieldBinder extends AbstractBinder implements Binder {
@@ -38,9 +38,8 @@ public abstract class AbstractDateFieldBinder extends AbstractBinder implements 
 
 	protected void applyContext(AbstractDateFieldBinding binding, Map context) {
 		if (context.containsKey(DATE_FORMAT)) {
-			binding.setDateFormat((String)context.get(DATE_FORMAT));
-		}
-		else if (dateFormat != null) {
+			binding.setDateFormat((String) context.get(DATE_FORMAT));
+		} else if (dateFormat != null) {
 			binding.setDateFormat(dateFormat);
 		}
 	}

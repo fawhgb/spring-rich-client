@@ -18,29 +18,33 @@ package org.springframework.richclient.application.splash;
 import org.springframework.util.Assert;
 
 /**
- * <code>SplashScreen</code> implementation that delegates to a <code>java.awt.SplashScreen</code> implementation.
- * 
+ * <code>SplashScreen</code> implementation that delegates to a
+ * <code>java.awt.SplashScreen</code> implementation.
+ *
  * @author Peter De Bruycker
  */
 public class MustangSplashScreen implements SplashScreen {
-    private java.awt.SplashScreen splashScreen;
+	private java.awt.SplashScreen splashScreen;
 
-    public void dispose() {
-        splashScreen.close();
-    }
+	@Override
+	public void dispose() {
+		splashScreen.close();
+	}
 
-    public void splash() {
-        splashScreen = java.awt.SplashScreen.getSplashScreen();
-        Assert.state(splashScreen != null, "No splash screen defined on startup");
-    }
+	@Override
+	public void splash() {
+		splashScreen = java.awt.SplashScreen.getSplashScreen();
+		Assert.state(splashScreen != null, "No splash screen defined on startup");
+	}
 
-    /**
-     * Returns the <code>java.awt.SplashScreen</code> implementation that has been set at startup. The splashscreen
-     * can then be used to perform custom painting, etc...
-     * 
-     * @return the splash screen
-     */
-    protected java.awt.SplashScreen getSplashScreen() {
-        return splashScreen;
-    }
+	/**
+	 * Returns the <code>java.awt.SplashScreen</code> implementation that has been
+	 * set at startup. The splashscreen can then be used to perform custom painting,
+	 * etc...
+	 * 
+	 * @return the splash screen
+	 */
+	protected java.awt.SplashScreen getSplashScreen() {
+		return splashScreen;
+	}
 }

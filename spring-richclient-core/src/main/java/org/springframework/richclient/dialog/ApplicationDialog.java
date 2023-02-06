@@ -15,6 +15,30 @@
  */
 package org.springframework.richclient.dialog;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.HeadlessException;
+import java.awt.Point;
+import java.awt.Window;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
+
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.richclient.application.support.ApplicationServicesAccessor;
@@ -28,13 +52,6 @@ import org.springframework.richclient.util.WindowUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowFocusListener;
-
 /**
  * <p>
  * Abstract Base Class for a dialog with standard layout, buttons, and behavior.
@@ -45,9 +62,9 @@ import java.awt.event.WindowFocusListener;
  * </p>
  * <p>
  * Subclasses implement the body of the dialog (wherein business objects are
- * manipulated), and the action taken by the <code>OK</code> button. Aside
- * from creating the dialog's contentj with {@link #createDialogContentPane()},
- * a proper disposing should be implemented in
+ * manipulated), and the action taken by the <code>OK</code> button. Aside from
+ * creating the dialog's contentj with {@link #createDialogContentPane()}, a
+ * proper disposing should be implemented in
  * {@link #disposeDialogContentPane()}.
  * </p>
  * <p>
@@ -68,7 +85,8 @@ import java.awt.event.WindowFocusListener;
  * applicationwindow is open</li>
  * </ul>
  * </p>
- * <em>Note: Default close behaviour is to dispose the graphical dialog when it closes, you can set the CloseAction to hide if needed.</em>
+ * <em>Note: Default close behaviour is to dispose the graphical dialog when it
+ * closes, you can set the CloseAction to hide if needed.</em>
  *
  * @author Keith Donald
  * @author Jan Hoskens
@@ -126,8 +144,8 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	private ActionCommand callingCommand;
 
 	/**
-	 * Create dialog with default closeAction {@link CloseAction#DISPOSE}. No
-	 * parent or title set.
+	 * Create dialog with default closeAction {@link CloseAction#DISPOSE}. No parent
+	 * or title set.
 	 *
 	 * @see #init()
 	 */
@@ -138,7 +156,7 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	/**
 	 * Create dialog with default closeAction {@link CloseAction#DISPOSE}.
 	 *
-	 * @param title text that will appear on dialog's titlebar.
+	 * @param title  text that will appear on dialog's titlebar.
 	 * @param parent component serving as parent in it's hierarchy.
 	 *
 	 * @see #init()
@@ -153,11 +171,11 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	 * Creates a new application dialog. The actual UI is not initialized until
 	 * showDialog() is called.
 	 *
-	 * @param title text which appears in the title bar after the name of the
-	 * application.
-	 * @param parent frame to which this dialog is attached.
+	 * @param title       text which appears in the title bar after the name of the
+	 *                    application.
+	 * @param parent      frame to which this dialog is attached.
 	 * @param closeAction sets the behaviour of the dialog upon close. Default
-	 * closeAction is {@link CloseAction#DISPOSE}.
+	 *                    closeAction is {@link CloseAction#DISPOSE}.
 	 *
 	 * @see #init()
 	 */
@@ -177,6 +195,7 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setTitle(String title) {
 		this.title = title;
 		if (dialog != null) {
@@ -194,8 +213,9 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	 */
 	protected String getTitle() {
 		if (!StringUtils.hasText(this.title)) {
-			if (StringUtils.hasText(getCallingCommandText()))
+			if (StringUtils.hasText(getCallingCommandText())) {
 				return getCallingCommandText();
+			}
 
 			return DEFAULT_DIALOG_TITLE;
 		}
@@ -203,15 +223,15 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	}
 
 	/**
-	 * The parent Component that will be used to extract the Frame/Dialog owner
-	 * for the JDialog at creation. You may pass a Window/Frame that will be
-	 * used directly as parent for the JDialog, or you can pass the component
-	 * which has one of both in it's parent hierarchy. The latter option can be
-	 * handy when you're locally implementing Components without a direct
-	 * -connection to/notion of- a Window/Frame.
+	 * The parent Component that will be used to extract the Frame/Dialog owner for
+	 * the JDialog at creation. You may pass a Window/Frame that will be used
+	 * directly as parent for the JDialog, or you can pass the component which has
+	 * one of both in it's parent hierarchy. The latter option can be handy when
+	 * you're locally implementing Components without a direct -connection to/notion
+	 * of- a Window/Frame.
 	 *
 	 * @param parentComponent Component that is a Frame/Window or has one in its
-	 * parent hierarchy.
+	 *                        parent hierarchy.
 	 */
 	public void setParentComponent(Component parentComponent) {
 		this.parentComponent = parentComponent;
@@ -229,9 +249,9 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 
 	/**
 	 * Set the {@link CloseAction} of this dialog. Default action is
-	 * {@link CloseAction#DISPOSE} which disposes the visual dialog upon
-	 * closing. When using {@link CloseAction#HIDE} the visual components are
-	 * cached and reused.
+	 * {@link CloseAction#DISPOSE} which disposes the visual dialog upon closing.
+	 * When using {@link CloseAction#HIDE} the visual components are cached and
+	 * reused.
 	 *
 	 * @param action the {@link CloseAction} to use when closing the dialog.
 	 */
@@ -242,8 +262,8 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	/**
 	 * When opening the dialog, the finish button can be enabled by default.
 	 *
-	 * @param enabled <code>true</code> when the finish button should be
-	 * enabled by default, <code>false</code> otherwise.
+	 * @param enabled <code>true</code> when the finish button should be enabled by
+	 *                default, <code>false</code> otherwise.
 	 */
 	public void setDefaultEnabled(boolean enabled) {
 		this.defaultEnabled = enabled;
@@ -297,6 +317,7 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	/**
 	 * Enable/disable the finish command of the dialog.
 	 */
+	@Override
 	public void setEnabled(boolean enabled) {
 		setFinishEnabled(enabled);
 	}
@@ -330,9 +351,11 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	/**
 	 * Returns whether this Dialog is enabled.
 	 */
+	@Override
 	public boolean isEnabled() {
-		if (isControlCreated())
+		if (isControlCreated()) {
 			return finishCommand.isEnabled();
+		}
 
 		return false;
 	}
@@ -378,14 +401,14 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 
 	/**
 	 * <p>
-	 * Show the dialog. The dialog will be created if it doesn't exist yet.
-	 * Before setting the dialog visible, a hook method onAboutToShow is called
-	 * and the location will be set.
+	 * Show the dialog. The dialog will be created if it doesn't exist yet. Before
+	 * setting the dialog visible, a hook method onAboutToShow is called and the
+	 * location will be set.
 	 * </p>
 	 * <p>
 	 * When showing the dialog several times, it will always be opened on the
-	 * location that has been set, or relative to the parent. (former location
-	 * will not persist)
+	 * location that has been set, or relative to the parent. (former location will
+	 * not persist)
 	 * </p>
 	 */
 	public void showDialog() {
@@ -396,9 +419,8 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 			onAboutToShow();
 			if (getLocation() != null) {
 				dialog.setLocation(getLocation());
-                dialog.setPreferredSize(getPreferredSize());
-			}
-			else {
+				dialog.setPreferredSize(getPreferredSize());
+			} else {
 				WindowUtils.centerOnParent(dialog, getLocationRelativeTo());
 			}
 
@@ -436,8 +458,7 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	private void constructDialog() {
 		if (getParentWindow() instanceof Frame) {
 			dialog = new JDialog((Frame) getParentWindow(), getTitle(), modal);
-		}
-		else {
+		} else {
 			dialog = new JDialog((Dialog) getParentWindow(), getTitle(), modal);
 		}
 
@@ -451,29 +472,31 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 
 	/**
 	 * <p>
-	 * --jh-- This method is copied from JOptionPane. I'm still trying to figure
-	 * out why they chose to have a static method with package visibility for
-	 * this one instead of just making it public.
+	 * --jh-- This method is copied from JOptionPane. I'm still trying to figure out
+	 * why they chose to have a static method with package visibility for this one
+	 * instead of just making it public.
 	 * </p>
 	 *
 	 * Returns the specified component's toplevel <code>Frame</code> or
 	 * <code>Dialog</code>.
 	 *
 	 * @param parentComponent the <code>Component</code> to check for a
-	 * <code>Frame</code> or <code>Dialog</code>
-	 * @return the <code>Frame</code> or <code>Dialog</code> that contains
-	 * the component, or the default frame if the component is <code>null</code>,
-	 * or does not have a valid <code>Frame</code> or <code>Dialog</code>
-	 * parent
-	 * @exception HeadlessException if
-	 * <code>GraphicsEnvironment.isHeadless</code> returns <code>true</code>
+	 *                        <code>Frame</code> or <code>Dialog</code>
+	 * @return the <code>Frame</code> or <code>Dialog</code> that contains the
+	 *         component, or the default frame if the component is
+	 *         <code>null</code>, or does not have a valid <code>Frame</code> or
+	 *         <code>Dialog</code> parent
+	 * @exception HeadlessException if <code>GraphicsEnvironment.isHeadless</code>
+	 *                              returns <code>true</code>
 	 * @see java.awt.GraphicsEnvironment#isHeadless
 	 */
 	public static Window getWindowForComponent(Component parentComponent) throws HeadlessException {
-		if (parentComponent == null)
+		if (parentComponent == null) {
 			return JOptionPane.getRootFrame();
-		if (parentComponent instanceof Frame || parentComponent instanceof Dialog)
+		}
+		if (parentComponent instanceof Frame || parentComponent instanceof Dialog) {
 			return (Window) parentComponent;
+		}
 		return getWindowForComponent(parentComponent.getParent());
 	}
 
@@ -482,6 +505,7 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	 */
 	private void initStandardCommands() {
 		finishCommand = new ActionCommand(getFinishCommandId()) {
+			@Override
 			public void doExecuteCommand() {
 				boolean result = onFinish();
 				if (result) {
@@ -497,6 +521,7 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 
 		cancelCommand = new ActionCommand(getCancelCommandId()) {
 
+			@Override
 			public void doExecuteCommand() {
 				onCancel();
 			}
@@ -514,8 +539,8 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	}
 
 	/**
-	 * Subclasses may override to return a security controller id to be attached
-	 * to the finish command. The default is null, no controller.
+	 * Subclasses may override to return a security controller id to be attached to
+	 * the finish command. The default is null, no controller.
 	 *
 	 * @return security controller id, or null if none
 	 */
@@ -524,8 +549,8 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	}
 
 	/**
-	 * Request invocation of the action taken when the user hits the
-	 * <code>OK</code> (finish) button.
+	 * Request invocation of the action taken when the user hits the <code>OK</code>
+	 * (finish) button.
 	 *
 	 * @return true if action completed successfully; false otherwise.
 	 */
@@ -545,7 +570,8 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	 * @see #getFinishSuccessMessage()
 	 */
 	protected void showFinishSuccessMessageDialog() {
-		MessageDialog messageDialog = new MessageDialog(getFinishSuccessTitle(), getDialog(), getFinishSuccessMessage());
+		MessageDialog messageDialog = new MessageDialog(getFinishSuccessTitle(), getDialog(),
+				getFinishSuccessMessage());
 		messageDialog.showDialog();
 	}
 
@@ -593,8 +619,9 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	 * Returns the arguments to use in the finish succesful title.
 	 */
 	protected Object[] getFinishSuccessTitleArguments() {
-		if (StringUtils.hasText(getCallingCommandText()))
+		if (StringUtils.hasText(getCallingCommandText())) {
 			return new Object[] { getCallingCommandText() };
+		}
 
 		return new Object[0];
 	}
@@ -628,8 +655,8 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	}
 
 	/**
-	 * Force the escape key to call the same action as pressing the Cancel
-	 * button. This does not always work. See class comment.
+	 * Force the escape key to call the same action as pressing the Cancel button.
+	 * This does not always work. See class comment.
 	 */
 	private void addCancelByEscapeKey() {
 		int noModifiers = 0;
@@ -640,19 +667,18 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	/**
 	 * Add an action key binding to this dialog.
 	 *
-	 * @param key the {@link KeyStroke} that triggers the command/action.
-	 * @param actionKey id of command that will be triggered by the {@link KeyStroke}.
+	 * @param key       the {@link KeyStroke} that triggers the command/action.
+	 * @param actionKey id of command that will be triggered by the
+	 *                  {@link KeyStroke}.
 	 *
 	 * @see #addActionKeyBinding(KeyStroke, String, Action)
 	 */
 	protected void addActionKeyBinding(KeyStroke key, String actionKey) {
 		if (actionKey == finishCommand.getId()) {
 			addActionKeyBinding(key, actionKey, finishCommand.getActionAdapter());
-		}
-		else if (actionKey == cancelCommand.getId()) {
+		} else if (actionKey == cancelCommand.getId()) {
 			addActionKeyBinding(key, actionKey, cancelCommand.getActionAdapter());
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("Unknown action key " + actionKey);
 		}
 	}
@@ -660,9 +686,10 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	/**
 	 * Add an action key binding to this dialog.
 	 *
-	 * @param key the {@link KeyStroke} that triggers the command/action.
+	 * @param key       the {@link KeyStroke} that triggers the command/action.
 	 * @param actionKey id of the action.
-	 * @param action {@link Action} that will be triggered by the {@link KeyStroke}.
+	 * @param action    {@link Action} that will be triggered by the
+	 *                  {@link KeyStroke}.
 	 *
 	 * @see #getActionMap()
 	 * @see #getInputMap()
@@ -728,8 +755,8 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 
 	/**
 	 * Return the GUI which allows the user to manipulate the business objects
-	 * related to this dialog. This GUI will be placed above the <code>OK</code>
-	 * and <code>Cancel</code> buttons, in a standard manner.
+	 * related to this dialog. This GUI will be placed above the <code>OK</code> and
+	 * <code>Cancel</code> buttons, in a standard manner.
 	 *
 	 * <p>
 	 * Any components/objects created at this point need to be disposed in
@@ -752,9 +779,9 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	}
 
 	/**
-	 * Return a standardized row of command buttons, right-justified and all of
-	 * the same size, with OK as the default button, and no mnemonics used, as
-	 * per the Java Look and Feel guidelines.
+	 * Return a standardized row of command buttons, right-justified and all of the
+	 * same size, with OK as the default button, and no mnemonics used, as per the
+	 * Java Look and Feel guidelines.
 	 */
 	protected JComponent createButtonBar() {
 		this.dialogCommandGroup = CommandGroup.createCommandGroup(null, getCommandGroupMembers());
@@ -764,11 +791,10 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	}
 
 	/**
-	 * Template getter method to return the commands to populate the dialog
-	 * button bar.
+	 * Template getter method to return the commands to populate the dialog button
+	 * bar.
 	 *
-	 * @return The array of commands (may also be a separator or glue
-	 * identifier)
+	 * @return The array of commands (may also be a separator or glue identifier)
 	 */
 	protected Object[] getCommandGroupMembers() {
 		return new AbstractCommand[] { getFinishCommand(), getCancelCommand() };
@@ -793,8 +819,8 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	}
 
 	/**
-	 * Register the provided button as the default dialog button. The button
-	 * must be present on the dialog.
+	 * Register the provided button as the default dialog button. The button must be
+	 * present on the dialog.
 	 *
 	 * @param command The button to become the default.
 	 */
@@ -805,8 +831,7 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	}
 
 	/**
-	 * Template lifecycle method invoked after the dialog control is
-	 * initialized.
+	 * Template lifecycle method invoked after the dialog control is initialized.
 	 */
 	protected void onInitialized() {
 	}
@@ -855,19 +880,18 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	private void executeCloseAction() {
 		if (closeAction == CloseAction.HIDE) {
 			hide();
-		}
-		else {
+		} else {
 			dispose();
 		}
 	}
 
 	/**
-	 * Close and dispose of the visual dialog. This forces the dialog to be
-	 * re-built on the next show. Any subclasses that are creating visual
-	 * components and holding references to them should dispose them when the
-	 * surrounding dialog is disposed by implementing
-	 * {@link #disposeDialogContentPane()}. Any other objects that are created
-	 * in {@link #createDialogContentPane()} can be handled here as well.
+	 * Close and dispose of the visual dialog. This forces the dialog to be re-built
+	 * on the next show. Any subclasses that are creating visual components and
+	 * holding references to them should dispose them when the surrounding dialog is
+	 * disposed by implementing {@link #disposeDialogContentPane()}. Any other
+	 * objects that are created in {@link #createDialogContentPane()} can be handled
+	 * here as well.
 	 *
 	 * @see #disposeDialogContentPane()
 	 */
@@ -883,9 +907,9 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	/**
 	 * Cleanup any components/objects that are created during
 	 * {@link #createDialogContentPane()}. This method is called if the
-	 * {@link CloseAction} is set to {@link CloseAction#DISPOSE} and the dialog
-	 * is being closed. This ensures that when disposing the surrounding dialog,
-	 * the content pane can be disposed as well.
+	 * {@link CloseAction} is set to {@link CloseAction#DISPOSE} and the dialog is
+	 * being closed. This ensures that when disposing the surrounding dialog, the
+	 * content pane can be disposed as well.
 	 *
 	 * @see #createDialogContentPane()
 	 * @see #dispose()
@@ -894,8 +918,8 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	}
 
 	/**
-	 * Hide the dialog. This differs from dispose in that the dialog control
-	 * stays cached in memory.
+	 * Hide the dialog. This differs from dispose in that the dialog control stays
+	 * cached in memory.
 	 */
 	protected final void hide() {
 		if (dialog != null) {
@@ -905,9 +929,9 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	}
 
 	/**
-	 * Returns the parent window based on the internal parent Component. Will
-	 * search for a Window in the parent hierarchy if needed (when parent
-	 * Component isn't a Window).
+	 * Returns the parent window based on the internal parent Component. Will search
+	 * for a Window in the parent hierarchy if needed (when parent Component isn't a
+	 * Window).
 	 *
 	 * @return the parent window
 	 */
@@ -915,8 +939,7 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 		if (parentWindow == null) {
 			if ((parentComponent == null) && (getActiveWindow() != null)) {
 				parentWindow = getActiveWindow().getControl();
-			}
-			else {
+			} else {
 				parentWindow = getWindowForComponent(parentComponent);
 			}
 		}
@@ -927,18 +950,22 @@ public abstract class ApplicationDialog extends ApplicationServicesAccessor impl
 	 * Handler that will be registered as listener on the dialog.
 	 */
 	private class DialogEventHandler extends WindowAdapter implements WindowFocusListener {
+		@Override
 		public void windowActivated(WindowEvent e) {
 			onWindowActivated();
 		}
 
+		@Override
 		public void windowClosing(WindowEvent e) {
 			getCancelCommand().execute();
 		}
 
+		@Override
 		public void windowGainedFocus(WindowEvent e) {
 			onWindowGainedFocus();
 		}
 
+		@Override
 		public void windowLostFocus(WindowEvent e) {
 			onWindowLostFocus();
 		}

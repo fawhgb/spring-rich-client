@@ -1,6 +1,5 @@
 package org.springframework.richclient.form.binding.swing.date;
 
-
 import java.util.Map;
 
 import javax.swing.JComponent;
@@ -17,10 +16,12 @@ public class JCalendarDateFieldBinder extends AbstractDateFieldBinder {
 		super(new String[] { DATE_FORMAT });
 	}
 
+	@Override
 	protected JComponent createControl(Map context) {
 		return new JDateChooser();
 	}
 
+	@Override
 	protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, Map context) {
 		Assert.isTrue(control instanceof JDateChooser, "Control must be an instance of JDateChooser.");
 		JCalendarDateFieldBinding binding = new JCalendarDateFieldBinding((JDateChooser) control, formModel,

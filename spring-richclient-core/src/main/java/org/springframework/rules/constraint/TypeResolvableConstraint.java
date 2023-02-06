@@ -15,7 +15,6 @@
  */
 package org.springframework.rules.constraint;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.reporting.TypeResolvableSupport;
 
 /**
@@ -24,8 +23,7 @@ import org.springframework.rules.reporting.TypeResolvableSupport;
  *
  * @author Keith Donald
  */
-public abstract class TypeResolvableConstraint extends
-		TypeResolvableSupport implements Constraint {
+public abstract class TypeResolvableConstraint extends TypeResolvableSupport implements Constraint {
 
 	public TypeResolvableConstraint() {
 		super();

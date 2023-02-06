@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2006 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -39,185 +39,199 @@ import org.springframework.util.StringUtils;
 
 /**
  * MessagePane implementation used by {@link MessageDialog}.
- * 
+ *
  * @author Peter De Bruycker
  */
 public class AlertMessageAreaPane extends AbstractControlFactory implements MessagePane, PropertyChangeListener {
-	
-    private Icon warningIcon;
-    private Icon errorIcon;
-    private Icon infoIcon;
-    private HtmlPane messageArea;
-    private JLabel iconLabel;
-    private DefaultMessageAreaModel messageAreaModel;
 
-    /**
-     * Creates a new uninitialized {@code AlertMessageAreaPane}.
-     */
-    public AlertMessageAreaPane() {
-        init( this );
-    }
+	private Icon warningIcon;
+	private Icon errorIcon;
+	private Icon infoIcon;
+	private HtmlPane messageArea;
+	private JLabel iconLabel;
+	private DefaultMessageAreaModel messageAreaModel;
 
-    /**
-     * Creates a new {@code AlertMessageAreaPane} that uses the given delegate
-     * as a message container.
-     * @param delegate The messagable delegate.
-     */
-    public AlertMessageAreaPane( Messagable delegate ) {
-        init( delegate );
-    }
+	/**
+	 * Creates a new uninitialized {@code AlertMessageAreaPane}.
+	 */
+	public AlertMessageAreaPane() {
+		init(this);
+	}
 
-    private void init( Messagable delegate ) {
-        this.messageAreaModel = new DefaultMessageAreaModel( delegate );
-        this.messageAreaModel.addPropertyChangeListener( this );
+	/**
+	 * Creates a new {@code AlertMessageAreaPane} that uses the given delegate as a
+	 * message container.
+	 *
+	 * @param delegate The messagable delegate.
+	 */
+	public AlertMessageAreaPane(Messagable delegate) {
+		init(delegate);
+	}
 
-        iconLabel = new JLabel();
-        messageArea = new HtmlPane();
+	private void init(Messagable delegate) {
+		this.messageAreaModel = new DefaultMessageAreaModel(delegate);
+		this.messageAreaModel.addPropertyChangeListener(this);
 
-        Font defaultFont = UIManager.getFont( "Button.font" );
-        String stylesheet = "body {  font-family: " + defaultFont.getName() + "; font-size: " + defaultFont.getSize()
-                + "pt;  }" + "a, p, li { font-family: " + defaultFont.getName() + "; font-size: "
-                + defaultFont.getSize() + "pt;  }";
-        try {
-            ((HTMLDocument) messageArea.getDocument()).getStyleSheet().loadRules( new StringReader( stylesheet ), null );
-        } catch( IOException e ) {
-        }
+		iconLabel = new JLabel();
+		messageArea = new HtmlPane();
 
-        GuiStandardUtils.textComponentAsLabel( messageArea );
-        messageArea.setFont( new JLabel().getFont() );
-        messageArea.setFocusable(false);
-    }
+		Font defaultFont = UIManager.getFont("Button.font");
+		String stylesheet = "body {  font-family: " + defaultFont.getName() + "; font-size: " + defaultFont.getSize()
+				+ "pt;  }" + "a, p, li { font-family: " + defaultFont.getName() + "; font-size: "
+				+ defaultFont.getSize() + "pt;  }";
+		try {
+			((HTMLDocument) messageArea.getDocument()).getStyleSheet().loadRules(new StringReader(stylesheet), null);
+		} catch (IOException e) {
+		}
 
-    public int getPreferredHeight() {
-        return messageArea.getPreferredSize().height;
-    }
+		GuiStandardUtils.textComponentAsLabel(messageArea);
+		messageArea.setFont(new JLabel().getFont());
+		messageArea.setFocusable(false);
+	}
 
-    protected JComponent createControl() {
-        JPanel panel = new JPanel( new BorderLayout( UIConstants.TWO_SPACES, 0 ) );
-        panel.add( iconLabel, BorderLayout.LINE_START );
-        panel.add( messageArea );
+	public int getPreferredHeight() {
+		return messageArea.getPreferredSize().height;
+	}
 
-        return panel;
-    }
+	@Override
+	protected JComponent createControl() {
+		JPanel panel = new JPanel(new BorderLayout(UIConstants.TWO_SPACES, 0));
+		panel.add(iconLabel, BorderLayout.LINE_START);
+		panel.add(messageArea);
 
-    public Message getMessage() {
-        return messageAreaModel.getMessage();
-    }
+		return panel;
+	}
 
-    public void setMessage( Message message ) {
-        messageAreaModel.setMessage( message );
-    }
+	@Override
+	public Message getMessage() {
+		return messageAreaModel.getMessage();
+	}
 
-    public boolean isMessageShowing() {
-        if( messageArea == null ) {
-            return false;
-        }
-        return StringUtils.hasText( messageArea.getText() ) && messageArea.isVisible();
-    }
+	@Override
+	public void setMessage(Message message) {
+		messageAreaModel.setMessage(message);
+	}
 
-    public void addPropertyChangeListener( PropertyChangeListener listener ) {
-        messageAreaModel.addPropertyChangeListener( listener );
-    }
+	@Override
+	public boolean isMessageShowing() {
+		if (messageArea == null) {
+			return false;
+		}
+		return StringUtils.hasText(messageArea.getText()) && messageArea.isVisible();
+	}
 
-    public void addPropertyChangeListener( String propertyName, PropertyChangeListener listener ) {
-        messageAreaModel.addPropertyChangeListener( propertyName, listener );
-    }
+	@Override
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
+		messageAreaModel.addPropertyChangeListener(listener);
+	}
 
-    public void removePropertyChangeListener( PropertyChangeListener listener ) {
-        messageAreaModel.removePropertyChangeListener( listener );
-    }
+	@Override
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		messageAreaModel.addPropertyChangeListener(propertyName, listener);
+	}
 
-    public void removePropertyChangeListener( String propertyName, PropertyChangeListener listener ) {
-        messageAreaModel.removePropertyChangeListener( propertyName, listener );
-    }
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
+		messageAreaModel.removePropertyChangeListener(listener);
+	}
 
-    public void propertyChange( PropertyChangeEvent evt ) {
-        update( getMessage() );
-    }
+	@Override
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+		messageAreaModel.removePropertyChangeListener(propertyName, listener);
+	}
 
-    private void update( Message message ) {
-        String text = message.getMessage();
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		update(getMessage());
+	}
 
-        // try to split it into two parts
-        String[] parts = message.getMessage().split( "\\n" );
-        if( parts.length > 1 ) {
-            StringBuffer sb = new StringBuffer();
-            sb.append( "<html>" );
-            sb.append( "<b>" );
-            sb.append( parts[0] );
-            sb.append( "</b>" );
+	private void update(Message message) {
+		String text = message.getMessage();
 
-            for( int i = 1; i < parts.length; i++ ) {
-                sb.append( "<p>" );
-                sb.append( parts[i] );
-            }
+		// try to split it into two parts
+		String[] parts = message.getMessage().split("\\n");
+		if (parts.length > 1) {
+			StringBuffer sb = new StringBuffer();
+			sb.append("<html>");
+			sb.append("<b>");
+			sb.append(parts[0]);
+			sb.append("</b>");
 
-            text = sb.toString();
-        }
+			for (int i = 1; i < parts.length; i++) {
+				sb.append("<p>");
+				sb.append(parts[i]);
+			}
 
-        messageArea.setText( text );
-        iconLabel.setIcon( getIcon( message.getSeverity() ) );
-    }
+			text = sb.toString();
+		}
 
-    /**
-     * Returns the icon for the given severity.
-     * @param severity The severity level.
-     * @return The icon for the given severity, never null.
-     */
-    private Icon getIcon( Severity severity ) {
-        if( severity == Severity.ERROR ) {
-            return getErrorIcon();
-        }
-        if( severity == Severity.WARNING ) {
-            return getWarningIcon();
-        }
-        return getInfoIcon();
-    }
+		messageArea.setText(text);
+		iconLabel.setIcon(getIcon(message.getSeverity()));
+	}
 
-    private Icon getErrorIcon() {
-        if( errorIcon == null ) {
-            errorIcon = UIManager.getIcon( "OptionPane.errorIcon" );
-        }
-        return errorIcon;
-    }
+	/**
+	 * Returns the icon for the given severity.
+	 *
+	 * @param severity The severity level.
+	 * @return The icon for the given severity, never null.
+	 */
+	private Icon getIcon(Severity severity) {
+		if (severity == Severity.ERROR) {
+			return getErrorIcon();
+		}
+		if (severity == Severity.WARNING) {
+			return getWarningIcon();
+		}
+		return getInfoIcon();
+	}
 
-    /**
-     * Sets the icon to be shown when displaying messages with error-level severity.
-     * @param icon The error icon.
-     */
-    public void setErrorIcon( Icon icon ) {
-        errorIcon = icon;
-    }
+	private Icon getErrorIcon() {
+		if (errorIcon == null) {
+			errorIcon = UIManager.getIcon("OptionPane.errorIcon");
+		}
+		return errorIcon;
+	}
 
-    private Icon getWarningIcon() {
-        if( warningIcon == null ) {
-            warningIcon = UIManager.getIcon( "OptionPane.warningIcon" );
-        }
-        return warningIcon;
-    }
+	/**
+	 * Sets the icon to be shown when displaying messages with error-level severity.
+	 *
+	 * @param icon The error icon.
+	 */
+	public void setErrorIcon(Icon icon) {
+		errorIcon = icon;
+	}
 
-    /**
-     * Sets the icon to be shown when displaying messages with warning-level severity.
-     * @param icon The warning icon.
-     */
-    public void setWarningIcon( Icon icon ) {
-        warningIcon = icon;
-    }
+	private Icon getWarningIcon() {
+		if (warningIcon == null) {
+			warningIcon = UIManager.getIcon("OptionPane.warningIcon");
+		}
+		return warningIcon;
+	}
 
-    private Icon getInfoIcon() {
-        if( infoIcon == null ) {
-            infoIcon = UIManager.getIcon( "OptionPane.informationIcon" );
-        }
-        return infoIcon;
-    }
+	/**
+	 * Sets the icon to be shown when displaying messages with warning-level
+	 * severity.
+	 *
+	 * @param icon The warning icon.
+	 */
+	public void setWarningIcon(Icon icon) {
+		warningIcon = icon;
+	}
 
-    /**
-     * The icon to be shown when dispalying messages with info-level severity.
-     * @param icon The info icon.
-     */
-    public void setInfoIcon( Icon icon ) {
-        infoIcon = icon;
-    }
-    
+	private Icon getInfoIcon() {
+		if (infoIcon == null) {
+			infoIcon = UIManager.getIcon("OptionPane.informationIcon");
+		}
+		return infoIcon;
+	}
+
+	/**
+	 * The icon to be shown when dispalying messages with info-level severity.
+	 *
+	 * @param icon The info icon.
+	 */
+	public void setInfoIcon(Icon icon) {
+		infoIcon = icon;
+	}
+
 }
-

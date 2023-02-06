@@ -24,36 +24,37 @@ import org.springframework.richclient.command.ActionCommand;
 
 /**
  * Tiles all <code>JInternalFrame</code>s in a given <code>JDesktopPane</code>.
- * 
+ *
  * @author Peter De Bruycker
  */
 public class TileCommand extends ActionCommand {
-    private static final String ID = "tileCommand";
-    private JDesktopPane desktop;
+	private static final String ID = "tileCommand";
+	private JDesktopPane desktop;
 
-    public TileCommand( JDesktopPane desktopPane ) {
-        super( ID );
-        desktop = desktopPane;
-    }
+	public TileCommand(JDesktopPane desktopPane) {
+		super(ID);
+		desktop = desktopPane;
+	}
 
-    protected void doExecuteCommand() {
-        JInternalFrame allFrames[] = desktop.getAllFrames();
+	@Override
+	protected void doExecuteCommand() {
+		JInternalFrame allFrames[] = desktop.getAllFrames();
 
-        int frameHeight = desktop.getBounds().height / allFrames.length;
-        int y = 0;
-        for( int i = 0; i < allFrames.length; i++ ) {
-            JInternalFrame frame = allFrames[i];
-            if( frame.isIcon() ) {
-                try {
-                    frame.setIcon( false );
-                } catch( PropertyVetoException e ) {
-                    // ignore
-                }
-            }
+		int frameHeight = desktop.getBounds().height / allFrames.length;
+		int y = 0;
+		for (int i = 0; i < allFrames.length; i++) {
+			JInternalFrame frame = allFrames[i];
+			if (frame.isIcon()) {
+				try {
+					frame.setIcon(false);
+				} catch (PropertyVetoException e) {
+					// ignore
+				}
+			}
 
-            frame.setSize( desktop.getBounds().width, frameHeight );
-            frame.setLocation( 0, y );
-            y = y + frameHeight;
-        }
-    }
+			frame.setSize(desktop.getBounds().width, frameHeight);
+			frame.setLocation(0, y);
+			y = y + frameHeight;
+		}
+	}
 }

@@ -54,6 +54,7 @@ public class IteratorTemplate extends AbstractElementGeneratorWorkflow {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	protected void doSetup() {
 		if (this.collection != null) {
 			this.it = this.collection.iterator();
@@ -63,6 +64,7 @@ public class IteratorTemplate extends AbstractElementGeneratorWorkflow {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	protected boolean hasMoreWork() {
 		return it.hasNext();
 	}
@@ -70,6 +72,7 @@ public class IteratorTemplate extends AbstractElementGeneratorWorkflow {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	protected Object doWork() {
 		return it.next();
 	}

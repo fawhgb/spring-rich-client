@@ -20,12 +20,13 @@ import org.springframework.richclient.form.builder.FormComponentInterceptor;
 
 /**
  * Factory for <code>DirtyIndicatorInterceptor</code> instances.
- * 
+ *
  * @author Peter De Bruycker
  */
 
 public class DirtyIndicatorInterceptorFactory extends ConfigurableFormComponentInterceptorFactory {
-    protected FormComponentInterceptor createInterceptor( FormModel formModel ) {
-        return new DirtyIndicatorInterceptor( formModel );
-    }
+	@Override
+	protected FormComponentInterceptor createInterceptor(FormModel formModel) {
+		return new DirtyIndicatorInterceptor(formModel);
+	}
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -48,309 +48,309 @@ import org.springframework.util.Assert;
  * <p>
  * This class also decorates the entries in the tree to indicate the page
  * completed status.
- * 
+ *
  * @author Peter De Bruycker
  * @author Oliver Hutchison
  */
 public class TreeCompositeDialogPage extends CompositeDialogPage {
 
-    private static final DialogPage ROOT_PAGE = null;
-    
-    private final PageSelector pageSelector = new PageSelector();
-    
-    private final PageTitleCellRenderer treeCellRenderer = new PageTitleCellRenderer();
+	private static final DialogPage ROOT_PAGE = null;
 
-    private CardLayout cardLayout;
+	private final PageSelector pageSelector = new PageSelector();
 
-    private DefaultTreeModel pageTreeModel;
+	private final PageTitleCellRenderer treeCellRenderer = new PageTitleCellRenderer();
 
-    private JPanel pagePanel;
+	private CardLayout cardLayout;
 
-    private JTree pageTree;
+	private DefaultTreeModel pageTreeModel;
 
-    private Map nodes;
+	private JPanel pagePanel;
 
+	private JTree pageTree;
 
-    /**
-     * Constructs a new <code>TreeCompositeDialogPage</code> instance.
-     * 
-     * @param pageId
-     *            the pageId
-     */
-    public TreeCompositeDialogPage(String pageId) {
-        this(pageId, true);
-    }
-    
-    public TreeCompositeDialogPage(String pageId, boolean autoConfigure) {
-        super(pageId, autoConfigure);
-        nodes = new HashMap();
-        nodes.put(ROOT_PAGE, new DefaultMutableTreeNode("pages"));
-    }
+	private Map nodes;
 
-    /**
-     * Adds a DialogPage to the tree. The page will be added at the top level of
-     * the tree hierarchy.
-     * 
-     * @param page
-     *            the page to add
-     */
-    public void addPage(DialogPage page) {
-        addPage(ROOT_PAGE, page);
-    }
+	/**
+	 * Constructs a new <code>TreeCompositeDialogPage</code> instance.
+	 * 
+	 * @param pageId the pageId
+	 */
+	public TreeCompositeDialogPage(String pageId) {
+		this(pageId, true);
+	}
 
-    /**
-     * Adds a new page to the tree. The page is created by wrapping the form
-     * page in a FormBackedDialogPage.
-     * 
-     * @param parent
-     *            the parent page in the tree hierarchy
-     * @param formPage
-     *            the form page to be inserted
-     * @return the DialogPage that wraps form
-     */
-    public DialogPage addForm(DialogPage parent, Form form) {
-        DialogPage page = createDialogPage(form);
-        addPage(parent, page);
-        return page;
-    }
+	public TreeCompositeDialogPage(String pageId, boolean autoConfigure) {
+		super(pageId, autoConfigure);
+		nodes = new HashMap();
+		nodes.put(ROOT_PAGE, new DefaultMutableTreeNode("pages"));
+	}
 
-    /**
-     * Adds a DialogPage to the tree.
-     * 
-     * @param parent
-     *            the parent page in the tree hierarchy
-     * @param page
-     *            the page to add
-     */
-    public void addPage(DialogPage parent, DialogPage child) {
-        DefaultMutableTreeNode parentNode = getNode(parent);
-        Assert.notNull(parentNode, "Parent dialog page must have been added before child");
-        DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
-        parentNode.add(childNode);
-        nodes.put(child, childNode);
-        super.addPage(child);
-        
-        // If we've already been constructed, then update our model and cards
-        if( pageTreeModel != null ) {
-            pageTreeModel.nodeStructureChanged(parentNode);
-        }
-        if( pagePanel != null ) {
-            prepareDialogPage(child);
-            processDialogPage(child);
-            // TODO: should resize all pages if this new page is the largest
-        }
-    }
+	/**
+	 * Adds a DialogPage to the tree. The page will be added at the top level of the
+	 * tree hierarchy.
+	 * 
+	 * @param page the page to add
+	 */
+	@Override
+	public void addPage(DialogPage page) {
+		addPage(ROOT_PAGE, page);
+	}
 
-    /**
-     * Remove a page from the tree.
-     * @param page to remove
-     */
-    public void removePage( DialogPage page ) {
-        DefaultMutableTreeNode treeNode = getNode(page);
-        TreeNode parentNode = treeNode.getParent();
-        
-        treeNode.removeFromParent();
-        
-        // If we've already been constructed, then update our model and cards
-        if( pagePanel != null ) {
-            JComponent control = page.getControl();
-            pagePanel.remove(control);
-        }
+	/**
+	 * Adds a new page to the tree. The page is created by wrapping the form page in
+	 * a FormBackedDialogPage.
+	 * 
+	 * @param parent   the parent page in the tree hierarchy
+	 * @param formPage the form page to be inserted
+	 * @return the DialogPage that wraps form
+	 */
+	public DialogPage addForm(DialogPage parent, Form form) {
+		DialogPage page = createDialogPage(form);
+		addPage(parent, page);
+		return page;
+	}
 
-        if( pageTreeModel != null ) {
-            pageTreeModel.nodeStructureChanged(parentNode);
-        }
-    }
+	/**
+	 * Adds a DialogPage to the tree.
+	 * 
+	 * @param parent the parent page in the tree hierarchy
+	 * @param page   the page to add
+	 */
+	public void addPage(DialogPage parent, DialogPage child) {
+		DefaultMutableTreeNode parentNode = getNode(parent);
+		Assert.notNull(parentNode, "Parent dialog page must have been added before child");
+		DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
+		parentNode.add(childNode);
+		nodes.put(child, childNode);
+		super.addPage(child);
 
-    /**
-     * Adds a group DialogPages to the tree.
-     * 
-     * @param parent
-     *            the parent page in the tree hierarchy
-     * @param pages
-     *            the pages to add
-     */
-    public void addPages(DialogPage parent, DialogPage[] pages) {
-        for (int i = 0; i < pages.length; i++) {
-            addPage(parent, pages[i]);
-        }
-    }
+		// If we've already been constructed, then update our model and cards
+		if (pageTreeModel != null) {
+			pageTreeModel.nodeStructureChanged(parentNode);
+		}
+		if (pagePanel != null) {
+			prepareDialogPage(child);
+			processDialogPage(child);
+			// TODO: should resize all pages if this new page is the largest
+		}
+	}
 
-    /**
-     * Expands or collapses all of the tree nodes.
-     * 
-     * @param expand
-     *            when true expand all nodes; otherwise collapses all nodes
-     */
-    public void expandAll(boolean expand) {
-        if (!isControlCreated()) {
-            getControl();
-        }
-        TreeUtils.expandAll(pageTree, expand);
-    }
+	/**
+	 * Remove a page from the tree.
+	 *
+	 * @param page to remove
+	 */
+	public void removePage(DialogPage page) {
+		DefaultMutableTreeNode treeNode = getNode(page);
+		TreeNode parentNode = treeNode.getParent();
 
-    /**
-     * Expands or collapses a number of levels of tree nodes.
-     * 
-     * @param levels
-     *            the number of levels to expand/collapses
-     * @param expand
-     *            when true expand all nodes; otherwise collapses all nodes
-     */
-    public void expandLevels(int levels, boolean expand) {
-        if (!isControlCreated()) {
-            getControl();
-        }
-        TreeUtils.expandLevels(pageTree, levels, expand);
-    }
+		treeNode.removeFromParent();
 
-    /**
-     * @see org.springframework.richclient.dialog.AbstractDialogPage#createControl()
-     */
-    protected JComponent createControl() {
-        createPageControls();
+		// If we've already been constructed, then update our model and cards
+		if (pagePanel != null) {
+			JComponent control = page.getControl();
+			pagePanel.remove(control);
+		}
 
-        cardLayout = new CardLayout();
-        pagePanel = new JPanel(cardLayout);
+		if (pageTreeModel != null) {
+			pageTreeModel.nodeStructureChanged(parentNode);
+		}
+	}
 
-        List pages = getPages();
-        for (Iterator i = pages.iterator(); i.hasNext();) {
-            DialogPage page = (DialogPage)i.next();
+	/**
+	 * Adds a group DialogPages to the tree.
+	 * 
+	 * @param parent the parent page in the tree hierarchy
+	 * @param pages  the pages to add
+	 */
+	public void addPages(DialogPage parent, DialogPage[] pages) {
+		for (int i = 0; i < pages.length; i++) {
+			addPage(parent, pages[i]);
+		}
+	}
 
-            processDialogPage(page);
-        }
+	/**
+	 * Expands or collapses all of the tree nodes.
+	 * 
+	 * @param expand when true expand all nodes; otherwise collapses all nodes
+	 */
+	public void expandAll(boolean expand) {
+		if (!isControlCreated()) {
+			getControl();
+		}
+		TreeUtils.expandAll(pageTree, expand);
+	}
 
-        DefaultMutableTreeNode rootNode = getNode(null);
-        pageTreeModel = new DefaultTreeModel(rootNode);
+	/**
+	 * Expands or collapses a number of levels of tree nodes.
+	 * 
+	 * @param levels the number of levels to expand/collapses
+	 * @param expand when true expand all nodes; otherwise collapses all nodes
+	 */
+	public void expandLevels(int levels, boolean expand) {
+		if (!isControlCreated()) {
+			getControl();
+		}
+		TreeUtils.expandLevels(pageTree, levels, expand);
+	}
 
-        createTreeControl();
-        pageTree.setModel(pageTreeModel);
+	/**
+	 * @see org.springframework.richclient.dialog.AbstractDialogPage#createControl()
+	 */
+	@Override
+	protected JComponent createControl() {
+		createPageControls();
 
-        if (rootNode.getChildCount() > 0) {
-            pageTree.setSelectionInterval(0, 0);
-        }
+		cardLayout = new CardLayout();
+		pagePanel = new JPanel(cardLayout);
 
-        return createContentControl();
-    }
+		List pages = getPages();
+		for (Iterator i = pages.iterator(); i.hasNext();) {
+			DialogPage page = (DialogPage) i.next();
 
-    protected void processDialogPage(DialogPage page) {
-        JComponent control = page.getControl();
-        control.setPreferredSize(getLargestPageSize());
-        pagePanel.add(control, page.getId());
-    }
+			processDialogPage(page);
+		}
 
-    protected JPanel createContentControl() {
-        TableLayoutBuilder panelBuilder = new TableLayoutBuilder();
-        String colSpec = "colSpec=" + getTreeControlWidth() + " rowSpec=fill:default:grow";
-        panelBuilder.cell(new JScrollPane(pageTree), colSpec);
-        panelBuilder.gapCol();
-        panelBuilder.cell(pagePanel, "valign=top");
-        return panelBuilder.getPanel();
-    }
+		DefaultMutableTreeNode rootNode = getNode(null);
+		pageTreeModel = new DefaultTreeModel(rootNode);
 
-    /**
-     * Get the width of the tree component to use in the final control construction.  This
-     * default implementation returns 150.
-     * @return width of tree control
-     */
-    protected int getTreeControlWidth() {
-        return 150;
-    }
+		createTreeControl();
+		pageTree.setModel(pageTreeModel);
 
-    protected void createTreeControl() {
-        pageTree = new JTree();
-        pageTree.setRootVisible(false);
-        pageTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-        pageTree.addTreeSelectionListener(pageSelector);
-        pageTree.setCellRenderer(treeCellRenderer);
-        pageTree.setShowsRootHandles(true);
-    }
+		if (rootNode.getChildCount() > 0) {
+			pageTree.setSelectionInterval(0, 0);
+		}
 
-    protected void updatePageComplete(DialogPage page) {
-        super.updatePageComplete(page);
-        if (pageTreeModel != null) {
-            pageTreeModel.nodeChanged(getNode(page));
-        }
-    }
-    
-    protected void updatePageLabels(DialogPage page) {
-        if (pageTreeModel != null) {
-             pageTreeModel.nodeChanged(getNode(page));
-         }
-    }
- 
+		return createContentControl();
+	}
 
-    protected DefaultMutableTreeNode getNode(DialogPage page) {
-        return (DefaultMutableTreeNode)nodes.get(page);
-    }
+	protected void processDialogPage(DialogPage page) {
+		JComponent control = page.getControl();
+		control.setPreferredSize(getLargestPageSize());
+		pagePanel.add(control, page.getId());
+	}
 
-    
-    /**
-     * Get the nodes map.
-     * @return nodes map.
-     */
-    protected Map getNodes() {
-        return nodes;
-    }
-    
-    /**
-     * Get the page tree.
-     * @return page tree component.
-     */
-    protected JTree getPageTree() {
-        return pageTree;
-    }
+	protected JPanel createContentControl() {
+		TableLayoutBuilder panelBuilder = new TableLayoutBuilder();
+		String colSpec = "colSpec=" + getTreeControlWidth() + " rowSpec=fill:default:grow";
+		panelBuilder.cell(new JScrollPane(pageTree), colSpec);
+		panelBuilder.gapCol();
+		panelBuilder.cell(pagePanel, "valign=top");
+		return panelBuilder.getPanel();
+	}
 
-    /**
-     * Get the page panel.
-     * @return page panel component.
-     */
-    protected JPanel getPagePanel() {
-        return pagePanel;
-    }
-    
-    /**
-     * Get the page tree model.
-     * @return page tree model.
-     */
-    protected DefaultTreeModel getPageTreeModel() {
-        return pageTreeModel;
-    }
-    
-    protected class PageTitleCellRenderer extends FocusableTreeCellRenderer {
-        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded,
-                boolean leaf, int row, boolean hasFocus) {
-            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-        
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
-            if (node.getUserObject() instanceof DialogPage) {
-                DialogPage page = (DialogPage)node.getUserObject();
-        
-                this.setText(getDecoratedPageTitle(page));
-                this.setIcon(page.getIcon());
-            }
-        
-            return this;
-        }
-    }
+	/**
+	 * Get the width of the tree component to use in the final control construction.
+	 * This default implementation returns 150.
+	 *
+	 * @return width of tree control
+	 */
+	protected int getTreeControlWidth() {
+		return 150;
+	}
 
-    protected class PageSelector implements TreeSelectionListener {
-        private TreePath currentSelection;
+	protected void createTreeControl() {
+		pageTree = new JTree();
+		pageTree.setRootVisible(false);
+		pageTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		pageTree.addTreeSelectionListener(pageSelector);
+		pageTree.setCellRenderer(treeCellRenderer);
+		pageTree.setShowsRootHandles(true);
+	}
 
-        public void valueChanged(TreeSelectionEvent e) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode)pageTree.getLastSelectedPathComponent();
+	@Override
+	protected void updatePageComplete(DialogPage page) {
+		super.updatePageComplete(page);
+		if (pageTreeModel != null) {
+			pageTreeModel.nodeChanged(getNode(page));
+		}
+	}
 
-            if (node == null) {
-                pageTree.setSelectionPath(currentSelection);
+	@Override
+	protected void updatePageLabels(DialogPage page) {
+		if (pageTreeModel != null) {
+			pageTreeModel.nodeChanged(getNode(page));
+		}
+	}
 
-                return;
-            }
-            currentSelection = e.getPath();
+	protected DefaultMutableTreeNode getNode(DialogPage page) {
+		return (DefaultMutableTreeNode) nodes.get(page);
+	}
 
-            DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode)e.getPath().getLastPathComponent();
-            DialogPage activePage = (DialogPage)selectedNode.getUserObject();
-            cardLayout.show(pagePanel, activePage.getId());
-            setActivePage(activePage);
-        }
-    }    
+	/**
+	 * Get the nodes map.
+	 *
+	 * @return nodes map.
+	 */
+	protected Map getNodes() {
+		return nodes;
+	}
+
+	/**
+	 * Get the page tree.
+	 *
+	 * @return page tree component.
+	 */
+	protected JTree getPageTree() {
+		return pageTree;
+	}
+
+	/**
+	 * Get the page panel.
+	 *
+	 * @return page panel component.
+	 */
+	protected JPanel getPagePanel() {
+		return pagePanel;
+	}
+
+	/**
+	 * Get the page tree model.
+	 *
+	 * @return page tree model.
+	 */
+	protected DefaultTreeModel getPageTreeModel() {
+		return pageTreeModel;
+	}
+
+	protected class PageTitleCellRenderer extends FocusableTreeCellRenderer {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded,
+				boolean leaf, int row, boolean hasFocus) {
+			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+			if (node.getUserObject() instanceof DialogPage) {
+				DialogPage page = (DialogPage) node.getUserObject();
+
+				this.setText(getDecoratedPageTitle(page));
+				this.setIcon(page.getIcon());
+			}
+
+			return this;
+		}
+	}
+
+	protected class PageSelector implements TreeSelectionListener {
+		private TreePath currentSelection;
+
+		@Override
+		public void valueChanged(TreeSelectionEvent e) {
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) pageTree.getLastSelectedPathComponent();
+
+			if (node == null) {
+				pageTree.setSelectionPath(currentSelection);
+
+				return;
+			}
+			currentSelection = e.getPath();
+
+			DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
+			DialogPage activePage = (DialogPage) selectedNode.getUserObject();
+			cardLayout.show(pagePanel, activePage.getId());
+			setActivePage(activePage);
+		}
+	}
 }

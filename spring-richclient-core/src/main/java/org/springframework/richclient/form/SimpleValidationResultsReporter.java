@@ -43,7 +43,7 @@ public class SimpleValidationResultsReporter implements ValidationResultsReporte
 	/**
 	 * Constructor.
 	 *
-	 * @param resultsModel ValidationResultsModel to monitor and report on.
+	 * @param resultsModel    ValidationResultsModel to monitor and report on.
 	 * @param messageReceiver The receiver for validation messages.
 	 */
 	public SimpleValidationResultsReporter(ValidationResultsModel resultsModel, Messagable messageReceiver) {
@@ -70,14 +70,14 @@ public class SimpleValidationResultsReporter implements ValidationResultsReporte
 	}
 
 	/**
-	 * Handle a change in the validation results model. Update the message
-	 * receiver based on our current results model state.
+	 * Handle a change in the validation results model. Update the message receiver
+	 * based on our current results model state.
 	 */
+	@Override
 	public void validationResultsChanged(ValidationResults results) {
 		if (resultsModel.getMessageCount() == 0) {
 			messageReceiver.setMessage(null);
-		}
-		else {
+		} else {
 			ValidationMessage message = getValidationMessage(resultsModel);
 			messageReceiver.setMessage(message);
 		}
@@ -90,10 +90,10 @@ public class SimpleValidationResultsReporter implements ValidationResultsReporte
 	 *
 	 * Searching takes following rules into account:
 	 * <ul>
-	 * <li>Severity of the selected message is the most severe one (INFO <
-	 * WARNING < ERROR).</li>
-	 * <li>Timestamp of the selected message is the most recent one of the
-	 * result of the previous rule.</li>
+	 * <li>Severity of the selected message is the most severe one (INFO < WARNING <
+	 * ERROR).</li>
+	 * <li>Timestamp of the selected message is the most recent one of the result of
+	 * the previous rule.</li>
 	 * </ul>
 	 *
 	 * Any custom Severities will be placed in order according to their given
@@ -104,21 +104,21 @@ public class SimpleValidationResultsReporter implements ValidationResultsReporte
 	 */
 	protected ValidationMessage getValidationMessage(ValidationResults resultsModel) {
 		ValidationMessage validationMessage = null;
-        for (Iterator i = resultsModel.getMessages().iterator(); i.hasNext();) {
-            ValidationMessage tmpMessage = (ValidationMessage) i.next();
-            if (validationMessage == null
-                    || (validationMessage.getSeverity().compareTo(tmpMessage.getSeverity()) < 0)
-                    || ((validationMessage.getTimestamp() < tmpMessage.getTimestamp()) && (validationMessage
-                            .getSeverity() == tmpMessage.getSeverity()))) {
-                validationMessage = tmpMessage;
-            }
-        }
-        return validationMessage;
+		for (Iterator i = resultsModel.getMessages().iterator(); i.hasNext();) {
+			ValidationMessage tmpMessage = (ValidationMessage) i.next();
+			if (validationMessage == null || (validationMessage.getSeverity().compareTo(tmpMessage.getSeverity()) < 0)
+					|| ((validationMessage.getTimestamp() < tmpMessage.getTimestamp())
+							&& (validationMessage.getSeverity() == tmpMessage.getSeverity()))) {
+				validationMessage = tmpMessage;
+			}
+		}
+		return validationMessage;
 	}
 
 	/**
 	 * @see org.springframework.richclient.form.ValidationResultsReporter#hasErrors()
 	 */
+	@Override
 	public boolean hasErrors() {
 		return resultsModel.getHasErrors();
 	}

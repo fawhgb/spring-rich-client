@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -35,12 +35,12 @@ import org.springframework.util.Assert;
 /**
  * A convenience implementation of the DialogPage interface. Recommended to be
  * used as a base class for all GUI dialog pages (or panes.)
- * 
+ *
  * @author Keith Donald
  * @see DialogPage
  */
-public abstract class AbstractDialogPage extends LabeledObjectSupport implements DialogPage, ControlFactory, Guarded,
-		IconConfigurable {
+public abstract class AbstractDialogPage extends LabeledObjectSupport
+		implements DialogPage, ControlFactory, Guarded, IconConfigurable {
 
 	private final MessageChangeHandler messageChangeHandler = new MessageChangeHandler();
 
@@ -55,17 +55,18 @@ public abstract class AbstractDialogPage extends LabeledObjectSupport implements
 	private boolean visible = true;
 
 	private AbstractControlFactory factory = new AbstractControlFactory() {
+		@Override
 		public JComponent createControl() {
 			return AbstractDialogPage.this.createControl();
 		}
 	};
 
 	/**
-	 * Creates a new dialog page. This titles of this dialog page will be
-	 * configured using the default ObjectConfigurer.
-	 * 
-	 * @param pageId the id of this dialog page. This will be used to configure
-	 * the page.
+	 * Creates a new dialog page. This titles of this dialog page will be configured
+	 * using the default ObjectConfigurer.
+	 *
+	 * @param pageId the id of this dialog page. This will be used to configure the
+	 *               page.
 	 */
 	protected AbstractDialogPage(String pageId) {
 		this(pageId, true);
@@ -73,10 +74,10 @@ public abstract class AbstractDialogPage extends LabeledObjectSupport implements
 
 	/**
 	 * Creates a new dialog page.
-	 * 
-	 * @param pageId the id of this dialog page
-	 * @param autoConfigure whether or not to use an ObjectConfigurer to
-	 * configure the titles of this dialog page using the given pageId
+	 *
+	 * @param pageId        the id of this dialog page
+	 * @param autoConfigure whether or not to use an ObjectConfigurer to configure
+	 *                      the titles of this dialog page using the given pageId
 	 */
 	protected AbstractDialogPage(String pageId, boolean autoConfigure) {
 		this.messageBuffer = new DefaultMessageAreaModel(this);
@@ -86,12 +87,12 @@ public abstract class AbstractDialogPage extends LabeledObjectSupport implements
 
 	/**
 	 * Creates a new dialog page with the given title.
-	 * 
-	 * @param pageId the id of this dialog page
-	 * @param autoConfigure whether or not to use an ObjectConfigurer to
-	 * configure the titles of this dialog page using the given pageId
-	 * @param title the title of this dialog page, or <code>null</code> if
-	 * none
+	 *
+	 * @param pageId        the id of this dialog page
+	 * @param autoConfigure whether or not to use an ObjectConfigurer to configure
+	 *                      the titles of this dialog page using the given pageId
+	 * @param title         the title of this dialog page, or <code>null</code> if
+	 *                      none
 	 */
 	protected AbstractDialogPage(String pageId, boolean autoConfigure, String title) {
 		this(pageId, autoConfigure);
@@ -102,14 +103,14 @@ public abstract class AbstractDialogPage extends LabeledObjectSupport implements
 
 	/**
 	 * Creates a new dialog page with the given title and image.
-	 * 
-	 * @param pageId the id of this dialog page
-	 * @param autoConfigure whether or not to use an ObjectConfigurer to
-	 * configure the titles of this dialog page using the given pageId
-	 * @param title the title of this dialog page, or <code>null</code> if
-	 * none
-	 * @param icon the image for this dialog page, or <code>null</code> if
-	 * none
+	 *
+	 * @param pageId        the id of this dialog page
+	 * @param autoConfigure whether or not to use an ObjectConfigurer to configure
+	 *                      the titles of this dialog page using the given pageId
+	 * @param title         the title of this dialog page, or <code>null</code> if
+	 *                      none
+	 * @param icon          the image for this dialog page, or <code>null</code> if
+	 *                      none
 	 */
 	protected AbstractDialogPage(String pageId, boolean autoConfigure, String title, Image icon) {
 		this(pageId, autoConfigure, title);
@@ -118,6 +119,7 @@ public abstract class AbstractDialogPage extends LabeledObjectSupport implements
 		}
 	}
 
+	@Override
 	public String getId() {
 		return pageId;
 	}
@@ -135,20 +137,22 @@ public abstract class AbstractDialogPage extends LabeledObjectSupport implements
 		}
 	}
 
+	@Override
 	public String getTitle() {
 		return getDisplayName();
 	}
 
+	@Override
 	public Message getMessage() {
 		return messageBuffer.getMessage();
 	}
 
 	/**
 	 * Sets or clears the message for this page.
-	 * 
-	 * @param newMessage the message, or <code>null</code> to clear the
-	 * message
+	 *
+	 * @param newMessage the message, or <code>null</code> to clear the message
 	 */
+	@Override
 	public void setMessage(Message newMessage) {
 		messageBuffer.setMessage(newMessage);
 	}
@@ -165,6 +169,7 @@ public abstract class AbstractDialogPage extends LabeledObjectSupport implements
 		return messageBuffer.hasInfoMessage();
 	}
 
+	@Override
 	public void setVisible(boolean visible) {
 		boolean oldValue = this.visible;
 		getControl().setVisible(visible);
@@ -172,10 +177,12 @@ public abstract class AbstractDialogPage extends LabeledObjectSupport implements
 		firePropertyChange("visible", oldValue, visible);
 	}
 
+	@Override
 	public boolean isVisible() {
 		return visible;
 	}
 
+	@Override
 	public boolean isPageComplete() {
 		return pageComplete;
 	}
@@ -186,14 +193,17 @@ public abstract class AbstractDialogPage extends LabeledObjectSupport implements
 		firePropertyChange("pageComplete", oldValue, pageComplete);
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return isPageComplete();
 	}
 
+	@Override
 	public void setEnabled(boolean enabled) {
 		setPageComplete(enabled);
 	}
 
+	@Override
 	public JComponent getControl() {
 		return factory.getControl();
 	}
@@ -207,10 +217,11 @@ public abstract class AbstractDialogPage extends LabeledObjectSupport implements
 	}
 
 	/**
-	 * This default implementation of an <code>AbstractDialogPage</code>
-	 * method does nothing. Subclasses should override to take some action in
-	 * response to a help request.
+	 * This default implementation of an <code>AbstractDialogPage</code> method does
+	 * nothing. Subclasses should override to take some action in response to a help
+	 * request.
 	 */
+	@Override
 	public void performHelp() {
 		// do nothing by default
 	}
@@ -218,15 +229,18 @@ public abstract class AbstractDialogPage extends LabeledObjectSupport implements
 	protected abstract JComponent createControl();
 
 	private class MessageChangeHandler implements PropertyChangeListener {
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
 		}
 	}
 
+	@Override
 	public void setIcon(Icon icon) {
 		this.icon = icon;
 	}
 
+	@Override
 	public Icon getIcon() {
 		return icon;
 	}

@@ -21,6 +21,7 @@ public class TitleConfigurableBeanPostProcessor implements BeanPostProcessor {
 		this.messageSource = messageSource;
 	}
 
+	@Override
 	public Object postProcessAfterInitialization(Object bean, String name) throws BeansException {
 		if (bean instanceof TitleConfigurable) {
 			TitleConfigurable configurable = (TitleConfigurable) bean;
@@ -32,8 +33,7 @@ public class TitleConfigurableBeanPostProcessor implements BeanPostProcessor {
 				if (StringUtils.hasText(title)) {
 					configurable.setTitle(title);
 				}
-			}
-			catch (NoSuchMessageException e) {
+			} catch (NoSuchMessageException e) {
 				throw new BeanInitializationException("Unable to initialize bean " + name, e);
 			}
 		}
@@ -41,6 +41,7 @@ public class TitleConfigurableBeanPostProcessor implements BeanPostProcessor {
 		return bean;
 	}
 
+	@Override
 	public Object postProcessBeforeInitialization(Object bean, String name) throws BeansException {
 		return bean;
 	}

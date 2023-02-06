@@ -24,25 +24,27 @@ import org.springframework.richclient.util.Assert;
 
 public class StaticApplicationServices implements ApplicationServices {
 
-    private final Map services = Collections.synchronizedMap(new HashMap());
+	private final Map services = Collections.synchronizedMap(new HashMap());
 
-    public Object getService(Class serviceType) {
-        Assert.required(serviceType, "serviceType");
-        Object service = services.get(serviceType);
-        if (service == null) {
-            throw new UnsupportedOperationException("No service of type '" + serviceType + "' found.");
-        }
-        return service;
-    }
+	@Override
+	public Object getService(Class serviceType) {
+		Assert.required(serviceType, "serviceType");
+		Object service = services.get(serviceType);
+		if (service == null) {
+			throw new UnsupportedOperationException("No service of type '" + serviceType + "' found.");
+		}
+		return service;
+	}
 
-    public boolean containsService(Class serviceType) {
-        Assert.required(serviceType, "serviceType");
-        return services.containsKey(serviceType);
-    }
+	@Override
+	public boolean containsService(Class serviceType) {
+		Assert.required(serviceType, "serviceType");
+		return services.containsKey(serviceType);
+	}
 
-    public void registerService(Object service, Class serviceInterface) {
-        Assert.required(service, "service");
-        Assert.required(serviceInterface, "serviceInterface");
-        services.put(serviceInterface, service);
-    }
+	public void registerService(Object service, Class serviceInterface) {
+		Assert.required(service, "service");
+		Assert.required(serviceInterface, "serviceInterface");
+		services.put(serviceInterface, service);
+	}
 }

@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -37,11 +37,11 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
- * <code>XmlSettingsReaderWriter</code> implementation that reads and writes
- * the xml from and to the file system.
- * 
+ * <code>XmlSettingsReaderWriter</code> implementation that reads and writes the
+ * xml from and to the file system.
+ *
  * @author Peter De Bruycker
- * 
+ *
  */
 public class FileSystemXmlSettingsReaderWriter implements XmlSettingsReaderWriter {
 
@@ -49,18 +49,18 @@ public class FileSystemXmlSettingsReaderWriter implements XmlSettingsReaderWrite
 
 	/**
 	 * Creates a new instance.
-	 * 
-	 * @param location
-	 *            the location where the xml files will be located
+	 *
+	 * @param location the location where the xml files will be located
 	 */
 	public FileSystemXmlSettingsReaderWriter(String location) {
 		this.location = location;
 	}
 
+	@Override
 	public void write(RootXmlSettings settings) throws SettingsException {
 		try {
 			File file = createFile(settings.getName());
-            file.getParentFile().mkdirs();
+			file.getParentFile().mkdirs();
 
 			TransformerFactory.newInstance().newTransformer().transform(new DOMSource(settings.getDocument()),
 					new StreamResult(new FileOutputStream(file)));
@@ -78,6 +78,7 @@ public class FileSystemXmlSettingsReaderWriter implements XmlSettingsReaderWrite
 	/*
 	 * TODO: create DTD + validate parsing
 	 */
+	@Override
 	public RootXmlSettings read(String key) throws SettingsException {
 		try {
 			File file = createFile(key);
@@ -111,7 +112,7 @@ public class FileSystemXmlSettingsReaderWriter implements XmlSettingsReaderWrite
 
 	/**
 	 * Returns the current location.
-	 * 
+	 *
 	 * @return the location
 	 */
 	public String getLocation() {
@@ -120,9 +121,8 @@ public class FileSystemXmlSettingsReaderWriter implements XmlSettingsReaderWrite
 
 	/**
 	 * Sets the location.
-	 * 
-	 * @param location
-	 *            the new location
+	 *
+	 * @param location the new location
 	 */
 	public void setLocation(String location) {
 		this.location = location;

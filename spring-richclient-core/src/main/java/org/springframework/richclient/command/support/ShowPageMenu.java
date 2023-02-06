@@ -48,6 +48,7 @@ public class ShowPageMenu extends CommandGroup implements ApplicationWindowAware
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setApplicationWindow(ApplicationWindow window) {
 		this.window = window;
 	}
@@ -58,6 +59,7 @@ public class ShowPageMenu extends CommandGroup implements ApplicationWindowAware
 	 * collection of 'show page' commands will be determined by querying the
 	 * {@link PageDescriptorRegistry} retrieved from {@link ApplicationServices}.
 	 */
+	@Override
 	public void afterPropertiesSet() {
 		super.afterPropertiesSet();
 		Assert.notNull(window, "Application window cannot be null.");

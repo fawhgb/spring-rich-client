@@ -20,31 +20,35 @@ import javax.swing.JToggleButton;
  */
 public class DefaultButtonFactory implements ButtonFactory {
 
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractButton createButton() {
-        return new JButton();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public AbstractButton createButton() {
+		return new JButton();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractButton createCheckBox() {
-        return new JCheckBox();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public AbstractButton createCheckBox() {
+		return new JCheckBox();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractButton createToggleButton() {
-        return new JToggleButton();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public AbstractButton createToggleButton() {
+		return new JToggleButton();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public AbstractButton createRadioButton() {
-        return new JRadioButton();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public AbstractButton createRadioButton() {
+		return new JRadioButton();
+	}
 }

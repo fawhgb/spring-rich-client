@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -84,21 +84,21 @@ public interface Settings {
 
 	/**
 	 * Returns the keys in this <code>Settings</code>.
-	 * 
+	 *
 	 * @return the keys
 	 */
 	String[] getKeys();
 
 	/**
 	 * Returns the registered default keys in this <code>Settings</code>.
-	 * 
+	 *
 	 * @return the keys
 	 */
 	String[] getDefaultKeys();
 
 	/**
 	 * Returns the "sum" of {link #getKeys()} and {link #getDefaultKeys()}.
-	 * 
+	 *
 	 * @return all keys
 	 */
 	String[] getAllKeys();
@@ -108,11 +108,11 @@ public interface Settings {
 	void load() throws IOException;
 
 	Settings getSettings(String name);
-    
-    /**
-     * Removes this <code>Settings</code> from the backing store.
-     */
-    void removeSettings();
+
+	/**
+	 * Removes this <code>Settings</code> from the backing store.
+	 */
+	void removeSettings();
 
 	String getName();
 
@@ -131,6 +131,6 @@ public interface Settings {
 	void remove(String key);
 
 	boolean isRoot();
-	
+
 	String[] getChildSettings();
 }

@@ -91,6 +91,7 @@ public class TableSortIndicator implements TableColumnModelListener {
 	}
 
 	private class TableHeaderClickHandler extends MouseAdapter {
+		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.isMetaDown()) {
 				return;
@@ -114,33 +115,28 @@ public class TableSortIndicator implements TableColumnModelListener {
 				if (shiftPressed == 1) {
 					sortList.toggleSortOrder(column);
 					displayRendererIcon(column, columnToSort.getSortOrder());
-				}
-				else {
+				} else {
 					SortOrder order;
 					if (sortList.size() > 1) {
 						order = SortOrder.ASCENDING;
-					}
-					else {
+					} else {
 						order = columnToSort.getSortOrder().flip();
 					}
 					sortList.setSingleSortLevel(column, order);
 					removeRendererIcons();
 					displayRendererIcon(columnView, order);
 				}
-			}
-			else {
+			} else {
 				if (shiftPressed == 1) {
 					try {
 						sortList.addSortLevel(column, SortOrder.ASCENDING);
 						displayRendererIcon(columnView, SortOrder.ASCENDING);
-					}
-					catch (IllegalArgumentException ex) {
+					} catch (IllegalArgumentException ex) {
 						JOptionPane.showMessageDialog(table.getTopLevelAncestor(),
 								"Maximum number of sort levels reached.", "Table Sorter", JOptionPane.WARNING_MESSAGE);
 						return;
 					}
-				}
-				else {
+				} else {
 					sortList.setSingleSortLevel(column, SortOrder.ASCENDING);
 					removeRendererIcons();
 					displayRendererIcon(columnView, SortOrder.ASCENDING);
@@ -151,6 +147,7 @@ public class TableSortIndicator implements TableColumnModelListener {
 	}
 
 	private static final class HeaderRenderer extends DefaultTableCellRenderer {
+		private static final long serialVersionUID = 1L;
 		private JTableHeader tableHeader;
 
 		public HeaderRenderer(JTableHeader header) {
@@ -162,6 +159,7 @@ public class TableSortIndicator implements TableColumnModelListener {
 			this.tableHeader = header;
 		}
 
+		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean iSelected, boolean hasFocus,
 				int row, int column) {
 			setText((value == null) ? "" : value.toString());
@@ -174,8 +172,7 @@ public class TableSortIndicator implements TableColumnModelListener {
 		HeaderRenderer rend = getRenderer(column);
 		if (order == SortOrder.ASCENDING) {
 			rend.setIcon(this.ascendingIcon);
-		}
-		else {
+		} else {
 			rend.setIcon(this.descendingIcon);
 		}
 	}
@@ -193,25 +190,29 @@ public class TableSortIndicator implements TableColumnModelListener {
 		return (HeaderRenderer) column.getHeaderRenderer();
 	}
 
+	@Override
 	public void columnAdded(TableColumnModelEvent e) {
 		TableColumn column = table.getColumnModel().getColumn(e.getToIndex());
 		if (column.getHeaderRenderer() instanceof HeaderRenderer) {
-			((HeaderRenderer)column.getHeaderRenderer()).setIcon(null);
-		}
-		else {
+			((HeaderRenderer) column.getHeaderRenderer()).setIcon(null);
+		} else {
 			column.setHeaderRenderer(new HeaderRenderer(table.getTableHeader()));
 		}
 	}
 
+	@Override
 	public void columnMarginChanged(ChangeEvent e) {
 	}
 
+	@Override
 	public void columnMoved(TableColumnModelEvent e) {
 	}
 
+	@Override
 	public void columnRemoved(TableColumnModelEvent e) {
 	}
 
+	@Override
 	public void columnSelectionChanged(ListSelectionEvent e) {
 	}
 }

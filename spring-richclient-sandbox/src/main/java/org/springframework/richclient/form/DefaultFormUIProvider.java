@@ -24,49 +24,51 @@ import javax.swing.JComponent;
 
 /**
  * Default <code>FormUIProvider</code> implementation.
- * 
+ *
  * @author Peter De Bruycker
  */
 public class DefaultFormUIProvider extends AbstractFormUIProvider {
-    private JComponent formComponent;
+	private JComponent formComponent;
 
-    public DefaultFormUIProvider() {
+	public DefaultFormUIProvider() {
 
-    }
+	}
 
-    public DefaultFormUIProvider(JComponent component) {
-        formComponent = component;
-    }
+	public DefaultFormUIProvider(JComponent component) {
+		formComponent = component;
+	}
 
-    public JComponent getComponent(String propertyPath) {
-        return getComponent(formComponent, propertyPath);
-    }
+	@Override
+	public JComponent getComponent(String propertyPath) {
+		return getComponent(formComponent, propertyPath);
+	}
 
-    private static JComponent getComponent(Container parent, String id) {
-        Component[] children = parent.getComponents();
-        for (int i = 0; i < children.length; i++) {
-            Component child = children[i];
-            if (child instanceof JComponent && id.equals(children[i].getName())) {
-                return (JComponent)child;
-            }
+	private static JComponent getComponent(Container parent, String id) {
+		Component[] children = parent.getComponents();
+		for (int i = 0; i < children.length; i++) {
+			Component child = children[i];
+			if (child instanceof JComponent && id.equals(children[i].getName())) {
+				return (JComponent) child;
+			}
 
-            if (child instanceof Container) {
-                Container container = (Container)child;
-                JComponent result = getComponent(container, id);
-                if (result != null) {
-                    return result;
-                }
-            }
-        }
+			if (child instanceof Container) {
+				Container container = (Container) child;
+				JComponent result = getComponent(container, id);
+				if (result != null) {
+					return result;
+				}
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    public void setControl(JComponent control) {
-        formComponent = control;
-    }
+	public void setControl(JComponent control) {
+		formComponent = control;
+	}
 
-    protected JComponent createControl() {
-        return formComponent;
-    }
+	@Override
+	protected JComponent createControl() {
+		return formComponent;
+	}
 }

@@ -22,6 +22,7 @@ package org.springframework.richclient.application;
  * and throwing an instance of this type, consider if a more specific subclass
  * would be appropriate.
  * </p>
+ *
  * @author Kevin Stembridge
  * @since 0.3
  *
@@ -47,11 +48,11 @@ public class ConfigurationException extends ApplicationException {
 	}
 
 	/**
-	 * Creates a new {@code ConfigurationException} with the specified message
-	 * and nested exception.
+	 * Creates a new {@code ConfigurationException} with the specified message and
+	 * nested exception.
 	 *
 	 * @param message The detail message.
-	 * @param cause The nested exception.
+	 * @param cause   The nested exception.
 	 */
 	public ConfigurationException(String message, Throwable cause) {
 		super(message, cause);

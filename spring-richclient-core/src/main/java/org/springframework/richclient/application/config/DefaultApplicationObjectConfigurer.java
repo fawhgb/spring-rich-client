@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -52,7 +52,7 @@ import org.springframework.util.StringUtils;
 /**
  * The default implementation of the {@link ApplicationObjectConfigurer}
  * interface.
- * 
+ *
  * This class makes use of several application services in order to determine
  * the property values to be applied to objects being configured. For example,
  * some string properties will be retrieved from the application's message
@@ -64,16 +64,15 @@ import org.springframework.util.StringUtils;
  * implement certain 'configurable' interfaces, such as
  * {@link LabelConfigurable} or {@link TitleConfigurable}. See the javadoc of
  * the {@link #configure(Object, String)} method for more details.
- * 
- * 
+ *
+ *
  * @author Keith Donald
  * @author Kevin Stembridge
  */
 public class DefaultApplicationObjectConfigurer implements ApplicationObjectConfigurer, BeanPostProcessor {
 
 	/**
-	 * The key fragment used to retrieve the <i>pressed</i> icon for a given
-	 * object.
+	 * The key fragment used to retrieve the <i>pressed</i> icon for a given object.
 	 */
 	public static final String PRESSED_ICON_KEY = "pressedIcon";
 
@@ -135,10 +134,10 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	}
 
 	/**
-	 * Creates a new {@code DefaultApplicationObjectConfigurer} that will use
-	 * the given message source. Other application services will be retrieved
-	 * using the application services locator.
-	 * 
+	 * Creates a new {@code DefaultApplicationObjectConfigurer} that will use the
+	 * given message source. Other application services will be retrieved using the
+	 * application services locator.
+	 *
 	 * @param messageSource The message source. May be null.
 	 */
 	public DefaultApplicationObjectConfigurer(MessageSource messageSource) {
@@ -146,27 +145,27 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	}
 
 	/**
-	 * Creates a new {@code DefaultApplicationObjectConfigurer} that will use
-	 * the given message and image sources. Other application services will be
-	 * retrieved using the application services locator.
-	 * 
+	 * Creates a new {@code DefaultApplicationObjectConfigurer} that will use the
+	 * given message and image sources. Other application services will be retrieved
+	 * using the application services locator.
+	 *
 	 * @param messageSource The message source. May be null.
-	 * @param imageSource The image source. May be null.
+	 * @param imageSource   The image source. May be null.
 	 */
 	public DefaultApplicationObjectConfigurer(MessageSource messageSource, ImageSource imageSource) {
 		this(messageSource, imageSource, null, null);
 	}
 
 	/**
-	 * Creates a new {@code DefaultApplicationObjectConfigurer} that will use
-	 * the given message, image and icon sources. If any of these services are
-	 * null, they will be retrieved using the application services locator.
-	 * 
-	 * @param messageSource The message source. May be null.
-	 * @param imageSource The image source. May be null.
-	 * @param iconSource The icon source. May be null.
+	 * Creates a new {@code DefaultApplicationObjectConfigurer} that will use the
+	 * given message, image and icon sources. If any of these services are null,
+	 * they will be retrieved using the application services locator.
+	 *
+	 * @param messageSource             The message source. May be null.
+	 * @param imageSource               The image source. May be null.
+	 * @param iconSource                The icon source. May be null.
 	 * @param securityControllerManager The security controller manager. May be
-	 * null.
+	 *                                  null.
 	 */
 	public DefaultApplicationObjectConfigurer(MessageSource messageSource, ImageSource imageSource,
 			IconSource iconSource, SecurityControllerManager securityControllerManager) {
@@ -180,9 +179,9 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 
 	/**
 	 * Sets the flag that determines if optional icons will be loaded for any
-	 * {@link CommandIconConfigurable} objects that are configured by this
-	 * instance. The default is true.
-	 * 
+	 * {@link CommandIconConfigurable} objects that are configured by this instance.
+	 * The default is true.
+	 *
 	 * @param loadOptionalIcons The flag to load optional options.
 	 */
 	public void setLoadOptionalIcons(boolean loadOptionalIcons) {
@@ -192,12 +191,12 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	/**
 	 * Returns this instance's message source. If a source was not provided at
 	 * construction, it will be retrieved by the application services locator.
-	 * 
+	 *
 	 * @return The message source, never null.
-	 * 
-	 * @throws ServiceNotFoundException if a source was not provided at
-	 * construction time and the application services locator cannot find an
-	 * instance of a message source.
+	 *
+	 * @throws ServiceNotFoundException if a source was not provided at construction
+	 *                                  time and the application services locator
+	 *                                  cannot find an instance of a message source.
 	 */
 	protected MessageSource getMessageSource() {
 
@@ -212,12 +211,12 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	/**
 	 * Returns this instance's icon source. If a source was not provided at
 	 * construction, it will be retrieved by the application services locator.
-	 * 
+	 *
 	 * @return The icon source, never null.
-	 * 
-	 * @throws ServiceNotFoundException if a source was not provided at
-	 * construction time and the application services locator cannot find an
-	 * instance of an icon source.
+	 *
+	 * @throws ServiceNotFoundException if a source was not provided at construction
+	 *                                  time and the application services locator
+	 *                                  cannot find an instance of an icon source.
 	 */
 	protected IconSource getIconSource() {
 
@@ -232,12 +231,12 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	/**
 	 * Returns this instance's image source. If a source was not provided at
 	 * construction, it will be retrieved by the application services locator.
-	 * 
+	 *
 	 * @return The image source, never null.
-	 * 
-	 * @throws ServiceNotFoundException if a source was not provided at
-	 * construction time and the application services locator cannot find an
-	 * instance of an image source.
+	 *
+	 * @throws ServiceNotFoundException if a source was not provided at construction
+	 *                                  time and the application services locator
+	 *                                  cannot find an instance of an image source.
 	 */
 	protected ImageSource getImageSource() {
 
@@ -250,21 +249,22 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	}
 
 	/**
-	 * Returns this instance's security controller manager. If the security
-	 * manager was not provided at construction, it will be retrieved by the
-	 * application services locator.
-	 * 
+	 * Returns this instance's security controller manager. If the security manager
+	 * was not provided at construction, it will be retrieved by the application
+	 * services locator.
+	 *
 	 * @return The security controller manager, never null.
-	 * 
+	 *
 	 * @throws ServiceNotFoundException if a security controller manager was not
-	 * provided at construction time and the application services locator cannot
-	 * find an instance of the service.
+	 *                                  provided at construction time and the
+	 *                                  application services locator cannot find an
+	 *                                  instance of the service.
 	 */
 	protected SecurityControllerManager getSecurityControllerManager() {
 
 		if (securityControllerManager == null) {
-			securityControllerManager = (SecurityControllerManager) ApplicationServicesLocator.services().getService(
-					SecurityControllerManager.class);
+			securityControllerManager = (SecurityControllerManager) ApplicationServicesLocator.services()
+					.getService(SecurityControllerManager.class);
 		}
 
 		return securityControllerManager;
@@ -272,15 +272,14 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	}
 
 	/**
-	 * Configures the given object according to the interfaces that it
-	 * implements.
-	 * 
+	 * Configures the given object according to the interfaces that it implements.
+	 *
 	 * <p>
-	 * This implementation forwards the object to the following overridable
-	 * methods in the order listed. Subclasses can use these methods as hooks to
-	 * modify the default configuration behaviour without having to override
-	 * this method entirely.
-	 * 
+	 * This implementation forwards the object to the following overridable methods
+	 * in the order listed. Subclasses can use these methods as hooks to modify the
+	 * default configuration behaviour without having to override this method
+	 * entirely.
+	 *
 	 * <ul>
 	 * <li>{@link #configureTitle(TitleConfigurable, String)}</li>
 	 * <li>{@link #configureLabel(LabelConfigurable, String)}</li>
@@ -292,16 +291,17 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	 * <li>{@link #configureSecurityController(SecurityControllable, String)}</li>
 	 * </ul>
 	 * </p>
-	 * 
-	 * @param object The object to be configured. May be null.
-	 * @param objectName The name for the object, expected to be unique within
-	 * the application. If {@code object} is not null, then {@code objectName}
-	 * must also be non-null.
-	 * 
+	 *
+	 * @param object     The object to be configured. May be null.
+	 * @param objectName The name for the object, expected to be unique within the
+	 *                   application. If {@code object} is not null, then
+	 *                   {@code objectName} must also be non-null.
+	 *
 	 * @throws IllegalArgumentException if {@code object} is not null, but
-	 * {@code objectName} is null.
-	 * 
+	 *                                  {@code objectName} is null.
+	 *
 	 */
+	@Override
 	public void configure(Object object, String objectName) {
 
 		if (object == null) {
@@ -318,9 +318,9 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 		if (object instanceof LabelConfigurable) {
 			configureLabel((LabelConfigurable) object, objectName);
 		}
-		
+
 		if (object instanceof ColorConfigurable) {
-			configureColor((ColorConfigurable)object, objectName);
+			configureColor((ColorConfigurable) object, objectName);
 		}
 
 		if (object instanceof CommandLabelConfigurable) {
@@ -350,17 +350,17 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	}
 
 	/**
-	 * Sets the title of the given object. The title is loaded from this
-	 * instance's {@link MessageSource} using a message code in the format
-	 * 
+	 * Sets the title of the given object. The title is loaded from this instance's
+	 * {@link MessageSource} using a message code in the format
+	 *
 	 * <pre>
 	 *                     &lt;objectName&gt;.title
 	 * </pre>
-	 * 
+	 *
 	 * @param configurable The object to be configured. Must not be null.
-	 * @param objectName The name of the configurable object, unique within the
-	 * application. Must not be null.
-	 * 
+	 * @param objectName   The name of the configurable object, unique within the
+	 *                     application. Must not be null.
+	 *
 	 * @throws IllegalArgumentException if either argument is null.
 	 */
 	protected void configureTitle(TitleConfigurable configurable, String objectName) {
@@ -378,15 +378,15 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	 * Sets the {@link LabelInfo} of the given object. The label info is created
 	 * after loading the encoded label string from this instance's
 	 * {@link MessageSource} using a message code in the format
-	 * 
+	 *
 	 * <pre>
 	 *                     &lt;objectName&gt;.label
 	 * </pre>
-	 * 
+	 *
 	 * @param configurable The object to be configured. Must not be null.
-	 * @param objectName The name of the configurable object, unique within the
-	 * application. Must not be null.
-	 * 
+	 * @param objectName   The name of the configurable object, unique within the
+	 *                     application. Must not be null.
+	 *
 	 * @throws IllegalArgumentException if either argument is null.
 	 */
 	protected void configureLabel(LabelConfigurable configurable, String objectName) {
@@ -402,18 +402,18 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	}
 
 	/**
-	 * Sets the foreground and background colours of the given object.
-	 * Use the following message codes:
-	 * 
+	 * Sets the foreground and background colours of the given object. Use the
+	 * following message codes:
+	 *
 	 * <pre>
 	 * &lt;objectName&gt;.foreground
 	 * &lt;objectName&gt;.background
 	 * </pre>
-	 * 
+	 *
 	 * @param configurable The object to be configured. Must not be null.
-	 * @param objectName The name of the configurable object, unique within the
-	 * application. Must not be null.
-	 * 
+	 * @param objectName   The name of the configurable object, unique within the
+	 *                     application. Must not be null.
+	 *
 	 * @throws IllegalArgumentException if either argument is null.
 	 */
 	protected void configureColor(ColorConfigurable configurable, String objectName) {
@@ -421,27 +421,29 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 		Assert.required(objectName, "objectName");
 
 		Color color = loadColor(objectName + ".foreground");
-		if (color != null)
+		if (color != null) {
 			configurable.setForeground(color);
-		
+		}
+
 		color = loadColor(objectName + ".background");
-		if (color != null)
+		if (color != null) {
 			configurable.setBackground(color);
+		}
 	}
-	
+
 	/**
-	 * Sets the {@link CommandButtonLabelInfo} of the given object. The label
-	 * info is created after loading the encoded label string from this
-	 * instance's {@link MessageSource} using a message code in the format
-	 * 
+	 * Sets the {@link CommandButtonLabelInfo} of the given object. The label info
+	 * is created after loading the encoded label string from this instance's
+	 * {@link MessageSource} using a message code in the format
+	 *
 	 * <pre>
 	 *   &lt;objectName&gt;.label
 	 * </pre>
-	 * 
+	 *
 	 * @param configurable The object to be configured. Must not be null.
-	 * @param objectName The name of the configurable object, unique within the
-	 * application. Must not be null.
-	 * 
+	 * @param objectName   The name of the configurable object, unique within the
+	 *                     application. Must not be null.
+	 *
 	 * @throws IllegalArgumentException if either argument is null.
 	 */
 	protected void configureCommandLabel(CommandLabelConfigurable configurable, String objectName) {
@@ -457,26 +459,25 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	}
 
 	/**
-	 * Sets the description and caption of the given object. These values are
-	 * loaded from this instance's {@link MessageSource} using message codes in
-	 * the format
-	 * 
+	 * Sets the description and caption of the given object. These values are loaded
+	 * from this instance's {@link MessageSource} using message codes in the format
+	 *
 	 * <pre>
 	 *   &lt;objectName&gt;.description
 	 * </pre>
-	 * 
+	 *
 	 * and
-	 * 
+	 *
 	 * <pre>
 	 *   &lt;objectName&gt;.caption
 	 * </pre>
-	 * 
+	 *
 	 * respectively.
-	 * 
+	 *
 	 * @param configurable The object to be configured. Must not be null.
-	 * @param objectName The name of the configurable object, unique within the
-	 * application. Must not be null.
-	 * 
+	 * @param objectName   The name of the configurable object, unique within the
+	 *                     application. Must not be null.
+	 *
 	 * @throws IllegalArgumentException if either argument is null.
 	 */
 	protected void configureDescription(DescriptionConfigurable configurable, String objectName) {
@@ -498,20 +499,20 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	}
 
 	/**
-	 * Sets the image of the given object. The image is loaded from this
-	 * instance's {@link ImageSource} using a key in the format
-	 * 
+	 * Sets the image of the given object. The image is loaded from this instance's
+	 * {@link ImageSource} using a key in the format
+	 *
 	 * <pre>
 	 *   &lt;objectName&gt;.image
 	 * </pre>
-	 * 
-	 * If the image source cannot find an image under that key, the object's
-	 * image will be set to null.
-	 * 
+	 *
+	 * If the image source cannot find an image under that key, the object's image
+	 * will be set to null.
+	 *
 	 * @param configurable The object to be configured. Must not be null.
-	 * @param objectName The name of the configurable object, unique within the
-	 * application. Must not be null.
-	 * 
+	 * @param objectName   The name of the configurable object, unique within the
+	 *                     application. Must not be null.
+	 *
 	 * @throws IllegalArgumentException if either argument is null.
 	 */
 	protected void configureImage(ImageConfigurable configurable, String objectName) {
@@ -526,20 +527,20 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	}
 
 	/**
-	 * Sets the icon of the given object. The icon is loaded from this
-	 * instance's {@link IconSource} using a key in the format
-	 * 
+	 * Sets the icon of the given object. The icon is loaded from this instance's
+	 * {@link IconSource} using a key in the format
+	 *
 	 * <pre>
 	 *   &lt;objectName&gt;.icon
 	 * </pre>
-	 * 
-	 * If the icon source cannot find an icon under that key, the object's icon
-	 * will be set to null.
-	 * 
+	 *
+	 * If the icon source cannot find an icon under that key, the object's icon will
+	 * be set to null.
+	 *
 	 * @param configurable The object to be configured. Must not be null.
-	 * @param objectName The name of the configurable object, unique within the
-	 * application. Must not be null.
-	 * 
+	 * @param objectName   The name of the configurable object, unique within the
+	 *                     application. Must not be null.
+	 *
 	 * @throws IllegalArgumentException if either argument is null.
 	 */
 	protected void configureIcon(IconConfigurable configurable, String objectName) {
@@ -555,37 +556,37 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 
 	/**
 	 * Sets the icons of the given object.
-	 * 
+	 *
 	 * <p>
-	 * The icons are loaded from this instance's {@link IconSource}. using a
-	 * key in the format
+	 * The icons are loaded from this instance's {@link IconSource}. using a key in
+	 * the format
 	 * </p>
-	 * 
+	 *
 	 * <pre>
 	 *   &lt;objectName&gt;.someIconType
 	 * </pre>
-	 * 
+	 *
 	 * <p>
 	 * The keys used to retrieve large icons from the icon source are created by
-	 * concatenating the given {@code objectName} with a dot (.), the text
-	 * 'large' and then an icon type like so:
+	 * concatenating the given {@code objectName} with a dot (.), the text 'large'
+	 * and then an icon type like so:
 	 * </p>
-	 * 
+	 *
 	 * <pre>
 	 *  &lt;myObjectName&gt;.large.someIconType
 	 * </pre>
-	 * 
+	 *
 	 * <p>
-	 * If the icon source cannot find an icon under that key, the object's icon
-	 * will be set to null.
+	 * If the icon source cannot find an icon under that key, the object's icon will
+	 * be set to null.
 	 * </p>
-	 * 
+	 *
 	 * <p>
-	 * If the {@code loadOptionalIcons} flag is set to true (it is by default)
-	 * all the following icon types will be used. If the flag is false, only the
-	 * first will be used:
+	 * If the {@code loadOptionalIcons} flag is set to true (it is by default) all
+	 * the following icon types will be used. If the flag is false, only the first
+	 * will be used:
 	 * </p>
-	 * 
+	 *
 	 * <ul>
 	 * <li>{@value #ICON_KEY}</li>
 	 * <li>{@value #SELECTED_ICON_KEY}</li>
@@ -593,11 +594,11 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	 * <li>{@value #DISABLED_ICON_KEY}</li>
 	 * <li>{@value #PRESSED_ICON_KEY}</li>
 	 * </ul>
-	 * 
+	 *
 	 * @param configurable The object to be configured. Must not be null.
-	 * @param objectName The name of the configurable object, unique within the
-	 * application. Must not be null.
-	 * 
+	 * @param objectName   The name of the configurable object, unique within the
+	 *                     application. Must not be null.
+	 *
 	 * @throws IllegalArgumentException if either argument is null.
 	 */
 	protected void configureCommandIcons(CommandIconConfigurable configurable, String objectName) {
@@ -608,12 +609,13 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	}
 
 	/**
-	 * Associates the given object with a security controller if it implements
-	 * the {@link SecurityControllable} interface.
-	 * @param object The object to be configured.
+	 * Associates the given object with a security controller if it implements the
+	 * {@link SecurityControllable} interface.
+	 *
+	 * @param object     The object to be configured.
 	 * @param objectName The name (id) of the object.
-	 * @throws BeansException if a referenced security controller is not found
-	 * or is of the wrong type
+	 * @throws BeansException if a referenced security controller is not found or is
+	 *                        of the wrong type
 	 */
 	protected void configureSecurityController(SecurityControllable controllable, String objectName) {
 		Assert.required(controllable, "controllable");
@@ -637,19 +639,17 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 							+ controllerId + "'");
 				}
 				controller.addControlledObject(controllable);
-			}
-			else {
+			} else {
 				if (logger.isDebugEnabled()) {
 					logger.debug("configuring SecurityControllable [" + objectName
 							+ "]; no security controller for id='" + controllerId + "'");
 				}
 			}
-		}
-		else {
+		} else {
 
 			if (logger.isDebugEnabled()) {
-				logger.debug("configuring SecurityControllable [" + objectName
-						+ "]; no security controller Id specified");
+				logger.debug(
+						"configuring SecurityControllable [" + objectName + "]; no security controller Id specified");
 			}
 
 		}
@@ -674,23 +674,23 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 			Icon disabledIcon = loadIcon(objectName, DISABLED_ICON_KEY, large);
 			Icon pressedIcon = loadIcon(objectName, PRESSED_ICON_KEY, large);
 			iconInfo = new CommandButtonIconInfo(icon, selectedIcon, rolloverIcon, disabledIcon, pressedIcon);
-		}
-		else {
+		} else {
 			iconInfo = new CommandButtonIconInfo(icon);
 		}
 
 		if (large) {
 			object.setLargeIconInfo(iconInfo);
-		}
-		else {
+		} else {
 			object.setIconInfo(iconInfo);
 		}
 	}
 
 	/**
 	 * Configures the given object.
+	 *
 	 * @see #configure(Object, String)
 	 */
+	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		configure(bean, beanName);
 		return bean;
@@ -700,10 +700,10 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	 * Attempts to load a {@link Color} by decoding the message that is found by
 	 * looking up the given colorKey. Decoding is done by by
 	 * {@link Color#decode(String)}.
-	 * 
+	 *
 	 * @param colorKey The message code used to retrieve the colour code.
-	 * @return the decoded {@link Color} or <code>null</code> if no colour could
-	 * be decoded/found.
+	 * @return the decoded {@link Color} or <code>null</code> if no colour could be
+	 *         decoded/found.
 	 */
 	private Color loadColor(String colorKey) {
 		String colorCode = loadMessage(colorKey);
@@ -712,25 +712,24 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 		}
 		try {
 			return Color.decode(colorCode);
-		}
-		catch (NumberFormatException nfe) {
+		} catch (NumberFormatException nfe) {
 			if (logger.isWarnEnabled()) {
-				logger.warn("Could not parse a valid Color from code [" + colorCode
-						+ "]. Ignoring and returning null.");
+				logger.warn(
+						"Could not parse a valid Color from code [" + colorCode + "]. Ignoring and returning null.");
 			}
 			return null;
 		}
 	}
-	
+
 	/**
-	 * Attempts to load the message corresponding to the given message code
-	 * using this instance's {@link MessageSource} and locale.
-	 * 
+	 * Attempts to load the message corresponding to the given message code using
+	 * this instance's {@link MessageSource} and locale.
+	 *
 	 * @param messageCode The message code that will be used to retrieve the
-	 * message. Must not be null.
-	 * @return The message for the given code, or null if the message code could
-	 * not be found.
-	 * 
+	 *                    message. Must not be null.
+	 * @return The message for the given code, or null if the message code could not
+	 *         be found.
+	 *
 	 * @throws IllegalArgumentException if {@code messageCode} is null.
 	 */
 	private String loadMessage(String messageCode) {
@@ -743,8 +742,7 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 
 		try {
 			return getMessageSource().getMessage(messageCode, null, getLocale());
-		}
-		catch (NoSuchMessageException e) {
+		} catch (NoSuchMessageException e) {
 
 			if (logger.isInfoEnabled()) {
 				logger.info("The message source is unable to find message code [" + messageCode
@@ -758,7 +756,7 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 
 	/**
 	 * Returns the system default locale.
-	 * 
+	 *
 	 * @return The system default locale, never null.
 	 */
 	protected Locale getLocale() {
@@ -781,8 +779,7 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 				logger.debug("Resolving optional image with code '" + key + "'");
 			}
 			return getImageSource().getImage(key);
-		}
-		catch (NoSuchImageResourceException e) {
+		} catch (NoSuchImageResourceException e) {
 			if (logger.isInfoEnabled()) {
 				logger.info("Labelable object's image '" + key + "' does not exist in image bundle; continuing...");
 			}
@@ -793,6 +790,7 @@ public class DefaultApplicationObjectConfigurer implements ApplicationObjectConf
 	/**
 	 * A default implemenation, performing no operation.
 	 */
+	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 		return bean;
 	}

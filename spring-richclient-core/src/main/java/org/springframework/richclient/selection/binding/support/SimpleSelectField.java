@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2008 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -18,31 +18,32 @@ package org.springframework.richclient.selection.binding.support;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 
-
 /**
  * SelectField implementation using a single <tt>JTextField</tt>.
- * 
+ *
  * @author Peter De Bruycker
  */
 public class SimpleSelectField extends SelectField {
-    private JTextField textField;
+	private JTextField textField;
 
-    private String asString(Object value) {
-        if (getLabelProvider() != null) {
-            return getLabelProvider().getLabel(value);
-        }
+	private String asString(Object value) {
+		if (getLabelProvider() != null) {
+			return getLabelProvider().getLabel(value);
+		}
 
-        return value == null ? "" : value.toString();
-    }
-    
-    protected void render(Object value) {
-        textField.setText(asString(value));
-    }
-    
-    protected JComponent createRenderer() {
-        textField = new JTextField();
-        textField.setEditable(false);
+		return value == null ? "" : value.toString();
+	}
 
-        return textField;
-    }
+	@Override
+	protected void render(Object value) {
+		textField.setText(asString(value));
+	}
+
+	@Override
+	protected JComponent createRenderer() {
+		textField = new JTextField();
+		textField.setEditable(false);
+
+		return textField;
+	}
 }

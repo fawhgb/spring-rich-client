@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -41,71 +41,81 @@ import org.springframework.richclient.text.SynchronousHTMLEditorKit;
  */
 public class HtmlFormBuilder extends AbstractFormBuilder {
 
-    private JPanel panel;
+	private JPanel panel;
 
-    private JTextPane htmlPane;
+	private JTextPane htmlPane;
 
-    private Map formViewMap;
+	private Map formViewMap;
 
-    protected boolean inLink;
+	protected boolean inLink;
 
-    public HtmlFormBuilder(BindingFactory bindingFactory, String html) {
-        super(bindingFactory);
-        formViewMap = new HashMap();
-        panel = new JPanel(new BorderLayout());
-        htmlPane = new HtmlPane();
-        panel.add(htmlPane);
-        htmlPane.setEditorKit(new InternalHTMLEditorKit());
-        htmlPane.setFocusCycleRoot(false);
-        htmlPane.setCaret(new DefaultCaret() {
-            public void mouseDragged(MouseEvent e) {
-            }
+	public HtmlFormBuilder(BindingFactory bindingFactory, String html) {
+		super(bindingFactory);
+		formViewMap = new HashMap();
+		panel = new JPanel(new BorderLayout());
+		htmlPane = new HtmlPane();
+		panel.add(htmlPane);
+		htmlPane.setEditorKit(new InternalHTMLEditorKit());
+		htmlPane.setFocusCycleRoot(false);
+		htmlPane.setCaret(new DefaultCaret() {
+			private static final long serialVersionUID = 1L;
 
-            public void mouseMoved(MouseEvent e) {
-            }
+			@Override
+			public void mouseDragged(MouseEvent e) {
+			}
 
-            public void mouseClicked(MouseEvent e) {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+			}
 
-            }
-        });
-        setHtml(html);
-    }
+			@Override
+			public void mouseClicked(MouseEvent e) {
 
-    private void setHtml(String html) {
-        htmlPane.setText(html);
-        htmlPane.setEditable(false);
+			}
+		});
+		setHtml(html);
+	}
 
-        for (Iterator i = formViewMap.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry)i.next();
-            Element element = (Element)entry.getKey();
-            FormView view = (FormView)entry.getValue();
+	private void setHtml(String html) {
+		htmlPane.setText(html);
+		htmlPane.setEditable(false);
 
-            String propertyName = (String)element.getAttributes().getAttribute(HTML.getAttributeKey("id"));
-            if (propertyName != null) {
-                JComponent comp = (JComponent)view.getComponent();
-                getBindingFactory().bindControl(comp, propertyName);
-                if (comp instanceof JCheckBox)
-                    ((JCheckBox)comp).setOpaque(false);
-            }
-        }
-    }
+		for (Iterator i = formViewMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry entry = (Map.Entry) i.next();
+			Element element = (Element) entry.getKey();
+			FormView view = (FormView) entry.getValue();
 
-    public JComponent getForm() {
-        return panel;
-    }
+			String propertyName = (String) element.getAttributes().getAttribute(HTML.getAttributeKey("id"));
+			if (propertyName != null) {
+				JComponent comp = (JComponent) view.getComponent();
+				getBindingFactory().bindControl(comp, propertyName);
+				if (comp instanceof JCheckBox) {
+					((JCheckBox) comp).setOpaque(false);
+				}
+			}
+		}
+	}
 
-    private class InternalHTMLEditorKit extends SynchronousHTMLEditorKit {
+	public JComponent getForm() {
+		return panel;
+	}
 
-        public ViewFactory getViewFactory() {
-            return new HTMLFactory() {
-                public View create(Element elem) {
-                    View view = super.create(elem);
-                    if (view instanceof FormView) {
-                        formViewMap.put(elem, view);
-                    }
-                    return view;
-                }
-            };
-        }
-    }
+	private class InternalHTMLEditorKit extends SynchronousHTMLEditorKit {
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public ViewFactory getViewFactory() {
+			return new HTMLFactory() {
+				@Override
+				public View create(Element elem) {
+					View view = super.create(elem);
+					if (view instanceof FormView) {
+						formViewMap.put(elem, view);
+					}
+					return view;
+				}
+			};
+		}
+	}
 }

@@ -14,6 +14,7 @@ import javax.swing.plaf.FontUIResource;
 
 public class FontSizeAdjuster {
 	private static final AWTEventListener listener = new AWTEventListener() {
+		@Override
 		public void eventDispatched(AWTEvent e) {
 			MouseWheelEvent event = (MouseWheelEvent) e;
 			if (event.isControlDown()) {
@@ -29,8 +30,7 @@ public class FontSizeAdjuster {
 	}
 
 	public static void init() {
-		Toolkit.getDefaultToolkit().addAWTEventListener(listener,
-				AWTEvent.MOUSE_WHEEL_EVENT_MASK);
+		Toolkit.getDefaultToolkit().addAWTEventListener(listener, AWTEvent.MOUSE_WHEEL_EVENT_MASK);
 	}
 
 	public static void dispose() {
@@ -38,14 +38,12 @@ public class FontSizeAdjuster {
 	}
 
 	public static void adjust(int amount) {
-		Object[] objs = UIManager.getLookAndFeel().getDefaults().keySet()
-				.toArray();
+		Object[] objs = UIManager.getLookAndFeel().getDefaults().keySet().toArray();
 		for (int i = 0; i < objs.length; i++) {
 			if (objs[i].toString().toUpperCase().indexOf("FONT") != -1) {
 				Font font = UIManager.getFont(objs[i]);
 				if (font != null) {
-					UIManager.put(objs[i], new FontUIResource(font
-							.deriveFont((float)font.getSize() + amount)));
+					UIManager.put(objs[i], new FontUIResource(font.deriveFont((float) font.getSize() + amount)));
 				}
 			}
 		}

@@ -29,8 +29,8 @@ public class ValueHolder extends AbstractValueModel {
 	private Object value;
 
 	/**
-	 * Constructs a <code>ValueHolder</code> with <code>null</code> as
-	 * initial value.
+	 * Constructs a <code>ValueHolder</code> with <code>null</code> as initial
+	 * value.
 	 */
 	public ValueHolder() {
 		this(null);
@@ -45,10 +45,12 @@ public class ValueHolder extends AbstractValueModel {
 		this.value = value;
 	}
 
+	@Override
 	public Object getValue() {
 		return value;
 	}
 
+	@Override
 	public void setValue(Object value) {
 		if (hasValueChanged(this.value, value)) {
 			Object oldValue = this.value;
@@ -60,6 +62,7 @@ public class ValueHolder extends AbstractValueModel {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("value", getValue()).toString();
 	}

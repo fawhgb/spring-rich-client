@@ -21,5 +21,5 @@ import org.springframework.richclient.application.support.MultiViewPageDescripto
  * @author Peter De Bruycker
  */
 public class DesktopPageDescriptor extends MultiViewPageDescriptor {
-	
+
 }

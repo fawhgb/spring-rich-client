@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2008 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -46,161 +46,173 @@ import ca.odell.glazedlists.impl.filter.StringTextFilterator;
 
 /**
  * Binding for selection objects in a form.
- * 
+ *
  * @author Peter De Bruycker
  */
 public class ListSelectionDialogBinding extends CustomBinding {
 
-    protected SelectField selectField;
-    private boolean filtered;
-    private String[] filterProperties;
-    private ListCellRenderer renderer;
-    private ValueModel selectableItemsHolder;
-    private LabelProvider labelProvider;
-    private Comparator comparator;
-    private String descriptionKey;
-    private String titleKey;
-    private boolean nullable = true;
+	protected SelectField selectField;
+	private boolean filtered;
+	private String[] filterProperties;
+	private ListCellRenderer renderer;
+	private ValueModel selectableItemsHolder;
+	private LabelProvider labelProvider;
+	private Comparator comparator;
+	private String descriptionKey;
+	private String titleKey;
+	private boolean nullable = true;
 
-    protected ListSelectionDialogBinding(SelectField selectField, FormModel formModel, String formPropertyPath) {
-        super(formModel, formPropertyPath, null);
-        this.selectField = selectField;
-    }
+	protected ListSelectionDialogBinding(SelectField selectField, FormModel formModel, String formPropertyPath) {
+		super(formModel, formPropertyPath, null);
+		this.selectField = selectField;
+	}
 
-    protected JComponent doBindControl() {
-        selectField.setLabelProvider(labelProvider);
-        selectField.setSelectionDialog(createSelectionDialog());
+	@Override
+	protected JComponent doBindControl() {
+		selectField.setLabelProvider(labelProvider);
+		selectField.setSelectionDialog(createSelectionDialog());
 
-        selectField.setNullable(nullable);
-        
-        // trigger control creation so we can set the value
-        selectField.getControl();
+		selectField.setNullable(nullable);
 
-        selectField.setValue(getValue());
+		// trigger control creation so we can set the value
+		selectField.getControl();
 
-        selectField.addPropertyChangeListener("value", new PropertyChangeListener() {
-            public void propertyChange(PropertyChangeEvent evt) {
-                controlValueChanged(selectField.getValue());
-            }
-        });
+		selectField.setValue(getValue());
 
-        return selectField.getControl();
-    }
+		selectField.addPropertyChangeListener("value", new PropertyChangeListener() {
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				controlValueChanged(selectField.getValue());
+			}
+		});
 
-    protected ApplicationDialog createSelectionDialog() {
-        EventList eventList = createEventList(selectableItemsHolder);
-        final ValueModel2EventListBridge itemRefresher = new ValueModel2EventListBridge(selectableItemsHolder,
-                eventList, true);
+		return selectField.getControl();
+	}
 
-        ListSelectionDialog selectionDialog = null;
-        if (filtered) {
-            FilterListSelectionDialog filterDialog = new FilterListSelectionDialog("", null, new FilterList(eventList));
-            if (filterProperties == null) {
-                filterDialog.setFilterator(new StringTextFilterator());
-            } else {
-                filterDialog.setFilterator(new BeanTextFilterator(filterProperties));
-            }
+	protected ApplicationDialog createSelectionDialog() {
+		EventList eventList = createEventList(selectableItemsHolder);
+		final ValueModel2EventListBridge itemRefresher = new ValueModel2EventListBridge(selectableItemsHolder,
+				eventList, true);
 
-            selectionDialog = filterDialog;
-        } else {
-            selectionDialog = new ListSelectionDialog("", null, eventList);
-        }
+		ListSelectionDialog selectionDialog = null;
+		if (filtered) {
+			FilterListSelectionDialog filterDialog = new FilterListSelectionDialog("", null, new FilterList(eventList));
+			if (filterProperties == null) {
+				filterDialog.setFilterator(new StringTextFilterator());
+			} else {
+				filterDialog.setFilterator(new BeanTextFilterator(filterProperties));
+			}
 
-        selectionDialog.setOnAboutToShow(new Block() {
-            protected void handle(Object ignore) {
-                itemRefresher.synchronize();
-            }
-        });
+			selectionDialog = filterDialog;
+		} else {
+			selectionDialog = new ListSelectionDialog("", null, eventList);
+		}
 
-        selectionDialog.setOnSelectAction(new Closure() {
-            public Object call(Object argument) {
-                controlValueChanged(argument);
-                selectField.setValue(argument);
+		selectionDialog.setOnAboutToShow(new Block() {
+			/**
+			 *
+			 */
+			private static final long serialVersionUID = 1L;
 
-                return argument;
-            }
-        });
-        selectionDialog.setRenderer(getRendererForSelectionDialog());
+			@Override
+			protected void handle(Object ignore) {
+				itemRefresher.synchronize();
+			}
+		});
 
-        if (StringUtils.hasText(descriptionKey)) {
-            String description = getMessage(descriptionKey);
-            selectionDialog.setDescription(description);
-        }
-        if (StringUtils.hasText(titleKey)) {
-            String title = getMessage(titleKey);
-            selectionDialog.setTitle(title);
-        }
+		selectionDialog.setOnSelectAction(new Closure() {
+			@Override
+			public Object call(Object argument) {
+				controlValueChanged(argument);
+				selectField.setValue(argument);
 
-        return selectionDialog;
-    }
+				return argument;
+			}
+		});
+		selectionDialog.setRenderer(getRendererForSelectionDialog());
 
-    private EventList createEventList(ValueModel selectableItemsHolder) {
-        EventList eventList = GlazedLists.eventList(Collections.emptyList());
+		if (StringUtils.hasText(descriptionKey)) {
+			String description = getMessage(descriptionKey);
+			selectionDialog.setDescription(description);
+		}
+		if (StringUtils.hasText(titleKey)) {
+			String title = getMessage(titleKey);
+			selectionDialog.setTitle(title);
+		}
 
-        if (comparator != null) {
-            eventList = new SortedList(eventList, comparator);
-        }
+		return selectionDialog;
+	}
 
-        return eventList;
-    }
+	private EventList createEventList(ValueModel selectableItemsHolder) {
+		EventList eventList = GlazedLists.eventList(Collections.emptyList());
 
-    protected ListCellRenderer getRendererForSelectionDialog() {
-        if (renderer != null) {
-            return renderer;
-        }
+		if (comparator != null) {
+			eventList = new SortedList(eventList, comparator);
+		}
 
-        if (labelProvider != null) {
-            return new LabelProviderListCellRenderer(labelProvider);
-        }
+		return eventList;
+	}
 
-        return null;
-    }
+	protected ListCellRenderer getRendererForSelectionDialog() {
+		if (renderer != null) {
+			return renderer;
+		}
 
-    protected void enabledChanged() {
-        selectField.setEnabled(isEnabled());
-    }
+		if (labelProvider != null) {
+			return new LabelProviderListCellRenderer(labelProvider);
+		}
 
-    protected void readOnlyChanged() {
-        selectField.setEditable(!isReadOnly());
-    }
+		return null;
+	}
 
-    public void setLabelProvider(LabelProvider provider) {
-        this.labelProvider = provider;
-    }
+	@Override
+	protected void enabledChanged() {
+		selectField.setEnabled(isEnabled());
+	}
 
-    protected void valueModelChanged(Object newValue) {
-        selectField.setValue(newValue);
-    }
+	@Override
+	protected void readOnlyChanged() {
+		selectField.setEditable(!isReadOnly());
+	}
 
-    public void setFilterProperties(String[] filterProperties) {
-        this.filterProperties = filterProperties;
-    }
+	public void setLabelProvider(LabelProvider provider) {
+		this.labelProvider = provider;
+	}
 
-    public void setFiltered(boolean filtered) {
-        this.filtered = filtered;
-    }
+	@Override
+	protected void valueModelChanged(Object newValue) {
+		selectField.setValue(newValue);
+	}
 
-    public void setRenderer(ListCellRenderer renderer) {
-        this.renderer = renderer;
-    }
+	public void setFilterProperties(String[] filterProperties) {
+		this.filterProperties = filterProperties;
+	}
 
-    public void setSelectableItemsHolder(ValueModel selectableItemsHolder) {
-        this.selectableItemsHolder = selectableItemsHolder;
-    }
+	public void setFiltered(boolean filtered) {
+		this.filtered = filtered;
+	}
 
-    public void setComparator(Comparator comparator) {
-        this.comparator = comparator;
-    }
+	public void setRenderer(ListCellRenderer renderer) {
+		this.renderer = renderer;
+	}
 
-    public void setDescriptionKey(String descriptionKey) {
-        this.descriptionKey = descriptionKey;
-    }
+	public void setSelectableItemsHolder(ValueModel selectableItemsHolder) {
+		this.selectableItemsHolder = selectableItemsHolder;
+	}
 
-    public void setTitleKey(String titleKey) {
-        this.titleKey = titleKey;
-    }
+	public void setComparator(Comparator comparator) {
+		this.comparator = comparator;
+	}
 
-    public void setNullable(boolean nullable) {
-        this.nullable = nullable;
-    }
+	public void setDescriptionKey(String descriptionKey) {
+		this.descriptionKey = descriptionKey;
+	}
+
+	public void setTitleKey(String titleKey) {
+		this.titleKey = titleKey;
+	}
+
+	public void setNullable(boolean nullable) {
+		this.nullable = nullable;
+	}
 }

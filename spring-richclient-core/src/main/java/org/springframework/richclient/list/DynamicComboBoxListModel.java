@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -27,128 +27,124 @@ import org.springframework.binding.value.support.ValueHolder;
 
 /**
  * A combobox whose contents are dynamically refreshable.
- * 
+ *
  * @author Keith Donald
  */
 public class DynamicComboBoxListModel extends ComboBoxListModel implements PropertyChangeListener {
-    
-    private static final Log logger = LogFactory.getLog(DynamicComboBoxListModel.class);
-    
-    private final SelectedItemChangeHandler selectedItemChangeHandler = new SelectedItemChangeHandler();
 
-    private final ValueModel selectedItemHolder;
+	private static final long serialVersionUID = 1L;
 
-    private ValueModel selectableItemsHolder;
+	private static final Log logger = LogFactory.getLog(DynamicComboBoxListModel.class);
 
-    public DynamicComboBoxListModel(ValueModel selectedItemHolder) {
-        this(selectedItemHolder, (ValueModel)null);
-    }
+	private final SelectedItemChangeHandler selectedItemChangeHandler = new SelectedItemChangeHandler();
 
-    public DynamicComboBoxListModel(ValueModel selectedItemHolder, List items) {
-        this(selectedItemHolder, new ValueHolder(items));
-    }
+	private final ValueModel selectedItemHolder;
 
-    public DynamicComboBoxListModel(ValueModel selectedItemHolder, ValueModel selectableItemsHolder) {
-        this.selectedItemHolder = selectedItemHolder;
-        if (selectedItemHolder != null) {
-            selectedItemHolder.addValueChangeListener(selectedItemChangeHandler);
-        }
-        setSelectableItemsHolder(selectableItemsHolder);
-    }
+	private ValueModel selectableItemsHolder;
 
-    public void setSelectableItemsHolder(ValueModel holder) {
-        if (this.selectableItemsHolder == holder) {
-            return;
-        }
-        if (this.selectableItemsHolder != null) {
-            holder.removeValueChangeListener(this);
-        }
-        this.selectableItemsHolder = holder;
-        if (this.selectableItemsHolder != null) {
-            doAdd(holder.getValue());
-            this.selectableItemsHolder.addValueChangeListener(this);
-        }
-    }
+	public DynamicComboBoxListModel(ValueModel selectedItemHolder) {
+		this(selectedItemHolder, (ValueModel) null);
+	}
 
-    public Object getSelectedItem() {
-        if (selectedItemHolder != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Returning selected item " + selectedItemHolder.getValue());
-            }
-            return selectedItemHolder.getValue();
-        }
+	public DynamicComboBoxListModel(ValueModel selectedItemHolder, List items) {
+		this(selectedItemHolder, new ValueHolder(items));
+	}
 
-        return super.getSelectedItem();
-    }
+	public DynamicComboBoxListModel(ValueModel selectedItemHolder, ValueModel selectableItemsHolder) {
+		this.selectedItemHolder = selectedItemHolder;
+		if (selectedItemHolder != null) {
+			selectedItemHolder.addValueChangeListener(selectedItemChangeHandler);
+		}
+		setSelectableItemsHolder(selectableItemsHolder);
+	}
 
-    public void setSelectedItem(Object selectedItem) {
-        if (selectedItemHolder != null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Setting newly selected item on value holder to " + selectedItem);
-            }
-            selectedItemHolder.setValue(selectedItem);
-        }
-        else {
-            super.setSelectedItem(selectedItem);
-        }
-    }
+	public void setSelectableItemsHolder(ValueModel holder) {
+		if (this.selectableItemsHolder == holder) {
+			return;
+		}
+		if (this.selectableItemsHolder != null) {
+			holder.removeValueChangeListener(this);
+		}
+		this.selectableItemsHolder = holder;
+		if (this.selectableItemsHolder != null) {
+			doAdd(holder.getValue());
+			this.selectableItemsHolder.addValueChangeListener(this);
+		}
+	}
 
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Backing collection of selectable items changed; "
-                    + "refreshing combo box with contents of new collection.");
-        }
-        doAdd(selectableItemsHolder.getValue());
-    }
+	@Override
+	public Object getSelectedItem() {
+		if (selectedItemHolder != null) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Returning selected item " + selectedItemHolder.getValue());
+			}
+			return selectedItemHolder.getValue();
+		}
 
-    private void doAdd(Object items) {
-        clear();
-        if (items != null) {
-            if (items instanceof Collection) {
-                addAll((Collection)items);
-            }
-            else if (items instanceof Object[]) {
-                Object[] itemsArray = (Object[])items;
-                for (int i = 0; i < itemsArray.length; i++) {
-                    add(itemsArray[i]);
-                }
-            }
-            else {
-                throw new IllegalArgumentException("selectableItemsHolder must hold a Collection or array");
-            }
-        }
-        sort();
-    }
-    
-    private class SelectedItemChangeHandler implements PropertyChangeListener {
+		return super.getSelectedItem();
+	}
 
-        public void propertyChange(PropertyChangeEvent evt) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Notifying combo box view selected value changed; new value is '"
-                        + selectedItemHolder.getValue() + "'");
-            }
-            /*
-            if (selectedItemHolder.getValue() == null) {
-                if (size() > 0 && get(0) != null) {
-                    if (logger.isDebugEnabled()) {
-                        logger
-                                .debug("Backing value model is null; Pre-setting initial value to first combo-box element "
-                                        + get(0));
-                    }
-                    setSelectedItem(get(0));
-                }
-            }
-            else {
-            */
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Firing contents change event; selected item may have changed");
-                }
-                fireContentsChanged(this, -1, -1);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Fired contents change event!");
-                }
-            //}
-        }
-    }
+	@Override
+	public void setSelectedItem(Object selectedItem) {
+		if (selectedItemHolder != null) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Setting newly selected item on value holder to " + selectedItem);
+			}
+			selectedItemHolder.setValue(selectedItem);
+		} else {
+			super.setSelectedItem(selectedItem);
+		}
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Backing collection of selectable items changed; "
+					+ "refreshing combo box with contents of new collection.");
+		}
+		doAdd(selectableItemsHolder.getValue());
+	}
+
+	private void doAdd(Object items) {
+		clear();
+		if (items != null) {
+			if (items instanceof Collection) {
+				addAll((Collection) items);
+			} else if (items instanceof Object[]) {
+				Object[] itemsArray = (Object[]) items;
+				for (int i = 0; i < itemsArray.length; i++) {
+					add(itemsArray[i]);
+				}
+			} else {
+				throw new IllegalArgumentException("selectableItemsHolder must hold a Collection or array");
+			}
+		}
+		sort();
+	}
+
+	private class SelectedItemChangeHandler implements PropertyChangeListener {
+
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Notifying combo box view selected value changed; new value is '"
+						+ selectedItemHolder.getValue() + "'");
+			}
+			/*
+			 * if (selectedItemHolder.getValue() == null) { if (size() > 0 && get(0) !=
+			 * null) { if (logger.isDebugEnabled()) { logger
+			 * .debug("Backing value model is null; Pre-setting initial value to first combo-box element "
+			 * + get(0)); } setSelectedItem(get(0)); } } else {
+			 */
+			if (logger.isDebugEnabled()) {
+				logger.debug("Firing contents change event; selected item may have changed");
+			}
+			fireContentsChanged(this, -1, -1);
+			if (logger.isDebugEnabled()) {
+				logger.debug("Fired contents change event!");
+			}
+			// }
+		}
+	}
 
 }

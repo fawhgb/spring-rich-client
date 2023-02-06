@@ -28,8 +28,8 @@ public interface ApplicationServices {
 	 * @param serviceType Type of service to locate
 	 * @return A service implementation of the requested type. Never null.
 	 * @throws IllegalArgumentException if {@code serviceType} is null.
-	 * @throws ServiceNotFoundException if there is no service known for the
-	 * given serviceType.
+	 * @throws ServiceNotFoundException if there is no service known for the given
+	 *                                  serviceType.
 	 */
 	Object getService(Class serviceType);
 

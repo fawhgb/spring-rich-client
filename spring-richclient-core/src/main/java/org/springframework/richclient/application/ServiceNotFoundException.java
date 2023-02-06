@@ -32,8 +32,7 @@ public class ServiceNotFoundException extends RuntimeException {
 
 		if (serviceClass != null) {
 			return "Unable to locate an application service of type [" + serviceClass.getName() + "]";
-		}
-		else {
+		} else {
 			return "Unable to locate an application service. The type of the service is either "
 					+ "unknown or was not provided when this exception was created.";
 		}
@@ -41,11 +40,11 @@ public class ServiceNotFoundException extends RuntimeException {
 	}
 
 	/**
-	 * Creates a new {@code ServiceNotFoundException}. A default message
-	 * containing the name of the given class will be used.
+	 * Creates a new {@code ServiceNotFoundException}. A default message containing
+	 * the name of the given class will be used.
 	 *
-	 * @param serviceClass The class of the application service that could not
-	 * be located.
+	 * @param serviceClass The class of the application service that could not be
+	 *                     located.
 	 */
 	public ServiceNotFoundException(Class serviceClass) {
 		super(createDefaultMessage(serviceClass));
@@ -53,14 +52,14 @@ public class ServiceNotFoundException extends RuntimeException {
 	}
 
 	/**
-	 * Creates a new {@code ServiceNotFoundException} with the given detail
-	 * message and nested exception.
+	 * Creates a new {@code ServiceNotFoundException} with the given detail message
+	 * and nested exception.
 	 *
-	 * @param message The detail message.
-	 * @param serviceClass The class of the application service that could not
-	 * be located.
-	 * @param cause An optional nested exception that occurred attempting to
-	 * locate the service.
+	 * @param message      The detail message.
+	 * @param serviceClass The class of the application service that could not be
+	 *                     located.
+	 * @param cause        An optional nested exception that occurred attempting to
+	 *                     locate the service.
 	 */
 	public ServiceNotFoundException(String message, Class serviceClass) {
 		super(message);
@@ -68,14 +67,14 @@ public class ServiceNotFoundException extends RuntimeException {
 	}
 
 	/**
-	 * Creates a new {@code ServiceNotFoundException} with the given detail
-	 * message and nested exception.
+	 * Creates a new {@code ServiceNotFoundException} with the given detail message
+	 * and nested exception.
 	 *
-	 * @param message The detail message.
-	 * @param serviceClass The class of the application service that could not
-	 * be located.
-	 * @param cause An optional nested exception that occurred attempting to
-	 * locate the service.
+	 * @param message      The detail message.
+	 * @param serviceClass The class of the application service that could not be
+	 *                     located.
+	 * @param cause        An optional nested exception that occurred attempting to
+	 *                     locate the service.
 	 */
 	public ServiceNotFoundException(String message, Class serviceClass, Throwable cause) {
 		super(message, cause);
@@ -84,6 +83,7 @@ public class ServiceNotFoundException extends RuntimeException {
 
 	/**
 	 * Returns class of the application service that could not be located.
+	 *
 	 * @return Returns the service class.
 	 */
 	public Class getServiceClass() {

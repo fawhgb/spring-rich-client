@@ -34,14 +34,20 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.JComponent;
 
 /**
- * Taken from a blog post by <a
- * href="http://jroller.com/page/gfx?entry=wait_with_style_in_swing">Romain Guy</a>.
+ * Taken from a blog post by
+ * <a href="http://jroller.com/page/gfx?entry=wait_with_style_in_swing">Romain
+ * Guy</a>.
  * <p>
  * The only change is support for a background image.
- * 
+ *
  * @author Romain Guy
  */
 public class InfiniteProgressPanel extends JComponent implements MouseListener {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected Area[] ticker = null;
 
 	protected Thread animation = null;
@@ -132,6 +138,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 		}
 	}
 
+	@Override
 	public void paintComponent(Graphics g) {
 		if (started) {
 			int width = getWidth();
@@ -156,8 +163,9 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 				g2.fill(ticker[i]);
 
 				Rectangle2D bounds = ticker[i].getBounds2D();
-				if (bounds.getMaxY() > maxY)
+				if (bounds.getMaxY() > maxY) {
 					maxY = bounds.getMaxY();
+				}
 			}
 
 			if (text != null && text.length() > 0) {
@@ -174,9 +182,9 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 	private Area[] buildTicker() {
 		Area[] ticker = new Area[barsCount];
 		Point2D.Double center = new Point2D.Double((double) getWidth() / 2, (double) getHeight() / 2);
-		double fixedAngle = 2.0 * Math.PI / ((double) barsCount);
+		double fixedAngle = 2.0 * Math.PI / (barsCount);
 
-		for (double i = 0.0; i < (double) barsCount; i++) {
+		for (double i = 0.0; i < barsCount; i++) {
 			Area primitive = buildPrimitive();
 
 			AffineTransform toCenter = AffineTransform.getTranslateInstance(center.getX(), center.getY());
@@ -215,22 +223,25 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 			this.rampUp = rampUp;
 		}
 
+		@Override
 		public void run() {
 			Point2D.Double center = new Point2D.Double((double) getWidth() / 2, (double) getHeight() / 2);
-			double fixedIncrement = 2.0 * Math.PI / ((double) barsCount);
+			double fixedIncrement = 2.0 * Math.PI / (barsCount);
 			AffineTransform toCircle = AffineTransform.getRotateInstance(fixedIncrement, center.getX(), center.getY());
 
 			long start = System.currentTimeMillis();
-			if (rampDelay == 0)
+			if (rampDelay == 0) {
 				alphaLevel = rampUp ? 255 : 0;
+			}
 
 			started = true;
 			boolean inRamp = rampUp;
 
 			while (!Thread.interrupted()) {
 				if (!inRamp) {
-					for (int i = 0; i < ticker.length; i++)
+					for (int i = 0; i < ticker.length; i++) {
 						ticker[i].transform(toCircle);
+					}
 				}
 
 				repaint();
@@ -243,8 +254,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 							inRamp = false;
 						}
 					}
-				}
-				else if (alphaLevel > 0) {
+				} else if (alphaLevel > 0) {
 					alphaLevel = (int) (255 - (255 * (System.currentTimeMillis() - start) / rampDelay));
 					if (alphaLevel <= 0) {
 						alphaLevel = 0;
@@ -254,8 +264,7 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 
 				try {
 					Thread.sleep(inRamp ? 10 : (int) (1000 / fps));
-				}
-				catch (InterruptedException ie) {
+				} catch (InterruptedException ie) {
 					break;
 				}
 				Thread.yield();
@@ -271,18 +280,23 @@ public class InfiniteProgressPanel extends JComponent implements MouseListener {
 		}
 	}
 
+	@Override
 	public void mouseClicked(MouseEvent e) {
 	}
 
+	@Override
 	public void mousePressed(MouseEvent e) {
 	}
 
+	@Override
 	public void mouseReleased(MouseEvent e) {
 	}
 
+	@Override
 	public void mouseEntered(MouseEvent e) {
 	}
 
+	@Override
 	public void mouseExited(MouseEvent e) {
 	}
 

@@ -18,7 +18,6 @@ import org.springframework.binding.validation.ValidationMessage;
 import org.springframework.binding.validation.ValidationResults;
 import org.springframework.binding.validation.Validator;
 import org.springframework.richclient.core.Severity;
-import org.springframework.richclient.util.Assert;
 import org.springframework.rules.reporting.ObjectNameResolver;
 
 /**
@@ -64,20 +63,19 @@ import org.springframework.rules.reporting.ObjectNameResolver;
 @SuppressWarnings("unchecked")
 public class HibernateRulesValidator implements RichValidator, ObjectNameResolver {
 
-
 	private ValidatingFormModel formModel;
-    private Class beanClass;
+	private Class beanClass;
 	private final ClassValidator hibernateValidator;
 
 	private Set<String> ignoredHibernateProperties;
 
-    private DefaultValidationResults results = new DefaultValidationResults();
+	private DefaultValidationResults results = new DefaultValidationResults();
 
 	/**
 	 * Creates a new HibernateRulesValidator without ignoring any properties.
 	 *
-	 * @param formModel The {@link ValidatingFormModel} on which validation
-	 * needs to occur
+	 * @param formModel The {@link ValidatingFormModel} on which validation needs to
+	 *                  occur
 	 * @param beanClass The class of the object this validator needs to check
 	 */
 	public HibernateRulesValidator(ValidatingFormModel formModel, Class beanClass) {
@@ -85,26 +83,28 @@ public class HibernateRulesValidator implements RichValidator, ObjectNameResolve
 	}
 
 	/**
-	 * Creates a new HibernateRulesValidator with additionally a set of
-	 * properties that should not be validated.
+	 * Creates a new HibernateRulesValidator with additionally a set of properties
+	 * that should not be validated.
 	 *
-	 * @param formModel The {@link ValidatingFormModel} on which validation
-	 * needs to occur
-	 * @param beanClass The class of the object this validator needs to check
+	 * @param formModel                  The {@link ValidatingFormModel} on which
+	 *                                   validation needs to occur
+	 * @param beanClass                  The class of the object this validator
+	 *                                   needs to check
 	 * @param ignoredHibernateProperties properties that should not be checked
-	 * though are
+	 *                                   though are
 	 */
 	public HibernateRulesValidator(ValidatingFormModel formModel, Class beanClass,
-                                   Set<String> ignoredHibernateProperties) {
+			Set<String> ignoredHibernateProperties) {
 		this.formModel = formModel;
-        this.beanClass = beanClass;
-        this.hibernateValidator = new ClassValidator(beanClass, new HibernateRulesMessageInterpolator());
+		this.beanClass = beanClass;
+		this.hibernateValidator = new ClassValidator(beanClass, new HibernateRulesMessageInterpolator());
 		this.ignoredHibernateProperties = ignoredHibernateProperties;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ValidationResults validate(Object object) {
 		return validate(object, null);
 	}
@@ -112,19 +112,20 @@ public class HibernateRulesValidator implements RichValidator, ObjectNameResolve
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public ValidationResults validate(Object object, String propertyName) {
-        // TODO ge0ffrey: our code is not ready for our fail fast (due to usage of slices instead of hibernate-auditing)
+		// TODO ge0ffrey: our code is not ready for our fail fast (due to usage of
+		// slices instead of hibernate-auditing)
 //        // Normally ClassValidator.assertValid() checks this, but we use lower level methods of it instead
 //        if (object != null && !beanClass.isInstance(object)) {
 //            throw new IllegalArgumentException("The object (" + object + ") must be an instance of beanClass ("
 //                    + beanClass + ").");
 //        }
-        // hibernate will return InvalidValues per propertyName, remove any
+		// hibernate will return InvalidValues per propertyName, remove any
 		// previous validationMessages.
 		if (propertyName == null) {
 			results.clearMessages();
-		}
-		else {
+		} else {
 			results.clearMessages(propertyName);
 		}
 
@@ -154,10 +155,9 @@ public class HibernateRulesValidator implements RichValidator, ObjectNameResolve
 	/**
 	 * Validates the object through Hibernate Validator
 	 *
-	 * @param object The object that needs to be validated
+	 * @param object   The object that needs to be validated
 	 * @param property The properties that needs to be validated
-	 * @return An array of {@link InvalidValue}, containing all validation
-	 * errors
+	 * @return An array of {@link InvalidValue}, containing all validation errors
 	 */
 	protected InvalidValue[] doHibernateValidate(final Object object, final String property) {
 		if (property == null) {
@@ -165,15 +165,14 @@ public class HibernateRulesValidator implements RichValidator, ObjectNameResolve
 			PropertyDescriptor[] propertyDescriptors;
 			try {
 				propertyDescriptors = Introspector.getBeanInfo(object.getClass()).getPropertyDescriptors();
-			}
-			catch (IntrospectionException e) {
+			} catch (IntrospectionException e) {
 				throw new IllegalStateException("Could not retrieve property information");
 			}
 			for (final PropertyDescriptor prop : propertyDescriptors) {
 				String propertyName = prop.getName();
 				if (formModel.hasValueModel(propertyName) && !ignoredHibernateProperties.contains(propertyName)) {
-					final InvalidValue[] result = hibernateValidator.getPotentialInvalidValues(propertyName, formModel
-							.getValueModel(propertyName).getValue());
+					final InvalidValue[] result = hibernateValidator.getPotentialInvalidValues(propertyName,
+							formModel.getValueModel(propertyName).getValue());
 					if (result != null) {
 						for (final InvalidValue r : result) {
 							ret.add(r);
@@ -182,11 +181,9 @@ public class HibernateRulesValidator implements RichValidator, ObjectNameResolve
 				}
 			}
 			return ret.toArray(new InvalidValue[ret.size()]);
-		}
-		else if (!ignoredHibernateProperties.contains(property) && formModel.hasValueModel(property)) {
+		} else if (!ignoredHibernateProperties.contains(property) && formModel.hasValueModel(property)) {
 			return hibernateValidator.getPotentialInvalidValues(property, formModel.getValueModel(property).getValue());
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -206,7 +203,7 @@ public class HibernateRulesValidator implements RichValidator, ObjectNameResolve
 	 * @param propertyName Name of the property to ignore. Cannot be null.
 	 */
 	public void addIgnoredHibernateProperty(String propertyName) {
-		Assert.notNull(propertyName);
+		org.springframework.util.Assert.notNull(propertyName);
 		ignoredHibernateProperties.add(propertyName);
 	}
 
@@ -216,13 +213,14 @@ public class HibernateRulesValidator implements RichValidator, ObjectNameResolve
 	 * @param propertyName Name of the property to be removed. Cannot be null.
 	 */
 	public void removeIgnoredHibernateProperty(String propertyName) {
-		Assert.notNull(propertyName);
+		org.springframework.util.Assert.notNull(propertyName);
 		ignoredHibernateProperties.remove(propertyName);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String resolveObjectName(String objectName) {
 		return formModel.getFieldFace(objectName).getDisplayName();
 	}

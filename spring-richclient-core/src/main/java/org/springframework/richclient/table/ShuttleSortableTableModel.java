@@ -45,6 +45,8 @@ import org.springframework.util.comparator.NullSafeComparator;
  * function returns 0 to denote that they are equivalent.
  */
 public class ShuttleSortableTableModel extends AbstractTableModelFilter implements SortableTableModel {
+	private static final long serialVersionUID = 1L;
+
 	private static final Comparator OBJECT_COMPARATOR = new NullSafeComparator(ToStringComparator.INSTANCE, true);
 
 	private static final Comparator COMPARABLE_COMPARATOR = NullSafeComparator.NULLS_LOW;
@@ -60,6 +62,7 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 	private boolean autoSortEnabled = true;
 
 	private Runnable notifyTableRunnable = new Runnable() {
+		@Override
 		public void run() {
 			fireTableDataChanged();
 		}
@@ -88,10 +91,11 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 
 	/**
 	 * Reset the <code>columnComparartos</code>.<br>
-	 * Useful when the columns of the model were changed, and by consequence
-	 * their comparators.
-	 * @param comparators - map with comparators where the key is the column of
-	 * the comparator.
+	 * Useful when the columns of the model were changed, and by consequence their
+	 * comparators.
+	 *
+	 * @param comparators - map with comparators where the key is the column of the
+	 *                    comparator.
 	 */
 	public void resetComparators(Map comparators) {
 		int colCount = filteredModel.getColumnCount();
@@ -101,16 +105,18 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 		Class clazz;
 		for (int i = 0; i < columnComparators.length; i++) {
 			newComparator = (Comparator) comparators.get(Integer.valueOf(i));
-			if (newComparator != null)
+			if (newComparator != null) {
 				setComparator(i, newComparator);
-			else {
+			} else {
 				clazz = filteredModel.getColumnClass(i);
-				if (clazz == Object.class || !Comparable.class.isAssignableFrom(clazz))
+				if (clazz == Object.class || !Comparable.class.isAssignableFrom(clazz)) {
 					columnComparators[i] = OBJECT_COMPARATOR;
+				}
 			}
 		}
 	}
 
+	@Override
 	public boolean isCellEditable(int row, int column) {
 		return filteredModel.isCellEditable(indexes[row], column);
 	}
@@ -127,6 +133,7 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 		return this.columnComparators[columnIndex];
 	}
 
+	@Override
 	public void setComparator(int columnIndex, Comparator comparator) {
 		Assert.notNull(comparator);
 		this.columnComparators[columnIndex] = comparator;
@@ -134,14 +141,17 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 
 	// The mapping only affects the contents of the model rows.
 	// Pass all requests to these rows through the mapping array: "indexes".
+	@Override
 	public Object getValueAt(int row, int column) {
 		return filteredModel.getValueAt(indexes[row], column);
 	}
 
+	@Override
 	public void setValueAt(Object value, int row, int column) {
 		filteredModel.setValueAt(value, indexes[row], column);
 	}
 
+	@Override
 	public void sortByColumn(ColumnToSort columnToSort) {
 		columnsToSort.clear();
 		columnsToSort.add(columnToSort);
@@ -149,12 +159,14 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 		SwingUtilities.invokeLater(notifyTableRunnable);
 	}
 
+	@Override
 	public void sortByColumns(ColumnToSort[] columnsToSort) {
 		this.columnsToSort = Arrays.asList(columnsToSort);
 		sort();
 		notifyTableChanged();
 	}
 
+	@Override
 	public int[] sortByColumns(ColumnToSort[] columnsToSort, int[] preSortSelectedRows) {
 		int[] modelIndexes = new int[preSortSelectedRows.length];
 		if (logger.isDebugEnabled()) {
@@ -179,16 +191,17 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 	protected void notifyTableChanged() {
 		if (!EventQueue.isDispatchThread()) {
 			SwingUtilities.invokeLater(notifyTableRunnable);
-		}
-		else {
+		} else {
 			notifyTableRunnable.run();
 		}
 	}
 
+	@Override
 	public int convertSortedIndexToDataIndex(int index) {
 		return indexes[index];
 	}
 
+	@Override
 	public int[] convertSortedIndexesToDataIndexes(int[] indexes) {
 		int[] converted = new int[indexes.length];
 		for (int i = 0; i < indexes.length; i++) {
@@ -207,6 +220,7 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 		return 0;
 	}
 
+	@Override
 	public int[] convertDataIndexesToSortedIndexes(int[] indexes) {
 		int[] converted = new int[indexes.length];
 		for (int i = 0; i < indexes.length; i++) {
@@ -219,7 +233,7 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 		if (columnsToSort.size() > 0) {
 			checkModel();
 			compares = 0;
-			doShuttleSort((int[]) indexes.clone(), indexes, 0, indexes.length);
+			doShuttleSort(indexes.clone(), indexes, 0, indexes.length);
 		}
 	}
 
@@ -248,18 +262,17 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 		int q = middle;
 
 		/*
-		 * This is an optional short-cut; at each recursive call, check to see
-		 * if the elements in this subset are already ordered. If so, no further
-		 * comparisons are needed; the sub-array can just be copied. The array
-		 * must be copied rather than assigned otherwise sister calls in the
-		 * recursion might get out of sinc. When the number of elements is three
-		 * they are partitioned so that the first set, [low, mid), has one
-		 * element and and the second, [mid, high), has two. We skip the
-		 * optimisation when the number of elements is three or less as the
-		 * first compare in the normal merge will produce the same sequence of
-		 * steps. This optimisation seems to be worthwhile for partially ordered
-		 * lists but some analysis is needed to find out how the performance
-		 * drops to Nlog(N) as the initial
+		 * This is an optional short-cut; at each recursive call, check to see if the
+		 * elements in this subset are already ordered. If so, no further comparisons
+		 * are needed; the sub-array can just be copied. The array must be copied rather
+		 * than assigned otherwise sister calls in the recursion might get out of sinc.
+		 * When the number of elements is three they are partitioned so that the first
+		 * set, [low, mid), has one element and and the second, [mid, high), has two. We
+		 * skip the optimisation when the number of elements is three or less as the
+		 * first compare in the normal merge will produce the same sequence of steps.
+		 * This optimisation seems to be worthwhile for partially ordered lists but some
+		 * analysis is needed to find out how the performance drops to Nlog(N) as the
+		 * initial
 		 */
 		if (high - low >= 4 && compare(from[middle - 1], from[middle]) <= 0) {
 			for (int i = low; i < high; i++) {
@@ -272,8 +285,7 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 		for (int i = low; i < high; i++) {
 			if (q >= high || (p < middle && compare(from[p], from[q]) <= 0)) {
 				to[i] = from[p++];
-			}
-			else {
+			} else {
 				to[i] = from[q++];
 			}
 		}
@@ -303,6 +315,7 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 		return COMPARABLE_COMPARATOR.compare(o1, o2);
 	}
 
+	@Override
 	public void tableChanged(final TableModelEvent e) {
 		if (e.getType() == TableModelEvent.INSERT) {
 			if (autoSortEnabled) {
@@ -316,13 +329,11 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 				for (int i = 0; i < insertedRows.length; i++) {
 					fireTableRowsInserted(insertedRows[i], insertedRows[i]);
 				}
-			}
-			else {
+			} else {
 				reallocateIndexesOnInsert(e.getFirstRow(), e.getLastRow());
 				super.tableChanged(e);
 			}
-		}
-		else if (e.getType() == TableModelEvent.DELETE) {
+		} else if (e.getType() == TableModelEvent.DELETE) {
 			final int[] deletedRows = new int[e.getLastRow() - e.getFirstRow() + 1];
 			int row = e.getFirstRow();
 			for (int i = 0; i < deletedRows.length; i++) {
@@ -334,13 +345,11 @@ public class ShuttleSortableTableModel extends AbstractTableModelFilter implemen
 				fireTableRowsDeleted(deletedRows[i], deletedRows[i]);
 			}
 			sort();
-		}
-		else if (e.getType() == TableModelEvent.UPDATE) {
+		} else if (e.getType() == TableModelEvent.UPDATE) {
 			allocateIndexes();
 			sort();
 			fireTableDataChanged();
-		}
-		else {
+		} else {
 			logger.warn("Doing an unknown table change type: " + e.getType());
 			allocateIndexes();
 			sort();

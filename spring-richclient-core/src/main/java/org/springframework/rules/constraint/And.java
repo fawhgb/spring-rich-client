@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -17,14 +17,14 @@ package org.springframework.rules.constraint;
 
 import java.util.Iterator;
 
-import org.springframework.rules.constraint.Constraint;
-
 /**
  * A "and" compound constraint (aka conjunction).
- * 
+ *
  * @author Keith Donald
  */
 public class And extends CompoundConstraint {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Creates a empty And conjunction.
@@ -35,11 +35,9 @@ public class And extends CompoundConstraint {
 
 	/**
 	 * "Ands" two constraints.
-	 * 
-	 * @param constraint1
-	 *            The first constraint.
-	 * @param constraint2
-	 *            The second constraint.
+	 *
+	 * @param constraint1 The first constraint.
+	 * @param constraint2 The second constraint.
 	 */
 	public And(Constraint constraint1, Constraint constraint2) {
 		super(constraint1, constraint2);
@@ -47,23 +45,23 @@ public class And extends CompoundConstraint {
 
 	/**
 	 * "Ands" the specified constraints.
-	 * 
-	 * @param constraints
-	 *            The constraints
+	 *
+	 * @param constraints The constraints
 	 */
 	public And(Constraint[] constraints) {
 		super(constraints);
 	}
 
 	/**
-	 * Tests if all of the constraints aggregated by this compound constraint
-	 * return <code>true</code> when evaulating this argument.
-	 * 
+	 * Tests if all of the constraints aggregated by this compound constraint return
+	 * <code>true</code> when evaulating this argument.
+	 *
 	 * @see Constraint#test(java.lang.Object)
 	 */
+	@Override
 	public boolean test(Object argument) {
 		for (Iterator i = iterator(); i.hasNext();) {
-			if (!((Constraint)i.next()).test(argument)) {
+			if (!((Constraint) i.next()).test(argument)) {
 				return false;
 			}
 		}

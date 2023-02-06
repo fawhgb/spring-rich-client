@@ -52,322 +52,344 @@ import org.springframework.util.Assert;
  * Abstract helper implementation for <code>ApplicationWindow</code>.
  */
 public abstract class AbstractApplicationWindow implements ApplicationWindow, WindowFocusListener {
-    protected Log logger = LogFactory.getLog( getClass() );
+	protected Log logger = LogFactory.getLog(getClass());
 
-    private final EventListenerListHelper pageListeners = new EventListenerListHelper( PageListener.class );
+	private final EventListenerListHelper pageListeners = new EventListenerListHelper(PageListener.class);
 
-    private int number;
+	private int number;
 
-    private ApplicationWindowCommandManager commandManager;
+	private ApplicationWindowCommandManager commandManager;
 
-    private CommandGroup menuBarCommandGroup;
+	private CommandGroup menuBarCommandGroup;
 
-    private CommandGroup toolBarCommandGroup;
+	private CommandGroup toolBarCommandGroup;
 
-    private StatusBar statusBar;
+	private StatusBar statusBar;
 
-    private ApplicationWindowConfigurer windowConfigurer;
+	private ApplicationWindowConfigurer windowConfigurer;
 
-    private JFrame control;
+	private JFrame control;
 
-    private ApplicationPage currentPage;
+	private ApplicationPage currentPage;
 
-    private WindowManager windowManager;
+	private WindowManager windowManager;
 
-    public AbstractApplicationWindow() {
-        this( Application.instance().getWindowManager().size() );
-    }
+	public AbstractApplicationWindow() {
+		this(Application.instance().getWindowManager().size());
+	}
 
-    public AbstractApplicationWindow( int number ) {
-        this.number = number;
-        getAdvisor().setOpeningWindow( this );
-        init();
-        getAdvisor().onCommandsCreated( this );
-    }
+	public AbstractApplicationWindow(int number) {
+		this.number = number;
+		getAdvisor().setOpeningWindow(this);
+		init();
+		getAdvisor().onCommandsCreated(this);
+	}
 
-    protected void init() {
-        this.commandManager = getAdvisor().createWindowCommandManager();
-        this.menuBarCommandGroup = getAdvisor().getMenuBarCommandGroup();
-        this.toolBarCommandGroup = getAdvisor().getToolBarCommandGroup();
-        this.statusBar = getAdvisor().getStatusBar();
-    }
+	protected void init() {
+		this.commandManager = getAdvisor().createWindowCommandManager();
+		this.menuBarCommandGroup = getAdvisor().getMenuBarCommandGroup();
+		this.toolBarCommandGroup = getAdvisor().getToolBarCommandGroup();
+		this.statusBar = getAdvisor().getStatusBar();
+	}
 
-    public int getNumber() {
-        return number;
-    }
+	@Override
+	public int getNumber() {
+		return number;
+	}
 
-    public ApplicationPage getPage() {
-        return currentPage;
-    }
+	@Override
+	public ApplicationPage getPage() {
+		return currentPage;
+	}
 
-    protected ApplicationLifecycleAdvisor getAdvisor() {
-        return Application.instance().getLifecycleAdvisor();
-    }
+	protected ApplicationLifecycleAdvisor getAdvisor() {
+		return Application.instance().getLifecycleAdvisor();
+	}
 
-    protected ApplicationServices getServices() {
-        return ApplicationServicesLocator.services();
-    }
+	protected ApplicationServices getServices() {
+		return ApplicationServicesLocator.services();
+	}
 
-    protected ApplicationWindowConfigurer getWindowConfigurer() {
-        if( windowConfigurer == null ) {
-            this.windowConfigurer = initWindowConfigurer();
-        }
-        return windowConfigurer;
-    }
+	protected ApplicationWindowConfigurer getWindowConfigurer() {
+		if (windowConfigurer == null) {
+			this.windowConfigurer = initWindowConfigurer();
+		}
+		return windowConfigurer;
+	}
 
-    protected ApplicationWindowConfigurer initWindowConfigurer() {
-        return new DefaultApplicationWindowConfigurer( this );
-    }
+	protected ApplicationWindowConfigurer initWindowConfigurer() {
+		return new DefaultApplicationWindowConfigurer(this);
+	}
 
-    public CommandManager getCommandManager() {
-        return commandManager;
-    }
+	@Override
+	public CommandManager getCommandManager() {
+		return commandManager;
+	}
 
-    public Iterator getSharedCommands() {
-        return commandManager.getSharedCommands();
-    }
+	@Override
+	public Iterator getSharedCommands() {
+		return commandManager.getSharedCommands();
+	}
 
-    public CommandGroup getMenuBar() {
-        return menuBarCommandGroup;
-    }
+	@Override
+	public CommandGroup getMenuBar() {
+		return menuBarCommandGroup;
+	}
 
-    public CommandGroup getToolBar() {
-        return toolBarCommandGroup;
-    }
+	@Override
+	public CommandGroup getToolBar() {
+		return toolBarCommandGroup;
+	}
 
-    public StatusBar getStatusBar() {
-        return statusBar;
-    }
+	@Override
+	public StatusBar getStatusBar() {
+		return statusBar;
+	}
 
-    public void setWindowManager( WindowManager windowManager ) {
-        this.windowManager = windowManager;
-    }
+	@Override
+	public void setWindowManager(WindowManager windowManager) {
+		this.windowManager = windowManager;
+	}
 
-    /**
-     * Show the given page in this window.
-     *
-     * @param pageId the page to show, identified by id
-     *
-     * @throws IllegalArgumentException if pageId == null
-     */
-    public void showPage( String pageId ) {
-        if( pageId == null )
-            throw new IllegalArgumentException( "pageId == null" );
+	/**
+	 * Show the given page in this window.
+	 *
+	 * @param pageId the page to show, identified by id
+	 *
+	 * @throws IllegalArgumentException if pageId == null
+	 */
+	@Override
+	public void showPage(String pageId) {
+		if (pageId == null) {
+			throw new IllegalArgumentException("pageId == null");
+		}
 
-        if( getPage() == null || !getPage().getId().equals( pageId ) ) {
-            showPage( createPage( this, pageId ) );
-        } else {
-            // asking for the same page, so ignore
-        }
-    }
+		if (getPage() == null || !getPage().getId().equals(pageId)) {
+			showPage(createPage(this, pageId));
+		} else {
+			// asking for the same page, so ignore
+		}
+	}
 
-    public void showPage( PageDescriptor pageDescriptor ) {
-        Assert.notNull( pageDescriptor, "pageDescriptor == null" );
+	@Override
+	public void showPage(PageDescriptor pageDescriptor) {
+		Assert.notNull(pageDescriptor, "pageDescriptor == null");
 
-        if( getPage() == null || !getPage().getId().equals( pageDescriptor.getId() ) ) {
-            showPage( createPage( pageDescriptor ) );
-        } else {
-            // asking for the same page, so ignore
-        }
-    }
+		if (getPage() == null || !getPage().getId().equals(pageDescriptor.getId())) {
+			showPage(createPage(pageDescriptor));
+		} else {
+			// asking for the same page, so ignore
+		}
+	}
 
-    /**
-     * Show the given page in this window.
-     *
-     * @param page the page to show
-     *
-     * @throws IllegalArgumentException if page == null
-     */
-    public void showPage( ApplicationPage page ) {
-        if( page == null )
-            throw new IllegalArgumentException( "page == null" );
+	/**
+	 * Show the given page in this window.
+	 *
+	 * @param page the page to show
+	 *
+	 * @throws IllegalArgumentException if page == null
+	 */
+	@Override
+	public void showPage(ApplicationPage page) {
+		if (page == null) {
+			throw new IllegalArgumentException("page == null");
+		}
 
-        if( this.currentPage == null ) {
-            this.currentPage = page;
-            getAdvisor().onPreWindowOpen( getWindowConfigurer() );
-            this.control = createNewWindowControl();
-            this.control.addWindowFocusListener( this );
-            initWindowControl( this.control );
-            getAdvisor().onWindowCreated( this );
-            setActivePage( page );
-            this.control.setVisible( true );
-            getAdvisor().onWindowOpened( this );
-        } else {
-            if( !currentPage.getId().equals( page.getId() ) ) {
-                final ApplicationPage oldPage = this.currentPage;
-                this.currentPage = page;
-                setActivePage( page );
-                pageListeners.fire( "pageClosed", oldPage );
-            } else {
-                // asking for the same page, so ignore
-            }
-        }
-        pageListeners.fire( "pageOpened", this.currentPage );
-    }
+		if (this.currentPage == null) {
+			this.currentPage = page;
+			getAdvisor().onPreWindowOpen(getWindowConfigurer());
+			this.control = createNewWindowControl();
+			this.control.addWindowFocusListener(this);
+			initWindowControl(this.control);
+			getAdvisor().onWindowCreated(this);
+			setActivePage(page);
+			this.control.setVisible(true);
+			getAdvisor().onWindowOpened(this);
+		} else {
+			if (!currentPage.getId().equals(page.getId())) {
+				final ApplicationPage oldPage = this.currentPage;
+				this.currentPage = page;
+				setActivePage(page);
+				pageListeners.fire("pageClosed", oldPage);
+			} else {
+				// asking for the same page, so ignore
+			}
+		}
+		pageListeners.fire("pageOpened", this.currentPage);
+	}
 
-    protected final ApplicationPage createPage( ApplicationWindow window, String pageDescriptorId ) {
-        PageDescriptor descriptor = getPageDescriptor( pageDescriptorId );
-        return createPage( descriptor );
-    }
+	protected final ApplicationPage createPage(ApplicationWindow window, String pageDescriptorId) {
+		PageDescriptor descriptor = getPageDescriptor(pageDescriptorId);
+		return createPage(descriptor);
+	}
 
-    /**
-     * Factory method for creating the page area managed by this window. Subclasses may
-     * override to return a custom page implementation.
-     *
-     * @param descriptor The page descriptor
-     *
-     * @return The window's page
-     */
-    protected ApplicationPage createPage( PageDescriptor descriptor ) {
-        ApplicationPageFactory windowFactory = (ApplicationPageFactory) getServices().getService(
-                ApplicationPageFactory.class );
-        return windowFactory.createApplicationPage( this, descriptor );
-    }
+	/**
+	 * Factory method for creating the page area managed by this window. Subclasses
+	 * may override to return a custom page implementation.
+	 *
+	 * @param descriptor The page descriptor
+	 *
+	 * @return The window's page
+	 */
+	protected ApplicationPage createPage(PageDescriptor descriptor) {
+		ApplicationPageFactory windowFactory = (ApplicationPageFactory) getServices()
+				.getService(ApplicationPageFactory.class);
+		return windowFactory.createApplicationPage(this, descriptor);
+	}
 
-    protected PageDescriptor getPageDescriptor( String pageDescriptorId ) {
-        ApplicationContext ctx = Application.instance().getApplicationContext();
-        Assert.state( ctx.containsBean( pageDescriptorId ), "Do not know about page or view descriptor with name '"
-                + pageDescriptorId + "' - check your context config" );
-        Object desc = ctx.getBean( pageDescriptorId );
-        if( desc instanceof PageDescriptor ) {
-            return (PageDescriptor) desc;
-        } else if( desc instanceof ViewDescriptor ) {
-            return new SingleViewPageDescriptor( (ViewDescriptor) desc );
-        } else {
-            throw new IllegalArgumentException( "Page id '" + pageDescriptorId
-                    + "' is not backed by an ApplicationPageDescriptor" );
-        }
-    }
+	protected PageDescriptor getPageDescriptor(String pageDescriptorId) {
+		ApplicationContext ctx = Application.instance().getApplicationContext();
+		Assert.state(ctx.containsBean(pageDescriptorId), "Do not know about page or view descriptor with name '"
+				+ pageDescriptorId + "' - check your context config");
+		Object desc = ctx.getBean(pageDescriptorId);
+		if (desc instanceof PageDescriptor) {
+			return (PageDescriptor) desc;
+		} else if (desc instanceof ViewDescriptor) {
+			return new SingleViewPageDescriptor((ViewDescriptor) desc);
+		} else {
+			throw new IllegalArgumentException(
+					"Page id '" + pageDescriptorId + "' is not backed by an ApplicationPageDescriptor");
+		}
+	}
 
-    protected void initWindowControl( JFrame windowControl ) {
-        ApplicationWindowConfigurer configurer = getWindowConfigurer();
-        applyStandardLayout( windowControl, configurer );
-        prepareWindowForView( windowControl, configurer );
-    }
+	protected void initWindowControl(JFrame windowControl) {
+		ApplicationWindowConfigurer configurer = getWindowConfigurer();
+		applyStandardLayout(windowControl, configurer);
+		prepareWindowForView(windowControl, configurer);
+	}
 
-    protected void applyStandardLayout( JFrame windowControl, ApplicationWindowConfigurer configurer ) {
-        windowControl.setTitle( configurer.getTitle() );
-        windowControl.setIconImage( configurer.getImage() );
-        windowControl.setJMenuBar( createMenuBarControl() );
-        windowControl.getContentPane().setLayout( new BorderLayout() );
-        windowControl.getContentPane().add( createToolBarControl(), BorderLayout.NORTH );
-        windowControl.getContentPane().add( createWindowContentPane() );
-        windowControl.getContentPane().add( createStatusBarControl(), BorderLayout.SOUTH );
-    }
+	protected void applyStandardLayout(JFrame windowControl, ApplicationWindowConfigurer configurer) {
+		windowControl.setTitle(configurer.getTitle());
+		windowControl.setIconImage(configurer.getImage());
+		windowControl.setJMenuBar(createMenuBarControl());
+		windowControl.getContentPane().setLayout(new BorderLayout());
+		windowControl.getContentPane().add(createToolBarControl(), BorderLayout.NORTH);
+		windowControl.getContentPane().add(createWindowContentPane());
+		windowControl.getContentPane().add(createStatusBarControl(), BorderLayout.SOUTH);
+	}
 
-    /**
-     * Set the given <code>ApplicationPage</code> active (visible + selected if
-     * applicable)
-     *
-     * @param page the <code>ApplicationPage</code>
-     */
-    protected abstract void setActivePage( ApplicationPage page );
+	/**
+	 * Set the given <code>ApplicationPage</code> active (visible + selected if
+	 * applicable)
+	 *
+	 * @param page the <code>ApplicationPage</code>
+	 */
+	protected abstract void setActivePage(ApplicationPage page);
 
-    protected void prepareWindowForView( JFrame windowControl, ApplicationWindowConfigurer configurer ) {
-        windowControl.pack();
-        windowControl.setSize( configurer.getInitialSize() );
+	protected void prepareWindowForView(JFrame windowControl, ApplicationWindowConfigurer configurer) {
+		windowControl.pack();
+		windowControl.setSize(configurer.getInitialSize());
 
-        WindowUtils.centerOnScreen(windowControl);
-    }
+		WindowUtils.centerOnScreen(windowControl);
+	}
 
-    protected JFrame createNewWindowControl() {
-        JFrame frame = new JFrame();
-        frame.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
-        WindowAdapter windowCloseHandler = new WindowAdapter() {
-            public void windowClosing( WindowEvent e ) {
-                close();
-            }
-        };
-        frame.addWindowListener( windowCloseHandler );
-        return frame;
-    }
+	protected JFrame createNewWindowControl() {
+		JFrame frame = new JFrame();
+		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		WindowAdapter windowCloseHandler = new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				close();
+			}
+		};
+		frame.addWindowListener(windowCloseHandler);
+		return frame;
+	}
 
-    public JFrame getControl() {
-        return control;
-    }
+	@Override
+	public JFrame getControl() {
+		return control;
+	}
 
-    public boolean isControlCreated() {
-        return control != null;
-    }
+	public boolean isControlCreated() {
+		return control != null;
+	}
 
-    protected JMenuBar createMenuBarControl() {
-        JMenuBar menuBar = menuBarCommandGroup.createMenuBar();
-        menuBarCommandGroup.setVisible( getWindowConfigurer().getShowMenuBar() );
-        return menuBar;
-    }
+	protected JMenuBar createMenuBarControl() {
+		JMenuBar menuBar = menuBarCommandGroup.createMenuBar();
+		menuBarCommandGroup.setVisible(getWindowConfigurer().getShowMenuBar());
+		return menuBar;
+	}
 
-    protected JComponent createToolBarControl() {
-        JComponent toolBar = toolBarCommandGroup.createToolBar();
-        toolBarCommandGroup.setVisible( getWindowConfigurer().getShowToolBar() );
-        return toolBar;
-    }
+	protected JComponent createToolBarControl() {
+		JComponent toolBar = toolBarCommandGroup.createToolBar();
+		toolBarCommandGroup.setVisible(getWindowConfigurer().getShowToolBar());
+		return toolBar;
+	}
 
-    protected JComponent createStatusBarControl() {
-        JComponent statusBarControl = statusBar.getControl();
-        statusBarControl.setVisible( getWindowConfigurer().getShowStatusBar() );
-        return statusBarControl;
-    }
+	protected JComponent createStatusBarControl() {
+		JComponent statusBarControl = statusBar.getControl();
+		statusBarControl.setVisible(getWindowConfigurer().getShowStatusBar());
+		return statusBarControl;
+	}
 
-    public void addPageListener( PageListener listener ) {
-        this.pageListeners.add( listener );
-    }
+	@Override
+	public void addPageListener(PageListener listener) {
+		this.pageListeners.add(listener);
+	}
 
-    public void removePageListener( PageListener listener ) {
-        this.pageListeners.remove( listener );
-    }
+	@Override
+	public void removePageListener(PageListener listener) {
+		this.pageListeners.remove(listener);
+	}
 
-    /**
+	/**
 	 * Close this window. First checks with the advisor by calling the
 	 * {@link ApplicationLifecycleAdvisor#onPreWindowClose(ApplicationWindow)}
-	 * method. Then tries to close it's currentPage. If both are successfull,
-	 * the window will be disposed and removed from the {@link WindowManager}.
+	 * method. Then tries to close it's currentPage. If both are successfull, the
+	 * window will be disposed and removed from the {@link WindowManager}.
 	 *
-	 * @return boolean <code>true</code> if both, the advisor and the
-	 * currentPage allow the closing action.
+	 * @return boolean <code>true</code> if both, the advisor and the currentPage
+	 *         allow the closing action.
 	 */
-    public boolean close() {
-        boolean canClose = getAdvisor().onPreWindowClose( this );
-        if( canClose ) {
-        	// check if page can be closed
-            if( currentPage != null ) {
-                canClose = currentPage.close();
-                // page cannot be closed, exit method and do not dispose
-                if (!canClose)
-                	return canClose;
-            }
+	@Override
+	public boolean close() {
+		boolean canClose = getAdvisor().onPreWindowClose(this);
+		if (canClose) {
+			// check if page can be closed
+			if (currentPage != null) {
+				canClose = currentPage.close();
+				// page cannot be closed, exit method and do not dispose
+				if (!canClose) {
+					return canClose;
+				}
+			}
 
-            if( control != null ) {
-                control.dispose();
-                control = null;
-            }
+			if (control != null) {
+				control.dispose();
+				control = null;
+			}
 
-            if( windowManager != null ) {
-                windowManager.remove( this );
-            }
-            windowManager = null;
-        }
-        return canClose;
-    }
+			if (windowManager != null) {
+				windowManager.remove(this);
+			}
+			windowManager = null;
+		}
+		return canClose;
+	}
 
-    /**
-     * When gaining focus, set this window as the active one on it's manager.
-     */
-    public void windowGainedFocus( WindowEvent e ) {
-        if( this.windowManager != null )
-            this.windowManager.setActiveWindow( this );
-    }
+	/**
+	 * When gaining focus, set this window as the active one on it's manager.
+	 */
+	@Override
+	public void windowGainedFocus(WindowEvent e) {
+		if (this.windowManager != null) {
+			this.windowManager.setActiveWindow(this);
+		}
+	}
 
-    /**
-     * When losing focus no action is done. This way the last focussed window will stay
-     * listed as the activeWindow.
-     */
-    public void windowLostFocus( WindowEvent e ) {
-    }
+	/**
+	 * When losing focus no action is done. This way the last focussed window will
+	 * stay listed as the activeWindow.
+	 */
+	@Override
+	public void windowLostFocus(WindowEvent e) {
+	}
 
-    /**
-     * Implementors create the component that contains the contents of this window.
-     *
-     * @return the content pane
-     */
-    protected abstract JComponent createWindowContentPane();
+	/**
+	 * Implementors create the component that contains the contents of this window.
+	 *
+	 * @return the content pane
+	 */
+	protected abstract JComponent createWindowContentPane();
 }

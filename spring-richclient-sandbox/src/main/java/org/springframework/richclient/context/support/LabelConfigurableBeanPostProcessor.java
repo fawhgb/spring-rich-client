@@ -10,7 +10,6 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.richclient.core.LabelConfigurable;
 import org.springframework.richclient.core.LabelInfo;
-import org.springframework.richclient.core.TitleConfigurable;
 import org.springframework.util.StringUtils;
 
 public class LabelConfigurableBeanPostProcessor implements BeanPostProcessor {
@@ -23,6 +22,7 @@ public class LabelConfigurableBeanPostProcessor implements BeanPostProcessor {
 		this.messageSource = messageSource;
 	}
 
+	@Override
 	public Object postProcessAfterInitialization(Object bean, String name) throws BeansException {
 		if (bean instanceof LabelConfigurable) {
 			LabelConfigurable configurable = (LabelConfigurable) bean;
@@ -34,8 +34,7 @@ public class LabelConfigurableBeanPostProcessor implements BeanPostProcessor {
 				if (StringUtils.hasText(label)) {
 					configurable.setLabelInfo(LabelInfo.valueOf(label));
 				}
-			}
-			catch (NoSuchMessageException e) {
+			} catch (NoSuchMessageException e) {
 				throw new BeanInitializationException("Unable to initialize bean " + name, e);
 			}
 		}
@@ -43,6 +42,7 @@ public class LabelConfigurableBeanPostProcessor implements BeanPostProcessor {
 		return bean;
 	}
 
+	@Override
 	public Object postProcessBeforeInitialization(Object bean, String name) throws BeansException {
 		return bean;
 	}

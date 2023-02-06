@@ -26,51 +26,56 @@ import org.springframework.richclient.form.binding.support.CustomBinding;
 
 /**
  * @author Mathias Broekelmann
- * 
+ *
  */
 public class ToggleButtonBinding extends CustomBinding {
 
-    private final JToggleButton toggleButton;
+	private final JToggleButton toggleButton;
 
-    private ItemListener selectionListener = new SelectionListener();
+	private ItemListener selectionListener = new SelectionListener();
 
-    private boolean configureFace = true;
+	private boolean configureFace = true;
 
-    public ToggleButtonBinding(JToggleButton toggleButton, FormModel formModel, String formPropertyPath) {
-        super(formModel, formPropertyPath, Boolean.class);
-        this.toggleButton = toggleButton;
-    }
+	public ToggleButtonBinding(JToggleButton toggleButton, FormModel formModel, String formPropertyPath) {
+		super(formModel, formPropertyPath, Boolean.class);
+		this.toggleButton = toggleButton;
+	}
 
-    protected JComponent doBindControl() {
-        if(configureFace) {
-            getFieldFace().configure(toggleButton);
-        }
-        toggleButton.getModel().addItemListener(selectionListener);
-        toggleButton.setSelected(Boolean.TRUE.equals(getValue()));
-        return toggleButton;
-    }
-    
-    void setConfigureFace(boolean configureFace) {
-        this.configureFace = configureFace;        
-    }
-    
-    protected void readOnlyChanged() {
-        toggleButton.setEnabled(isEnabled() && !isReadOnly());
-    }
+	@Override
+	protected JComponent doBindControl() {
+		if (configureFace) {
+			getFieldFace().configure(toggleButton);
+		}
+		toggleButton.getModel().addItemListener(selectionListener);
+		toggleButton.setSelected(Boolean.TRUE.equals(getValue()));
+		return toggleButton;
+	}
 
-    protected void enabledChanged() {
-        toggleButton.setEnabled(isEnabled() && !isReadOnly());
-    }
+	void setConfigureFace(boolean configureFace) {
+		this.configureFace = configureFace;
+	}
 
-    protected void valueModelChanged(Object newValue) {
-        toggleButton.setSelected(Boolean.TRUE.equals(newValue));
-    }
+	@Override
+	protected void readOnlyChanged() {
+		toggleButton.setEnabled(isEnabled() && !isReadOnly());
+	}
 
-    protected class SelectionListener implements ItemListener {
+	@Override
+	protected void enabledChanged() {
+		toggleButton.setEnabled(isEnabled() && !isReadOnly());
+	}
 
-        public void itemStateChanged(ItemEvent e) {
-            controlValueChanged(Boolean.valueOf(toggleButton.isSelected()));
-        }
+	@Override
+	protected void valueModelChanged(Object newValue) {
+		toggleButton.setSelected(Boolean.TRUE.equals(newValue));
+	}
 
-    }
+	protected class SelectionListener implements ItemListener {
+
+		@Override
+		public void itemStateChanged(ItemEvent e) {
+			controlValueChanged(Boolean.valueOf(toggleButton.isSelected()));
+		}
+
+	}
 }

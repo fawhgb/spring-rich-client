@@ -25,8 +25,8 @@ import org.springframework.binding.value.ValueModel;
  * </p>
  * <ul>
  * <li>registering custom property editors for performing type conversions</li>
- * <li>returning a domain object holder allowing the underlying domain object
- * to be changed and subscribed to for modification, and</li>
+ * <li>returning a domain object holder allowing the underlying domain object to
+ * be changed and subscribed to for modification, and</li>
  * <li>adding listeners for changes on particular properties.</li>
  * </ul>
  *
@@ -52,14 +52,12 @@ public interface MutablePropertyAccessStrategy extends PropertyAccessStrategy {
 	ValueModel getPropertyValueModel(String propertyPath) throws BeansException;
 
 	/**
-	 * Get a <code>MutablePropertyAccessStrategy</code> for the given
-	 * property.
+	 * Get a <code>MutablePropertyAccessStrategy</code> for the given property.
 	 *
 	 * TODO check why this exists and where this is used.
 	 *
 	 * @param propertyPath property.
-	 * @return <code>MutablePropertyAccessStrategy</code> for the given
-	 * property.
+	 * @return <code>MutablePropertyAccessStrategy</code> for the given property.
 	 * @throws BeansException
 	 */
 	MutablePropertyAccessStrategy getPropertyAccessStrategyForPath(String propertyPath) throws BeansException;
@@ -71,7 +69,7 @@ public interface MutablePropertyAccessStrategy extends PropertyAccessStrategy {
 	 * TODO check why this exists and where this is used.
 	 *
 	 * @param domainObjectHolder a <code>ValueModel</code> containing the
-	 * domainObject.
+	 *                           domainObject.
 	 * @return a newly created <code>MutablePropertyAccessStrategy</code>.
 	 */
 	MutablePropertyAccessStrategy newPropertyAccessStrategy(ValueModel domainObjectHolder);

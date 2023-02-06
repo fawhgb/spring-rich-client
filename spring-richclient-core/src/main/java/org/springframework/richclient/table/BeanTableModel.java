@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2007 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -29,91 +29,97 @@ import org.springframework.util.ClassUtils;
  * @author Keith Donald
  */
 public abstract class BeanTableModel extends BaseTableModel {
-    private BeanWrapper beanWrapper = new BeanWrapperImpl();
+	private static final long serialVersionUID = 1L;
 
-    private Class beanClass;
+	private BeanWrapper beanWrapper = new BeanWrapperImpl();
 
-    private String[] columnPropertyNames;
+	private Class beanClass;
 
-    private MessageSourceAccessor messages;
+	private String[] columnPropertyNames;
 
-    public BeanTableModel(Class beanClass) {
-        this(beanClass, (MessageSource)null);
-    }
+	private MessageSourceAccessor messages;
 
-    public BeanTableModel(Class beanClass, List rows) {
-        this(beanClass, rows, null);
-    }
+	public BeanTableModel(Class beanClass) {
+		this(beanClass, (MessageSource) null);
+	}
 
-    public BeanTableModel(Class beanClass, MessageSource messages) {
-        super();
-        setBeanClass(beanClass);
-        setMessageSource(messages);
-    }
+	public BeanTableModel(Class beanClass, List rows) {
+		this(beanClass, rows, null);
+	}
 
-    public BeanTableModel(Class beanClass, List rows, MessageSource messages) {
-        super(rows);
-        setBeanClass(beanClass);
-        setMessageSource(messages);
-    }
+	public BeanTableModel(Class beanClass, MessageSource messages) {
+		super();
+		setBeanClass(beanClass);
+		setMessageSource(messages);
+	}
 
-    public void setBeanClass(Class clazz) {
-        this.beanClass = clazz;
-    }
+	public BeanTableModel(Class beanClass, List rows, MessageSource messages) {
+		super(rows);
+		setBeanClass(beanClass);
+		setMessageSource(messages);
+	}
 
-    public void setMessageSource(MessageSource messages) {
-        if (messages != null) {
-            this.messages = new MessageSourceAccessor(messages);
-            createColumnInfo();
-        }
-        else {
-            this.messages = null;
-        }
-    }
+	public void setBeanClass(Class clazz) {
+		this.beanClass = clazz;
+	}
 
-    protected void createColumnInfo() {
-        this.columnPropertyNames = createColumnPropertyNames();
-        super.createColumnInfo();
-    }
+	public void setMessageSource(MessageSource messages) {
+		if (messages != null) {
+			this.messages = new MessageSourceAccessor(messages);
+			createColumnInfo();
+		} else {
+			this.messages = null;
+		}
+	}
 
-    protected abstract String[] createColumnPropertyNames();
+	@Override
+	protected void createColumnInfo() {
+		this.columnPropertyNames = createColumnPropertyNames();
+		super.createColumnInfo();
+	}
 
-    protected String[] createColumnNames() {
-        String[] columnPropertyNames = getColumnPropertyNames();
-        String[] columnNames = new String[columnPropertyNames.length];
-        Assert.state(this.messages != null, "First set the MessageSource.");
-        for (int i = 0; i < columnPropertyNames.length; i++) {
-            String className = ClassUtils.getShortNameAsProperty(beanClass);
-            String columnPropertyName = columnPropertyNames[i];
-            try {
-                columnNames[i] = messages.getMessage(className + "." + columnPropertyName);
-            } catch(NoSuchMessageException e) {
-                columnNames[i] = messages.getMessage(columnPropertyName, columnPropertyName);
-            }            
-        }
-        return columnNames;
-    }
+	protected abstract String[] createColumnPropertyNames();
 
-    protected String[] getColumnPropertyNames() {
-        return columnPropertyNames;
-    }
+	@Override
+	protected String[] createColumnNames() {
+		String[] columnPropertyNames = getColumnPropertyNames();
+		String[] columnNames = new String[columnPropertyNames.length];
+		Assert.state(this.messages != null, "First set the MessageSource.");
+		for (int i = 0; i < columnPropertyNames.length; i++) {
+			String className = ClassUtils.getShortNameAsProperty(beanClass);
+			String columnPropertyName = columnPropertyNames[i];
+			try {
+				columnNames[i] = messages.getMessage(className + "." + columnPropertyName);
+			} catch (NoSuchMessageException e) {
+				columnNames[i] = messages.getMessage(columnPropertyName, columnPropertyName);
+			}
+		}
+		return columnNames;
+	}
 
-    private String getColumnPropertyName(int index) {
-        return columnPropertyNames[index];
-    }
+	protected String[] getColumnPropertyNames() {
+		return columnPropertyNames;
+	}
 
-    protected Object getValueAtInternal(Object row, int columnIndex) {
-        beanWrapper.setWrappedInstance(row);
-        return beanWrapper.getPropertyValue(columnPropertyNames[columnIndex]);
-    }
+	private String getColumnPropertyName(int index) {
+		return columnPropertyNames[index];
+	}
 
-    protected boolean isCellEditableInternal(Object row, int columnIndex) {
-        beanWrapper.setWrappedInstance(row);
-        return beanWrapper.isWritableProperty(getColumnPropertyName(columnIndex));
-    }
+	@Override
+	protected Object getValueAtInternal(Object row, int columnIndex) {
+		beanWrapper.setWrappedInstance(row);
+		return beanWrapper.getPropertyValue(columnPropertyNames[columnIndex]);
+	}
 
-    protected void setValueAtInternal(Object value, Object bean, int columnIndex) {        
-        beanWrapper.setWrappedInstance(bean);
-        beanWrapper.setPropertyValue(getColumnPropertyName(columnIndex), value);        
-    }
+	@Override
+	protected boolean isCellEditableInternal(Object row, int columnIndex) {
+		beanWrapper.setWrappedInstance(row);
+		return beanWrapper.isWritableProperty(getColumnPropertyName(columnIndex));
+	}
+
+	@Override
+	protected void setValueAtInternal(Object value, Object bean, int columnIndex) {
+		beanWrapper.setWrappedInstance(bean);
+		beanWrapper.setPropertyValue(getColumnPropertyName(columnIndex), value);
+	}
 }

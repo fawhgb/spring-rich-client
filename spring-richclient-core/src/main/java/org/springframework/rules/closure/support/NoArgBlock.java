@@ -15,18 +15,20 @@
  */
 package org.springframework.rules.closure.support;
 
-
 /**
  * Simple implementation of AbstractClosure: makes it easy to just execute a
  * block of code without any additional parameters.
  */
 public abstract class NoArgBlock extends AbstractClosure {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * {@inheritDoc}
 	 *
 	 * @return allways <code>null</code>, only code is executed.
 	 */
+	@Override
 	public final Object call(Object argument) {
 		handle();
 		return null;

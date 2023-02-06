@@ -18,17 +18,16 @@ package org.springframework.richclient.form.binding.swing.date;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.swing.JComponent;
 
-import net.sf.nachocalendar.components.DateField;
-
 import org.springframework.binding.form.FormModel;
+
+import net.sf.nachocalendar.components.DateField;
 
 /**
  * Binds a <cod>Date</code> to a NachoCalendar <code>DateField</code>
- * 
+ *
  * @author Geoffrey De Smet
  */
 public class NachoCalendarDateFieldBinding extends AbstractDateFieldBinding {
@@ -50,8 +49,9 @@ public class NachoCalendarDateFieldBinding extends AbstractDateFieldBinding {
 		this.showOkCancel = showOkCancel;
 	}
 
+	@Override
 	protected JComponent doBindControl() {
-		dateField.setValue((Date) getValue());
+		dateField.setValue(getValue());
 		if (showOkCancel != null) {
 			dateField.setShowOkCancel(showOkCancel.booleanValue());
 		}
@@ -59,22 +59,26 @@ public class NachoCalendarDateFieldBinding extends AbstractDateFieldBinding {
 			dateField.setDateFormat(new SimpleDateFormat(getDateFormat()));
 		}
 		dateField.addPropertyChangeListener("value", new PropertyChangeListener() {
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				controlValueChanged(dateField.getValue());
 			}
 		});
-		
+
 		return dateField;
 	}
 
+	@Override
 	protected void valueModelChanged(Object newValue) {
-		dateField.setValue((Date) newValue);
+		dateField.setValue(newValue);
 	}
 
+	@Override
 	protected void readOnlyChanged() {
 		dateField.setEnabled(isEnabled() && !isReadOnly());
 	}
 
+	@Override
 	protected void enabledChanged() {
 		dateField.setEnabled(isEnabled() && !isReadOnly());
 	}

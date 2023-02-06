@@ -12,7 +12,7 @@ import org.springframework.richclient.factory.ControlFactory;
  * @author Jan Hoskens
  *
  */
-public interface Reporter extends ControlFactory{
+public interface Reporter extends ControlFactory {
 
 	void setMessageArea(JTextArea messageArea);
 

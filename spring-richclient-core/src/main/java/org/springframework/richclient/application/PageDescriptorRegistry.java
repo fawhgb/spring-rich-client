@@ -24,23 +24,23 @@ package org.springframework.richclient.application;
  */
 public interface PageDescriptorRegistry {
 
-    /**
-     * Returns an array of all the page descriptors in the registry.
-     *
-     * @return An array of all the page descriptors in the registry. The array may be empty but
-     * will never be null.
-     */
-    public PageDescriptor[] getPageDescriptors();
+	/**
+	 * Returns an array of all the page descriptors in the registry.
+	 *
+	 * @return An array of all the page descriptors in the registry. The array may
+	 *         be empty but will never be null.
+	 */
+	public PageDescriptor[] getPageDescriptors();
 
-    /**
-     * Returns the page descriptor with the given identifier, or null if no such descriptor
-     * exists in the registry.
-     *
-     * @param pageDescriptorId The id of the page descriptor to be returned.
-     * @return The page descriptor with the given id, or null.
-     *
-     * @throws IllegalArgumentException if {@code pageDescriptorId} is null.
-     */
-    public PageDescriptor getPageDescriptor(String pageDescriptorId);
+	/**
+	 * Returns the page descriptor with the given identifier, or null if no such
+	 * descriptor exists in the registry.
+	 *
+	 * @param pageDescriptorId The id of the page descriptor to be returned.
+	 * @return The page descriptor with the given id, or null.
+	 *
+	 * @throws IllegalArgumentException if {@code pageDescriptorId} is null.
+	 */
+	public PageDescriptor getPageDescriptor(String pageDescriptorId);
 
 }

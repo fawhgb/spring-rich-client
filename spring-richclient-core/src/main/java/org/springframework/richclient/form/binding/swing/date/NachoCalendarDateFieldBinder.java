@@ -15,20 +15,22 @@
  */
 package org.springframework.richclient.form.binding.swing.date;
 
-import net.sf.nachocalendar.components.DateField;
+import java.awt.Dimension;
+import java.util.Map;
+
+import javax.swing.JComponent;
+
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.binding.form.FormModel;
 import org.springframework.richclient.form.binding.Binding;
 import org.springframework.util.Assert;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.Map;
+import net.sf.nachocalendar.components.DateField;
 
 /**
  * Binds a <cod>Date</code> to a NachoCalendar <code>DateField</code>
- * 
+ *
  * @author Geoffrey De Smet
  * @author Benoit Xhenseval (added dateFormat setting)
  */
@@ -53,6 +55,7 @@ public class NachoCalendarDateFieldBinder extends AbstractDateFieldBinder {
 				WORKING_DAYS_KEY, DATE_FORMAT, SHOW_WEEKNUMBERS_KEY });
 	}
 
+	@Override
 	protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, Map context) {
 		Assert.isTrue(control instanceof DateField, "Control must be an instance of DateField.");
 		NachoCalendarDateFieldBinding binding = new NachoCalendarDateFieldBinding((DateField) control, formModel,
@@ -63,7 +66,7 @@ public class NachoCalendarDateFieldBinder extends AbstractDateFieldBinder {
 
 	protected void applyContext(NachoCalendarDateFieldBinding binding, Map context) {
 		super.applyContext(binding, context);
-        BeanWrapper wrapper = new BeanWrapperImpl(binding.getControl());
+		BeanWrapper wrapper = new BeanWrapperImpl(binding.getControl());
 		Object dateFormat = context.get(DATE_FORMAT);
 		// remove DATE_FORMAT temporarily since it is handled in the super class
 		context.remove(DATE_FORMAT);
@@ -71,9 +74,10 @@ public class NachoCalendarDateFieldBinder extends AbstractDateFieldBinder {
 		if (dateFormat != null) {
 			// restore the original context
 			context.put(DATE_FORMAT, dateFormat);
-        }
+		}
 	}
 
+	@Override
 	protected JComponent createControl(Map context) {
 		final int preferredHeight = getComponentFactory().createComboBox().getPreferredSize().height;
 
@@ -83,11 +87,11 @@ public class NachoCalendarDateFieldBinder extends AbstractDateFieldBinder {
 			context.remove(SHOW_WEEKNUMBERS_KEY);
 		}
 
-
 		DateField dateField = new DateField(showWeekNumbers) {
 
 			private static final long serialVersionUID = 1L;
 
+			@Override
 			public Dimension getPreferredSize() {
 				Dimension size = super.getPreferredSize();
 				size.height = preferredHeight;

@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -26,46 +26,49 @@ import org.springframework.binding.value.support.ListListModel;
 
 /**
  * A list whose contents are dynamically refreshable.
- * 
+ *
  * @author Keith Donald
  */
 public class DynamicListModel extends ListListModel implements PropertyChangeListener {
-    private static final Log logger = LogFactory.getLog(DynamicListModel.class);
+	private static final long serialVersionUID = 1L;
 
-    private ValueModel listItemsValueModel;
+	private static final Log logger = LogFactory.getLog(DynamicListModel.class);
 
-    public DynamicListModel(ValueModel listItemsValueModel) {
-        super();
-        setListItemsValueModel(listItemsValueModel);
-    }
+	private ValueModel listItemsValueModel;
 
-    public void setListItemsValueModel(ValueModel valueModel) {
-        if (this.listItemsValueModel == valueModel) {
-            return;
-        }
-        if (this.listItemsValueModel != null) {
-            this.listItemsValueModel.removeValueChangeListener(this);
-        }
-        this.listItemsValueModel = valueModel;
-        if (this.listItemsValueModel != null) {
-            doAdd((Collection)valueModel.getValue());
-            this.listItemsValueModel.addValueChangeListener(this);
-        }
-    }
+	public DynamicListModel(ValueModel listItemsValueModel) {
+		super();
+		setListItemsValueModel(listItemsValueModel);
+	}
 
-    public void propertyChange(PropertyChangeEvent evt) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Backing collection of items changed; refreshing list model.");
-        }
-        doAdd((Collection)listItemsValueModel.getValue());
-    }
+	public void setListItemsValueModel(ValueModel valueModel) {
+		if (this.listItemsValueModel == valueModel) {
+			return;
+		}
+		if (this.listItemsValueModel != null) {
+			this.listItemsValueModel.removeValueChangeListener(this);
+		}
+		this.listItemsValueModel = valueModel;
+		if (this.listItemsValueModel != null) {
+			doAdd((Collection) valueModel.getValue());
+			this.listItemsValueModel.addValueChangeListener(this);
+		}
+	}
 
-    private void doAdd(Collection c) {
-        clear();
-        if (c != null) {
-            addAll(c);
-        }
-        sort();
-    }
+	@Override
+	public void propertyChange(PropertyChangeEvent evt) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Backing collection of items changed; refreshing list model.");
+		}
+		doAdd((Collection) listItemsValueModel.getValue());
+	}
+
+	private void doAdd(Collection c) {
+		clear();
+		if (c != null) {
+			addAll(c);
+		}
+		sort();
+	}
 
 }

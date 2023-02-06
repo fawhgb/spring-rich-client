@@ -15,34 +15,38 @@
  */
 package org.springframework.richclient.convert.support;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.swing.EventListModel;
+import javax.swing.ListModel;
+
 import org.springframework.binding.convert.ConversionContext;
 import org.springframework.binding.convert.support.AbstractConverter;
 
-import javax.swing.*;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swing.EventListModel;
 
 /**
  * supports converting {@link EventList}s to {@link ListModel}
- * 
+ *
  * @author Mathias Broekelmann
  *
  */
 public class GlazedListModelConverter extends AbstractConverter {
 
-    private static final Class[] TARGET_CLASSES = new Class[] {ListModel.class};
-    private static final Class[] SOURCE_CLASSES = new Class[] {EventList.class};
+	private static final Class[] TARGET_CLASSES = new Class[] { ListModel.class };
+	private static final Class[] SOURCE_CLASSES = new Class[] { EventList.class };
 
-    protected Object doConvert(Object source, Class targetClass, ConversionContext context) throws Exception {
-        return new EventListModel((EventList) source);
-    }
+	@Override
+	protected Object doConvert(Object source, Class targetClass, ConversionContext context) throws Exception {
+		return new EventListModel((EventList) source);
+	}
 
-    public Class[] getSourceClasses() {
-        return SOURCE_CLASSES;
-    }
+	@Override
+	public Class[] getSourceClasses() {
+		return SOURCE_CLASSES;
+	}
 
-    public Class[] getTargetClasses() {
-        return TARGET_CLASSES;
-    }
+	@Override
+	public Class[] getTargetClasses() {
+		return TARGET_CLASSES;
+	}
 
 }

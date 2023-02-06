@@ -1,23 +1,20 @@
 package org.springframework.richclient.widget.editor.provider;
 
-public class MaximumRowsExceededException extends RuntimeException
-{
-    private int maxRows;
-    private int numberOfRows;
+public class MaximumRowsExceededException extends RuntimeException {
+	private static final long serialVersionUID = 1L;
+	private int maxRows;
+	private int numberOfRows;
 
-    public MaximumRowsExceededException(int maxRows, int numberOfRows)
-    {
-        this.maxRows = maxRows;
-        this.numberOfRows = numberOfRows;
-    }
+	public MaximumRowsExceededException(int maxRows, int numberOfRows) {
+		this.maxRows = maxRows;
+		this.numberOfRows = numberOfRows;
+	}
 
-    public int getMaxRows()
-    {
-        return maxRows;
-    }
+	public int getMaxRows() {
+		return maxRows;
+	}
 
-    public int getNumberOfRows()
-    {
-        return numberOfRows;
-    }
+	public int getNumberOfRows() {
+		return numberOfRows;
+	}
 }

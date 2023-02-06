@@ -17,59 +17,54 @@ package org.springframework.richclient.form.binding.support;
 
 import javax.swing.JComponent;
 
-import org.springframework.richclient.form.binding.Binding;
 import org.springframework.binding.form.FormModel;
+import org.springframework.richclient.form.binding.Binding;
 
 /**
- * Wraps a source {@link Binding} and returns an alternate control in place
- * of the source binding's control.  This allows one to decorate the source
- * binding's control (for example, by wrapping a JList in a JScrollPane).
- * Note that this method will call the source Binding's {@link #getControl()}
- * method whenever its <code>getControl()</code> method is called in order
- * to ensure that any actual initialization/binding done in the source
- * Binding's <code>getControl()</code> method is performed.
- * 
+ * Wraps a source {@link Binding} and returns an alternate control in place of
+ * the source binding's control. This allows one to decorate the source
+ * binding's control (for example, by wrapping a JList in a JScrollPane). Note
+ * that this method will call the source Binding's {@link #getControl()} method
+ * whenever its <code>getControl()</code> method is called in order to ensure
+ * that any actual initialization/binding done in the source Binding's
+ * <code>getControl()</code> method is performed.
+ *
  * @author Andy DePue
  */
-public class DecoratedControlBinding implements Binding
-{
-  private final Binding source;
-  private final JComponent decoratingComponent;
+public class DecoratedControlBinding implements Binding {
+	private final Binding source;
+	private final JComponent decoratingComponent;
 
-  public DecoratedControlBinding(final Binding source, final JComponent decoratingComponent)
-  {
-    this.source = source;
-    this.decoratingComponent = decoratingComponent;
-  }
+	public DecoratedControlBinding(final Binding source, final JComponent decoratingComponent) {
+		this.source = source;
+		this.decoratingComponent = decoratingComponent;
+	}
 
-  public Binding getSource()
-  {
-    return this.source;
-  }
+	public Binding getSource() {
+		return this.source;
+	}
 
-  public JComponent getDecoratingComponent()
-  {
-    return this.decoratingComponent;
-  }
+	public JComponent getDecoratingComponent() {
+		return this.decoratingComponent;
+	}
 
+	//
+	// METHODS FROM INTERFACE Binding
+	//
 
-  //
-  // METHODS FROM INTERFACE Binding
-  //
+	@Override
+	public FormModel getFormModel() {
+		return getSource().getFormModel();
+	}
 
-  public FormModel getFormModel()
-  {
-    return getSource().getFormModel();
-  }
+	@Override
+	public String getProperty() {
+		return getSource().getProperty();
+	}
 
-  public String getProperty()
-  {
-    return getSource().getProperty();
-  }
-
-  public JComponent getControl()
-  {
-    getSource().getControl();
-    return getDecoratingComponent();
-  }
+	@Override
+	public JComponent getControl() {
+		getSource().getControl();
+		return getDecoratingComponent();
+	}
 }

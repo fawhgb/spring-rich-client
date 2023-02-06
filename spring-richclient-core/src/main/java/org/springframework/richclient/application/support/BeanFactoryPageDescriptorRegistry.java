@@ -24,12 +24,13 @@ import org.springframework.richclient.application.PageDescriptor;
 import org.springframework.richclient.application.PageDescriptorRegistry;
 import org.springframework.richclient.util.Assert;
 
-
 /**
- * A simple {@link PageDescriptorRegistry} implementation that pulls singleton page definitions out
- * of a spring application context. This class is intended to be managed by a Spring IoC container.
- * If being created programatically, be sure to call the
- * {@link #setApplicationContext(org.springframework.context.ApplicationContext)} method.
+ * A simple {@link PageDescriptorRegistry} implementation that pulls singleton
+ * page definitions out of a spring application context. This class is intended
+ * to be managed by a Spring IoC container. If being created programatically, be
+ * sure to call the
+ * {@link #setApplicationContext(org.springframework.context.ApplicationContext)}
+ * method.
  *
  *
  * @author Keith Donald
@@ -38,37 +39,40 @@ import org.springframework.richclient.util.Assert;
  */
 public class BeanFactoryPageDescriptorRegistry extends ApplicationObjectSupport implements PageDescriptorRegistry {
 
-    /**
-     * {@inheritDoc}
-     */
-    public PageDescriptor[] getPageDescriptors() {
-        Map beans = getApplicationContext().getBeansOfType(PageDescriptor.class, false, false);
-        return (PageDescriptor[])beans.values().toArray(new PageDescriptor[beans.size()]);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public PageDescriptor[] getPageDescriptors() {
+		Map beans = getApplicationContext().getBeansOfType(PageDescriptor.class, false, false);
+		return (PageDescriptor[]) beans.values().toArray(new PageDescriptor[beans.size()]);
+	}
 
-    /**
-     * Returns the page descriptor with the given identifier, or null if no such bean definition
-     * with the given name exists in the current application context.
-     *
-     * @param pageName The bean name of the page descriptor that is to be retrieved from the
-     * underlying application context. Must not be null.
-     *
-     * @throws IllegalArgumentException if {@code pageName} is null.
-     * @throws BeanNotOfRequiredTypeException if the bean retrieved from the underlying application
-     * context is not of type {@link PageDescriptor}.
-     *
-     */
-    public PageDescriptor getPageDescriptor(String pageName) {
+	/**
+	 * Returns the page descriptor with the given identifier, or null if no such
+	 * bean definition with the given name exists in the current application
+	 * context.
+	 *
+	 * @param pageName The bean name of the page descriptor that is to be retrieved
+	 *                 from the underlying application context. Must not be null.
+	 *
+	 * @throws IllegalArgumentException       if {@code pageName} is null.
+	 * @throws BeanNotOfRequiredTypeException if the bean retrieved from the
+	 *                                        underlying application context is not
+	 *                                        of type {@link PageDescriptor}.
+	 *
+	 */
+	@Override
+	public PageDescriptor getPageDescriptor(String pageName) {
 
-        Assert.required(pageName, "pageName");
+		Assert.required(pageName, "pageName");
 
-        try {
-            return (PageDescriptor) getApplicationContext().getBean(pageName, PageDescriptor.class);
-        }
-        catch (NoSuchBeanDefinitionException e) {
-            return null;
-        }
+		try {
+			return (PageDescriptor) getApplicationContext().getBean(pageName, PageDescriptor.class);
+		} catch (NoSuchBeanDefinitionException e) {
+			return null;
+		}
 
-    }
+	}
 
 }

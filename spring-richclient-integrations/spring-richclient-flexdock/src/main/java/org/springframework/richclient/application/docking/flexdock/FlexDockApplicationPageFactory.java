@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2008 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -28,76 +28,78 @@ import org.springframework.richclient.application.PageDescriptor;
 
 /**
  * Factory for <code>FlexDockApplicationPage</code> instances
- * 
+ *
  * @author Peter De Bruycker
  */
 public class FlexDockApplicationPageFactory implements ApplicationPageFactory, InitializingBean {
 
-    private PerspectiveFactory perspectiveFactory;
-    private String defaultPerspective;
-    private DragPreview dragPreview;
-    private boolean floatingEnabled;
-    private boolean singleTabsAllowed;
+	private PerspectiveFactory perspectiveFactory;
+	private String defaultPerspective;
+	private DragPreview dragPreview;
+	private boolean floatingEnabled;
+	private boolean singleTabsAllowed;
 
-    public String getDefaultPerspective() {
-        return defaultPerspective;
-    }
+	public String getDefaultPerspective() {
+		return defaultPerspective;
+	}
 
-    public void setDefaultPerspective( String defaultPerspective ) {
-        this.defaultPerspective = defaultPerspective;
-    }
+	public void setDefaultPerspective(String defaultPerspective) {
+		this.defaultPerspective = defaultPerspective;
+	}
 
-    public ApplicationPage createApplicationPage( ApplicationWindow window, PageDescriptor descriptor ) {
-        final FlexDockApplicationPage page = new FlexDockApplicationPage();
-        page.setApplicationWindow( window );
-        page.setDescriptor( descriptor );
+	@Override
+	public ApplicationPage createApplicationPage(ApplicationWindow window, PageDescriptor descriptor) {
+		final FlexDockApplicationPage page = new FlexDockApplicationPage();
+		page.setApplicationWindow(window);
+		page.setDescriptor(descriptor);
 
-        DockingManager.setDockableFactory( page );
-        // TODO uncomment for persistence
-        // DockingManager.setAutoPersist(true);
+		DockingManager.setDockableFactory(page);
+		// TODO uncomment for persistence
+		// DockingManager.setAutoPersist(true);
 
-        PerspectiveManager.setFactory( perspectiveFactory );
-        PerspectiveManager.getInstance().setCurrentPerspective( defaultPerspective, true );
-        // TODO define how the file name or persister will be passed in the app context
-        // PersistenceHandler persister = FilePersistenceHandler.createDefault(
-        // "test-flexdock.xml" );
-        // PerspectiveManager.setPersistenceHandler( persister );
+		PerspectiveManager.setFactory(perspectiveFactory);
+		PerspectiveManager.getInstance().setCurrentPerspective(defaultPerspective, true);
+		// TODO define how the file name or persister will be passed in the app context
+		// PersistenceHandler persister = FilePersistenceHandler.createDefault(
+		// "test-flexdock.xml" );
+		// PerspectiveManager.setPersistenceHandler( persister );
 
-        page.loadLayout();
+		page.loadLayout();
 
-        return page;
-    }
+		return page;
+	}
 
-    public void setPerspectiveFactory( PerspectiveFactory perspectiveFactory ) {
-        this.perspectiveFactory = perspectiveFactory;
-    }
+	public void setPerspectiveFactory(PerspectiveFactory perspectiveFactory) {
+		this.perspectiveFactory = perspectiveFactory;
+	}
 
-    public PerspectiveFactory getPerspectiveFactory() {
-        return perspectiveFactory;
-    }
+	public PerspectiveFactory getPerspectiveFactory() {
+		return perspectiveFactory;
+	}
 
-    public void afterPropertiesSet() throws Exception {
-        if( dragPreview != null ) {
-            EffectsManager.setPreview( dragPreview );
-        }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		if (dragPreview != null) {
+			EffectsManager.setPreview(dragPreview);
+		}
 
-        DockingManager.setFloatingEnabled( floatingEnabled );
-        DockingManager.setSingleTabsAllowed( singleTabsAllowed );
-    }
+		DockingManager.setFloatingEnabled(floatingEnabled);
+		DockingManager.setSingleTabsAllowed(singleTabsAllowed);
+	}
 
-    public DragPreview getDragPreview() {
-        return dragPreview;
-    }
+	public DragPreview getDragPreview() {
+		return dragPreview;
+	}
 
-    public void setDragPreview( DragPreview dragPreview ) {
-        this.dragPreview = dragPreview;
-    }
+	public void setDragPreview(DragPreview dragPreview) {
+		this.dragPreview = dragPreview;
+	}
 
-    public boolean isFloatingEnabled() {
-        return floatingEnabled;
-    }
+	public boolean isFloatingEnabled() {
+		return floatingEnabled;
+	}
 
-    public void setFloatingEnabled( boolean floatingEnabled ) {
-        this.floatingEnabled = floatingEnabled;
-    }
+	public void setFloatingEnabled(boolean floatingEnabled) {
+		this.floatingEnabled = floatingEnabled;
+	}
 }

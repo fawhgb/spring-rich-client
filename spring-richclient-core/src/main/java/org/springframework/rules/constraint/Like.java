@@ -15,7 +15,6 @@
  */
 package org.springframework.rules.constraint;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.core.enums.StringCodedLabeledEnum;
 import org.springframework.util.StringUtils;
 
@@ -45,29 +44,25 @@ public class Like implements Constraint {
 		if (encodedLikeString.startsWith("%")) {
 			if (encodedLikeString.endsWith("%")) {
 				this.type = CONTAINS;
-			}
-			else {
+			} else {
 				this.type = ENDS_WITH;
 			}
-		}
-		else if (encodedLikeString.endsWith("%")) {
+		} else if (encodedLikeString.endsWith("%")) {
 			this.type = STARTS_WITH;
-		}
-		else {
+		} else {
 			this.type = CONTAINS;
 		}
 		stringToMatch = StringUtils.deleteAny(encodedLikeString, "%");
 	}
 
+	@Override
 	public boolean test(Object argument) {
 		String value = String.valueOf(argument);
 		if (type == STARTS_WITH) {
 			return value.startsWith(stringToMatch);
-		}
-		else if (type == ENDS_WITH) {
+		} else if (type == ENDS_WITH) {
 			return value.endsWith(stringToMatch);
-		}
-		else {
+		} else {
 			return value.indexOf(stringToMatch) != -1;
 		}
 	}
@@ -79,11 +74,13 @@ public class Like implements Constraint {
 	public String getString() {
 		return stringToMatch;
 	}
-    
-    public static class LikeType extends StringCodedLabeledEnum {
-        private LikeType(String code) {
-            super(code, null);
-        }
-    }
+
+	public static class LikeType extends StringCodedLabeledEnum {
+		private static final long serialVersionUID = 1L;
+
+		private LikeType(String code) {
+			super(code, null);
+		}
+	}
 
 }

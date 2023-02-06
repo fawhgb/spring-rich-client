@@ -46,7 +46,7 @@ public class CalendarBindingDialog extends TitledApplicationDialog {
 
 		public String getName() {
 			return name;
-	}
+		}
 
 		public void setName(String name) {
 			this.name = name;
@@ -88,15 +88,16 @@ public class CalendarBindingDialog extends TitledApplicationDialog {
 			context.put(NachoCalendarDateFieldBinder.SHOW_OK_CANCEL_KEY, Boolean.TRUE);
 			context.put(NachoCalendarDateFieldBinder.SHOW_WEEKNUMBERS_KEY, Boolean.TRUE);
 //			context.put(NachoCalendarDateFieldBinder.DATE_FORMAT, "MM'/'yyyy");
-			context.put(NachoCalendarDateFieldBinder.WORKING_DAYS_KEY, new boolean[] {true, true, true, false, false, false, false});
+			context.put(NachoCalendarDateFieldBinder.WORKING_DAYS_KEY,
+					new boolean[] { true, true, true, false, false, false, false });
 			final SwingBindingFactory bf = (SwingBindingFactory) getBindingFactory();
 			Binding b = bf.createBinding("birthday", context);
 			builder.add(b);
 //			builder.add("birthday");
 			builder.row();
 			ConfigurableFormModel formModel = getFormModel();
-			ValueModel derivedValueModel = new MessageFormatValueModel("{0} {1} was born on {2}", new ValueModel[] {
-					getValueModel("name"), getValueModel("surname"), getValueModel("birthday") });
+			ValueModel derivedValueModel = new MessageFormatValueModel("{0} {1} was born on {2}",
+					new ValueModel[] { getValueModel("name"), getValueModel("surname"), getValueModel("birthday") });
 			FieldMetadata fieldMetaData = new ReadOnlyFieldMetadata(getFormModel(), String.class);
 			formModel.add("derivedBirthday", derivedValueModel, fieldMetaData);
 			builder.add("derivedBirthday");

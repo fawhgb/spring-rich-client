@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -28,52 +28,62 @@ import org.springframework.util.Assert;
  * @author Keith Donald
  */
 public class AbstractTableModelFilter extends AbstractTableModel implements TableModelListener {
-    protected final Log logger = LogFactory.getLog(getClass());
+	private static final long serialVersionUID = 1L;
 
-    protected TableModel filteredModel;
+	protected final Log logger = LogFactory.getLog(getClass());
 
-    public AbstractTableModelFilter(TableModel model) {
-        Assert.notNull(model);
-        this.filteredModel = model;
-        this.filteredModel.addTableModelListener(this);
-    }
+	protected TableModel filteredModel;
 
-    public TableModel getFilteredModel() {
-        return filteredModel;
-    }
+	public AbstractTableModelFilter(TableModel model) {
+		Assert.notNull(model);
+		this.filteredModel = model;
+		this.filteredModel.addTableModelListener(this);
+	}
 
-    // By default, implement TableModel by forwarding all messages
-    // to the model.
-    public Object getValueAt(int aRow, int aColumn) {
-        return filteredModel.getValueAt(aRow, aColumn);
-    }
+	public TableModel getFilteredModel() {
+		return filteredModel;
+	}
 
-    public void setValueAt(Object aValue, int aRow, int aColumn) {
-        filteredModel.setValueAt(aValue, aRow, aColumn);
-    }
+	// By default, implement TableModel by forwarding all messages
+	// to the model.
+	@Override
+	public Object getValueAt(int aRow, int aColumn) {
+		return filteredModel.getValueAt(aRow, aColumn);
+	}
 
-    public int getRowCount() {
-        return filteredModel.getRowCount();
-    }
+	@Override
+	public void setValueAt(Object aValue, int aRow, int aColumn) {
+		filteredModel.setValueAt(aValue, aRow, aColumn);
+	}
 
-    public int getColumnCount() {
-        return filteredModel.getColumnCount();
-    }
+	@Override
+	public int getRowCount() {
+		return filteredModel.getRowCount();
+	}
 
-    public String getColumnName(int aColumn) {
-        return filteredModel.getColumnName(aColumn);
-    }
+	@Override
+	public int getColumnCount() {
+		return filteredModel.getColumnCount();
+	}
 
-    public Class getColumnClass(int aColumn) {
-        return filteredModel.getColumnClass(aColumn);
-    }
+	@Override
+	public String getColumnName(int aColumn) {
+		return filteredModel.getColumnName(aColumn);
+	}
 
-    public boolean isCellEditable(int row, int column) {
-        return filteredModel.isCellEditable(row, column);
-    }
+	@Override
+	public Class getColumnClass(int aColumn) {
+		return filteredModel.getColumnClass(aColumn);
+	}
 
-    // By default forward all events to all the listeners.
-    public void tableChanged(TableModelEvent e) {
-        fireTableChanged(e);
-    }
+	@Override
+	public boolean isCellEditable(int row, int column) {
+		return filteredModel.isCellEditable(row, column);
+	}
+
+	// By default forward all events to all the listeners.
+	@Override
+	public void tableChanged(TableModelEvent e) {
+		fireTableChanged(e);
+	}
 }

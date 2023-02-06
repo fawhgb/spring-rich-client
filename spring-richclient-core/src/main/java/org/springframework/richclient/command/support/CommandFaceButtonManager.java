@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -33,196 +33,200 @@ import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 public class CommandFaceButtonManager implements PropertyChangeListener {
-    private Set buttons = new HashSet(6);
+	private Set buttons = new HashSet(6);
 
-    private AbstractCommand command;
+	private AbstractCommand command;
 
-    private String faceDescriptorId;
+	private String faceDescriptorId;
 
-    private CommandFaceDescriptor faceDescriptor;
+	private CommandFaceDescriptor faceDescriptor;
 
-    private static class ManagedButton {
-        private WeakReference buttonHolder;
+	private static class ManagedButton {
+		private WeakReference buttonHolder;
 
-        private CommandButtonConfigurer buttonConfigurer;
-        
-        private int hashCode;
+		private CommandButtonConfigurer buttonConfigurer;
 
-        public ManagedButton(AbstractButton button, CommandButtonConfigurer buttonConfigurer) {
-            this.buttonHolder = new WeakReference(button);
-            this.buttonConfigurer = buttonConfigurer;
-            this.hashCode = button.hashCode();
-        }
+		private int hashCode;
 
-        public AbstractButton getButton() {
-            return (AbstractButton)buttonHolder.get();
-        }
+		public ManagedButton(AbstractButton button, CommandButtonConfigurer buttonConfigurer) {
+			this.buttonHolder = new WeakReference(button);
+			this.buttonConfigurer = buttonConfigurer;
+			this.hashCode = button.hashCode();
+		}
 
-        public boolean equals(Object o) {
-        	if (o == null) {
-        		return false;
-        	}
-            if (this == o) {
-                return true;
-            }
-            return ObjectUtils.nullSafeEquals(getButton(), ((ManagedButton)o).getButton());
-        }
+		public AbstractButton getButton() {
+			return (AbstractButton) buttonHolder.get();
+		}
 
-        public int hashCode() {
-            return hashCode;
-        }
-    }
+		@Override
+		public boolean equals(Object o) {
+			if (o == null) {
+				return false;
+			}
+			if (this == o) {
+				return true;
+			}
+			return ObjectUtils.nullSafeEquals(getButton(), ((ManagedButton) o).getButton());
+		}
 
-    public CommandFaceButtonManager(AbstractCommand command, String faceDescriptorKey) {
-        Assert.notNull(command, "The command to manage buttons for cannot be null");
-        Assert.hasText(faceDescriptorKey, "The face descriptor key is required");
-        this.command = command;
-        this.faceDescriptorId = faceDescriptorKey;
-    }
+		@Override
+		public int hashCode() {
+			return hashCode;
+		}
+	}
 
-    public CommandFaceButtonManager(AbstractCommand command, CommandFaceDescriptor faceDescriptor) {
-        this.command = command;
-        setFaceDescriptor(faceDescriptor);
-    }
+	public CommandFaceButtonManager(AbstractCommand command, String faceDescriptorKey) {
+		Assert.notNull(command, "The command to manage buttons for cannot be null");
+		Assert.hasText(faceDescriptorKey, "The face descriptor key is required");
+		this.command = command;
+		this.faceDescriptorId = faceDescriptorKey;
+	}
 
-    public void setFaceDescriptor(CommandFaceDescriptor faceDescriptor) {
-        Assert.notNull(faceDescriptor, "The face descriptor for managing command button appearance is required");
-        if (!ObjectUtils.nullSafeEquals(this.faceDescriptor, faceDescriptor)) {
-            if (this.faceDescriptor != null) {
-                this.faceDescriptor.removePropertyChangeListener(this);
-            }
-            this.faceDescriptor = faceDescriptor;
-            this.faceDescriptor.addPropertyChangeListener(this);
-            propertyChange(null);
-        }
-    }
+	public CommandFaceButtonManager(AbstractCommand command, CommandFaceDescriptor faceDescriptor) {
+		this.command = command;
+		setFaceDescriptor(faceDescriptor);
+	}
 
-    public CommandFaceDescriptor getFaceDescriptor() {
-        return faceDescriptor;
-    }
+	public void setFaceDescriptor(CommandFaceDescriptor faceDescriptor) {
+		Assert.notNull(faceDescriptor, "The face descriptor for managing command button appearance is required");
+		if (!ObjectUtils.nullSafeEquals(this.faceDescriptor, faceDescriptor)) {
+			if (this.faceDescriptor != null) {
+				this.faceDescriptor.removePropertyChangeListener(this);
+			}
+			this.faceDescriptor = faceDescriptor;
+			this.faceDescriptor.addPropertyChangeListener(this);
+			propertyChange(null);
+		}
+	}
 
-    public boolean isFaceConfigured() {
-        return this.faceDescriptor != null;
-    }
+	public CommandFaceDescriptor getFaceDescriptor() {
+		return faceDescriptor;
+	}
 
-    public void attachAndConfigure(AbstractButton button, CommandButtonConfigurer strategy) {
-        Assert.notNull(button, "The button to attach and configure is required");
-        Assert.notNull(strategy, "The button configuration strategy is required");
-        if (!isAttachedTo(button)) {
-            ManagedButton managedButton = new ManagedButton(button, strategy);
-            if (buttons.add(managedButton)) {
-                configure(button, strategy);
-            }
-        }
-    }
+	public boolean isFaceConfigured() {
+		return this.faceDescriptor != null;
+	}
 
-    private void cleanUp() {
-        for (Iterator i = buttons.iterator(); i.hasNext();) {
-            ManagedButton button = (ManagedButton)i.next();
-            if (button.getButton() == null) {
-                i.remove();
-            }
-        }
-    }
+	public void attachAndConfigure(AbstractButton button, CommandButtonConfigurer strategy) {
+		Assert.notNull(button, "The button to attach and configure is required");
+		Assert.notNull(strategy, "The button configuration strategy is required");
+		if (!isAttachedTo(button)) {
+			ManagedButton managedButton = new ManagedButton(button, strategy);
+			if (buttons.add(managedButton)) {
+				configure(button, strategy);
+			}
+		}
+	}
 
-    protected void configure(AbstractButton button, CommandButtonConfigurer strategy) {
-        if (this.faceDescriptor == null) {
-            if (command.getFaceDescriptorRegistry() != null) {
-                setFaceDescriptor(command.getFaceDescriptorRegistry().getFaceDescriptor(command, faceDescriptorId));
-            } else {
-                setFaceDescriptor(new CommandFaceDescriptor());
-            }
-        }
+	private void cleanUp() {
+		for (Iterator i = buttons.iterator(); i.hasNext();) {
+			ManagedButton button = (ManagedButton) i.next();
+			if (button.getButton() == null) {
+				i.remove();
+			}
+		}
+	}
 
-        getFaceDescriptor().configure(button, command, strategy);
-    }
+	protected void configure(AbstractButton button, CommandButtonConfigurer strategy) {
+		if (this.faceDescriptor == null) {
+			if (command.getFaceDescriptorRegistry() != null) {
+				setFaceDescriptor(command.getFaceDescriptorRegistry().getFaceDescriptor(command, faceDescriptorId));
+			} else {
+				setFaceDescriptor(new CommandFaceDescriptor());
+			}
+		}
 
-    public void detach(AbstractButton button) {
-        buttons.remove(findManagedButton(button));
-    }
+		getFaceDescriptor().configure(button, command, strategy);
+	}
 
-    public void detachAll() {
-        buttons.clear();
-    }
+	public void detach(AbstractButton button) {
+		buttons.remove(findManagedButton(button));
+	}
 
-    public boolean isAttachedTo(AbstractButton button) {
-        return findManagedButton(button) != null;
-    }
+	public void detachAll() {
+		buttons.clear();
+	}
 
-    protected ManagedButton findManagedButton(AbstractButton button) {
-        Assert.notNull(button, "The button is required");
-        cleanUp();
-        for (Iterator i = buttons.iterator(); i.hasNext();) {
-            ManagedButton managedButton = (ManagedButton)i.next();
-            if (button.equals(managedButton.getButton())) {
-                return managedButton;
-            }
-        }
-        return null;
-    }
+	public boolean isAttachedTo(AbstractButton button) {
+		return findManagedButton(button) != null;
+	}
 
-    public Iterator iterator() {
-        cleanUp();
-        return new ButtonIterator(buttons.iterator());
-    }
+	protected ManagedButton findManagedButton(AbstractButton button) {
+		Assert.notNull(button, "The button is required");
+		cleanUp();
+		for (Iterator i = buttons.iterator(); i.hasNext();) {
+			ManagedButton managedButton = (ManagedButton) i.next();
+			if (button.equals(managedButton.getButton())) {
+				return managedButton;
+			}
+		}
+		return null;
+	}
 
-    private static class ButtonIterator implements Iterator {
-        private Iterator it;
+	public Iterator iterator() {
+		cleanUp();
+		return new ButtonIterator(buttons.iterator());
+	}
 
-        private AbstractButton nextButton;
+	private static class ButtonIterator implements Iterator {
+		private Iterator it;
 
-        public ButtonIterator(Iterator it) {
-            this.it = it;
-            fetchNextButton();
-        }
+		private AbstractButton nextButton;
 
-        public boolean hasNext() {
-            return nextButton != null;
-        }
+		public ButtonIterator(Iterator it) {
+			this.it = it;
+			fetchNextButton();
+		}
 
-        public Object next() {
-            if (nextButton == null) {
-                throw new NoSuchElementException();
-            }
-            AbstractButton lastButton = nextButton;
-            fetchNextButton();
-            return lastButton;
-        }
+		@Override
+		public boolean hasNext() {
+			return nextButton != null;
+		}
 
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
+		@Override
+		public Object next() {
+			if (nextButton == null) {
+				throw new NoSuchElementException();
+			}
+			AbstractButton lastButton = nextButton;
+			fetchNextButton();
+			return lastButton;
+		}
 
-        private void fetchNextButton() {
-            while (it.hasNext()) {
-                ManagedButton managedButton = (ManagedButton)it.next();
-                nextButton = managedButton.getButton();
-                if (nextButton != null) {
-                    return;
-                }
-            }
-            nextButton = null;
-        }
-    }
+		@Override
+		public void remove() {
+			throw new UnsupportedOperationException();
+		}
 
-    public void propertyChange(PropertyChangeEvent e) {
-        Iterator it = buttons.iterator();
-        while (it.hasNext()) {
-            ManagedButton mb = (ManagedButton)it.next();
-            Assert.notNull(mb, "Managed button reference cannot be null");
-            if (mb.getButton() == null) {
-                it.remove();
-            }
-            else {
-                configure(mb.getButton(), mb.buttonConfigurer);
-            }
-        }
-    }
+		private void fetchNextButton() {
+			while (it.hasNext()) {
+				ManagedButton managedButton = (ManagedButton) it.next();
+				nextButton = managedButton.getButton();
+				if (nextButton != null) {
+					return;
+				}
+			}
+			nextButton = null;
+		}
+	}
 
-    public String toString() {
-        return new ToStringCreator(this).append("commandId", command.getId())
-                .append("faceDescriptor", faceDescriptor)
-                .append("attachedButtonCount", buttons.size())
-                .toString();
-    }
+	@Override
+	public void propertyChange(PropertyChangeEvent e) {
+		Iterator it = buttons.iterator();
+		while (it.hasNext()) {
+			ManagedButton mb = (ManagedButton) it.next();
+			Assert.notNull(mb, "Managed button reference cannot be null");
+			if (mb.getButton() == null) {
+				it.remove();
+			} else {
+				configure(mb.getButton(), mb.buttonConfigurer);
+			}
+		}
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("commandId", command.getId()).append("faceDescriptor", faceDescriptor)
+				.append("attachedButtonCount", buttons.size()).toString();
+	}
 }

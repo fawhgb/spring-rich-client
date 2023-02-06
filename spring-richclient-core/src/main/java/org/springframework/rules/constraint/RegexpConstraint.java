@@ -18,7 +18,6 @@ package org.springframework.rules.constraint;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.reporting.TypeResolvable;
 import org.springframework.rules.reporting.TypeResolvableSupport;
 
@@ -49,7 +48,7 @@ public class RegexpConstraint extends TypeResolvableSupport implements Constrain
 	 * string and sets the type of the constraint to provide specific messages.
 	 *
 	 * @param regex the regular expression.
-	 * @param type	id used to fetch the message.
+	 * @param type  id used to fetch the message.
 	 */
 	public RegexpConstraint(String regex, String type) {
 		super(type);
@@ -59,6 +58,7 @@ public class RegexpConstraint extends TypeResolvableSupport implements Constrain
 	/**
 	 * Test if the argument matches the pattern.
 	 */
+	@Override
 	public boolean test(Object argument) {
 		if (argument == null) {
 			argument = "";
@@ -67,6 +67,7 @@ public class RegexpConstraint extends TypeResolvableSupport implements Constrain
 		return m.matches();
 	}
 
+	@Override
 	public String toString() {
 		return getDefaultMessage() + " " + pattern.pattern();
 	}

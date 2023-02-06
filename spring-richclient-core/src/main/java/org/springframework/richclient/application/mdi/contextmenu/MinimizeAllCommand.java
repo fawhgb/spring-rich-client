@@ -23,30 +23,32 @@ import javax.swing.JInternalFrame;
 import org.springframework.richclient.command.ActionCommand;
 
 /**
- * Minimizes all <code>JInternalFrame</code>s in a given <code>JDesktopPane</code>.
- * 
+ * Minimizes all <code>JInternalFrame</code>s in a given
+ * <code>JDesktopPane</code>.
+ *
  * @author Peter De Bruycker
  */
 public class MinimizeAllCommand extends ActionCommand {
-    private static final String ID = "minimizeAllCommand";
+	private static final String ID = "minimizeAllCommand";
 
-    private JDesktopPane desktop;
+	private JDesktopPane desktop;
 
-    public MinimizeAllCommand( JDesktopPane desktopPane ) {
-        super(ID);
-        desktop = desktopPane;
-    }
+	public MinimizeAllCommand(JDesktopPane desktopPane) {
+		super(ID);
+		desktop = desktopPane;
+	}
 
-    protected void doExecuteCommand() {
-        JInternalFrame allFrames[] = desktop.getAllFrames();
+	@Override
+	protected void doExecuteCommand() {
+		JInternalFrame allFrames[] = desktop.getAllFrames();
 
-        for( int i = 0; i < allFrames.length; i++ ) {
-            JInternalFrame frame = allFrames[i];
-            try {
-                frame.setIcon( true );
-            } catch( PropertyVetoException ignore ) {
-                // ignore
-            }
-        }
-    }
+		for (int i = 0; i < allFrames.length; i++) {
+			JInternalFrame frame = allFrames[i];
+			try {
+				frame.setIcon(true);
+			} catch (PropertyVetoException ignore) {
+				// ignore
+			}
+		}
+	}
 }

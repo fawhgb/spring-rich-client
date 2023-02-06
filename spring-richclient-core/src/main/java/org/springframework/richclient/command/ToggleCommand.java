@@ -63,19 +63,20 @@ public abstract class ToggleCommand extends ActionCommand {
 		return exclusiveController != null;
 	}
 
+	@Override
 	public JMenuItem createMenuItem(String faceDescriptorId, MenuFactory factory,
 			CommandButtonConfigurer buttonConfigurer) {
 		JMenuItem menuItem;
 		if (isExclusiveGroupMember()) {
 			menuItem = factory.createRadioButtonMenuItem();
-		}
-		else {
+		} else {
 			menuItem = factory.createCheckBoxMenuItem();
 		}
 		attach(menuItem, faceDescriptorId, buttonConfigurer);
 		return menuItem;
 	}
 
+	@Override
 	public AbstractButton createButton(String faceDescriptorId, ButtonFactory buttonFactory,
 			CommandButtonConfigurer configurer) {
 		AbstractButton button = buttonFactory.createToggleButton();
@@ -126,6 +127,7 @@ public abstract class ToggleCommand extends ActionCommand {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	protected void onButtonAttached(AbstractButton button) {
 		super.onButtonAttached(button);
 		button.setSelected(selected);
@@ -150,18 +152,18 @@ public abstract class ToggleCommand extends ActionCommand {
 			if (oldState == isSelected()) {
 				Iterator iter = buttonIterator();
 				while (iter.hasNext()) {
-					AbstractButton button = (AbstractButton)iter.next();
+					AbstractButton button = (AbstractButton) iter.next();
 					button.setSelected(isSelected());
 				}
 			}
-		}
-		else {
+		} else {
 			requestSetSelection(selected);
 		}
 	}
 
 	/**
-	 * Handles the switching of the selected state. All attached buttons are updated.
+	 * Handles the switching of the selected state. All attached buttons are
+	 * updated.
 	 *
 	 * @param selected select state to set.
 	 * @return the select state afterwards.
@@ -182,7 +184,7 @@ public abstract class ToggleCommand extends ActionCommand {
 			logger.debug("Updating all attached toggle buttons to '" + isSelected() + "'");
 		}
 		while (it.hasNext()) {
-			AbstractButton button = (AbstractButton)it.next();
+			AbstractButton button = (AbstractButton) it.next();
 			button.setSelected(isSelected());
 		}
 
@@ -199,24 +201,25 @@ public abstract class ToggleCommand extends ActionCommand {
 	/**
 	 * Executing a toggleCommand will flip its select state.
 	 */
+	@Override
 	protected final void doExecuteCommand() {
 		setSelected(!isSelected());
 	}
 
 	/**
-	 * Hook method to perform the toggle action.  Subclasses may override.
+	 * Hook method to perform the toggle action. Subclasses may override.
 	 * <p>
-	 * The toggle selection request can be vetoed by returning a boolean result (for example if onSelected
-	 * is handed 'true', signaling the toggle command was activated, a subclass can veto that by
-	 * returning false.)
+	 * The toggle selection request can be vetoed by returning a boolean result (for
+	 * example if onSelected is handed 'true', signaling the toggle command was
+	 * activated, a subclass can veto that by returning false.)
+	 *
 	 * @param selected The newly requested selection state of this toggle command
 	 * @return the value of selected, if allowed, !selection if vetoed.
 	 */
 	protected boolean onSelection(boolean selected) {
 		if (selected) {
 			onSelection();
-		}
-		else {
+		} else {
 			onDeselection();
 		}
 		return selected;

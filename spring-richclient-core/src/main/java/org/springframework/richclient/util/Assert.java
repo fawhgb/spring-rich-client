@@ -34,7 +34,7 @@ public class Assert extends org.springframework.util.Assert {
 	 * </pre>
 	 *
 	 * @param object the object to check
-	 * @param name the name of the object being checked
+	 * @param name   the name of the object being checked
 	 * @throws IllegalArgumentException if the object is <code>null</code>
 	 */
 	public static void required(Object object, String name) {
@@ -44,15 +44,15 @@ public class Assert extends org.springframework.util.Assert {
 	}
 
 	/**
-	 * Confirms that the given array is not null and that all of its elements
-	 * are not null also.
+	 * Confirms that the given array is not null and that all of its elements are
+	 * not null also.
 	 *
-	 * @param array The array whose elements, if any, must all be non-null.
+	 * @param array     The array whose elements, if any, must all be non-null.
 	 * @param arrayName The property name of the array, only used for display
-	 * purposes. May be null.
+	 *                  purposes. May be null.
 	 *
-	 * @throws IllegalArgumentException if the given array is null or if any of
-	 * its elements are null.
+	 * @throws IllegalArgumentException if the given array is null or if any of its
+	 *                                  elements are null.
 	 */
 	public static void noElementsNull(Object[] array, String arrayName) {
 

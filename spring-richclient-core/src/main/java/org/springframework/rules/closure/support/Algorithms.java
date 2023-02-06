@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.springframework.rules.closure.Closure;
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.closure.ElementGenerator;
+import org.springframework.rules.constraint.Constraint;
 
 /**
  * Convenience utility class which provides a number of algorithms involving
@@ -68,7 +68,7 @@ public class Algorithms {
 	 * Returns true if any elements in the given collection meet the specified
 	 * predicate condition.
 	 *
-	 * @param it the iterator
+	 * @param it         the iterator
 	 * @param constraint the constraint
 	 * @return true or false
 	 */
@@ -92,7 +92,7 @@ public class Algorithms {
 	 * Returns true if all elements in the given collection meet the specified
 	 * predicate condition.
 	 *
-	 * @param it the iterator
+	 * @param it         the iterator
 	 * @param constraint the constraint
 	 * @return true if all true, false otherwise
 	 */
@@ -101,8 +101,7 @@ public class Algorithms {
 	}
 
 	/**
-	 * Find the first element in the collection matching the specified
-	 * constraint.
+	 * Find the first element in the collection matching the specified constraint.
 	 *
 	 * @param collection the collection
 	 * @param constraint the predicate
@@ -113,10 +112,9 @@ public class Algorithms {
 	}
 
 	/**
-	 * Find the first element in the collection matching the specified
-	 * constraint.
+	 * Find the first element in the collection matching the specified constraint.
 	 *
-	 * @param it the iterator
+	 * @param it         the iterator
 	 * @param constraint the predicate
 	 * @return The first object match, or null if no match
 	 */
@@ -125,8 +123,7 @@ public class Algorithms {
 	}
 
 	/**
-	 * Find all the elements in the collection that match the specified
-	 * constraint.
+	 * Find all the elements in the collection that match the specified constraint.
 	 *
 	 * @param collection
 	 * @param constraint
@@ -137,10 +134,9 @@ public class Algorithms {
 	}
 
 	/**
-	 * Find all the elements in the collection that match the specified
-	 * constraint.
+	 * Find all the elements in the collection that match the specified constraint.
 	 *
-	 * @param it the iterator
+	 * @param it         the iterator
 	 * @param constraint the constraint
 	 * @return The objects that match, or a empty collection if none match
 	 */
@@ -148,6 +144,9 @@ public class Algorithms {
 		ElementGenerator finder = new IteratorTemplate(it).findAll(constraint);
 		final Collection results = new ArrayList();
 		finder.run(new Block() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
 			protected void handle(Object element) {
 				results.add(element);
 			}
@@ -159,7 +158,7 @@ public class Algorithms {
 	 * Execute the provided closure for each element in the collection.
 	 *
 	 * @param collection the collection
-	 * @param closure the callback
+	 * @param closure    the callback
 	 */
 	public void forEach(Collection collection, Closure closure) {
 		forEach(collection.iterator(), closure);
@@ -168,7 +167,7 @@ public class Algorithms {
 	/**
 	 * Execute the provided closure for each element in the collection.
 	 *
-	 * @param it the iterator
+	 * @param it      the iterator
 	 * @param closure the callback
 	 */
 	public void forEach(Iterator it, Closure closure) {

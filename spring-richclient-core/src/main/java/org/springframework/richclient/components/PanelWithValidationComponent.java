@@ -1,38 +1,37 @@
 package org.springframework.richclient.components;
 
+import java.awt.LayoutManager;
+
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+
 import org.springframework.richclient.form.HasValidationComponent;
 
-import javax.swing.*;
-import java.awt.*;
+public class PanelWithValidationComponent extends JPanel implements HasValidationComponent {
+	private static final long serialVersionUID = 1L;
 
-public class PanelWithValidationComponent extends JPanel implements HasValidationComponent
-{
-    public PanelWithValidationComponent()
-    {
-        super();
-    }
+	public PanelWithValidationComponent() {
+		super();
+	}
 
-    public PanelWithValidationComponent(LayoutManager layoutManager)
-    {
-        super(layoutManager);
-    }
+	public PanelWithValidationComponent(LayoutManager layoutManager) {
+		super(layoutManager);
+	}
 
-    public PanelWithValidationComponent(boolean isDoubleBuffered)
-    {
-        super(isDoubleBuffered);
-    }
+	public PanelWithValidationComponent(boolean isDoubleBuffered) {
+		super(isDoubleBuffered);
+	}
 
-    public PanelWithValidationComponent(LayoutManager layoutManager, boolean isDoubleBuffered)
-    {
-        super(layoutManager, isDoubleBuffered);
-    }
+	public PanelWithValidationComponent(LayoutManager layoutManager, boolean isDoubleBuffered) {
+		super(layoutManager, isDoubleBuffered);
+	}
 
-    /**
-     * Geef de component waarop de validatiekleur en het icoontje terecht komen.
-     */
-    public JComponent getValidationComponent()
-    {
-        return null;
-    }
+	/**
+	 * Geef de component waarop de validatiekleur en het icoontje terecht komen.
+	 */
+	@Override
+	public JComponent getValidationComponent() {
+		return null;
+	}
 
 }

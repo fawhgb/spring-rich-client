@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -21,36 +21,38 @@ import java.util.List;
  * Designed to display object arrays / lists in a list for multi-column tables,
  * or just plain objects for single column table. Nicely aligned with Hibernate
  * List behaivior for query result sets.
- * 
+ *
  * @author keith
  */
 public abstract class ListTableModel extends BaseTableModel {
 
-    public ListTableModel() {
-        super();
-    }
+	private static final long serialVersionUID = 1L;
 
-    public ListTableModel(List rows) {
-        super(rows);
-    }
+	public ListTableModel() {
+		super();
+	}
 
-    protected Object getValueAtInternal(Object row, int columnIndex) {
-        if (row != null && getDataColumnCount() > 1) {            
-            if (row.getClass().isArray()) {
-                Object[] arrayRow = (Object[])row;
-                return arrayRow[columnIndex];
-            }
-            else if (row instanceof List) {
-                return ((List)row).get(columnIndex);
-            }
-            else {
-                throw new IllegalArgumentException("Unsupported row collection type " + row);
-            }
-        }
+	public ListTableModel(List rows) {
+		super(rows);
+	}
 
-        if (row != null && row.getClass().isArray())
-            return ((Object[])row)[0];
+	@Override
+	protected Object getValueAtInternal(Object row, int columnIndex) {
+		if (row != null && getDataColumnCount() > 1) {
+			if (row.getClass().isArray()) {
+				Object[] arrayRow = (Object[]) row;
+				return arrayRow[columnIndex];
+			} else if (row instanceof List) {
+				return ((List) row).get(columnIndex);
+			} else {
+				throw new IllegalArgumentException("Unsupported row collection type " + row);
+			}
+		}
 
-        return row;
-    }
+		if (row != null && row.getClass().isArray()) {
+			return ((Object[]) row)[0];
+		}
+
+		return row;
+	}
 }

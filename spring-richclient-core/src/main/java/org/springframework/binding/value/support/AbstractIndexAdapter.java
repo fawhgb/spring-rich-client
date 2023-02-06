@@ -25,10 +25,12 @@ public abstract class AbstractIndexAdapter extends AbstractValueModel implements
 
 	private int index;
 
+	@Override
 	public int getIndex() {
 		return index;
 	}
 
+	@Override
 	public void setIndex(int index) {
 		if (hasChanged(this.index, index)) {
 			int oldValue = this.index;

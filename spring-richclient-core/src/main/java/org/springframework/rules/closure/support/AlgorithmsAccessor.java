@@ -49,14 +49,16 @@ public abstract class AlgorithmsAccessor {
 	}
 
 	/**
-	 * @see Algorithms#findAll(Collection, org.springframework.rules.constraint.Constraint)
+	 * @see Algorithms#findAll(Collection,
+	 *      org.springframework.rules.constraint.Constraint)
 	 */
 	public Collection findAll(Collection collection, Constraint constraint) {
 		return getAlgorithms().findAll(collection, constraint);
 	}
 
 	/**
-	 * @see Algorithms#findAll(Iterator, org.springframework.rules.constraint.Constraint)
+	 * @see Algorithms#findAll(Iterator,
+	 *      org.springframework.rules.constraint.Constraint)
 	 */
 	public Collection findAll(Iterator it, Constraint constraint) {
 		return getAlgorithms().findAll(it, constraint);
@@ -77,7 +79,8 @@ public abstract class AlgorithmsAccessor {
 	}
 
 	/**
-	 * @see Algorithms#anyTrue(Collection, org.springframework.rules.constraint.Constraint)
+	 * @see Algorithms#anyTrue(Collection,
+	 *      org.springframework.rules.constraint.Constraint)
 	 */
 	public boolean anyTrue(Collection collection, Constraint constraint) {
 		return getAlgorithms().anyTrue(collection, constraint);
@@ -91,7 +94,8 @@ public abstract class AlgorithmsAccessor {
 	}
 
 	/**
-	 * @see Algorithms#forEach(Collection, org.springframework.rules.closure.Closure)
+	 * @see Algorithms#forEach(Collection,
+	 *      org.springframework.rules.closure.Closure)
 	 */
 	public void forEach(Collection collection, Closure closure) {
 		getAlgorithms().forEach(collection, closure);

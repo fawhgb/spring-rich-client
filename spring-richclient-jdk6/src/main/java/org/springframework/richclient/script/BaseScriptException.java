@@ -17,13 +17,18 @@ package org.springframework.richclient.script;
 
 /**
  * Base exception class for converting script exceptions to runtime exceptions.
- * 
+ *
  * @author Peter De Bruycker
  */
 public abstract class BaseScriptException extends RuntimeException {
 
-    public BaseScriptException(String message, Throwable cause) {
-        super(cause);
-    }
-    
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public BaseScriptException(String message, Throwable cause) {
+		super(cause);
+	}
+
 }

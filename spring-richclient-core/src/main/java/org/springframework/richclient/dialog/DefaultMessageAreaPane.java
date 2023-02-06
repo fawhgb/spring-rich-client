@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -74,6 +74,7 @@ public class DefaultMessageAreaPane extends AbstractControlFactory implements Me
 		this.defaultIcon = defaultIcon;
 	}
 
+	@Override
 	protected JComponent createControl() {
 		if (messageLabel == null) {
 			this.messageLabel = new JLabel();
@@ -97,10 +98,12 @@ public class DefaultMessageAreaPane extends AbstractControlFactory implements Me
 		return defaultIcon;
 	}
 
+	@Override
 	public Message getMessage() {
 		return messageAreaModel.getMessage();
 	}
 
+	@Override
 	public void setMessage(Message message) {
 		messageAreaModel.setMessage(message);
 		if (messageLabel != null) {
@@ -112,6 +115,7 @@ public class DefaultMessageAreaPane extends AbstractControlFactory implements Me
 		messageAreaModel.setMessage(null);
 	}
 
+	@Override
 	public boolean isMessageShowing() {
 		if (messageLabel == null) {
 			return false;
@@ -119,22 +123,27 @@ public class DefaultMessageAreaPane extends AbstractControlFactory implements Me
 		return StringUtils.hasText(messageLabel.getText()) && messageLabel.isVisible();
 	}
 
+	@Override
 	public void addPropertyChangeListener(PropertyChangeListener listener) {
 		messageAreaModel.addPropertyChangeListener(listener);
 	}
 
+	@Override
 	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		messageAreaModel.addPropertyChangeListener(propertyName, listener);
 	}
 
+	@Override
 	public void removePropertyChangeListener(PropertyChangeListener listener) {
 		messageAreaModel.removePropertyChangeListener(listener);
 	}
 
+	@Override
 	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
 		messageAreaModel.removePropertyChangeListener(propertyName, listener);
 	}
 
+	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (messageLabel == null) {
 			this.messageLabel = new JLabel();

@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2007 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -31,7 +31,7 @@ import org.springframework.util.StringUtils;
 /**
  * A TitledApplicationDialog that delegates to a single DialogPage for its
  * title, content and messages.
- * 
+ *
  * @author oliverh
  */
 public abstract class TitledPageApplicationDialog extends TitledApplicationDialog {
@@ -39,14 +39,13 @@ public abstract class TitledPageApplicationDialog extends TitledApplicationDialo
 	private DialogPage dialogPage;
 
 	private PropertyChangeListener dialogPagePropertyChangeHandler = new PropertyChangeListener() {
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (Messagable.MESSAGE_PROPERTY.equals(evt.getPropertyName())) {
 				update();
-			}
-			else if (DialogPage.PAGE_COMPLETE_PROPERTY.equals(evt.getPropertyName())) {
+			} else if (DialogPage.PAGE_COMPLETE_PROPERTY.equals(evt.getPropertyName())) {
 				setEnabled(dialogPage.isPageComplete());
-			}
-			else {
+			} else {
 				update();
 			}
 		}
@@ -92,12 +91,14 @@ public abstract class TitledPageApplicationDialog extends TitledApplicationDialo
 		return dialogPage;
 	}
 
+	@Override
 	protected JComponent createTitledDialogContentPane() {
 		dialogPage.addPropertyChangeListener(dialogPagePropertyChangeHandler);
 		update();
 		return dialogPage.getControl();
 	}
 
+	@Override
 	protected Message getDescription() {
 		return new DefaultMessage(dialogPage.getDescription());
 	}
@@ -115,32 +116,36 @@ public abstract class TitledPageApplicationDialog extends TitledApplicationDialo
 		super.setTitlePaneImage(titlePaneImage != null ? titlePaneImage : dialogPage.getImage());
 		setDescription(dialogPage.getDescription());
 	}
-	
+
 	protected void updateMessagePane() {
 		setMessage(dialogPage.getMessage());
 	}
 
 	/**
-	 * Sets the image to use in the title pane. Normally the image is provided
-	 * by the current dialog page, but this method allows for overriding this.
+	 * Sets the image to use in the title pane. Normally the image is provided by
+	 * the current dialog page, but this method allows for overriding this.
 	 * <p>
 	 * If the image passed is null, the image of the dialog page will be used.
+	 *
 	 * @param image the image
 	 * @see TitledApplicationDialog#setTitlePaneImage(Image)
 	 */
+	@Override
 	public void setTitlePaneImage(Image image) {
 		titlePaneImage = image;
 		super.setTitlePaneImage(image);
 	}
 
 	/**
-	 * Sets the title to use in the title pane. Normally the title is provided
-	 * by the current dialog page, but this method allows for overriding this.
+	 * Sets the title to use in the title pane. Normally the title is provided by
+	 * the current dialog page, but this method allows for overriding this.
 	 * <p>
 	 * If the title passed is null, the title of the dialog page will be used.
+	 *
 	 * @param title the title
 	 * @see TitledApplicationDialog#setTitlePaneTitle(String)
 	 */
+	@Override
 	public void setTitlePaneTitle(String title) {
 		titlePaneTitle = title;
 		super.setTitlePaneTitle(title);

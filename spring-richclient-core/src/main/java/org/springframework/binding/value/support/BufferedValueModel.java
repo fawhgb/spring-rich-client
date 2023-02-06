@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2005 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -27,248 +27,260 @@ import org.springframework.util.Assert;
 /**
  * A value model that wraps another value model; delaying or buffering changes
  * until a commit is triggered.
- * 
+ *
  * TODO: more class docs...
- * 
+ *
  * @author Karsten Lentzsch
  * @author Keith Donald
- * @author Oliver Hutchison  
+ * @author Oliver Hutchison
  */
 public class BufferedValueModel extends AbstractValueModel implements ValueModelWrapper {
 
-    /**
-     * Name of the bound property <em>buffering</em>.
-     */
-    public static final String BUFFERING_PROPERTY = "buffering";
+	/**
+	 * Name of the bound property <em>buffering</em>.
+	 */
+	public static final String BUFFERING_PROPERTY = "buffering";
 
-    private final ValueModel wrappedModel;
+	private final ValueModel wrappedModel;
 
-    private final PropertyChangeListener wrappedModelChangeHandler;
+	private final PropertyChangeListener wrappedModelChangeHandler;
 
-    private Object bufferedValue;
+	private Object bufferedValue;
 
-    private CommitTrigger commitTrigger;
+	private CommitTrigger commitTrigger;
 
-    private CommitTriggerListener commitTriggerHandler;
+	private CommitTriggerListener commitTriggerHandler;
 
-    private boolean buffering;
+	private boolean buffering;
 
-    /**
-     * Constructs a <code>BufferedValueHolder</code> that wraps the given wrappedModel.  
-     * 
-     * @param wrappedModel the value model to be buffered
-     */
-    public BufferedValueModel(ValueModel wrappedModel) {
-        this(wrappedModel, null);
-    }
+	/**
+	 * Constructs a <code>BufferedValueHolder</code> that wraps the given
+	 * wrappedModel.
+	 * 
+	 * @param wrappedModel the value model to be buffered
+	 */
+	public BufferedValueModel(ValueModel wrappedModel) {
+		this(wrappedModel, null);
+	}
 
-    /**
-     * Constructs a <code>BufferedValueHolder</code> that wraps the given wrappedModel
-     * and listens to the provided commitTrigger for commit and revert events.  
-     * 
-     * @param wrappedModel the value model to be buffered
-     * @param commitTrigger the commit trigger that triggers the commit or flush event
-     */
-    public BufferedValueModel(ValueModel wrappedModel, CommitTrigger commitTrigger) {
-        Assert.notNull(wrappedModel, "Wrapped value model can not be null.");
-        this.wrappedModel = wrappedModel;
-        this.wrappedModelChangeHandler = new WrappedModelValueChangeHandler();
-        this.wrappedModel.addValueChangeListener(wrappedModelChangeHandler);
-        this.bufferedValue = wrappedModel.getValue();
-        setCommitTrigger(commitTrigger);
-    }
+	/**
+	 * Constructs a <code>BufferedValueHolder</code> that wraps the given
+	 * wrappedModel and listens to the provided commitTrigger for commit and revert
+	 * events.
+	 * 
+	 * @param wrappedModel  the value model to be buffered
+	 * @param commitTrigger the commit trigger that triggers the commit or flush
+	 *                      event
+	 */
+	public BufferedValueModel(ValueModel wrappedModel, CommitTrigger commitTrigger) {
+		Assert.notNull(wrappedModel, "Wrapped value model can not be null.");
+		this.wrappedModel = wrappedModel;
+		this.wrappedModelChangeHandler = new WrappedModelValueChangeHandler();
+		this.wrappedModel.addValueChangeListener(wrappedModelChangeHandler);
+		this.bufferedValue = wrappedModel.getValue();
+		setCommitTrigger(commitTrigger);
+	}
 
-    /**
-     * Returns the CommitTrigger that is used to trigger commit and flush events.
-     * 
-     * @return the CommitTrigger that is used to trigger commit and flush events
-     */
-    public final CommitTrigger getCommitTrigger() {
-        return commitTrigger;
-    }
+	/**
+	 * Returns the CommitTrigger that is used to trigger commit and flush events.
+	 * 
+	 * @return the CommitTrigger that is used to trigger commit and flush events
+	 */
+	public final CommitTrigger getCommitTrigger() {
+		return commitTrigger;
+	}
 
-    /**
-     * Sets the <code>CommitTrigger</code> that triggers the commit and flush events.
-     *  
-     * @param commitTrigger  the commit trigger; or null to deregister the 
-     * existing trigger. 
-     */
-    public final void setCommitTrigger(CommitTrigger commitTrigger) {
-        if (this.commitTrigger == commitTrigger) {
-            return;
-        }
-        if (this.commitTrigger != null) {
-            this.commitTrigger.removeCommitTriggerListener(commitTriggerHandler);
-            this.commitTrigger = null;
-        }
-        if (commitTrigger != null) {
-            if (this.commitTriggerHandler == null) {
-                this.commitTriggerHandler = new CommitTriggerHandler();
-            }
-            this.commitTrigger = commitTrigger;
-            this.commitTrigger.addCommitTriggerListener(commitTriggerHandler);
-        }
-    }
+	/**
+	 * Sets the <code>CommitTrigger</code> that triggers the commit and flush
+	 * events.
+	 * 
+	 * @param commitTrigger the commit trigger; or null to deregister the existing
+	 *                      trigger.
+	 */
+	public final void setCommitTrigger(CommitTrigger commitTrigger) {
+		if (this.commitTrigger == commitTrigger) {
+			return;
+		}
+		if (this.commitTrigger != null) {
+			this.commitTrigger.removeCommitTriggerListener(commitTriggerHandler);
+			this.commitTrigger = null;
+		}
+		if (commitTrigger != null) {
+			if (this.commitTriggerHandler == null) {
+				this.commitTriggerHandler = new CommitTriggerHandler();
+			}
+			this.commitTrigger = commitTrigger;
+			this.commitTrigger.addCommitTriggerListener(commitTriggerHandler);
+		}
+	}
 
-    /**
-     * Returns whether this model buffers a value or not, that is, whether
-     * a value has been assigned since the last commit or flush. 
-     * 
-     * @return true if a value has been assigned since the last commit or revert
-     */
-    public boolean isBuffering() {
-        return buffering;
-    }
+	/**
+	 * Returns whether this model buffers a value or not, that is, whether a value
+	 * has been assigned since the last commit or flush.
+	 * 
+	 * @return true if a value has been assigned since the last commit or revert
+	 */
+	public boolean isBuffering() {
+		return buffering;
+	}
 
-    /**
-     * Returns the wrappedModel value if no value has been set since the last
-     * commit or flush, and returns the buffered value otherwise.
-     * 
-     * @return the buffered value
-     */
-    public Object getValue() {
-        return bufferedValue;
-    }
+	/**
+	 * Returns the wrappedModel value if no value has been set since the last commit
+	 * or flush, and returns the buffered value otherwise.
+	 * 
+	 * @return the buffered value
+	 */
+	@Override
+	public Object getValue() {
+		return bufferedValue;
+	}
 
-    /**
-     * Sets a new buffered value and turns this BufferedValueModel into
-     * the buffering state. The buffered value is not provided to the
-     * underlying model until the trigger channel indicates a commit.
-     *
-     * @param value  the value to be buffered
-     */
-    public void setValue(Object value) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Setting buffered value to '" + value + "'");
-        }
-        final Object oldValue = getValue();
-        this.bufferedValue = value;
-        updateBuffering();
-        fireValueChange(oldValue, bufferedValue);
-    }
+	/**
+	 * Sets a new buffered value and turns this BufferedValueModel into the
+	 * buffering state. The buffered value is not provided to the underlying model
+	 * until the trigger channel indicates a commit.
+	 *
+	 * @param value the value to be buffered
+	 */
+	@Override
+	public void setValue(Object value) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Setting buffered value to '" + value + "'");
+		}
+		final Object oldValue = getValue();
+		this.bufferedValue = value;
+		updateBuffering();
+		fireValueChange(oldValue, bufferedValue);
+	}
 
-    /**
-     * Returns the wrappedModel, i.e. the underlying ValueModel that provides 
-     * the unbuffered value.
-     * 
-     * @return the ValueModel that provides the unbuffered value  
-     */
-    public final ValueModel getWrappedValueModel() {
-        return wrappedModel;
-    }
-    
-    /**
-     * Returns the inner most wrappedModel; i.e. the root ValueModel that provides 
-     * the unbuffered value. This is found by repeatedly unwrapping any ValueModelWrappers
-     * until we find the inner most value model.
-     * 
-     * @return the inner most ValueModel that provides the unbuffered value
-     * 
-     * @see ValueModelWrapper#getInnerMostWrappedValueModel()  
-     */
-    public final ValueModel getInnerMostWrappedValueModel() {
-        if (wrappedModel instanceof ValueModelWrapper)
-            return ((ValueModelWrapper)wrappedModel).getInnerMostWrappedValueModel();
+	/**
+	 * Returns the wrappedModel, i.e. the underlying ValueModel that provides the
+	 * unbuffered value.
+	 * 
+	 * @return the ValueModel that provides the unbuffered value
+	 */
+	@Override
+	public final ValueModel getWrappedValueModel() {
+		return wrappedModel;
+	}
 
-        return wrappedModel;
-    }
+	/**
+	 * Returns the inner most wrappedModel; i.e. the root ValueModel that provides
+	 * the unbuffered value. This is found by repeatedly unwrapping any
+	 * ValueModelWrappers until we find the inner most value model.
+	 * 
+	 * @return the inner most ValueModel that provides the unbuffered value
+	 * 
+	 * @see ValueModelWrapper#getInnerMostWrappedValueModel()
+	 */
+	@Override
+	public final ValueModel getInnerMostWrappedValueModel() {
+		if (wrappedModel instanceof ValueModelWrapper) {
+			return ((ValueModelWrapper) wrappedModel).getInnerMostWrappedValueModel();
+		}
 
-    /**
-     * Called when the value held by the wrapped value model changes.
-     */
-    protected void onWrappedValueChanged() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Wrapped model value has changed; new value is '" + wrappedModel.getValue() + "'");
-        }
-        setValue(wrappedModel.getValue());
-    }
+		return wrappedModel;
+	}
 
-    /**
-     * Commits the value buffered by this value model back to the 
-     * wrapped value model. 
-     */
-    public void commit() {
-        if (isBuffering()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Committing buffered value '" + getValue() + "' to wrapped value model '" + wrappedModel
-                        + "'");
-            }
-            wrappedModel.setValueSilently(getValueToCommit(), wrappedModelChangeHandler);
-            setValue(wrappedModel.getValue()); // check if the wrapped model changed the committed value
-        }
-        else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No buffered edit to commit; nothing to do...");
-            }
-        }
-    }
+	/**
+	 * Called when the value held by the wrapped value model changes.
+	 */
+	protected void onWrappedValueChanged() {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Wrapped model value has changed; new value is '" + wrappedModel.getValue() + "'");
+		}
+		setValue(wrappedModel.getValue());
+	}
 
-    /**
-     * Provides a hook that allows for modification of the value that is committed 
-     * to the underlying value model. 
-     */
-    protected Object getValueToCommit() {
-        return bufferedValue;
-    }
+	/**
+	 * Commits the value buffered by this value model back to the wrapped value
+	 * model.
+	 */
+	public void commit() {
+		if (isBuffering()) {
+			if (logger.isDebugEnabled()) {
+				logger.debug(
+						"Committing buffered value '" + getValue() + "' to wrapped value model '" + wrappedModel + "'");
+			}
+			wrappedModel.setValueSilently(getValueToCommit(), wrappedModelChangeHandler);
+			setValue(wrappedModel.getValue()); // check if the wrapped model changed the committed value
+		} else {
+			if (logger.isDebugEnabled()) {
+				logger.debug("No buffered edit to commit; nothing to do...");
+			}
+		}
+	}
 
-    /**
-     * Updates the value of the buffering property. Fires a property change event 
-     * if there's been a change.
-     */
-    private void updateBuffering() {
-        boolean wasBuffering = isBuffering();
-        buffering = hasValueChanged(wrappedModel.getValue(), bufferedValue);
-        firePropertyChange(BUFFERING_PROPERTY, wasBuffering, buffering);
-    }
+	/**
+	 * Provides a hook that allows for modification of the value that is committed
+	 * to the underlying value model.
+	 */
+	protected Object getValueToCommit() {
+		return bufferedValue;
+	}
 
-    /**
-     * Reverts the value held by the value model back to the value held by the 
-     * wrapped value model.
-     */
-    public final void revert() {
-        if (isBuffering()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Reverting buffered value '" + getValue() + "' to value '" + wrappedModel.getValue() + "'");
-            }
-            setValue(wrappedModel.getValue());
-        }
-        else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("No buffered edit to commit; nothing to do...");
-            }
-        }
-    }
+	/**
+	 * Updates the value of the buffering property. Fires a property change event if
+	 * there's been a change.
+	 */
+	private void updateBuffering() {
+		boolean wasBuffering = isBuffering();
+		buffering = hasValueChanged(wrappedModel.getValue(), bufferedValue);
+		firePropertyChange(BUFFERING_PROPERTY, wasBuffering, buffering);
+	}
 
-    public String toString() {
-        return new ToStringCreator(this).append("bufferedValue", bufferedValue).toString();
-    }
+	/**
+	 * Reverts the value held by the value model back to the value held by the
+	 * wrapped value model.
+	 */
+	public final void revert() {
+		if (isBuffering()) {
+			if (logger.isDebugEnabled()) {
+				logger.debug(
+						"Reverting buffered value '" + getValue() + "' to value '" + wrappedModel.getValue() + "'");
+			}
+			setValue(wrappedModel.getValue());
+		} else {
+			if (logger.isDebugEnabled()) {
+				logger.debug("No buffered edit to commit; nothing to do...");
+			}
+		}
+	}
 
-    /**
-     * Listens for changes to the wrapped value model.
-     */
-    private class WrappedModelValueChangeHandler implements PropertyChangeListener {
-        public void propertyChange(PropertyChangeEvent evt) {
-            onWrappedValueChanged();
-        }
-    }
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append("bufferedValue", bufferedValue).toString();
+	}
 
-    /**
-     * Listens for commit/revert on the commitTrigger.
-     */
-    private class CommitTriggerHandler implements CommitTriggerListener {
-        public void commit() {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Commit trigger fired commit event.");
-            }
-            BufferedValueModel.this.commit();
-        }
+	/**
+	 * Listens for changes to the wrapped value model.
+	 */
+	private class WrappedModelValueChangeHandler implements PropertyChangeListener {
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			onWrappedValueChanged();
+		}
+	}
 
-        public void revert() {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Commit trigger fired revert event.");
-            }
-            BufferedValueModel.this.revert();
-        }
-    }
+	/**
+	 * Listens for commit/revert on the commitTrigger.
+	 */
+	private class CommitTriggerHandler implements CommitTriggerListener {
+		@Override
+		public void commit() {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Commit trigger fired commit event.");
+			}
+			BufferedValueModel.this.commit();
+		}
+
+		@Override
+		public void revert() {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Commit trigger fired revert event.");
+			}
+			BufferedValueModel.this.revert();
+		}
+	}
 
 }

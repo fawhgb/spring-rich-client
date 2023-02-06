@@ -30,8 +30,7 @@ public interface DescribedElement {
 	public static final String DISPLAY_NAME_PROPERTY = "displayName";
 
 	/**
-	 * The property name used when firing events for the {@code caption}
-	 * property.
+	 * The property name used when firing events for the {@code caption} property.
 	 */
 	public static final String CAPTION_PROPERTY = "caption";
 

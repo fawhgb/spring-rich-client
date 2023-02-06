@@ -14,6 +14,7 @@ import org.springframework.binding.format.Formatter;
  * @author Jan Hoskens
  */
 public class StrictNumberFormatterFactory extends SimpleFormatterFactory {
+	@Override
 	public Formatter getNumberFormatter(Class numberClass) {
 		Locale locale = getLocale();
 		NumberFormat instance = NumberFormat.getInstance(locale);

@@ -84,16 +84,16 @@ public abstract class ApplicationLifecycleAdvisor implements InitializingBean {
 	/** Initial page to show. */
 	private String startingPageId;
 
-    private ApplicationSessionInitializer applicationSessionInitializer;
+	private ApplicationSessionInitializer applicationSessionInitializer;
 
 	/** ExceptionHandler to catch all uncaught exceptions. */
 	private RegisterableExceptionHandler registerableExceptionHandler;
 
 	/**
 	 * This is used to allow the ViewDescriptor to be lazily created when the
-	 * ApplicationWindow is opened. Useful when the ApplicationAdvisor needs to
-	 * do things before ViewDescriptor should be created, such as setting up a
-	 * security context.
+	 * ApplicationWindow is opened. Useful when the ApplicationAdvisor needs to do
+	 * things before ViewDescriptor should be created, such as setting up a security
+	 * context.
 	 *
 	 * @param pageDescriptorId id of the pageDescriptor bean to show on startup.
 	 *
@@ -104,14 +104,14 @@ public abstract class ApplicationLifecycleAdvisor implements InitializingBean {
 	}
 
 	/**
-	 * Sets the exception handler which will be registered upon initialization
-	 * to handle uncaught throwables.
+	 * Sets the exception handler which will be registered upon initialization to
+	 * handle uncaught throwables.
 	 *
-	 * By default this is a DefaultRegisterableExceptionHandler, which is
-	 * inferior to a well configured DelegatingExceptionHandler (java 1.5 only).
+	 * By default this is a DefaultRegisterableExceptionHandler, which is inferior
+	 * to a well configured DelegatingExceptionHandler (java 1.5 only).
 	 *
-	 * @param registerableExceptionHandler the exception handler which will
-	 * handle uncaught throwables
+	 * @param registerableExceptionHandler the exception handler which will handle
+	 *                                     uncaught throwables
 	 */
 	public void setRegisterableExceptionHandler(RegisterableExceptionHandler registerableExceptionHandler) {
 		this.registerableExceptionHandler = registerableExceptionHandler;
@@ -120,6 +120,7 @@ public abstract class ApplicationLifecycleAdvisor implements InitializingBean {
 	/**
 	 * After properties are set, register the exceptionHandler.
 	 */
+	@Override
 	public void afterPropertiesSet() throws Exception {
 		getRegisterableExceptionHandler().registerExceptionHandler();
 	}
@@ -246,8 +247,7 @@ public abstract class ApplicationLifecycleAdvisor implements InitializingBean {
 	}
 
 	/**
-	 * Hook called right after the window (JFrame) of the application is
-	 * created.
+	 * Hook called right after the window (JFrame) of the application is created.
 	 *
 	 * @param window applicationWindow.
 	 */
@@ -276,8 +276,7 @@ public abstract class ApplicationLifecycleAdvisor implements InitializingBean {
 	}
 
 	/**
-	 * @return the ExceptionHandler to be registered as
-	 * uncaughtExceptionHandler.
+	 * @return the ExceptionHandler to be registered as uncaughtExceptionHandler.
 	 */
 	public RegisterableExceptionHandler getRegisterableExceptionHandler() {
 		if (registerableExceptionHandler == null) {
@@ -293,13 +292,11 @@ public abstract class ApplicationLifecycleAdvisor implements InitializingBean {
 		this.application = application;
 	}
 
-    public ApplicationSessionInitializer getApplicationSessionInitializer()
-    {
-        return applicationSessionInitializer;
-    }
+	public ApplicationSessionInitializer getApplicationSessionInitializer() {
+		return applicationSessionInitializer;
+	}
 
-    public void setApplicationSessionInitializer(ApplicationSessionInitializer applicationSessionInitializer)
-    {
-        this.applicationSessionInitializer = applicationSessionInitializer;
-    }
+	public void setApplicationSessionInitializer(ApplicationSessionInitializer applicationSessionInitializer) {
+		this.applicationSessionInitializer = applicationSessionInitializer;
+	}
 }

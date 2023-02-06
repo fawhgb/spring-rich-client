@@ -13,5 +13,5 @@ import javax.swing.text.JTextComponent;
  */
 public interface TextComponentContainer {
 
-    public JTextComponent getComponent();
+	public JTextComponent getComponent();
 }

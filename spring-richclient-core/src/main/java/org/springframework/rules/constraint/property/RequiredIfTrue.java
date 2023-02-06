@@ -31,11 +31,9 @@ public class RequiredIfTrue extends AbstractPropertyConstraint {
 	private Constraint constraint;
 
 	/**
-	 * Tests that the property is present if the provided predicate is
-	 * satisified.
+	 * Tests that the property is present if the provided predicate is satisified.
 	 *
-	 * @param predicate
-	 *            the condition
+	 * @param predicate the condition
 	 */
 	public RequiredIfTrue(String propertyName, Constraint predicate) {
 		super(propertyName);
@@ -55,30 +53,33 @@ public class RequiredIfTrue extends AbstractPropertyConstraint {
 		this.constraint = predicate;
 	}
 
-    /**
-     * Determine if this rule is dependent on the given property name. True if either the
-     * direct poperty (from the contstructor) is equal to the given name, or if the "if
-     * true" predicate is a PropertyConstraint and it is dependent on the given property.
-     * @return true if this rule is dependent on the given property
-     */
-    public boolean isDependentOn(String propertyName) {
-        boolean dependent = false;
-        if( getConstraint() instanceof PropertyConstraint ) {
-            dependent = ((PropertyConstraint) getConstraint()).isDependentOn( propertyName );
-        }
-        return super.isDependentOn( propertyName ) || dependent;
-    }
-
-	protected boolean test(PropertyAccessStrategy domainObjectAccessStrategy) {
-		if (constraint.test(domainObjectAccessStrategy)) {
-			return Required.instance().test(
-					domainObjectAccessStrategy
-					.getPropertyValue(getPropertyName()));
+	/**
+	 * Determine if this rule is dependent on the given property name. True if
+	 * either the direct poperty (from the contstructor) is equal to the given name,
+	 * or if the "if true" predicate is a PropertyConstraint and it is dependent on
+	 * the given property.
+	 *
+	 * @return true if this rule is dependent on the given property
+	 */
+	@Override
+	public boolean isDependentOn(String propertyName) {
+		boolean dependent = false;
+		if (getConstraint() instanceof PropertyConstraint) {
+			dependent = ((PropertyConstraint) getConstraint()).isDependentOn(propertyName);
 		}
-
-        return true;
+		return super.isDependentOn(propertyName) || dependent;
 	}
 
+	@Override
+	protected boolean test(PropertyAccessStrategy domainObjectAccessStrategy) {
+		if (constraint.test(domainObjectAccessStrategy)) {
+			return Required.instance().test(domainObjectAccessStrategy.getPropertyValue(getPropertyName()));
+		}
+
+		return true;
+	}
+
+	@Override
 	public String toString() {
 		return "required if (" + constraint + ")";
 	}

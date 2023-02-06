@@ -31,25 +31,27 @@ import org.springframework.richclient.application.PageLayoutBuilder;
  */
 public class MultiViewPageDescriptor extends AbstractPageDescriptor {
 
-    private List viewDescriptors = new ArrayList();
+	private List viewDescriptors = new ArrayList();
 
-    public void buildInitialLayout(PageLayoutBuilder pageLayout) {
-        for (Iterator iter = viewDescriptors.iterator(); iter.hasNext();) {
-            String viewDescriptorId = (String) iter.next();
-            pageLayout.addView(viewDescriptorId);
-        }
-    }
+	@Override
+	public void buildInitialLayout(PageLayoutBuilder pageLayout) {
+		for (Iterator iter = viewDescriptors.iterator(); iter.hasNext();) {
+			String viewDescriptorId = (String) iter.next();
+			pageLayout.addView(viewDescriptorId);
+		}
+	}
 
-    public List getViewDescriptors() {
-        return viewDescriptors;
-    }
+	public List getViewDescriptors() {
+		return viewDescriptors;
+	}
 
-    public void setViewDescriptors(List viewDescriptors) {
-        this.viewDescriptors = viewDescriptors;
-    }
+	public void setViewDescriptors(List viewDescriptors) {
+		this.viewDescriptors = viewDescriptors;
+	}
 
-    public void setBeanName(String name) {
-        setId(name);
-    }
+	@Override
+	public void setBeanName(String name) {
+		setId(name);
+	}
 
 }

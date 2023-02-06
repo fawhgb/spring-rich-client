@@ -29,96 +29,102 @@ import javax.swing.JViewport;
  * scrollbar functionality.
  */
 public class ScrollingDesktopManager extends DefaultDesktopManager {
-    private ScrollingDesktopPane desktopPane;
+	private static final long serialVersionUID = 1L;
+	private ScrollingDesktopPane desktopPane;
 
-    public ScrollingDesktopManager(ScrollingDesktopPane pane) {
-        this.desktopPane = pane;
-    }
+	public ScrollingDesktopManager(ScrollingDesktopPane pane) {
+		this.desktopPane = pane;
+	}
 
-    public void endResizingFrame(JComponent f) {
-        super.endResizingFrame(f);
-        resizeDesktop();
-    }
+	@Override
+	public void endResizingFrame(JComponent f) {
+		super.endResizingFrame(f);
+		resizeDesktop();
+	}
 
-    public void endDraggingFrame(JComponent f) {
-        super.endDraggingFrame(f);
-        resizeDesktop();
-    }
+	@Override
+	public void endDraggingFrame(JComponent f) {
+		super.endDraggingFrame(f);
+		resizeDesktop();
+	}
 
-    public void setNormalSize() {
-        JScrollPane scrollPane = getScrollPane();
+	public void setNormalSize() {
+		JScrollPane scrollPane = getScrollPane();
 
-        if (scrollPane != null) {
-            int x = 0;
-            int y = 0;
-            Insets scrollInsets = getInsets(scrollPane);
-            Dimension d = scrollPane.getVisibleRect().getSize();
-            if (scrollPane.getBorder() != null) {
-                d.setSize(d.getWidth() - scrollInsets.left - scrollInsets.right, d.getHeight() - scrollInsets.top
-                        - scrollInsets.bottom);
-            }
+		if (scrollPane != null) {
+			int x = 0;
+			int y = 0;
+			Insets scrollInsets = getInsets(scrollPane);
+			Dimension d = scrollPane.getVisibleRect().getSize();
+			if (scrollPane.getBorder() != null) {
+				d.setSize(d.getWidth() - scrollInsets.left - scrollInsets.right,
+						d.getHeight() - scrollInsets.top - scrollInsets.bottom);
+			}
 
-            d.setSize(d.getWidth() - 20, d.getHeight() - 20);
-            setAllSize(x, y);
-            scrollPane.invalidate();
-            scrollPane.validate();
-        }
-    }
+			d.setSize(d.getWidth() - 20, d.getHeight() - 20);
+			setAllSize(x, y);
+			scrollPane.invalidate();
+			scrollPane.validate();
+		}
+	}
 
-    private Insets getInsets(JScrollPane scrollPane) {
-        if (scrollPane == null) {
-            return new Insets(0, 0, 0, 0);
-        }
+	private Insets getInsets(JScrollPane scrollPane) {
+		if (scrollPane == null) {
+			return new Insets(0, 0, 0, 0);
+		}
 
-        return scrollPane.getBorder().getBorderInsets(scrollPane);
-    }
+		return scrollPane.getBorder().getBorderInsets(scrollPane);
+	}
 
-    private JScrollPane getScrollPane() {
-        if (desktopPane.getParent() instanceof JViewport) {
-            JViewport viewPort = (JViewport) desktopPane.getParent();
-            if (viewPort.getParent() instanceof JScrollPane)
-                return (JScrollPane) viewPort.getParent();
-        }
-        return null;
-    }
+	private JScrollPane getScrollPane() {
+		if (desktopPane.getParent() instanceof JViewport) {
+			JViewport viewPort = (JViewport) desktopPane.getParent();
+			if (viewPort.getParent() instanceof JScrollPane) {
+				return (JScrollPane) viewPort.getParent();
+			}
+		}
+		return null;
+	}
 
-    void resizeDesktop() {
-        JScrollPane scrollPane = getScrollPane();
+	void resizeDesktop() {
+		JScrollPane scrollPane = getScrollPane();
 
-        if (scrollPane != null) {
-            int x = 0;
-            int y = 0;
-            Insets scrollInsets = getInsets(scrollPane);
-            JInternalFrame allFrames[] = desktopPane.getAllFrames();
-            for (int i = 0; i < allFrames.length; i++) {
-                if (allFrames[i].getX() + allFrames[i].getWidth() > x) {
-                    x = allFrames[i].getX() + allFrames[i].getWidth();
-                }
-                if (allFrames[i].getY() + allFrames[i].getHeight() > y) {
-                    y = allFrames[i].getY() + allFrames[i].getHeight();
-                }
-            }
-            Dimension d = scrollPane.getVisibleRect().getSize();
-            if (scrollPane.getBorder() != null) {
-                d.setSize(d.getWidth() - scrollInsets.left - scrollInsets.right, d.getHeight() - scrollInsets.top
-                        - scrollInsets.bottom);
-            }
+		if (scrollPane != null) {
+			int x = 0;
+			int y = 0;
+			Insets scrollInsets = getInsets(scrollPane);
+			JInternalFrame allFrames[] = desktopPane.getAllFrames();
+			for (int i = 0; i < allFrames.length; i++) {
+				if (allFrames[i].getX() + allFrames[i].getWidth() > x) {
+					x = allFrames[i].getX() + allFrames[i].getWidth();
+				}
+				if (allFrames[i].getY() + allFrames[i].getHeight() > y) {
+					y = allFrames[i].getY() + allFrames[i].getHeight();
+				}
+			}
+			Dimension d = scrollPane.getVisibleRect().getSize();
+			if (scrollPane.getBorder() != null) {
+				d.setSize(d.getWidth() - scrollInsets.left - scrollInsets.right,
+						d.getHeight() - scrollInsets.top - scrollInsets.bottom);
+			}
 
-            if (x <= d.getWidth())
-                x = ((int) d.getWidth()) - 20;
-            if (y <= d.getHeight())
-                y = ((int) d.getHeight()) - 20;
-            setAllSize(x, y);
-            scrollPane.invalidate();
-            scrollPane.validate();
-        }
-    }
-    
-    private void setAllSize(int width, int height) {
-        Dimension d = new Dimension(width, height);
+			if (x <= d.getWidth()) {
+				x = ((int) d.getWidth()) - 20;
+			}
+			if (y <= d.getHeight()) {
+				y = ((int) d.getHeight()) - 20;
+			}
+			setAllSize(x, y);
+			scrollPane.invalidate();
+			scrollPane.validate();
+		}
+	}
 
-        desktopPane.setMinimumSize(d);
-        desktopPane.setMaximumSize(d);
-        desktopPane.setPreferredSize(d);
-    }
+	private void setAllSize(int width, int height) {
+		Dimension d = new Dimension(width, height);
+
+		desktopPane.setMinimumSize(d);
+		desktopPane.setMaximumSize(d);
+		desktopPane.setPreferredSize(d);
+	}
 }

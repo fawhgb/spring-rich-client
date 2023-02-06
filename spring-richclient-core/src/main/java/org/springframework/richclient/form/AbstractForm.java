@@ -53,8 +53,8 @@ import org.springframework.util.StringUtils;
  * <li><em>CommitCommand</em>: wraps the {@link FormModel#commit()} method.
  * Writes data to backing bean. Guarded mask {@link FormGuard#ON_NOERRORS},
  * {@link FormGuard#ON_ISDIRTY} and {@link FormGuard#ON_ENABLED}.</li>
- * <li><em>RevertCommand</em>: wraps the {@link FormModel#revert()} method.
- * Fall back to the values of the backing bean. Guarded mask
+ * <li><em>RevertCommand</em>: wraps the {@link FormModel#revert()} method. Fall
+ * back to the values of the backing bean. Guarded mask
  * {@link FormGuard#ON_ISDIRTY} and {@link FormGuard#ON_ENABLED}.</li>
  * <li><em>NewFormObjectCommand</em>: set a fresh instance on the
  * {@link FormModel}. Guarded mask {@link FormGuard#ON_ENABLED}</li>
@@ -131,8 +131,8 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	}
 
 	/**
-	 * Create an AbstractForm with the given {@link FormModel}. Use the
-	 * formModel's id to configure the Form.
+	 * Create an AbstractForm with the given {@link FormModel}. Use the formModel's
+	 * id to configure the Form.
 	 *
 	 * @see #AbstractForm(FormModel, String)
 	 */
@@ -147,8 +147,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 		setId(formId);
 		if (formModel instanceof ValidatingFormModel) {
 			setFormModel((ValidatingFormModel) formModel);
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("Unsupported form model implementation " + formModel);
 		}
 		init();
@@ -158,13 +157,14 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	 * Create a Form with a FormModel that has a child-parent relation with the
 	 * provided parentFormModel.
 	 *
-	 * @param parentFormModel the parent formModel.
-	 * @param formId id used for this Form's configuration.
-	 * @param childFormObjectPropertyPath the path relative to the
-	 * parentFormModel's formObject that leads to the child formObject that will
-	 * be handled by this Form.
-	 * @see FormModelHelper#createChildPageFormModel(HierarchicalFormModel,
-	 * String, String)
+	 * @param parentFormModel             the parent formModel.
+	 * @param formId                      id used for this Form's configuration.
+	 * @param childFormObjectPropertyPath the path relative to the parentFormModel's
+	 *                                    formObject that leads to the child
+	 *                                    formObject that will be handled by this
+	 *                                    Form.
+	 * @see FormModelHelper#createChildPageFormModel(HierarchicalFormModel, String,
+	 *      String)
 	 */
 	protected AbstractForm(HierarchicalFormModel parentFormModel, String formId, String childFormObjectPropertyPath) {
 		setId(formId);
@@ -177,12 +177,13 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	 * Create a Form with a FormModel that has a child-parent relation with the
 	 * provided parentFormModel.
 	 *
-	 * @param parentFormModel the parent formModel.
-	 * @param formId id used for this Form's configuration.
-	 * @param childFormObjectHolder the valueModel of the parentFormModel that
-	 * holds the child formObject that will be handled by this Form.
-	 * @see FormModelHelper#createChildPageFormModel(HierarchicalFormModel,
-	 * String, ValueModel)
+	 * @param parentFormModel       the parent formModel.
+	 * @param formId                id used for this Form's configuration.
+	 * @param childFormObjectHolder the valueModel of the parentFormModel that holds
+	 *                              the child formObject that will be handled by
+	 *                              this Form.
+	 * @see FormModelHelper#createChildPageFormModel(HierarchicalFormModel, String,
+	 *      ValueModel)
 	 */
 	protected AbstractForm(HierarchicalFormModel parentFormModel, String formId, ValueModel childFormObjectHolder) {
 		setId(formId);
@@ -198,6 +199,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 
 	}
 
+	@Override
 	public String getId() {
 		return formId;
 	}
@@ -209,6 +211,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 		this.formId = formId;
 	}
 
+	@Override
 	public ValidatingFormModel getFormModel() {
 		return formModel;
 	}
@@ -226,12 +229,12 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	}
 
 	/**
-	 * Set the {@link FormModel} for this {@link Form}. Normally a Form won't
-	 * change it's FormModel as this may lead to an inconsistent state. Only use
-	 * this when the formModel isn't set yet.
+	 * Set the {@link FormModel} for this {@link Form}. Normally a Form won't change
+	 * it's FormModel as this may lead to an inconsistent state. Only use this when
+	 * the formModel isn't set yet.
 	 *
-	 * TODO check why we do allow setting when no control is created.
-	 * ValueModels might exist already leading to an inconsistent state.
+	 * TODO check why we do allow setting when no control is created. ValueModels
+	 * might exist already leading to an inconsistent state.
 	 *
 	 * @param formModel
 	 */
@@ -257,22 +260,23 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	}
 
 	/**
-	 * Add a child (or sub) form to this form. Child forms will be tied in to
-	 * the same validation results reporter as this form and they will be
-	 * configured to control the same guarded object as this form.
+	 * Add a child (or sub) form to this form. Child forms will be tied in to the
+	 * same validation results reporter as this form and they will be configured to
+	 * control the same guarded object as this form.
 	 * <p>
 	 * Validation listeners are unique to a form, so calling
-	 * {@link #addValidationListener(ValidationListener)} will only add a
-	 * listener to this form. If you want to listen to the child forms, you will
-	 * need to add a validation listener on each child form of interest.
+	 * {@link #addValidationListener(ValidationListener)} will only add a listener
+	 * to this form. If you want to listen to the child forms, you will need to add
+	 * a validation listener on each child form of interest.
 	 * <p>
-	 * <em>Note:</em> It is very important that the child form provided be
-	 * created using a form model that is a child model of this form's form
-	 * model. If this is not done, then commit and revert operations will not be
-	 * properly delegated to the child form models.
+	 * <em>Note:</em> It is very important that the child form provided be created
+	 * using a form model that is a child model of this form's form model. If this
+	 * is not done, then commit and revert operations will not be properly delegated
+	 * to the child form models.
 	 *
 	 * @param childForm to add
 	 */
+	@Override
 	public void addChildForm(Form childForm) {
 		childForms.put(childForm.getId(), childForm);
 		getFormModel().addChild(childForm.getFormModel());
@@ -281,6 +285,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	/**
 	 * @inheritDoc
 	 */
+	@Override
 	public List getValidationResultsReporters() {
 		return validationResultsReporters;
 	}
@@ -288,6 +293,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	/**
 	 * @inheritDoc
 	 */
+	@Override
 	public void addValidationResultsReporter(ValidationResultsReporter reporter) {
 		this.validationResultsReporters.add(reporter);
 	}
@@ -295,6 +301,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	/**
 	 * @inheritDoc
 	 */
+	@Override
 	public void removeValidationResultsReporter(ValidationResultsReporter reporter) {
 		this.validationResultsReporters.remove(reporter);
 	}
@@ -302,6 +309,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	/**
 	 * @inheritDoc
 	 */
+	@Override
 	public void removeChildForm(Form childForm) {
 		getFormModel().removeChild(childForm.getFormModel());
 		childForms.remove(childForm.getId());
@@ -309,9 +317,10 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 
 	/**
 	 * Return a child form of this form with the given form id.
+	 *
 	 * @param id of child form
 	 * @return child form, null if no child form with the given id has been
-	 * registered
+	 *         registered
 	 */
 	protected Form getChildForm(String id) {
 		return (Form) childForms.get(id);
@@ -333,6 +342,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 
 	/**
 	 * Set the "editing new form object" state as indicated.
+	 *
 	 * @param editingNewFormOject
 	 */
 	protected void setEditingNewFormObject(boolean editingNewFormOject) {
@@ -340,14 +350,14 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	}
 
 	private class EditingFormObjectSetter implements PropertyChangeListener {
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			int selectionIndex = getEditingFormObjectIndex();
 			if (selectionIndex == -1) {
 				// FIXME: why do we need this
 				// getFormModel().reset();
 				setEnabled(false);
-			}
-			else {
+			} else {
 				if (selectionIndex < editableFormObjects.size()) {
 					// If we were editing a "new" object, we need to clear
 					// that flag since a new object has been selected
@@ -386,10 +396,10 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 		}
 	}
 
+	@Override
 	protected final JComponent createControl() {
-		Assert
-				.state(getFormModel() != null,
-						"This form's FormModel cannot be null once control creation is triggered!");
+		Assert.state(getFormModel() != null,
+				"This form's FormModel cannot be null once control creation is triggered!");
 		initStandardLocalFormCommands();
 		JComponent formControl = createFormControl();
 		this.formEnabledChangeHandler = new FormEnabledPropertyChangeHandler();
@@ -408,15 +418,14 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	}
 
 	/**
-	 * Set the form's enabled state based on a default policy--specifically,
-	 * disable if the form object is null or the form object is guarded and is
-	 * marked as disabled.
+	 * Set the form's enabled state based on a default policy--specifically, disable
+	 * if the form object is null or the form object is guarded and is marked as
+	 * disabled.
 	 */
 	protected void setFormModelDefaultEnabledState() {
 		if (getFormObject() == null) {
 			getFormModel().setEnabled(false);
-		}
-		else {
+		} else {
 			if (getFormObject() instanceof Guarded) {
 				setEnabled(((Guarded) getFormObject()).isEnabled());
 			}
@@ -427,6 +436,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 
 	private class FormObjectChangeHandler implements PropertyChangeListener {
 
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			setFormModelDefaultEnabledState();
 		}
@@ -437,6 +447,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 			handleEnabledChange(getFormModel().isEnabled());
 		}
 
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			handleEnabledChange(getFormModel().isEnabled());
 		}
@@ -450,8 +461,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 				}
 				getCommitCommand().setDefaultButton();
 			}
-		}
-		else {
+		} else {
 			if (getCommitCommand() != null) {
 				getCommitCommand().setEnabled(false);
 			}
@@ -489,6 +499,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 			return null;
 		}
 		ActionCommand newFormObjectCmd = new ActionCommand(commandId) {
+			@Override
 			protected void doExecuteCommand() {
 				getFormModel().setFormObject(createNewObject());
 				getFormModel().setEnabled(true);
@@ -504,10 +515,10 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	}
 
 	/**
-	 * Create a new object to install into the form. By default, this simply
-	 * returns null. This will cause the form model to instantiate a new copy of
-	 * the model object class. Subclasses should override this method if they
-	 * need more control over how new objects are constructed.
+	 * Create a new object to install into the form. By default, this simply returns
+	 * null. This will cause the form model to instantiate a new copy of the model
+	 * object class. Subclasses should override this method if they need more
+	 * control over how new objects are constructed.
 	 *
 	 * @return new object for editing
 	 */
@@ -530,8 +541,8 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	}
 
 	/**
-	 * Returns a command wrapping the commit behavior of the {@link FormModel}.
-	 * This command has the guarded and security aspects.
+	 * Returns a command wrapping the commit behavior of the {@link FormModel}. This
+	 * command has the guarded and security aspects.
 	 */
 	private final ActionCommand createCommitCommand() {
 		String commandId = getCommitCommandFaceDescriptorId();
@@ -539,6 +550,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 			return null;
 		}
 		ActionCommand commitCmd = new ActionCommand(commandId) {
+			@Override
 			protected void doExecuteCommand() {
 				commit();
 			}
@@ -548,16 +560,17 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 		return (ActionCommand) getCommandConfigurer().configure(commitCmd);
 	}
 
+	@Override
 	public void preCommit(FormModel formModel) {
 	}
 
+	@Override
 	public void postCommit(FormModel formModel) {
 		if (editableFormObjects != null) {
 			if (editingNewFormObject) {
 				editableFormObjects.add(formModel.getFormObject());
 				setEditingFormObjectIndexSilently(editableFormObjects.size() - 1);
-			}
-			else {
+			} else {
 				int index = getEditingFormObjectIndex();
 				// Avoid updating unless we have actually selected an object for
 				// edit
@@ -580,6 +593,7 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 			return null;
 		}
 		ActionCommand revertCmd = new ActionCommand(commandId) {
+			@Override
 			protected void doExecuteCommand() {
 				revert();
 			}
@@ -599,9 +613,8 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	}
 
 	protected String getNewFormObjectCommandId() {
-		return "new"
-				+ StringUtils
-						.capitalize(ClassUtils.getShortName(getFormModel().getFormObject().getClass() + "Command"));
+		return "new" + StringUtils
+				.capitalize(ClassUtils.getShortName(getFormModel().getFormObject().getClass() + "Command"));
 	}
 
 	protected String getCommitCommandFaceDescriptorId() {
@@ -613,8 +626,8 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	}
 
 	/**
-	 * Subclasses may override to return a security controller id to be attached
-	 * to the newFormObject command. The default is
+	 * Subclasses may override to return a security controller id to be attached to
+	 * the newFormObject command. The default is
 	 * <code>[formModel.id] + "." + [getNewFormObjectCommandId()]</code>.
 	 * <p>
 	 * This id can be mapped to a specific security controller using the
@@ -628,8 +641,8 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	}
 
 	/**
-	 * Subclasses may override to return a security controller id to be attached
-	 * to the commit command. The default is The default is
+	 * Subclasses may override to return a security controller id to be attached to
+	 * the commit command. The default is The default is
 	 * <code>[formModel.id] + "." + [getCommitCommandFaceDescriptorId()]</code>.
 	 * <p>
 	 * This id can be mapped to a specific security controller using the
@@ -643,16 +656,16 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 	}
 
 	/**
-	 * Construct a default security controller Id for a given command face id.
-	 * The id will be a combination of the form model id, if any, and the face
-	 * id.
+	 * Construct a default security controller Id for a given command face id. The
+	 * id will be a combination of the form model id, if any, and the face id.
 	 * <p>
-	 * <code>[formModel.id] + "." + [commandFaceId]</code> if the form model
-	 * id is not null.
+	 * <code>[formModel.id] + "." + [commandFaceId]</code> if the form model id is
+	 * not null.
 	 * <p>
 	 * <code>[commandFaceId]</code> if the form model is null.
 	 * <p>
 	 * <code>null</code> if the commandFaceId is null.
+	 *
 	 * @param commandFaceId
 	 * @return default security controller id
 	 */
@@ -678,18 +691,22 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 		this.formGuard.removeGuarded(guarded);
 	}
 
+	@Override
 	public Object getFormObject() {
 		return formModel.getFormObject();
 	}
 
+	@Override
 	public void setFormObject(Object formObject) {
 		formModel.setFormObject(formObject);
 	}
 
+	@Override
 	public Object getValue(String formProperty) {
 		return formModel.getValueModel(formProperty).getValue();
 	}
 
+	@Override
 	public ValueModel getValueModel(String formProperty) {
 		ValueModel valueModel = formModel.getValueModel(formProperty);
 		if (valueModel == null) {
@@ -706,25 +723,28 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 		this.formModel.setEnabled(enabled);
 	}
 
+	@Override
 	public void addValidationListener(ValidationListener listener) {
 		formModel.getValidationResults().addValidationListener(listener);
 	}
 
+	@Override
 	public void removeValidationListener(ValidationListener listener) {
 		formModel.getValidationResults().removeValidationListener(listener);
 	}
 
 	/**
-	 * Construct the validation results reporter for this form and attach it to
-	 * the provided Guarded object. An instance of
-	 * {@link SimpleValidationResultsReporter} will be constructed and returned.
-	 * All registered child forms will be attached to the same
-	 * <code>guarded</code> and <code>messageReceiver</code> as this form.
+	 * Construct the validation results reporter for this form and attach it to the
+	 * provided Guarded object. An instance of
+	 * {@link SimpleValidationResultsReporter} will be constructed and returned. All
+	 * registered child forms will be attached to the same <code>guarded</code> and
+	 * <code>messageReceiver</code> as this form.
 	 */
+	@Override
 	public ValidationResultsReporter newSingleLineResultsReporter(Messagable messageReceiver) {
 
-		SimpleValidationResultsReporter reporter = new SimpleValidationResultsReporter(
-				formModel.getValidationResults(), messageReceiver);
+		SimpleValidationResultsReporter reporter = new SimpleValidationResultsReporter(formModel.getValidationResults(),
+				messageReceiver);
 
 		return reporter;
 	}
@@ -749,30 +769,37 @@ public abstract class AbstractForm extends AbstractControlFactory implements For
 		return formModel.isDirty();
 	}
 
+	@Override
 	public boolean hasErrors() {
 		return formModel.getValidationResults().getHasErrors();
 	}
 
+	@Override
 	public void commit() {
 		formModel.commit();
 	}
 
+	@Override
 	public void revert() {
 		formModel.revert();
 	}
 
+	@Override
 	public void reset() {
 		getFormModel().reset();
 	}
 
+	@Override
 	public void addGuarded(Guarded guarded) {
 		formGuard.addGuarded(guarded, FormGuard.FORMERROR_GUARDED);
 	}
 
+	@Override
 	public void addGuarded(Guarded guarded, int mask) {
 		formGuard.addGuarded(guarded, mask);
 	}
 
+	@Override
 	public void removeGuarded(Guarded guarded) {
 		formGuard.removeGuarded(guarded);
 	}

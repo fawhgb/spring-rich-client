@@ -15,145 +15,136 @@
  */
 package org.springframework.richclient.application.support;
 
-import org.springframework.richclient.core.LabeledObjectSupport;
-import org.springframework.richclient.application.ViewDescriptor;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.BeanNameAware;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.application.PageComponent;
 import org.springframework.richclient.application.View;
+import org.springframework.richclient.application.ViewDescriptor;
 import org.springframework.richclient.command.ActionCommand;
-import org.springframework.richclient.command.support.ShowViewCommand;
 import org.springframework.richclient.command.config.CommandButtonLabelInfo;
-import org.springframework.beans.factory.BeanNameAware;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.BeansException;
+import org.springframework.richclient.command.support.ShowViewCommand;
+import org.springframework.richclient.core.LabeledObjectSupport;
 import org.springframework.util.Assert;
 
 /**
- * An implementation of {@link ViewDescriptor} that instantiates new Views
- * by looking them up in a Spring {@link BeanFactory}.  You must set the bean
- * name to lookup in the <code>BeanFactory</code> via
+ * An implementation of {@link ViewDescriptor} that instantiates new Views by
+ * looking them up in a Spring {@link BeanFactory}. You must set the bean name
+ * to lookup in the <code>BeanFactory</code> via
  * {@link #setViewPrototypeBeanName(String)}, and the referenced bean
- * <b>must</b> be a declared non-singleton in the <code>BeanFactory</code>
- * (a prototype bean).
- * 
+ * <b>must</b> be a declared non-singleton in the <code>BeanFactory</code> (a
+ * prototype bean).
+ *
  * @author Andy DePue
  */
 public class LookupViewDescriptor extends LabeledObjectSupport
-    implements ViewDescriptor, BeanNameAware, BeanFactoryAware, InitializingBean
-{
-  private String id;
-  private String viewPrototypeBeanName;
-  private BeanFactory beanFactory;
+		implements ViewDescriptor, BeanNameAware, BeanFactoryAware, InitializingBean {
+	private String id;
+	private String viewPrototypeBeanName;
+	private BeanFactory beanFactory;
 
-  public void setId(final String id)
-  {
-    Assert.notNull(id);
-    this.id = id;
-  }
+	public void setId(final String id) {
+		Assert.notNull(id);
+		this.id = id;
+	}
 
-  public String getViewPrototypeBeanName()
-  {
-    return this.viewPrototypeBeanName;
-  }
+	public String getViewPrototypeBeanName() {
+		return this.viewPrototypeBeanName;
+	}
 
-  public void setViewPrototypeBeanName(final String viewPrototypeBeanName)
-  {
-    this.viewPrototypeBeanName = viewPrototypeBeanName;
-  }
+	public void setViewPrototypeBeanName(final String viewPrototypeBeanName) {
+		this.viewPrototypeBeanName = viewPrototypeBeanName;
+	}
 
-  public BeanFactory getBeanFactory()
-  {
-    return this.beanFactory;
-  }
+	public BeanFactory getBeanFactory() {
+		return this.beanFactory;
+	}
 
-  protected View createView()
-  {
-    final View view = (View)getBeanFactory().getBean(getViewPrototypeBeanName(), View.class);
-    view.setDescriptor(this);
-    return view;
-  }
-  
-  
-  //
-  // METHODS FROM INTERFACE ViewDescriptor
-  //
-  
-  public String getId()
-  {
-    return this.id;
-  }
+	protected View createView() {
+		final View view = (View) getBeanFactory().getBean(getViewPrototypeBeanName(), View.class);
+		view.setDescriptor(this);
+		return view;
+	}
 
-  public ActionCommand createShowViewCommand(final ApplicationWindow window)
-  {
-    return new ShowViewCommand(this, window);
-  }
+	//
+	// METHODS FROM INTERFACE ViewDescriptor
+	//
 
-  public CommandButtonLabelInfo getShowViewCommandLabel()
-  {
-    return getLabel();
-  }
+	@Override
+	public String getId() {
+		return this.id;
+	}
 
-  public PageComponent createPageComponent()
-  {
-    return createView();
-  }
-  
+	@Override
+	public ActionCommand createShowViewCommand(final ApplicationWindow window) {
+		return new ShowViewCommand(this, window);
+	}
 
+	@Override
+	public CommandButtonLabelInfo getShowViewCommandLabel() {
+		return getLabel();
+	}
 
-  //
-  // METHODS FROM INTERFACE BeanNameAware
-  //
+	@Override
+	public PageComponent createPageComponent() {
+		return createView();
+	}
 
-  public void setBeanName(final String name)
-  {
-    setId(name);
-  }
-  
-  
-  //
-  // METHODS FROM INTERFACE BeanFactoryAware
-  //
+	//
+	// METHODS FROM INTERFACE BeanNameAware
+	//
 
-  public void setBeanFactory(final BeanFactory beanFactory) throws BeansException
-  {
-    this.beanFactory = beanFactory;
-  }
+	@Override
+	public void setBeanName(final String name) {
+		setId(name);
+	}
 
+	//
+	// METHODS FROM INTERFACE BeanFactoryAware
+	//
 
-  //
-  // METHODS FROM INTERFACE InitializingBean
-  //
+	@Override
+	public void setBeanFactory(final BeanFactory beanFactory) throws BeansException {
+		this.beanFactory = beanFactory;
+	}
 
-  public final void afterPropertiesSet() throws Exception
-  {
-    initViewDescriptor();
+	//
+	// METHODS FROM INTERFACE InitializingBean
+	//
 
-    if(getViewPrototypeBeanName() == null) {
-      throw new IllegalArgumentException("viewPrototypeBeanName property must be set.");
-    }
-    if(getBeanFactory() == null) {
-      throw new IllegalArgumentException("beanFactory property must be set.");
-    }
-    if(!getBeanFactory().containsBean(getViewPrototypeBeanName())) {
-      throw new IllegalArgumentException("There is no bean in the bean factory with the given name '" + getViewPrototypeBeanName() + "'");
-    }
-    if(getBeanFactory().isSingleton(getViewPrototypeBeanName())) {
-      throw new IllegalArgumentException("View bean '" + getViewPrototypeBeanName() + "' must be a prototype (singleton=\"false\").");
-    }
-    if(!View.class.isAssignableFrom(getBeanFactory().getType(getViewPrototypeBeanName()))) {
-      throw new IllegalArgumentException("Prototype View bean '" + getViewPrototypeBeanName() + "' does not implement the View interface.");
-    }
-  }
+	@Override
+	public final void afterPropertiesSet() throws Exception {
+		initViewDescriptor();
 
+		if (getViewPrototypeBeanName() == null) {
+			throw new IllegalArgumentException("viewPrototypeBeanName property must be set.");
+		}
+		if (getBeanFactory() == null) {
+			throw new IllegalArgumentException("beanFactory property must be set.");
+		}
+		if (!getBeanFactory().containsBean(getViewPrototypeBeanName())) {
+			throw new IllegalArgumentException(
+					"There is no bean in the bean factory with the given name '" + getViewPrototypeBeanName() + "'");
+		}
+		if (getBeanFactory().isSingleton(getViewPrototypeBeanName())) {
+			throw new IllegalArgumentException(
+					"View bean '" + getViewPrototypeBeanName() + "' must be a prototype (singleton=\"false\").");
+		}
+		if (!View.class.isAssignableFrom(getBeanFactory().getType(getViewPrototypeBeanName()))) {
+			throw new IllegalArgumentException(
+					"Prototype View bean '" + getViewPrototypeBeanName() + "' does not implement the View interface.");
+		}
+	}
 
-  /**
-   * Subclasses may override this method to perform intialization after
-   * properties have been set.
-   * @throws Exception
-   */
-  protected void initViewDescriptor() throws Exception
-  {
-  }
+	/**
+	 * Subclasses may override this method to perform intialization after properties
+	 * have been set.
+	 *
+	 * @throws Exception
+	 */
+	protected void initViewDescriptor() throws Exception {
+	}
 }

@@ -20,9 +20,9 @@ import org.springframework.rules.constraint.Constraint;
 /**
  * A message translator which translates validation results into a human
  * readable form.
- * 
+ *
  * @author Mathias Broekelmann
- * 
+ *
  */
 public interface MessageTranslator {
 
@@ -30,8 +30,7 @@ public interface MessageTranslator {
 
 	String getMessage(String objectName, Constraint constraint);
 
-	String getMessage(String objectName, Object rejectedValue,
-			Constraint constraint);
+	String getMessage(String objectName, Object rejectedValue, Constraint constraint);
 
 	String getMessage(String objectName, ValidationResults results);
 

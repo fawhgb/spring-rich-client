@@ -17,32 +17,38 @@ package org.springframework.rules.constraint.property;
 
 import java.util.Iterator;
 
-import org.springframework.rules.constraint.Constraint;
-import org.springframework.rules.constraint.CompoundConstraint;
 import org.springframework.rules.constraint.AbstractConstraint;
+import org.springframework.rules.constraint.CompoundConstraint;
+import org.springframework.rules.constraint.Constraint;
 
 /**
  * Abstract base class for unary predicates which compose other predicates.
- * 
+ *
  * @author Keith Donald
  */
 public class CompoundPropertyConstraint implements PropertyConstraint {
 
 	private CompoundConstraint compoundConstraint;
 
+	@Override
 	public String getPropertyName() {
-		PropertyConstraint e = (PropertyConstraint)compoundConstraint.iterator().next();
+		PropertyConstraint e = (PropertyConstraint) compoundConstraint.iterator().next();
 		return e.getPropertyName();
 	}
 
+	@Override
 	public boolean isDependentOn(final String propertyName) {
 		return new AbstractConstraint() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
 			public boolean test(Object o) {
-				return ((PropertyConstraint)o).isDependentOn(propertyName);
+				return ((PropertyConstraint) o).isDependentOn(propertyName);
 			}
 		}.anyTrue(compoundConstraint.iterator());
 	}
-	
+
+	@Override
 	public boolean isCompoundRule() {
 		return true;
 	}
@@ -52,8 +58,8 @@ public class CompoundPropertyConstraint implements PropertyConstraint {
 	}
 
 	/**
-	 * Constructs a compound predicate with no initial members. It is expected
-	 * the client will call "add" to add individual predicates.
+	 * Constructs a compound predicate with no initial members. It is expected the
+	 * client will call "add" to add individual predicates.
 	 */
 	public CompoundPropertyConstraint(CompoundConstraint compoundConstraint) {
 		this.compoundConstraint = compoundConstraint;
@@ -63,9 +69,8 @@ public class CompoundPropertyConstraint implements PropertyConstraint {
 	/**
 	 * Add the specified predicate to the set of predicates aggregated by this
 	 * compound predicate.
-	 * 
-	 * @param predicate
-	 *            the predicate to add
+	 *
+	 * @param predicate the predicate to add
 	 * @return A reference to this, to support chaining.
 	 */
 	public CompoundPropertyConstraint add(PropertyConstraint constraint) {
@@ -75,17 +80,19 @@ public class CompoundPropertyConstraint implements PropertyConstraint {
 
 	/**
 	 * Return an iterator over the aggregated predicates.
-	 * 
+	 *
 	 * @return An iterator
 	 */
 	public Iterator iterator() {
 		return compoundConstraint.iterator();
 	}
 
+	@Override
 	public boolean test(Object bean) {
 		return compoundConstraint.test(bean);
 	}
 
+	@Override
 	public String toString() {
 		return compoundConstraint.toString();
 	}

@@ -24,14 +24,17 @@ public abstract class AbstractPropertyConstraint implements PropertyConstraint {
 		setPropertyName(propertyName);
 	}
 
+	@Override
 	public String getPropertyName() {
 		return propertyName;
 	}
 
+	@Override
 	public boolean isDependentOn(String propertyName) {
 		return getPropertyName().equals(propertyName);
 	}
-	
+
+	@Override
 	public boolean isCompoundRule() {
 		return false;
 	}
@@ -41,15 +44,18 @@ public abstract class AbstractPropertyConstraint implements PropertyConstraint {
 		this.propertyName = propertyName;
 	}
 
+	@Override
 	public boolean test(Object o) {
-		if (o instanceof PropertyAccessStrategy)
-			return test((PropertyAccessStrategy)o);
+		if (o instanceof PropertyAccessStrategy) {
+			return test((PropertyAccessStrategy) o);
+		}
 
-        return test(new BeanPropertyAccessStrategy(o));
+		return test(new BeanPropertyAccessStrategy(o));
 	}
 
 	protected abstract boolean test(PropertyAccessStrategy domainObjectAccessStrategy);
 
+	@Override
 	public String toString() {
 		return getPropertyName();
 	}

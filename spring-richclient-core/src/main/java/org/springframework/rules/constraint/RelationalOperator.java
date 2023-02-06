@@ -24,11 +24,15 @@ import org.springframework.rules.closure.BinaryConstraint;
  */
 public abstract class RelationalOperator extends Operator {
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * The <code>EQUAL_TO (==)</code> operator
 	 */
-	public static final RelationalOperator EQUAL_TO = new RelationalOperator(
-			"eq", "=") {
+	public static final RelationalOperator EQUAL_TO = new RelationalOperator("eq", "=") {
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		public BinaryConstraint getConstraint() {
 			return EqualTo.instance();
 		}
@@ -37,12 +41,15 @@ public abstract class RelationalOperator extends Operator {
 	/**
 	 * The <code>LESS_THAN (<)</code> operator
 	 */
-	public static final RelationalOperator LESS_THAN = new RelationalOperator(
-			"lt", "<") {
+	public static final RelationalOperator LESS_THAN = new RelationalOperator("lt", "<") {
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		public Operator negation() {
 			return GREATER_THAN;
 		}
 
+		@Override
 		public BinaryConstraint getConstraint() {
 			return LessThan.instance();
 		}
@@ -51,12 +58,15 @@ public abstract class RelationalOperator extends Operator {
 	/**
 	 * The <code>LESS_THAN_EQUAL_TO (<=)</code> operator
 	 */
-	public static final RelationalOperator LESS_THAN_EQUAL_TO = new RelationalOperator(
-			"lte", "<=") {
+	public static final RelationalOperator LESS_THAN_EQUAL_TO = new RelationalOperator("lte", "<=") {
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		public Operator negation() {
 			return GREATER_THAN_EQUAL_TO;
 		}
 
+		@Override
 		public BinaryConstraint getConstraint() {
 			return LessThanEqualTo.instance();
 		}
@@ -65,12 +75,15 @@ public abstract class RelationalOperator extends Operator {
 	/**
 	 * The <code>GREATER_THAN (>)</code> operator
 	 */
-	public static final RelationalOperator GREATER_THAN = new RelationalOperator(
-			"gt", ">") {
+	public static final RelationalOperator GREATER_THAN = new RelationalOperator("gt", ">") {
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		public Operator negation() {
 			return LESS_THAN;
 		}
 
+		@Override
 		public BinaryConstraint getConstraint() {
 			return GreaterThan.instance();
 		}
@@ -79,12 +92,15 @@ public abstract class RelationalOperator extends Operator {
 	/**
 	 * The <code>GREATER_THAN_EQUAL_TO (>=)</code> operator
 	 */
-	public static final RelationalOperator GREATER_THAN_EQUAL_TO = new RelationalOperator(
-			"gte", ">=") {
+	public static final RelationalOperator GREATER_THAN_EQUAL_TO = new RelationalOperator("gte", ">=") {
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		public Operator negation() {
 			return LESS_THAN_EQUAL_TO;
 		}
 
+		@Override
 		public BinaryConstraint getConstraint() {
 			return GreaterThanEqualTo.instance();
 		}

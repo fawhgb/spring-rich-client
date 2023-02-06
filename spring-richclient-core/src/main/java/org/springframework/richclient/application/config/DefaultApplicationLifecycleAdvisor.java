@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -33,148 +33,160 @@ import org.springframework.richclient.command.CommandGroup;
 /**
  * @author Keith Donald
  */
-public class DefaultApplicationLifecycleAdvisor extends ApplicationLifecycleAdvisor
-        implements ApplicationListener {
-    private String windowCommandManagerBeanName;
+public class DefaultApplicationLifecycleAdvisor extends ApplicationLifecycleAdvisor implements ApplicationListener {
+	private String windowCommandManagerBeanName;
 
-    private String toolBarBeanName;
+	private String toolBarBeanName;
 
-    private String menuBarBeanName;
+	private String menuBarBeanName;
 
-    private String windowCommandBarDefinitions;
+	private String windowCommandBarDefinitions;
 
-    private ConfigurableListableBeanFactory openingWindowCommandBarFactory;
+	private ConfigurableListableBeanFactory openingWindowCommandBarFactory;
 
-    /** Set of child command contexts created - used to bridge application events. */
-    private ArrayList childContexts = new ArrayList();
-    
-    public void setWindowCommandBarDefinitions(String commandBarDefinitionLocation) {
-        this.windowCommandBarDefinitions = commandBarDefinitionLocation;
-    }
+	/**
+	 * Set of child command contexts created - used to bridge application events.
+	 */
+	private ArrayList childContexts = new ArrayList();
 
-    public void setWindowCommandManagerBeanName(String commandManagerBeanName) {
-        this.windowCommandManagerBeanName = commandManagerBeanName;
-    }
+	public void setWindowCommandBarDefinitions(String commandBarDefinitionLocation) {
+		this.windowCommandBarDefinitions = commandBarDefinitionLocation;
+	}
 
-    public void setMenubarBeanName(String menubarBeanName) {
-        this.menuBarBeanName = menubarBeanName;
-    }
+	public void setWindowCommandManagerBeanName(String commandManagerBeanName) {
+		this.windowCommandManagerBeanName = commandManagerBeanName;
+	}
 
-    public void setToolbarBeanName(String toolbarBeanName) {
-        this.toolBarBeanName = toolbarBeanName;
-    }
+	public void setMenubarBeanName(String menubarBeanName) {
+		this.menuBarBeanName = menubarBeanName;
+	}
 
-    public ApplicationWindowCommandManager createWindowCommandManager() {
-        initNewWindowCommandBarFactory();
-        if (windowCommandManagerBeanName == null || !getCommandBarFactory().containsBean(windowCommandManagerBeanName)) {
-            return new ApplicationWindowCommandManager();
-        }
-        return (ApplicationWindowCommandManager)getCommandBarFactory().getBean(windowCommandManagerBeanName,
-                ApplicationWindowCommandManager.class);
-    }
+	public void setToolbarBeanName(String toolbarBeanName) {
+		this.toolBarBeanName = toolbarBeanName;
+	}
 
-    protected void initNewWindowCommandBarFactory() {
-    	if (windowCommandBarDefinitions != null) {
-    		// Install our own application context so we can register needed post-processors
-    		final CommandBarApplicationContext commandBarContext =
-    			new CommandBarApplicationContext(windowCommandBarDefinitions);
-    		addChildCommandContext(commandBarContext);
-    		this.openingWindowCommandBarFactory = commandBarContext.getBeanFactory();
-    	} else {
-    		this.openingWindowCommandBarFactory = new DefaultListableBeanFactory();
-    	}
-    }
+	@Override
+	public ApplicationWindowCommandManager createWindowCommandManager() {
+		initNewWindowCommandBarFactory();
+		if (windowCommandManagerBeanName == null
+				|| !getCommandBarFactory().containsBean(windowCommandManagerBeanName)) {
+			return new ApplicationWindowCommandManager();
+		}
+		return (ApplicationWindowCommandManager) getCommandBarFactory().getBean(windowCommandManagerBeanName,
+				ApplicationWindowCommandManager.class);
+	}
 
-    protected ConfigurableListableBeanFactory getCommandBarFactory() {
-        return openingWindowCommandBarFactory;
-    }
+	protected void initNewWindowCommandBarFactory() {
+		if (windowCommandBarDefinitions != null) {
+			// Install our own application context so we can register needed post-processors
+			final CommandBarApplicationContext commandBarContext = new CommandBarApplicationContext(
+					windowCommandBarDefinitions);
+			addChildCommandContext(commandBarContext);
+			this.openingWindowCommandBarFactory = commandBarContext.getBeanFactory();
+		} else {
+			this.openingWindowCommandBarFactory = new DefaultListableBeanFactory();
+		}
+	}
 
-    public CommandGroup getMenuBarCommandGroup() {
-        CommandGroup menuBarCommandGroup = getCommandGroup(menuBarBeanName);
-        return menuBarCommandGroup != null ? menuBarCommandGroup : super.getMenuBarCommandGroup();
-    }
+	protected ConfigurableListableBeanFactory getCommandBarFactory() {
+		return openingWindowCommandBarFactory;
+	}
 
-    public CommandGroup getToolBarCommandGroup() {
-        CommandGroup toolBarCommandGroup = getCommandGroup(toolBarBeanName);
-        return toolBarCommandGroup != null ? toolBarCommandGroup : super.getToolBarCommandGroup();
-    }
+	@Override
+	public CommandGroup getMenuBarCommandGroup() {
+		CommandGroup menuBarCommandGroup = getCommandGroup(menuBarBeanName);
+		return menuBarCommandGroup != null ? menuBarCommandGroup : super.getMenuBarCommandGroup();
+	}
 
-    protected CommandGroup getCommandGroup(String name) {
-        if (name == null || !getCommandBarFactory().containsBean(name)) {
-            return null;
-        }
-        return (CommandGroup)getCommandBarFactory().getBean(name);
-    }
+	@Override
+	public CommandGroup getToolBarCommandGroup() {
+		CommandGroup toolBarCommandGroup = getCommandGroup(toolBarBeanName);
+		return toolBarCommandGroup != null ? toolBarCommandGroup : super.getToolBarCommandGroup();
+	}
 
-    /**
-     * We need to deliver all application events down to the child command
-     * contexts that have been created.
-     * @param event to deliver
-     */
-    public void onApplicationEvent(ApplicationEvent event) {
-        // Dispatch the event to all the child command contexts
-        for( Iterator iter = getChildCommandContexts().iterator(); iter.hasNext(); ) {
-            ApplicationContext ctx = (ApplicationContext) iter.next();
-            ctx.publishEvent(event);
-        }
-    }
+	protected CommandGroup getCommandGroup(String name) {
+		if (name == null || !getCommandBarFactory().containsBean(name)) {
+			return null;
+		}
+		return (CommandGroup) getCommandBarFactory().getBean(name);
+	}
 
-    /**
-     * Get all the child command contexts that have been created.
-     * <p>
-     * <em>Note, theactual collection is being returned - so be careful what you
-     * do to it.</em>
-     * 
-     * @return list of contexts
-     */
-    protected List getChildCommandContexts() {
-        return childContexts;
-    }
+	/**
+	 * We need to deliver all application events down to the child command contexts
+	 * that have been created.
+	 *
+	 * @param event to deliver
+	 */
+	@Override
+	public void onApplicationEvent(ApplicationEvent event) {
+		// Dispatch the event to all the child command contexts
+		for (Iterator iter = getChildCommandContexts().iterator(); iter.hasNext();) {
+			ApplicationContext ctx = (ApplicationContext) iter.next();
+			ctx.publishEvent(event);
+		}
+	}
 
-    /**
-     * Add a new child command context.
-     * @param context
-     */
-    protected void addChildCommandContext( ApplicationContext context ) {
-        childContexts.add( context );
-    }
+	/**
+	 * Get all the child command contexts that have been created.
+	 * <p>
+	 * <em>Note, theactual collection is being returned - so be careful what you do
+	 * to it.</em>
+	 * 
+	 * @return list of contexts
+	 */
+	protected List getChildCommandContexts() {
+		return childContexts;
+	}
 
-    /**
-     * Simple extension to allow us to inject our special bean post-processors
-     * and control event publishing.
-     */
-    private class CommandBarApplicationContext extends ClassPathXmlApplicationContext {
+	/**
+	 * Add a new child command context.
+	 *
+	 * @param context
+	 */
+	protected void addChildCommandContext(ApplicationContext context) {
+		childContexts.add(context);
+	}
 
-        /**
-         * Constructor. Load bean definitions from the specified location.
-         * @param location of bean definitions
-         */
-        public CommandBarApplicationContext(String location) {
-            super( new String[] { location }, false, Application.instance().getApplicationContext() );
-            refresh();
-        }
+	/**
+	 * Simple extension to allow us to inject our special bean post-processors and
+	 * control event publishing.
+	 */
+	private class CommandBarApplicationContext extends ClassPathXmlApplicationContext {
 
-        /**
-         * Install our bean post-processors.
-         * @param beanFactory the bean factory used by the application context
-         * @throws org.springframework.beans.BeansException in case of errors
-         */
-        protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-            beanFactory.addBeanPostProcessor( new ApplicationWindowSetter( getOpeningWindow() ) );
-        }
+		/**
+		 * Constructor. Load bean definitions from the specified location.
+		 *
+		 * @param location of bean definitions
+		 */
+		public CommandBarApplicationContext(String location) {
+			super(new String[] { location }, false, Application.instance().getApplicationContext());
+			refresh();
+		}
 
-        /**
-         * Publish an event in to this context.  Since we are always getting
-         * notification from a parent context, this overriden implementation does
-         * not dispatch up to the parent context, thus avoiding an infinite loop.
-         */
-        public void publishEvent(ApplicationEvent event) {
-            // Temporarily disconnect our parent so the event publishing doesn't
-            // result in an infinite loop.
-            ApplicationContext parent = getParent();
-            setParent(null);
-            super.publishEvent(event);
-            setParent(parent);
-        }
-    }
+		/**
+		 * Install our bean post-processors.
+		 *
+		 * @param beanFactory the bean factory used by the application context
+		 * @throws org.springframework.beans.BeansException in case of errors
+		 */
+		@Override
+		protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+			beanFactory.addBeanPostProcessor(new ApplicationWindowSetter(getOpeningWindow()));
+		}
+
+		/**
+		 * Publish an event in to this context. Since we are always getting notification
+		 * from a parent context, this overriden implementation does not dispatch up to
+		 * the parent context, thus avoiding an infinite loop.
+		 */
+		@Override
+		public void publishEvent(ApplicationEvent event) {
+			// Temporarily disconnect our parent so the event publishing doesn't
+			// result in an infinite loop.
+			ApplicationContext parent = getParent();
+			setParent(null);
+			super.publishEvent(event);
+			setParent(parent);
+		}
+	}
 }

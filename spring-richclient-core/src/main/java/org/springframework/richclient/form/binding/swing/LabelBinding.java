@@ -26,27 +26,31 @@ import org.springframework.richclient.form.binding.support.CustomBinding;
  */
 public class LabelBinding extends CustomBinding {
 
-    private final JLabel label;
+	private final JLabel label;
 
-    public LabelBinding(JLabel label, FormModel formModel, String formPropertyPath) {
-        super(formModel, formPropertyPath, String.class);
-        this.label = label;
-    }
+	public LabelBinding(JLabel label, FormModel formModel, String formPropertyPath) {
+		super(formModel, formPropertyPath, String.class);
+		this.label = label;
+	}
 
-    protected JComponent doBindControl() {
-        label.setText((String)getValueModel().getValue());
-        return label;
-    }
+	@Override
+	protected JComponent doBindControl() {
+		label.setText((String) getValueModel().getValue());
+		return label;
+	}
 
-    protected void readOnlyChanged() {
-        label.setEnabled(isEnabled() && !isReadOnly());
-    }
+	@Override
+	protected void readOnlyChanged() {
+		label.setEnabled(isEnabled() && !isReadOnly());
+	}
 
-    protected void enabledChanged() {
-        label.setEnabled(isEnabled() && !isReadOnly());
-    }
+	@Override
+	protected void enabledChanged() {
+		label.setEnabled(isEnabled() && !isReadOnly());
+	}
 
-    protected void valueModelChanged(Object newValue) {
-        label.setText((String)newValue);
-    }
+	@Override
+	protected void valueModelChanged(Object newValue) {
+		label.setText((String) newValue);
+	}
 }

@@ -1,421 +1,376 @@
 package org.springframework.richclient.widget.table;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.Format;
+import java.text.NumberFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Locale;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+
 import org.apache.commons.beanutils.NestedNullException;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.jdesktop.swingx.renderer.DefaultTableRenderer;
 import org.jdesktop.swingx.renderer.FormatStringValue;
 import org.springframework.richclient.util.RcpSupport;
 
-import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import java.awt.*;
-import java.math.BigDecimal;
-import java.text.*;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-
 /**
  * Voorziet een paar eenvoudige renderers voor gebruiksgemak.
  */
-public class TableCellRenderers
-{
+public class TableCellRenderers {
 
-    public static final TableCellRenderer CENTER_ALIGNED_RENDERER = new AlignedRenderer(SwingConstants.CENTER);
+	public static final TableCellRenderer CENTER_ALIGNED_RENDERER = new AlignedRenderer(SwingConstants.CENTER);
 
-    public static final TableCellRenderer RIGHT_ALIGNED_RENDERER = new AlignedRenderer(SwingConstants.RIGHT);
+	public static final TableCellRenderer RIGHT_ALIGNED_RENDERER = new AlignedRenderer(SwingConstants.RIGHT);
 
-    public static final TableCellRenderer TOP_ALIGNED_RENDERER = new AlignedRenderer(SwingConstants.LEFT,
-            SwingConstants.TOP);
-    public static final TableCellRenderer BOTTOM_ALIGNED_RENDERER = new AlignedRenderer(SwingConstants.LEFT,
-            SwingConstants.BOTTOM);
-    public static final TableCellRenderer PERCENTAGE_RENDERER = new PercentageRenderer();
-    public static final TableCellRenderer MONEY_RENDERER = new BigDecimalRenderer(NumberFormat
-            .getCurrencyInstance(Locale.getDefault()));
-    public static final TableCellRenderer LEFT_ALIGNED_HEADER_RENDERER = new AlignedTableHeaderRenderer(
-            SwingConstants.LEFT);
-    public static final TableCellRenderer CENTER_ALIGNED_HEADER_RENDERER = new AlignedTableHeaderRenderer(
-            SwingConstants.CENTER);
-    public static final TableCellRenderer RIGHT_ALIGNED_HEADER_RENDERER = new AlignedTableHeaderRenderer(
-            SwingConstants.RIGHT);
-    public static final TableCellRenderer ENUM_RENDERER = new EnumTableCellRenderer();
+	public static final TableCellRenderer TOP_ALIGNED_RENDERER = new AlignedRenderer(SwingConstants.LEFT,
+			SwingConstants.TOP);
+	public static final TableCellRenderer BOTTOM_ALIGNED_RENDERER = new AlignedRenderer(SwingConstants.LEFT,
+			SwingConstants.BOTTOM);
+	public static final TableCellRenderer PERCENTAGE_RENDERER = new PercentageRenderer();
+	public static final TableCellRenderer MONEY_RENDERER = new BigDecimalRenderer(
+			NumberFormat.getCurrencyInstance(Locale.getDefault()));
+	public static final TableCellRenderer LEFT_ALIGNED_HEADER_RENDERER = new AlignedTableHeaderRenderer(
+			SwingConstants.LEFT);
+	public static final TableCellRenderer CENTER_ALIGNED_HEADER_RENDERER = new AlignedTableHeaderRenderer(
+			SwingConstants.CENTER);
+	public static final TableCellRenderer RIGHT_ALIGNED_HEADER_RENDERER = new AlignedTableHeaderRenderer(
+			SwingConstants.RIGHT);
+	public static final TableCellRenderer ENUM_RENDERER = new EnumTableCellRenderer();
 
-    public static final TableCellRenderer FLAT_NUMBER_RENDERER = new FlatNumberRenderer();
+	public static final TableCellRenderer FLAT_NUMBER_RENDERER = new FlatNumberRenderer();
 
-    public static class FlatNumberRenderer extends DefaultTableRenderer
-    {
+	public static class FlatNumberRenderer extends DefaultTableRenderer {
 
-        private static NumberFormat format = NumberFormat.getIntegerInstance();
-        static
-        {
-            format.setGroupingUsed(false);
-        }
+		private static final long serialVersionUID = 1L;
+		private static NumberFormat format = NumberFormat.getIntegerInstance();
+		static {
+			format.setGroupingUsed(false);
+		}
 
-        public FlatNumberRenderer()
-        {
-            super(new FormatStringValue(format));
-        }
-    }
+		public FlatNumberRenderer() {
+			super(new FormatStringValue(format));
+		}
+	}
 
-    public static class AlignedRenderer extends DefaultTableCellRenderer
-    {
+	public static class AlignedRenderer extends DefaultTableCellRenderer {
 
-        public AlignedRenderer(int horizontalAlignment)
-        {
-            super();
-            setHorizontalAlignment(horizontalAlignment);
-        }
+		private static final long serialVersionUID = 1L;
 
-        public AlignedRenderer(int horizontalAlignment, int verticalAlignment)
-        {
-            super();
-            setHorizontalAlignment(horizontalAlignment);
-            setVerticalAlignment(verticalAlignment);
-        }
+		public AlignedRenderer(int horizontalAlignment) {
+			super();
+			setHorizontalAlignment(horizontalAlignment);
+		}
 
-        DateFormat formatter;
+		public AlignedRenderer(int horizontalAlignment, int verticalAlignment) {
+			super();
+			setHorizontalAlignment(horizontalAlignment);
+			setVerticalAlignment(verticalAlignment);
+		}
 
-        @Override
-        public void setValue(Object value)
-        {
-            if (value != null && value instanceof Date)
-            {
-                if (formatter == null)
-                {
-                    formatter = DateFormat.getDateInstance();
-                }
-                setText(formatter.format(value));
-            }
-            else
-            {
-                super.setValue(value);
-            }
-        }
+		DateFormat formatter;
 
-    }
+		@Override
+		public void setValue(Object value) {
+			if (value != null && value instanceof Date) {
+				if (formatter == null) {
+					formatter = DateFormat.getDateInstance();
+				}
+				setText(formatter.format(value));
+			} else {
+				super.setValue(value);
+			}
+		}
 
-    public static class PercentageRenderer extends DefaultTableCellRenderer
-    {
+	}
 
-        private static final DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
-        private static final Format nonFractionalFormat = new DecimalFormat("###     %", symbols);
-        private static final Format fractionalFormat = new DecimalFormat("##0.00%", symbols);
-        private static final BigDecimal multiplyFactor = new BigDecimal("100");
+	public static class PercentageRenderer extends DefaultTableCellRenderer {
 
-        public PercentageRenderer()
-        {
-            setHorizontalAlignment(SwingConstants.RIGHT);
-        }
+		private static final long serialVersionUID = 1L;
+		private static final DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
+		private static final Format nonFractionalFormat = new DecimalFormat("###     %", symbols);
+		private static final Format fractionalFormat = new DecimalFormat("##0.00%", symbols);
+		private static final BigDecimal multiplyFactor = new BigDecimal("100");
 
-        @Override
-        protected void setValue(Object value)
-        {
-            if (value instanceof BigDecimal)
-            {
-                BigDecimal percentage = ((BigDecimal) value).multiply(multiplyFactor);
-                if (percentage.doubleValue() == percentage.intValue())
-                {
-                    super.setValue(nonFractionalFormat.format(value));
-                }
-                else
-                {
-                    super.setValue(fractionalFormat.format(value));
-                }
-            }
-            else
-            {
-                super.setValue(value);
-            }
-        }
-    }
+		public PercentageRenderer() {
+			setHorizontalAlignment(SwingConstants.RIGHT);
+		}
 
-    public static class BigDecimalRenderer extends DefaultTableCellRenderer
-    {
+		@Override
+		protected void setValue(Object value) {
+			if (value instanceof BigDecimal) {
+				BigDecimal percentage = ((BigDecimal) value).multiply(multiplyFactor);
+				if (percentage.doubleValue() == percentage.intValue()) {
+					super.setValue(nonFractionalFormat.format(value));
+				} else {
+					super.setValue(fractionalFormat.format(value));
+				}
+			} else {
+				super.setValue(value);
+			}
+		}
+	}
 
-        private final BigDecimal multiplyFactor;
-        private final Format format;
+	public static class BigDecimalRenderer extends DefaultTableCellRenderer {
 
-        public BigDecimalRenderer(Format format)
-        {
-            this(null, format);
-        }
+		private static final long serialVersionUID = 1L;
+		private final BigDecimal multiplyFactor;
+		private final Format format;
 
-        public BigDecimalRenderer(BigDecimal multiplyFactor)
-        {
-            this(multiplyFactor, NumberFormat.getNumberInstance());
-        }
+		public BigDecimalRenderer(Format format) {
+			this(null, format);
+		}
 
-        public BigDecimalRenderer(BigDecimal multiplyFactor, Format format)
-        {
-            this(multiplyFactor, format, SwingConstants.RIGHT);
-        }
+		public BigDecimalRenderer(BigDecimal multiplyFactor) {
+			this(multiplyFactor, NumberFormat.getNumberInstance());
+		}
 
-        public BigDecimalRenderer(BigDecimal multiplyFactor, Format format, int horizontalAlignment)
-        {
-            this.multiplyFactor = multiplyFactor;
-            this.format = format;
-            setHorizontalAlignment(horizontalAlignment);
-        }
+		public BigDecimalRenderer(BigDecimal multiplyFactor, Format format) {
+			this(multiplyFactor, format, SwingConstants.RIGHT);
+		}
 
-        @Override
-        protected void setValue(Object value)
-        {
-            if (value instanceof BigDecimal)
-            {
-                if (multiplyFactor != null)
-                {
-                    value = ((BigDecimal) value).multiply(multiplyFactor);
-                }
-                super.setValue(format.format(value));
-            }
-            else
-            {
-                super.setValue(value);
-            }
-        }
-    }
+		public BigDecimalRenderer(BigDecimal multiplyFactor, Format format, int horizontalAlignment) {
+			this.multiplyFactor = multiplyFactor;
+			this.format = format;
+			setHorizontalAlignment(horizontalAlignment);
+		}
 
-    public static class AlignedTableHeaderRenderer extends DefaultTableCellRenderer
-    {
+		@Override
+		protected void setValue(Object value) {
+			if (value instanceof BigDecimal) {
+				if (multiplyFactor != null) {
+					value = ((BigDecimal) value).multiply(multiplyFactor);
+				}
+				super.setValue(format.format(value));
+			} else {
+				super.setValue(value);
+			}
+		}
+	}
 
-        private int align = SwingConstants.CENTER;
+	public static class AlignedTableHeaderRenderer extends DefaultTableCellRenderer {
 
-        public AlignedTableHeaderRenderer(int align)
-        {
-            this.align = align;
-        }
+		private static final long serialVersionUID = 1L;
+		private int align = SwingConstants.CENTER;
 
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                boolean hasFocus, int row, int column)
-        {
-            if (table != null)
-            {
-                JTableHeader header = table.getTableHeader();
-                if (header != null)
-                {
-                    setForeground(header.getForeground());
-                    setBackground(header.getBackground());
-                    setFont(header.getFont());
-                }
-            }
+		public AlignedTableHeaderRenderer(int align) {
+			this.align = align;
+		}
 
-            setText((value == null) ? "" : value.toString() + " ");
-            setBorder(UIManager.getBorder("TableHeader.cellBorder"));
-            setHorizontalAlignment(align);
-            return this;
-        }
-    }
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			if (table != null) {
+				JTableHeader header = table.getTableHeader();
+				if (header != null) {
+					setForeground(header.getForeground());
+					setBackground(header.getBackground());
+					setFont(header.getFont());
+				}
+			}
 
-    public static class EnumTableCellRenderer extends DefaultTableCellRenderer
-    {
+			setText((value == null) ? "" : value.toString() + " ");
+			setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+			setHorizontalAlignment(align);
+			return this;
+		}
+	}
 
-        public EnumTableCellRenderer()
-        {
-            super();
-        }
+	public static class EnumTableCellRenderer extends DefaultTableCellRenderer {
 
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                boolean hasFocus, int row, int column)
-        {
+		private static final long serialVersionUID = 1L;
 
-            super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		public EnumTableCellRenderer() {
+			super();
+		}
 
-            if (value == null)
-            {
-                setValue("");
-                setIcon(null);
-            }
-            else
-            {
-                if (value instanceof Enum)
-                {
-                    Enum valueEnum = (Enum) value;
-                    Class<? extends Enum> valueClass = valueEnum.getClass();
-                    setValue(RcpSupport.getMessage(valueClass.getName() + "." + valueEnum.name()));
-                    setIcon(RcpSupport.getIcon(valueClass.getName() + "." + valueEnum.name()));
-                }
-                else
-                {
-                    setValue(value);
-                }
-            }
-            return this;
-        }
-    }
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
 
-    public static class ListPropertyCellRenderer extends JPanel implements TableCellRenderer
-    {
+			super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-        protected String property;
+			if (value == null) {
+				setValue("");
+				setIcon(null);
+			} else {
+				if (value instanceof Enum) {
+					Enum valueEnum = (Enum) value;
+					Class<? extends Enum> valueClass = valueEnum.getClass();
+					setValue(RcpSupport.getMessage(valueClass.getName() + "." + valueEnum.name()));
+					setIcon(RcpSupport.getIcon(valueClass.getName() + "." + valueEnum.name()));
+				} else {
+					setValue(value);
+				}
+			}
+			return this;
+		}
+	}
 
-        protected int verticalAlignment;
+	public static class ListPropertyCellRenderer extends JPanel implements TableCellRenderer {
 
-        protected int horizontalAlignment;
+		private static final long serialVersionUID = 1L;
 
-        protected Format format;
+		protected String property;
 
-        protected float alignmentX;
+		protected int verticalAlignment;
 
-        private static Border border = new EmptyBorder(1, 2, 1, 2);
+		protected int horizontalAlignment;
 
-        public ListPropertyCellRenderer(String property)
-        {
-            this(property, SwingConstants.LEFT, SwingConstants.CENTER);
-        }
+		protected Format format;
 
-        public ListPropertyCellRenderer(String property, int horizontalAlignment, int verticalAlignment)
-        {
-            this(property, horizontalAlignment, verticalAlignment, null);
-        }
+		protected float alignmentX;
 
-        public ListPropertyCellRenderer(String property, int horizontalAlignment, int verticalAlignment,
-                Format format)
-        {
-            this.property = property;
-            this.horizontalAlignment = horizontalAlignment;
-            this.verticalAlignment = verticalAlignment;
-            this.format = format;
-            switch (horizontalAlignment)
-            {
-                case SwingConstants.LEFT :
-                    alignmentX = (float) 0.0;
-                    break;
+		private static Border border = new EmptyBorder(1, 2, 1, 2);
 
-                case SwingConstants.CENTER :
-                    alignmentX = (float) 0.5;
-                    break;
+		public ListPropertyCellRenderer(String property) {
+			this(property, SwingConstants.LEFT, SwingConstants.CENTER);
+		}
 
-                case SwingConstants.RIGHT :
-                    alignmentX = (float) 1.0;
-                    break;
+		public ListPropertyCellRenderer(String property, int horizontalAlignment, int verticalAlignment) {
+			this(property, horizontalAlignment, verticalAlignment, null);
+		}
 
-                default :
-                    throw new IllegalArgumentException("Illegal horizontal alignment value");
-            }
+		public ListPropertyCellRenderer(String property, int horizontalAlignment, int verticalAlignment,
+				Format format) {
+			this.property = property;
+			this.horizontalAlignment = horizontalAlignment;
+			this.verticalAlignment = verticalAlignment;
+			this.format = format;
+			switch (horizontalAlignment) {
+			case SwingConstants.LEFT:
+				alignmentX = (float) 0.0;
+				break;
 
-            setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            setOpaque(true);
-            setBorder(border);
-        }
+			case SwingConstants.CENTER:
+				alignmentX = (float) 0.5;
+				break;
 
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                boolean hasFocus, int row, int column)
-        {
-            removeAll();
-            invalidate();
+			case SwingConstants.RIGHT:
+				alignmentX = (float) 1.0;
+				break;
 
-            Color fg = table.getForeground();
-            Color bg = table.getBackground();
+			default:
+				throw new IllegalArgumentException("Illegal horizontal alignment value");
+			}
 
-            if (isSelected)
-            {
-                fg = table.getSelectionForeground();
-                bg = table.getSelectionBackground();
-            }
+			setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+			setOpaque(true);
+			setBorder(border);
+		}
 
-            Font font = table.getFont();
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			removeAll();
+			invalidate();
 
-            setFont(font);
+			Color fg = table.getForeground();
+			Color bg = table.getBackground();
 
-            if (hasFocus)
-            {
-                Border border = null;
-                if (isSelected)
-                {
-                    border = UIManager.getBorder("Table.focusSelectedCellHighlightBorder");
-                }
-                if (border == null)
-                {
-                    border = UIManager.getBorder("Table.focusCellHighlightBorder");
-                }
-                setBorder(border);
+			if (isSelected) {
+				fg = table.getSelectionForeground();
+				bg = table.getSelectionBackground();
+			}
 
-                if (!isSelected && table.isCellEditable(row, column))
-                {
-                    Color col;
-                    col = UIManager.getColor("Table.focusCellForeground");
-                    if (col != null)
-                    {
-                        fg = col;
-                    }
-                    col = UIManager.getColor("Table.focusCellBackground");
-                    if (col != null)
-                    {
-                        bg = col;
-                    }
-                }
-            }
-            else
-            {
-                setBorder(border);
-            }
+			Font font = table.getFont();
 
-            super.setForeground(fg);
-            super.setBackground(bg);
+			setFont(font);
 
-            if (verticalAlignment != SwingConstants.TOP)
-            {
-                add(Box.createVerticalGlue());
-            }
+			if (hasFocus) {
+				Border border = null;
+				if (isSelected) {
+					border = UIManager.getBorder("Table.focusSelectedCellHighlightBorder");
+				}
+				if (border == null) {
+					border = UIManager.getBorder("Table.focusCellHighlightBorder");
+				}
+				setBorder(border);
 
-            Object[] values;
-            if (value instanceof Collection)
-            {
-                values = ((Collection) value).toArray();
-            }
-            else
-                throw new IllegalArgumentException("Value must be an instance of Collection.");
+				if (!isSelected && table.isCellEditable(row, column)) {
+					Color col;
+					col = UIManager.getColor("Table.focusCellForeground");
+					if (col != null) {
+						fg = col;
+					}
+					col = UIManager.getColor("Table.focusCellBackground");
+					if (col != null) {
+						bg = col;
+					}
+				}
+			} else {
+				setBorder(border);
+			}
 
-            for (int i = 0; i < values.length; i++)
-            {
-                Object o = values[i];
-                Object line;
-                try
-                {
-                    line = PropertyUtils.getProperty(o, property);
-                }
-                catch (NestedNullException e)
-                {
-                    line = null;
-                }
-                catch (Exception e)
-                {
-                    throw new RuntimeException("Error reading property " + property + " from object " + o, e);
-                }
-                JLabel lineLabel = new JLabel();
-                lineLabel.setForeground(fg);
-                lineLabel.setFont(font);
-                setValue(lineLabel, line, i);
-                add(lineLabel);
-            }
+			super.setForeground(fg);
+			super.setBackground(bg);
 
-            int height_wanted = (int) getPreferredSize().getHeight();
-            if (height_wanted > table.getRowHeight(row))
-                table.setRowHeight(row, height_wanted);
+			if (verticalAlignment != SwingConstants.TOP) {
+				add(Box.createVerticalGlue());
+			}
 
-            if (verticalAlignment != SwingConstants.BOTTOM)
-            {
-                add(Box.createVerticalGlue());
-            }
-            return this;
-        }
+			Object[] values;
+			if (value instanceof Collection) {
+				values = ((Collection) value).toArray();
+			} else {
+				throw new IllegalArgumentException("Value must be an instance of Collection.");
+			}
 
-        protected void setValue(JLabel l, Object value, int lineNumber)
-        {
-            if (format != null && value != null)
-                value = format.format(value);
-            l.setText(value == null ? " " : value.toString());
-            l.setHorizontalAlignment(horizontalAlignment);
-            l.setAlignmentX(alignmentX);
-            l.setOpaque(false);
-        }
+			for (int i = 0; i < values.length; i++) {
+				Object o = values[i];
+				Object line;
+				try {
+					line = PropertyUtils.getProperty(o, property);
+				} catch (NestedNullException e) {
+					line = null;
+				} catch (Exception e) {
+					throw new RuntimeException("Error reading property " + property + " from object " + o, e);
+				}
+				JLabel lineLabel = new JLabel();
+				lineLabel.setForeground(fg);
+				lineLabel.setFont(font);
+				setValue(lineLabel, line, i);
+				add(lineLabel);
+			}
 
-    }
+			int height_wanted = (int) getPreferredSize().getHeight();
+			if (height_wanted > table.getRowHeight(row)) {
+				table.setRowHeight(row, height_wanted);
+			}
+
+			if (verticalAlignment != SwingConstants.BOTTOM) {
+				add(Box.createVerticalGlue());
+			}
+			return this;
+		}
+
+		protected void setValue(JLabel l, Object value, int lineNumber) {
+			if (format != null && value != null) {
+				value = format.format(value);
+			}
+			l.setText(value == null ? " " : value.toString());
+			l.setHorizontalAlignment(horizontalAlignment);
+			l.setAlignmentX(alignmentX);
+			l.setOpaque(false);
+		}
+
+	}
 }
-

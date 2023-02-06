@@ -17,16 +17,15 @@ package org.springframework.rules.constraint;
 
 import java.lang.reflect.Method;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.reporting.TypeResolvable;
 import org.springframework.util.Assert;
 
 /**
  * A adapter that can adapt a method on an object that accepts a single argument
  * and returns a boolean result a UnaryPredicate. For example, a DAO might have
- * the method <code>isUnique(String objectName)<code> that
- * tests whether not a name parameter is unique.  To adapt that method as a
- * UnaryPredicate, use this class.
+ * the method <code>isUnique(String objectName)<code> that tests whether not a
+ * name parameter is unique. To adapt that method as a UnaryPredicate, use this
+ * class.
  *
  * @author Keith Donald
  */
@@ -45,17 +44,14 @@ public class MethodInvokingConstraint implements Constraint, TypeResolvable {
 	 * Note: this constructor will attempt to guess the parameter type for the
 	 * method as it accept a single unary argument and return a boolean result.
 	 *
-	 * @param targetObject
-	 *            The target object
-	 * @param methodName
-	 *            The method name
+	 * @param targetObject The target object
+	 * @param methodName   The method name
 	 */
 	public MethodInvokingConstraint(Object targetObject, String methodName) {
 		this(targetObject, methodName, null, null);
 	}
 
-	public MethodInvokingConstraint(Object targetObject, String methodName,
-			String constraintType) {
+	public MethodInvokingConstraint(Object targetObject, String methodName, String constraintType) {
 		this(targetObject, methodName, null, constraintType);
 	}
 
@@ -70,18 +66,15 @@ public class MethodInvokingConstraint implements Constraint, TypeResolvable {
 				}
 			}
 		}
-		throw new IllegalArgumentException(
-				"No single argument, boolean method found with name '"
-				+ methodName + "'");
+		throw new IllegalArgumentException("No single argument, boolean method found with name '" + methodName + "'");
 	}
 
-	public MethodInvokingConstraint(Object targetObject, String methodName,
-			Class parameterType) {
+	public MethodInvokingConstraint(Object targetObject, String methodName, Class parameterType) {
 		this(targetObject, methodName, parameterType, null);
 	}
 
-	public MethodInvokingConstraint(Object targetObject, String methodName,
-			Class parameterType, String constraintType) {
+	public MethodInvokingConstraint(Object targetObject, String methodName, Class parameterType,
+			String constraintType) {
 		Assert.notNull(targetObject, "targetObject is required");
 		this.targetObject = targetObject;
 		if (parameterType == null) {
@@ -89,17 +82,15 @@ public class MethodInvokingConstraint implements Constraint, TypeResolvable {
 		}
 		setType(constraintType);
 		try {
-			this.testMethod = targetObject.getClass().getMethod(methodName,
-					new Class[]{parameterType});
-		}
-		catch (NoSuchMethodException e) {
+			this.testMethod = targetObject.getClass().getMethod(methodName, new Class[] { parameterType });
+		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
 		Class returnType = testMethod.getReturnType();
-		Assert.isTrue(returnType == Boolean.class
-				|| returnType == boolean.class, "Return type must be a boolean type");
+		Assert.isTrue(returnType == Boolean.class || returnType == boolean.class, "Return type must be a boolean type");
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}
@@ -108,12 +99,11 @@ public class MethodInvokingConstraint implements Constraint, TypeResolvable {
 		this.type = type;
 	}
 
+	@Override
 	public boolean test(Object argument) {
 		try {
-			return ((Boolean) testMethod.invoke(targetObject,
-					new Object[]{argument})).booleanValue();
-		}
-		catch (Exception e) {
+			return ((Boolean) testMethod.invoke(targetObject, new Object[] { argument })).booleanValue();
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}

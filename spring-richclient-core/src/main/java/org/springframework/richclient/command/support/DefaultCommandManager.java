@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -48,233 +48,262 @@ import org.springframework.util.Assert;
  * @author Keith Donald
  */
 public class DefaultCommandManager implements CommandManager, BeanPostProcessor, BeanFactoryAware {
-    private final Log logger = LogFactory.getLog(getClass());
+	private final Log logger = LogFactory.getLog(getClass());
 
-    private BeanFactory beanFactory;
+	private BeanFactory beanFactory;
 
-    private final DefaultCommandRegistry commandRegistry = new DefaultCommandRegistry();
+	private final DefaultCommandRegistry commandRegistry = new DefaultCommandRegistry();
 
-    private CommandServices commandServices;
+	private CommandServices commandServices;
 
-    private CommandConfigurer commandConfigurer;
+	private CommandConfigurer commandConfigurer;
 
-    public DefaultCommandManager() {
+	public DefaultCommandManager() {
 
-    }
+	}
 
-    public DefaultCommandManager(CommandRegistry parent) {
-        setParent(parent);
-    }
+	public DefaultCommandManager(CommandRegistry parent) {
+		setParent(parent);
+	}
 
-    public DefaultCommandManager(CommandServices commandServices) {
-        setCommandServices(commandServices);
-    }
+	public DefaultCommandManager(CommandServices commandServices) {
+		setCommandServices(commandServices);
+	}
 
-    public void setCommandServices(CommandServices commandServices) {
-        Assert.notNull(commandServices, "A command services implementation is required");
-        this.commandServices = commandServices;
-    }
-    
-    public CommandServices getCommandServices() {
-        if(commandServices == null) {
-            commandServices = (CommandServices) ApplicationServicesLocator.services().getService(CommandServices.class);
-        }
-        return commandServices;
-    }
+	public void setCommandServices(CommandServices commandServices) {
+		Assert.notNull(commandServices, "A command services implementation is required");
+		this.commandServices = commandServices;
+	}
 
-    public void setParent(CommandRegistry parent) {
-        commandRegistry.setParent(parent);
-    }
+	public CommandServices getCommandServices() {
+		if (commandServices == null) {
+			commandServices = (CommandServices) ApplicationServicesLocator.services().getService(CommandServices.class);
+		}
+		return commandServices;
+	}
 
-    public CommandConfigurer getCommandConfigurer() {
-        if(commandConfigurer == null) {
-            commandConfigurer = (CommandConfigurer) ApplicationServicesLocator.services().getService(CommandConfigurer.class);
-        }
-        return commandConfigurer;
-    }
+	public void setParent(CommandRegistry parent) {
+		commandRegistry.setParent(parent);
+	}
 
-    public void setCommandConfigurer(CommandConfigurer commandConfigurer) {
-        Assert.notNull(commandConfigurer, "command configurer must not be null");
-        this.commandConfigurer = commandConfigurer;
-    }
+	public CommandConfigurer getCommandConfigurer() {
+		if (commandConfigurer == null) {
+			commandConfigurer = (CommandConfigurer) ApplicationServicesLocator.services()
+					.getService(CommandConfigurer.class);
+		}
+		return commandConfigurer;
+	}
 
-    public void setBeanFactory(BeanFactory beanFactory) {
-        this.beanFactory = beanFactory;
-    }
-    
-    public ComponentFactory getComponentFactory(){
-    	return getCommandServices().getComponentFactory();
-    }
+	public void setCommandConfigurer(CommandConfigurer commandConfigurer) {
+		Assert.notNull(commandConfigurer, "command configurer must not be null");
+		this.commandConfigurer = commandConfigurer;
+	}
 
-    public ButtonFactory getToolBarButtonFactory() {
-        return getCommandServices().getButtonFactory();
-    }
-    
-    public ButtonFactory getButtonFactory() {
-        return getCommandServices().getButtonFactory();
-    }
+	@Override
+	public void setBeanFactory(BeanFactory beanFactory) {
+		this.beanFactory = beanFactory;
+	}
 
-    public MenuFactory getMenuFactory() {
-        return getCommandServices().getMenuFactory();
-    }
+	@Override
+	public ComponentFactory getComponentFactory() {
+		return getCommandServices().getComponentFactory();
+	}
 
-    public CommandButtonConfigurer getDefaultButtonConfigurer() {
-        return getCommandServices().getDefaultButtonConfigurer();
-    }
+	@Override
+	public ButtonFactory getToolBarButtonFactory() {
+		return getCommandServices().getButtonFactory();
+	}
 
-    public CommandButtonConfigurer getToolBarButtonConfigurer() {
-        return getCommandServices().getToolBarButtonConfigurer();
-    }
+	@Override
+	public ButtonFactory getButtonFactory() {
+		return getCommandServices().getButtonFactory();
+	}
 
-    public CommandButtonConfigurer getMenuItemButtonConfigurer() {
-        return getCommandServices().getMenuItemButtonConfigurer();
-    }
+	@Override
+	public MenuFactory getMenuFactory() {
+		return getCommandServices().getMenuFactory();
+	}
 
-    public CommandButtonConfigurer getPullDownMenuButtonConfigurer() {
-        return getCommandServices().getPullDownMenuButtonConfigurer();
-    }
+	@Override
+	public CommandButtonConfigurer getDefaultButtonConfigurer() {
+		return getCommandServices().getDefaultButtonConfigurer();
+	}
 
-    public CommandFaceDescriptor getFaceDescriptor(AbstractCommand command, String faceDescriptorId) {
-        if (beanFactory == null) {
-            return null;
-        }
-        try {
-            return (CommandFaceDescriptor)beanFactory.getBean(command.getId() + "." + faceDescriptorId,
-                    CommandFaceDescriptor.class);
-        }
-        catch (NoSuchBeanDefinitionException e) {
-            try {
-                return (CommandFaceDescriptor)beanFactory.getBean(faceDescriptorId, CommandFaceDescriptor.class);
-            }
-            catch (NoSuchBeanDefinitionException ex) {
-                return null;
-            }
-        }
-    }
+	@Override
+	public CommandButtonConfigurer getToolBarButtonConfigurer() {
+		return getCommandServices().getToolBarButtonConfigurer();
+	}
 
-    public ActionCommand getActionCommand(String commandId) {
-        return (ActionCommand) commandRegistry.getCommand(commandId, ActionCommand.class);
-    }
+	@Override
+	public CommandButtonConfigurer getMenuItemButtonConfigurer() {
+		return getCommandServices().getMenuItemButtonConfigurer();
+	}
 
-    public CommandGroup getCommandGroup(String groupId) {
-        return (CommandGroup)commandRegistry.getCommand(groupId, CommandGroup.class);
-    }
+	@Override
+	public CommandButtonConfigurer getPullDownMenuButtonConfigurer() {
+		return getCommandServices().getPullDownMenuButtonConfigurer();
+	}
 
-    public boolean containsCommandGroup(String groupId) {
-        return commandRegistry.containsCommandGroup(groupId);
-    }
+	@Override
+	public CommandFaceDescriptor getFaceDescriptor(AbstractCommand command, String faceDescriptorId) {
+		if (beanFactory == null) {
+			return null;
+		}
+		try {
+			return (CommandFaceDescriptor) beanFactory.getBean(command.getId() + "." + faceDescriptorId,
+					CommandFaceDescriptor.class);
+		} catch (NoSuchBeanDefinitionException e) {
+			try {
+				return (CommandFaceDescriptor) beanFactory.getBean(faceDescriptorId, CommandFaceDescriptor.class);
+			} catch (NoSuchBeanDefinitionException ex) {
+				return null;
+			}
+		}
+	}
 
-    public boolean containsActionCommand(String commandId) {
-        return commandRegistry.containsActionCommand(commandId);
-    }
+	@Override
+	public ActionCommand getActionCommand(String commandId) {
+		return (ActionCommand) commandRegistry.getCommand(commandId, ActionCommand.class);
+	}
 
-    public void addCommandInterceptor(String commandId, ActionCommandInterceptor interceptor) {
-        getActionCommand(commandId).addCommandInterceptor(interceptor);
-    }
+	@Override
+	public CommandGroup getCommandGroup(String groupId) {
+		return (CommandGroup) commandRegistry.getCommand(groupId, CommandGroup.class);
+	}
 
-    public void removeCommandInterceptor(String commandId, ActionCommandInterceptor interceptor) {
-        getActionCommand(commandId).removeCommandInterceptor(interceptor);
-    }
+	@Override
+	public boolean containsCommandGroup(String groupId) {
+		return commandRegistry.containsCommandGroup(groupId);
+	}
 
-    public void registerCommand(AbstractCommand command) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Configuring and registering new command '" + command.getId() + "'");
-        }
-        configure(command);
-        commandRegistry.registerCommand(command);
-    }
+	@Override
+	public boolean containsActionCommand(String commandId) {
+		return commandRegistry.containsActionCommand(commandId);
+	}
 
-    public void setTargetableActionCommandExecutor(String commandId, ActionCommandExecutor executor) {
-        commandRegistry.setTargetableActionCommandExecutor(commandId, executor);
-    }
+	@Override
+	public void addCommandInterceptor(String commandId, ActionCommandInterceptor interceptor) {
+		getActionCommand(commandId).addCommandInterceptor(interceptor);
+	}
 
-    public void addCommandRegistryListener(CommandRegistryListener l) {
-        this.commandRegistry.addCommandRegistryListener(l);
-    }
+	@Override
+	public void removeCommandInterceptor(String commandId, ActionCommandInterceptor interceptor) {
+		getActionCommand(commandId).removeCommandInterceptor(interceptor);
+	}
 
-    public void removeCommandRegistryListener(CommandRegistryListener l) {
-        this.commandRegistry.removeCommandRegistryListener(l);
-    }
+	@Override
+	public void registerCommand(AbstractCommand command) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("Configuring and registering new command '" + command.getId() + "'");
+		}
+		configure(command);
+		commandRegistry.registerCommand(command);
+	}
 
-    public TargetableActionCommand createTargetableActionCommand(String commandId, ActionCommandExecutor delegate) {
-        Assert.notNull(commandId, "Registered targetable action commands must have an id.");
-        TargetableActionCommand newCommand = new TargetableActionCommand(commandId, delegate);
-        registerCommand(newCommand);
-        return newCommand;
-    }
+	@Override
+	public void setTargetableActionCommandExecutor(String commandId, ActionCommandExecutor executor) {
+		commandRegistry.setTargetableActionCommandExecutor(commandId, executor);
+	}
 
-    public CommandGroup createCommandGroup(String groupId, Object[] members) {
-        Assert.notNull(groupId, "Registered command groups must have an id.");
-        CommandGroup newGroup = new CommandGroupFactoryBean(groupId, this.commandRegistry, this, members)
-                .getCommandGroup();
-        registerCommand(newGroup);
-        return newGroup;
-    }
+	@Override
+	public void addCommandRegistryListener(CommandRegistryListener l) {
+		this.commandRegistry.addCommandRegistryListener(l);
+	}
 
-    public ExclusiveCommandGroup createExclusiveCommandGroup(String groupId, Object[] members) {
-        Assert.notNull(groupId, "Registered exclusive command groups must have an id.");
-        CommandGroupFactoryBean newGroupFactory = new CommandGroupFactoryBean(groupId, this.commandRegistry, this,
-                members);
-        newGroupFactory.setExclusive(true);
-        registerCommand(newGroupFactory.getCommandGroup());
-        return (ExclusiveCommandGroup)newGroupFactory.getCommandGroup();
-    }
+	@Override
+	public void removeCommandRegistryListener(CommandRegistryListener l) {
+		this.commandRegistry.removeCommandRegistryListener(l);
+	}
 
-    public AbstractCommand configure(AbstractCommand command) {
-        return getCommandConfigurer().configure(command);
-    }
+	@Override
+	public TargetableActionCommand createTargetableActionCommand(String commandId, ActionCommandExecutor delegate) {
+		Assert.notNull(commandId, "Registered targetable action commands must have an id.");
+		TargetableActionCommand newCommand = new TargetableActionCommand(commandId, delegate);
+		registerCommand(newCommand);
+		return newCommand;
+	}
 
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof AbstractCommand) {
-            registerCommand((AbstractCommand)bean);
-        }
-        return bean;
-    }
+	@Override
+	public CommandGroup createCommandGroup(String groupId, Object[] members) {
+		Assert.notNull(groupId, "Registered command groups must have an id.");
+		CommandGroup newGroup = new CommandGroupFactoryBean(groupId, this.commandRegistry, this, members)
+				.getCommandGroup();
+		registerCommand(newGroup);
+		return newGroup;
+	}
 
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (bean instanceof CommandGroupFactoryBean) {
-            CommandGroupFactoryBean factory = (CommandGroupFactoryBean)bean;
-            factory.setCommandRegistry(commandRegistry);
-        }
-        else if (bean instanceof AbstractCommand) {
-            configure((AbstractCommand)bean);
-        }
-        return bean;
-    }
+	@Override
+	public ExclusiveCommandGroup createExclusiveCommandGroup(String groupId, Object[] members) {
+		Assert.notNull(groupId, "Registered exclusive command groups must have an id.");
+		CommandGroupFactoryBean newGroupFactory = new CommandGroupFactoryBean(groupId, this.commandRegistry, this,
+				members);
+		newGroupFactory.setExclusive(true);
+		registerCommand(newGroupFactory.getCommandGroup());
+		return (ExclusiveCommandGroup) newGroupFactory.getCommandGroup();
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean containsCommand(String commandId) {
-        return this.commandRegistry.containsCommand(commandId);
-    }
+	@Override
+	public AbstractCommand configure(AbstractCommand command) {
+		return getCommandConfigurer().configure(command);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Object getCommand(String commandId, Class requiredType) throws CommandNotOfRequiredTypeException {
-        return this.commandRegistry.getCommand(commandId, requiredType);
-    }
+	@Override
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		if (bean instanceof AbstractCommand) {
+			registerCommand((AbstractCommand) bean);
+		}
+		return bean;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Object getCommand(String commandId) {
-        return this.commandRegistry.getCommand(commandId);
-    }
+	@Override
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+		if (bean instanceof CommandGroupFactoryBean) {
+			CommandGroupFactoryBean factory = (CommandGroupFactoryBean) bean;
+			factory.setCommandRegistry(commandRegistry);
+		} else if (bean instanceof AbstractCommand) {
+			configure((AbstractCommand) bean);
+		}
+		return bean;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public Class getType(String commandId) {
-        return this.commandRegistry.getType(commandId);
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean containsCommand(String commandId) {
+		return this.commandRegistry.containsCommand(commandId);
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean isTypeMatch(String commandId, Class targetType) {
-        return this.commandRegistry.isTypeMatch(commandId, targetType);
-    }
-    
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Object getCommand(String commandId, Class requiredType) throws CommandNotOfRequiredTypeException {
+		return this.commandRegistry.getCommand(commandId, requiredType);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Object getCommand(String commandId) {
+		return this.commandRegistry.getCommand(commandId);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Class getType(String commandId) {
+		return this.commandRegistry.getType(commandId);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isTypeMatch(String commandId, Class targetType) {
+		return this.commandRegistry.isTypeMatch(commandId, targetType);
+	}
+
 }

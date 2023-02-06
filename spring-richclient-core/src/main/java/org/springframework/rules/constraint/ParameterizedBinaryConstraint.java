@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -15,13 +15,12 @@
  */
 package org.springframework.rules.constraint;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.closure.BinaryConstraint;
 
 /**
  * A unary constraint adapting a binary constraint that uses a parameterized
  * constant value as the second argument when testing.
- * 
+ *
  * @author Keith Donald
  */
 public class ParameterizedBinaryConstraint implements Constraint {
@@ -32,11 +31,9 @@ public class ParameterizedBinaryConstraint implements Constraint {
 	/**
 	 * Creates a ParameterizedBinaryPredicate that binds the provided parameter
 	 * constant as the second argument to the constraint during tests.
-	 * 
-	 * @param constraint
-	 *            The binary constraint to adapt as a unary constraint
-	 * @param parameter
-	 *            The constant parameter value
+	 *
+	 * @param constraint The binary constraint to adapt as a unary constraint
+	 * @param parameter  The constant parameter value
 	 */
 	public ParameterizedBinaryConstraint(BinaryConstraint constraint, Object parameter) {
 		this.constraint = constraint;
@@ -94,15 +91,17 @@ public class ParameterizedBinaryConstraint implements Constraint {
 	}
 
 	/**
-	 * Tests the wrapped binary constraint with the variable argument value,
-	 * passing in the parameter constant as the second argument.
-	 * 
+	 * Tests the wrapped binary constraint with the variable argument value, passing
+	 * in the parameter constant as the second argument.
+	 *
 	 * @see Constraint#test(java.lang.Object)
 	 */
+	@Override
 	public boolean test(Object value) {
 		return constraint.test(value, this.parameter);
 	}
 
+	@Override
 	public String toString() {
 		return constraint.toString() + " " + getParameter();
 	}

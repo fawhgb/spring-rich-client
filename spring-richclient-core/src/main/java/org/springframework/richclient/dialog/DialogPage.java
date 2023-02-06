@@ -54,8 +54,8 @@ public interface DialogPage extends ControlFactory, Messagable, Guarded, Propert
 	/**
 	 * Returns this dialog page's description text.
 	 *
-	 * @return the description text for this dialog page, or <code>null</code>
-	 * if none
+	 * @return the description text for this dialog page, or <code>null</code> if
+	 *         none
 	 */
 	public String getDescription();
 
@@ -89,15 +89,15 @@ public interface DialogPage extends ControlFactory, Messagable, Guarded, Propert
 	 * Sets the visibility of this dialog page.
 	 *
 	 * @param visible <code>true</code> to make this page visible, and
-	 * <code>false</code> to hide it
+	 *                <code>false</code> to hide it
 	 */
 	public void setVisible(boolean visible);
 
 	/**
 	 * Returns the visibility of this dialog page.
 	 *
-	 * @return <code>true</code> this page is visible, or <code>false</code>
-	 * if this page is hidden
+	 * @return <code>true</code> this page is visible, or <code>false</code> if this
+	 *         page is hidden
 	 */
 	public boolean isVisible();
 
@@ -107,8 +107,8 @@ public interface DialogPage extends ControlFactory, Messagable, Guarded, Propert
 	 * This information is typically to decide when it is okay to submit a form.
 	 * </p>
 	 *
-	 * @return <code>true</code> if this page is complete, and
-	 * <code>false</code> otherwise
+	 * @return <code>true</code> if this page is complete, and <code>false</code>
+	 *         otherwise
 	 */
 	public boolean isPageComplete();
 

@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  * <p>
  * The splash screen renders an image in a Frame. It minimizes class loading so
  * it is displayed immediately once the application is started.
- * 
+ *
  * @author Keith Donald
  * @author Jan Hoskens
  */
@@ -56,12 +56,12 @@ public class SimpleSplashScreen extends AbstractSplashScreen {
 	}
 
 	/**
-	 * Creates a new {@code SimpleSplashScreen} that will display the image at
-	 * the specified location.
-	 * 
-	 * @param imageResourcePath The location of the image file to be displayed
-	 * by this splash screen.
-	 * 
+	 * Creates a new {@code SimpleSplashScreen} that will display the image at the
+	 * specified location.
+	 *
+	 * @param imageResourcePath The location of the image file to be displayed by
+	 *                          this splash screen.
+	 *
 	 * @see #setImageResourcePath(String)
 	 */
 	public SimpleSplashScreen(Resource imageResourcePath) {
@@ -69,11 +69,10 @@ public class SimpleSplashScreen extends AbstractSplashScreen {
 	}
 
 	/**
-	 * Creates a new {@code SimpleSplashScreen} that will display the given
-	 * image.
-	 * 
+	 * Creates a new {@code SimpleSplashScreen} that will display the given image.
+	 *
 	 * @param image the image to splash.
-	 * 
+	 *
 	 * @throws IllegalArgumentException if {@code image} is null.
 	 */
 	public SimpleSplashScreen(Image image) {
@@ -82,12 +81,12 @@ public class SimpleSplashScreen extends AbstractSplashScreen {
 	}
 
 	/**
-	 * Sets the location of the image to be displayed by this splash screen. If
-	 * the given path starts with a '/', it is interpreted to be relative to the
-	 * root of the runtime classpath. Otherwise it is interpreted to be relative
-	 * to the subdirectory of the classpath root that corresponds to the package
-	 * of this class.
-	 * 
+	 * Sets the location of the image to be displayed by this splash screen. If the
+	 * given path starts with a '/', it is interpreted to be relative to the root of
+	 * the runtime classpath. Otherwise it is interpreted to be relative to the
+	 * subdirectory of the classpath root that corresponds to the package of this
+	 * class.
+	 *
 	 * @param path The path to the splash screen image.
 	 */
 	public void setImageResourcePath(Resource path) {
@@ -97,11 +96,11 @@ public class SimpleSplashScreen extends AbstractSplashScreen {
 
 	/**
 	 * Load image from path.
-	 * 
+	 *
 	 * @param path Path to image.
 	 * @return Image
 	 * @throws IOException
-	 * 
+	 *
 	 * @throws NullPointerException if {@code path} is null.
 	 */
 	private Image loadImage(Resource path) throws IOException {
@@ -117,8 +116,7 @@ public class SimpleSplashScreen extends AbstractSplashScreen {
 		if (image == null && imageResourcePath != null) {
 			try {
 				image = loadImage(imageResourcePath);
-			}
-			catch (IOException e) {
+			} catch (IOException e) {
 				logger.error("Unable to load image from resource " + imageResourcePath, e);
 			}
 		}
@@ -134,11 +132,11 @@ public class SimpleSplashScreen extends AbstractSplashScreen {
 		private Image image;
 
 		/**
-		 * Creates a new {@code ImageCanvas} with the specified image. The size
-		 * of the canvas will be set to the size of the image.
-		 * 
+		 * Creates a new {@code ImageCanvas} with the specified image. The size of the
+		 * canvas will be set to the size of the image.
+		 *
 		 * @param image The image to be displayed by the canvas.
-		 * 
+		 *
 		 * @throws NullPointerException if {@code image} is null.
 		 */
 		public ImageCanvas(Image image) {
@@ -158,12 +156,12 @@ public class SimpleSplashScreen extends AbstractSplashScreen {
 			mediaTracker.addImage(image, 0);
 			try {
 				mediaTracker.waitForID(0);
-			}
-			catch (InterruptedException e) {
+			} catch (InterruptedException e) {
 				logger.warn("Interrupted while waiting for splash image to load.", e);
 			}
 		}
 
+		@Override
 		public void paintComponent(Graphics g) {
 			g.clearRect(0, 0, getWidth(), getHeight());
 			g.drawImage(image, 0, 0, this);
@@ -173,6 +171,7 @@ public class SimpleSplashScreen extends AbstractSplashScreen {
 	/**
 	 * Returns a component that displays an image in a canvas.
 	 */
+	@Override
 	protected Component createContentPane() {
 		Image image = getImage();
 		if (image != null) {

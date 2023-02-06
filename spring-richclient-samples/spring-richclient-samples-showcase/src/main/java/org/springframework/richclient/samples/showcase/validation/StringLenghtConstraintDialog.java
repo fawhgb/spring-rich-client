@@ -87,10 +87,11 @@ public class StringLenghtConstraintDialog extends TitledApplicationDialog {
 			this.value = value;
 		}
 
+		@Override
 		public PropertyConstraint getPropertyConstraint(String propertyName) {
 			if (isRangeConstraint()) {
-				return new PropertyValueConstraint("value", new StringLengthConstraint(minLength, maxLength,
-						"rangeConstraint"));
+				return new PropertyValueConstraint("value",
+						new StringLengthConstraint(minLength, maxLength, "rangeConstraint"));
 			}
 
 			return new PropertyValueConstraint("value", new StringLengthConstraint(relationalOperator, length));
@@ -104,6 +105,7 @@ public class StringLenghtConstraintDialog extends TitledApplicationDialog {
 			super(FormModelHelper.createFormModel(new StringLengthValue(), false, "stringLengthValue"));
 		}
 
+		@Override
 		protected JComponent createFormControl() {
 			TableFormBuilder builder = new TableFormBuilder(getBindingFactory());
 			builder.add("relationalOperator");
@@ -127,6 +129,7 @@ public class StringLenghtConstraintDialog extends TitledApplicationDialog {
 		private ActionCommand createValidateCommand() {
 			ActionCommand validateCommand = new ActionCommand("validateCommand") {
 
+				@Override
 				protected void doExecuteCommand() {
 					getFormModel().validate();
 				}
@@ -138,11 +141,13 @@ public class StringLenghtConstraintDialog extends TitledApplicationDialog {
 
 	}
 
+	@Override
 	protected JComponent createTitledDialogContentPane() {
 
 		return new StringLengthConstraintForm().getControl();
 	}
 
+	@Override
 	protected boolean onFinish() {
 		return true;
 	}

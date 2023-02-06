@@ -15,101 +15,95 @@
  */
 package org.springframework.richclient.form.binding.swing;
 
+import java.util.Map;
+
+import javax.swing.JComponent;
+import javax.swing.text.JTextComponent;
+
 import org.springframework.binding.form.FormModel;
 import org.springframework.richclient.form.binding.Binding;
 import org.springframework.richclient.form.binding.support.AbstractBinder;
 import org.springframework.richclient.form.binding.swing.text.DocumentFactory;
 import org.springframework.util.Assert;
 
-import javax.swing.*;
-import javax.swing.text.JTextComponent;
-import java.util.Map;
-
 /**
  * @author Oliver Hutchison
  */
 public class TextComponentBinder extends AbstractBinder {
-    private String promptKey;
-    private boolean convertEmptyStringToNull;
-    private DocumentFactory documentFactory;
-    private boolean readOnly;
-    private boolean selectAllOnFocus;
+	private String promptKey;
+	private boolean convertEmptyStringToNull;
+	private DocumentFactory documentFactory;
+	private boolean readOnly;
+	private boolean selectAllOnFocus;
 
-    public TextComponentBinder() {    
-        super(String.class);
-    }
+	public TextComponentBinder() {
+		super(String.class);
+	}
 
-    protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, Map context) {
-        Assert.isTrue(control instanceof JTextComponent, "Control must be an instance of JTextComponent.");
-        TextComponentBinding textComponentBinding = new TextComponentBinding((JTextComponent) control, formModel, formPropertyPath);
-        textComponentBinding.setConvertEmptyStringToNull(convertEmptyStringToNull);
-        textComponentBinding.setPromptKey(promptKey);
-        textComponentBinding.setReadOnly(readOnly);
-        textComponentBinding.setSelectAllOnFocus(selectAllOnFocus);
-        return textComponentBinding;
-    }
+	@Override
+	protected Binding doBind(JComponent control, FormModel formModel, String formPropertyPath, Map context) {
+		Assert.isTrue(control instanceof JTextComponent, "Control must be an instance of JTextComponent.");
+		TextComponentBinding textComponentBinding = new TextComponentBinding((JTextComponent) control, formModel,
+				formPropertyPath);
+		textComponentBinding.setConvertEmptyStringToNull(convertEmptyStringToNull);
+		textComponentBinding.setPromptKey(promptKey);
+		textComponentBinding.setReadOnly(readOnly);
+		textComponentBinding.setSelectAllOnFocus(selectAllOnFocus);
+		return textComponentBinding;
+	}
 
-    protected JTextComponent createTextComponent()
-    {
-         return getComponentFactory().createTextField();
-    }
+	protected JTextComponent createTextComponent() {
+		return getComponentFactory().createTextField();
+	}
 
-    protected JComponent createControl(Map context) {
-        JTextComponent textComponent = createTextComponent();
-        if (getDocumentFactory() != null) {
-            textComponent.setDocument(getDocumentFactory().createDocument());
-        }
-        return textComponent;
-    }
+	@Override
+	protected JComponent createControl(Map context) {
+		JTextComponent textComponent = createTextComponent();
+		if (getDocumentFactory() != null) {
+			textComponent.setDocument(getDocumentFactory().createDocument());
+		}
+		return textComponent;
+	}
 
-    public boolean isConvertEmptyStringToNull()
-    {
-        return convertEmptyStringToNull;
-    }
+	public boolean isConvertEmptyStringToNull() {
+		return convertEmptyStringToNull;
+	}
 
-    public void setConvertEmptyStringToNull(boolean convertEmptyStringToNull)
-    {
-        this.convertEmptyStringToNull = convertEmptyStringToNull;
-    }
+	public void setConvertEmptyStringToNull(boolean convertEmptyStringToNull) {
+		this.convertEmptyStringToNull = convertEmptyStringToNull;
+	}
 
-    public String getPromptKey()
-    {
-        return promptKey;
-    }
+	public String getPromptKey() {
+		return promptKey;
+	}
 
-    public void setPromptKey(String promptKey)
-    {
-        this.promptKey = promptKey;
-    }
+	public void setPromptKey(String promptKey) {
+		this.promptKey = promptKey;
+	}
 
-    public DocumentFactory getDocumentFactory()
-    {
-        return documentFactory;
-    }
+	public DocumentFactory getDocumentFactory() {
+		return documentFactory;
+	}
 
-    public void setDocumentFactory(DocumentFactory documentFactory)
-    {
-        this.documentFactory = documentFactory;
-    }
+	public void setDocumentFactory(DocumentFactory documentFactory) {
+		this.documentFactory = documentFactory;
+	}
 
-    public boolean isReadOnly()
-    {
-        return readOnly;
-    }
+	@Override
+	public boolean isReadOnly() {
+		return readOnly;
+	}
 
-    public void setReadOnly(boolean readOnly)
-    {
-        this.readOnly = readOnly;
-    }
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		this.readOnly = readOnly;
+	}
 
-    public boolean isSelectAllOnFocus()
-    {
-        return selectAllOnFocus;
-    }
+	public boolean isSelectAllOnFocus() {
+		return selectAllOnFocus;
+	}
 
-    public void setSelectAllOnFocus(boolean selectAllOnFocus)
-    {
-        this.selectAllOnFocus = selectAllOnFocus;
-    }
+	public void setSelectAllOnFocus(boolean selectAllOnFocus) {
+		this.selectAllOnFocus = selectAllOnFocus;
+	}
 }
-

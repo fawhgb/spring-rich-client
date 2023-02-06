@@ -7,11 +7,11 @@
  */
 package org.springframework.rules.reporting;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.richclient.core.Severity;
+import org.springframework.rules.constraint.Constraint;
 
 /**
- * @author  Keith Donald
+ * @author Keith Donald
  */
 public interface ValidationResults {
 

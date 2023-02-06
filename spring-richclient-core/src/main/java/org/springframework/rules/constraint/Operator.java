@@ -22,6 +22,8 @@ import org.springframework.core.enums.StringCodedLabeledEnum;
  */
 public abstract class Operator extends StringCodedLabeledEnum {
 
+	private static final long serialVersionUID = 1L;
+
 	protected Operator(String code, String symbol) {
 		super(code, symbol);
 	}
@@ -33,7 +35,8 @@ public abstract class Operator extends StringCodedLabeledEnum {
 	public Operator negation() {
 		return null;
 	}
-	
+
+	@Override
 	public String toString() {
 		return getSymbol();
 	}

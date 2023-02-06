@@ -21,40 +21,40 @@ import org.springframework.richclient.application.support.DefaultViewDescriptor;
  * @author Peter De Bruycker
  */
 public class DesktopViewDescriptor extends DefaultViewDescriptor {
-    private boolean resizable = true;
-    private boolean maximizable = true;
-    private boolean iconifiable = true;
-    private boolean closable = true;
+	private boolean resizable = true;
+	private boolean maximizable = true;
+	private boolean iconifiable = true;
+	private boolean closable = true;
 
-    public boolean isClosable() {
-        return closable;
-    }
+	public boolean isClosable() {
+		return closable;
+	}
 
-    public void setClosable( boolean closable ) {
-        this.closable = closable;
-    }
+	public void setClosable(boolean closable) {
+		this.closable = closable;
+	}
 
-    public boolean isIconifiable() {
-        return iconifiable;
-    }
+	public boolean isIconifiable() {
+		return iconifiable;
+	}
 
-    public void setIconifiable( boolean iconifiable ) {
-        this.iconifiable = iconifiable;
-    }
+	public void setIconifiable(boolean iconifiable) {
+		this.iconifiable = iconifiable;
+	}
 
-    public boolean isMaximizable() {
-        return maximizable;
-    }
+	public boolean isMaximizable() {
+		return maximizable;
+	}
 
-    public void setMaximizable( boolean maximizable ) {
-        this.maximizable = maximizable;
-    }
+	public void setMaximizable(boolean maximizable) {
+		this.maximizable = maximizable;
+	}
 
-    public boolean isResizable() {
-        return resizable;
-    }
+	public boolean isResizable() {
+		return resizable;
+	}
 
-    public void setResizable( boolean resizable ) {
-        this.resizable = resizable;
-    }
+	public void setResizable(boolean resizable) {
+		this.resizable = resizable;
+	}
 }

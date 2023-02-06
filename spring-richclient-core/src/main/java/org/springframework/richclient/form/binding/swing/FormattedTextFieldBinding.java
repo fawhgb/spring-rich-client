@@ -26,32 +26,35 @@ import org.springframework.richclient.form.binding.support.AbstractBinding;
 
 /**
  * TODO: this is probably very broken. Need to do extensive testing.
- *  
+ * 
  * @author Oliver Hutchison
  */
 public class FormattedTextFieldBinding extends AbstractBinding {
 
-    private final JFormattedTextField formattedTextField;
+	private final JFormattedTextField formattedTextField;
 
-    public FormattedTextFieldBinding(JFormattedTextField formattedTextField, FormModel formModel,
-            String formPropertyPath, Class requiredSourceClass) {
-        super(formModel, formPropertyPath, requiredSourceClass);
-        this.formattedTextField = formattedTextField;
-    }
+	public FormattedTextFieldBinding(JFormattedTextField formattedTextField, FormModel formModel,
+			String formPropertyPath, Class requiredSourceClass) {
+		super(formModel, formPropertyPath, requiredSourceClass);
+		this.formattedTextField = formattedTextField;
+	}
 
-    protected JComponent doBindControl() {
-        final ValueModel valueModel = getValueModel();
-        formattedTextField.setValue(valueModel.getValue());
-        // TODO: implement ValueCommitPolicies
-        new FormattedTextFieldAdapter(formattedTextField, valueModel, ValueCommitPolicy.AS_YOU_TYPE);
-        return formattedTextField;
-    }
+	@Override
+	protected JComponent doBindControl() {
+		final ValueModel valueModel = getValueModel();
+		formattedTextField.setValue(valueModel.getValue());
+		// TODO: implement ValueCommitPolicies
+		new FormattedTextFieldAdapter(formattedTextField, valueModel, ValueCommitPolicy.AS_YOU_TYPE);
+		return formattedTextField;
+	}
 
-    protected void readOnlyChanged() {
-        formattedTextField.setEditable(!isReadOnly());
-    }
+	@Override
+	protected void readOnlyChanged() {
+		formattedTextField.setEditable(!isReadOnly());
+	}
 
-    protected void enabledChanged() {
-        formattedTextField.setEnabled(isEnabled());
-    }
+	@Override
+	protected void enabledChanged() {
+		formattedTextField.setEnabled(isEnabled());
+	}
 }

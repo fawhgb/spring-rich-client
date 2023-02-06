@@ -9,8 +9,8 @@ import org.springframework.richclient.command.ActionCommand;
 import org.springframework.richclient.exceptionhandling.HibernateValidatorDialogExceptionHandler;
 
 /**
- * Throws an {@link InvalidStateException} with several {@link InvalidValue}s
- * to show the {@link HibernateValidatorDialogExceptionHandler}.
+ * Throws an {@link InvalidStateException} with several {@link InvalidValue}s to
+ * show the {@link HibernateValidatorDialogExceptionHandler}.
  *
  * @author Jan Hoskens
  *

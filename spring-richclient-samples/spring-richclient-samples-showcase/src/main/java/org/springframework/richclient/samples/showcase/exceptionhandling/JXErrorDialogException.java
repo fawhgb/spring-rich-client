@@ -10,6 +10,8 @@ import org.springframework.richclient.exceptionhandling.JXErrorDialogExceptionHa
  */
 public class JXErrorDialogException extends RuntimeException {
 
+	private static final long serialVersionUID = 1L;
+
 	public JXErrorDialogException() {
 		this("JXErrorDialogException message");
 	}

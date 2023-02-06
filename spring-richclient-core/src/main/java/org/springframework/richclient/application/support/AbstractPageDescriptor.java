@@ -32,34 +32,38 @@ import org.springframework.util.StringUtils;
  *
  * @author Peter De Bruycker
  */
-public abstract class AbstractPageDescriptor extends LabeledObjectSupport implements PageDescriptor, BeanNameAware,
-        InitializingBean {
+public abstract class AbstractPageDescriptor extends LabeledObjectSupport
+		implements PageDescriptor, BeanNameAware, InitializingBean {
 
-    private String id;
+	private String id;
 
-    public String getId() {
-        return id;
-    }
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void setBeanName(String name) {
-        setId(name);
-    }
+	@Override
+	public void setBeanName(String name) {
+		setId(name);
+	}
 
-    public void afterPropertiesSet() throws Exception {
-        Assert.state(StringUtils.hasText(getId()), "id is mandatory");
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.state(StringUtils.hasText(getId()), "id is mandatory");
+	}
 
-    public CommandButtonLabelInfo getShowPageCommandLabel() {
-        return getLabel();
-    }
+	@Override
+	public CommandButtonLabelInfo getShowPageCommandLabel() {
+		return getLabel();
+	}
 
-    public ActionCommand createShowPageCommand(ApplicationWindow window) {
-        return new ShowPageCommand(this, window);
-    }
-
+	@Override
+	public ActionCommand createShowPageCommand(ApplicationWindow window) {
+		return new ShowPageCommand(this, window);
+	}
 
 }

@@ -10,6 +10,7 @@ import org.springframework.richclient.dialog.ConfirmationDialog;
  */
 public class BasicConfirmationDialog extends ConfirmationDialog {
 
+	@Override
 	protected void onConfirm() {
 		logger.info("BasicConfirmationDialog was confirmed");
 	}

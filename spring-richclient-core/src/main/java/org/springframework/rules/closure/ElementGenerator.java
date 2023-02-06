@@ -79,15 +79,14 @@ public interface ElementGenerator extends ClosureTemplate {
 	 * Find the first element that matches the given criteria, return
 	 * <code>defaultIfNoneFound</code> if none found.
 	 *
-	 * @param constraint the constraint
+	 * @param constraint         the constraint
 	 * @param defaultIfNoneFound none found object
 	 * @return the first match, or defaultIfNoneFound if no match found
 	 */
 	Object findFirst(Constraint constraint, Object defaultIfNoneFound);
 
 	/**
-	 * Find all elements produced by ths template that match the specified
-	 * criteria.
+	 * Find all elements produced by ths template that match the specified criteria.
 	 *
 	 * @param constraint the criteria
 	 * @return the elements
@@ -98,7 +97,7 @@ public interface ElementGenerator extends ClosureTemplate {
 	 * Execute the template until the specified condition is true
 	 *
 	 * @param templateCallback the callback
-	 * @param constraint the constraint condition
+	 * @param constraint       the constraint condition
 	 */
 	void runUntil(Closure templateCallback, Constraint constraint);
 

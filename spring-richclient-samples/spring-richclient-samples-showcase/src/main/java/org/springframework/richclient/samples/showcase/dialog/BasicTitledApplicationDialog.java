@@ -8,6 +8,7 @@ import org.springframework.richclient.dialog.TitledApplicationDialog;
 
 public class BasicTitledApplicationDialog extends TitledApplicationDialog {
 
+	@Override
 	protected JComponent createTitledDialogContentPane() {
 		JPanel contentPane = new JPanel();
 		JLabel label = new JLabel(getMessage("basicTitledApplicationDialog.content.label"));
@@ -15,6 +16,7 @@ public class BasicTitledApplicationDialog extends TitledApplicationDialog {
 		return contentPane;
 	}
 
+	@Override
 	protected boolean onFinish() {
 		return true;
 	}

@@ -1,13 +1,5 @@
 package org.springframework.richclient.components;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.util.Assert;
-
-import javax.swing.*;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.PlainDocument;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.math.BigDecimal;
@@ -19,6 +11,15 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.JTextField;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.PlainDocument;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.util.Assert;
 
 /**
  * <p>
@@ -77,7 +78,7 @@ public class BigDecimalTextField extends JTextField {
 
 	/**
 	 * @see #BigDecimalTextField(int, int, boolean, Class, NumberFormat,
-	 * NumberFormat)
+	 *      NumberFormat)
 	 */
 	public BigDecimalTextField(int nrOfNonDecimals, int nrOfDecimals, boolean negativeSign) {
 		this(nrOfNonDecimals, nrOfDecimals, negativeSign, BigDecimal.class);
@@ -85,7 +86,7 @@ public class BigDecimalTextField extends JTextField {
 
 	/**
 	 * @see #BigDecimalTextField(int, int, boolean, Class, NumberFormat,
-	 * NumberFormat)
+	 *      NumberFormat)
 	 */
 	public BigDecimalTextField(int nrOfNonDecimals, int nrOfDecimals, boolean negativeSign, Class numberClass) {
 		this(nrOfNonDecimals, nrOfDecimals, negativeSign, numberClass, DEFAULT_FORMAT);
@@ -93,7 +94,7 @@ public class BigDecimalTextField extends JTextField {
 
 	/**
 	 * @see #BigDecimalTextField(int, int, boolean, Class, NumberFormat,
-	 * NumberFormat)
+	 *      NumberFormat)
 	 */
 	public BigDecimalTextField(int nrOfNonDecimals, int nrOfDecimals, boolean negativeSign, Class numberClass,
 			NumberFormat format) {
@@ -102,11 +103,11 @@ public class BigDecimalTextField extends JTextField {
 
 	/**
 	 * @param nrOfNonDecimals Number of non-decimals.
-	 * @param nrOfDecimals Number of decimals.
-	 * @param negativeSign Negative numbers allowed.
-	 * @param numberClass Class type (default BigDecimal).
-	 * @param format The "read"-format.
-	 * @param unformat The "edit"-format.
+	 * @param nrOfDecimals    Number of decimals.
+	 * @param negativeSign    Negative numbers allowed.
+	 * @param numberClass     Class type (default BigDecimal).
+	 * @param format          The "read"-format.
+	 * @param unformat        The "edit"-format.
 	 */
 	public BigDecimalTextField(int nrOfNonDecimals, int nrOfDecimals, boolean negativeSign, Class numberClass,
 			NumberFormat format, NumberFormat unformat) {
@@ -124,9 +125,9 @@ public class BigDecimalTextField extends JTextField {
 
 	/**
 	 * When parsing a number, BigDecimalFormat can return numbers different than
-	 * BigDecimal. This method will ensure that when using a {@link BigDecimal}
-	 * or a {@link BigInteger}, the formatter will return a {@link BigDecimal}
-	 * in order to prevent loss of precision. Note that you should use the
+	 * BigDecimal. This method will ensure that when using a {@link BigDecimal} or a
+	 * {@link BigInteger}, the formatter will return a {@link BigDecimal} in order
+	 * to prevent loss of precision. Note that you should use the
 	 * {@link DecimalFormat} to make this work.
 	 *
 	 * @param format
@@ -136,7 +137,8 @@ public class BigDecimalTextField extends JTextField {
 	 * @see DecimalFormat#setParseBigDecimal(boolean)
 	 */
 	private static final void setBigDecimalFormat(NumberFormat format, Class numberClass) {
-		if (format instanceof DecimalFormat && ((numberClass == BigDecimal.class) || (numberClass == BigInteger.class))) {
+		if (format instanceof DecimalFormat
+				&& ((numberClass == BigDecimal.class) || (numberClass == BigInteger.class))) {
 			((DecimalFormat) format).setParseBigDecimal(true);
 		}
 	}
@@ -149,8 +151,9 @@ public class BigDecimalTextField extends JTextField {
 	 * @see UserInputListener
 	 */
 	public void addUserInputListener(UserInputListener listener) {
-		if (this.listeners == null)
+		if (this.listeners == null) {
 			this.listeners = new ArrayList();
+		}
 		this.listeners.add(listener);
 	}
 
@@ -185,38 +188,38 @@ public class BigDecimalTextField extends JTextField {
 	 * @return Number the Parsed number.
 	 */
 	public Number getValue() {
-		if ((getText() == null) || "".equals(getText().trim()))
+		if ((getText() == null) || "".equals(getText().trim())) {
 			return null;
+		}
 		try {
 			Number n = format.parse(getText());
-			if (n.getClass() == this.numberClass)
+			if (n.getClass() == this.numberClass) {
 				return n;
-			else if (this.numberClass == BigDecimal.class) {
+			} else if (this.numberClass == BigDecimal.class) {
 				BigDecimal bd = new BigDecimal(n.doubleValue());
 				if (scale != null) {
 					bd = bd.setScale(scale.intValue(), BigDecimal.ROUND_HALF_UP);
 				}
 				return bd;
-			}
-			else if (this.numberClass == Double.class)
+			} else if (this.numberClass == Double.class) {
 				return new Double(n.doubleValue());
-			else if (this.numberClass == Float.class)
+			} else if (this.numberClass == Float.class) {
 				return new Float(n.floatValue());
-			else if (this.numberClass == BigInteger.class)
+			} else if (this.numberClass == BigInteger.class) {
 				// we have called setBigDecimalFormat to make sure a BigDecimal
 				// is returned so use toBigInteger on that class
 				return ((BigDecimal) n).toBigInteger();
-			else if (this.numberClass == Long.class)
+			} else if (this.numberClass == Long.class) {
 				return new Long(n.longValue());
-			else if (this.numberClass == Integer.class)
+			} else if (this.numberClass == Integer.class) {
 				return new Integer(n.intValue());
-			else if (this.numberClass == Short.class)
+			} else if (this.numberClass == Short.class) {
 				return new Short(n.shortValue());
-			else if (this.numberClass == Byte.class)
+			} else if (this.numberClass == Byte.class) {
 				return new Byte(n.byteValue());
+			}
 			return null;
-		}
-		catch (Exception pe) {
+		} catch (Exception pe) {
 			log.error("Error:  " + getText() + " is not a number.", pe);
 			return null;
 		}
@@ -249,8 +252,8 @@ public class BigDecimalTextField extends JTextField {
 	/**
 	 * <p>
 	 * When inputField gets focus, the contents will switch to "edit"-format
-	 * (=unformat). In most cases a format without all decorations, just the
-	 * number. In addition a selectAll() will be done.
+	 * (=unformat). In most cases a format without all decorations, just the number.
+	 * In addition a selectAll() will be done.
 	 * </p>
 	 *
 	 * TODO check if selectAll() is appropriate in all cases.
@@ -265,6 +268,7 @@ public class BigDecimalTextField extends JTextField {
 		/**
 		 * Focus gained: "edit"-format and selectAll.
 		 */
+		@Override
 		public void focusGained(FocusEvent e) {
 			String s = getText();
 			setTextInternally(format(unformat, format, s));
@@ -274,6 +278,7 @@ public class BigDecimalTextField extends JTextField {
 		/**
 		 * Focus lost: "read"-format.
 		 */
+		@Override
 		public void focusLost(FocusEvent e) {
 			String s = getText();
 			setTextInternally(format(format, unformat, s));
@@ -282,17 +287,16 @@ public class BigDecimalTextField extends JTextField {
 		/**
 		 * Format a string.
 		 *
-		 * @param toFormat Change to this format.
+		 * @param toFormat   Change to this format.
 		 * @param fromFormat Current format to be changed.
-		 * @param s String to be reformatted.
+		 * @param s          String to be reformatted.
 		 * @return String which holds the number in the new format.
 		 */
 		private String format(NumberFormat toFormat, NumberFormat fromFormat, String s) {
 			if (!"".equals(s)) {
 				try {
 					return toFormat.format(fromFormat.parse(s));
-				}
-				catch (ParseException pe) {
+				} catch (ParseException pe) {
 					log.error("Fout: De ingevulde waarde " + getText() + " is geen nummer.", pe);
 				}
 			}
@@ -301,15 +305,20 @@ public class BigDecimalTextField extends JTextField {
 	}
 
 	/**
-	 * Specific document that allows only input of numbers, decimal separator
-	 * (or alternative) and sign. Maximum number of decimals/non-decimals will
-	 * be respected at all times. Signing can be changed anywhere in the
-	 * inputField by simply clicking +/-. Decimal separator input can be done
-	 * with alternative character to allow both comma and point.
+	 * Specific document that allows only input of numbers, decimal separator (or
+	 * alternative) and sign. Maximum number of decimals/non-decimals will be
+	 * respected at all times. Signing can be changed anywhere in the inputField by
+	 * simply clicking +/-. Decimal separator input can be done with alternative
+	 * character to allow both comma and point.
 	 *
 	 * @author jh
 	 */
 	class BigDecimalDocument extends PlainDocument {
+
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
 
 		private final int nrOfNonDecimals;
 
@@ -336,16 +345,17 @@ public class BigDecimalTextField extends JTextField {
 		}
 
 		/**
-		 * Constructor with several configurations. Alternative separator can be
-		 * given in order to make input easier. Eg. Comma and point can be used
-		 * for decimal separation.
+		 * Constructor with several configurations. Alternative separator can be given
+		 * in order to make input easier. Eg. Comma and point can be used for decimal
+		 * separation.
 		 *
-		 * @param nrOfNonDecimals Maximum number of non-decimals.
-		 * @param nrOfDecimals Maximum number of decimals.
-		 * @param negativeSign Negative sign allowed.
+		 * @param nrOfNonDecimals      Maximum number of non-decimals.
+		 * @param nrOfDecimals         Maximum number of decimals.
+		 * @param negativeSign         Negative sign allowed.
 		 * @param alternativeSeparator Alternative separator.
 		 */
-		public BigDecimalDocument(int nrOfNonDecimals, int nrOfDecimals, boolean negativeSign, char alternativeSeparator) {
+		public BigDecimalDocument(int nrOfNonDecimals, int nrOfDecimals, boolean negativeSign,
+				char alternativeSeparator) {
 			this.nrOfNonDecimals = nrOfNonDecimals;
 			this.nrOfDecimals = nrOfDecimals;
 			this.negativeSign = negativeSign;
@@ -358,6 +368,7 @@ public class BigDecimalTextField extends JTextField {
 		 *
 		 * @inheritDoc
 		 */
+		@Override
 		public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
 			// first doing the single keys, then review what can be used for
 			// cut/paste actions
@@ -365,26 +376,24 @@ public class BigDecimalTextField extends JTextField {
 				if (this.negativeSign) // set - or flip to + if it's already
 				// there
 				{
-					if ((this.getLength() == 0) || !this.getText(0, 1).equals("-"))
+					if ((this.getLength() == 0) || !this.getText(0, 1).equals("-")) {
 						super.insertString(0, str, a);
-					else if (!(this.getLength() == 0) && this.getText(0, 1).equals("-"))
+					} else if (!(this.getLength() == 0) && this.getText(0, 1).equals("-")) {
 						super.remove(0, 1);
+					}
 					fireUserInputChange();
 				}
 				return;
-			}
-			else if ("+".equals(str)) {
+			} else if ("+".equals(str)) {
 				if (this.negativeSign && (!(this.getLength() == 0) && this.getText(0, 1).equals("-"))) {
 					super.remove(0, 1);
 					fireUserInputChange();
 				}
 				return;
+			} else if (isShortCut(str)) {
+				handleShortCut(str, offset, a);
+				return;
 			}
-            else if (isShortCut(str))
-            {
-                handleShortCut(str, offset, a);
-                return;
-            }
 			// check decimal signs
 			else if ((str.length() == 1)
 					&& ((this.alternativeSeparator == str.charAt(0)) || (this.decimalSeparator == str.charAt(0)))) {
@@ -407,9 +416,8 @@ public class BigDecimalTextField extends JTextField {
 			for (int i = 0; i < sarr.length; i++) {
 				if (sarr[i] == this.decimalSeparator) {
 					if (sep != -1) {// double decimalseparator??
-						log
-								.warn("Error while inserting string: " + s + "[pos=" + i + "]"
-										+ " Double decimalseparator?");
+						log.warn(
+								"Error while inserting string: " + s + "[pos=" + i + "]" + " Double decimalseparator?");
 						return;
 					}
 					sep = i;
@@ -420,8 +428,7 @@ public class BigDecimalTextField extends JTextField {
 						log.warn("Error while inserting string: " + s + "[pos=" + i + "]" + " Too many non decimals? ["
 								+ this.nrOfNonDecimals + "]");
 						return;
-					}
-					else if ((sarr.length - sep - 1) > this.nrOfDecimals) {// too
+					} else if ((sarr.length - sep - 1) > this.nrOfDecimals) {// too
 						// many
 						// digits
 						// right
@@ -432,19 +439,17 @@ public class BigDecimalTextField extends JTextField {
 								+ this.nrOfDecimals + "]");
 						return;
 					}
-				}
-				else if (sarr[i] == symbols.getGroupingSeparator()) {
+				} else if (sarr[i] == symbols.getGroupingSeparator()) {
 					// ignore character
-				}
-				else if (!Character.isDigit(sarr[i])) {// non digit, no
+				} else if (!Character.isDigit(sarr[i])) {// non digit, no
 					// grouping/decimal
 					// separator not allowed
 					log.warn("Error while inserting string: " + s + "[pos=" + i + "]"
 							+ " String contains character that is no digit or separator?");
 					return;
-				}
-				else
+				} else { // non digit, no
 					++numberLength;
+				}
 			}
 			if ((sep == -1) && (numberLength > this.nrOfNonDecimals)) {// no
 				// separator,
@@ -459,63 +464,47 @@ public class BigDecimalTextField extends JTextField {
 			fireUserInputChange();
 		}
 
-        private void handleShortCut(String str, int offset, AttributeSet a) throws BadLocationException
-        {
-            log.debug("handing shortcut " + str);
-            if (getLength() == 0)
-            {
-                if (str.equals("k"))
-                {
-                    super.insertString(0, "1000", a);
-                }
-                else if (str.equals("m"))
-                {
-                    super.insertString(0, "1000000", a);
-                }
-                else if (str.equals("b"))
-                {
-                    super.insertString(0, "1000000000", a);
-                }
-            }
-            else if (getLength() == 1 && (getText(0, 1).equals("-") || getText(0, 1).equals("+")))
-            {
-            }
-            else
-            {
-                String text = getText(0, offset);
-                text = text.replace(',', '.');
-                BigDecimal dec = new BigDecimal(text);
-                if (str.equals("k"))
-                {
-                    dec = dec.scaleByPowerOfTen(3);
-                }
-                else if (str.equals("m"))
-                {
-                    dec = dec.scaleByPowerOfTen(6);
-                }
-                else if (str.equals("b"))
-                {
-                    dec = dec.scaleByPowerOfTen(9);
-                }
-                super.remove(0, offset);
-                String outcome = dec.toBigIntegerExact().toString();
-                outcome = outcome.replace('.', decimalSeparator);
-                super.insertString(0, outcome, a);
-                fireUserInputChange();
-            }
+		private void handleShortCut(String str, int offset, AttributeSet a) throws BadLocationException {
+			log.debug("handing shortcut " + str);
+			if (getLength() == 0) {
+				if (str.equals("k")) {
+					super.insertString(0, "1000", a);
+				} else if (str.equals("m")) {
+					super.insertString(0, "1000000", a);
+				} else if (str.equals("b")) {
+					super.insertString(0, "1000000000", a);
+				}
+			} else if (getLength() == 1 && (getText(0, 1).equals("-") || getText(0, 1).equals("+"))) {
+			} else {
+				String text = getText(0, offset);
+				text = text.replace(',', '.');
+				BigDecimal dec = new BigDecimal(text);
+				if (str.equals("k")) {
+					dec = dec.scaleByPowerOfTen(3);
+				} else if (str.equals("m")) {
+					dec = dec.scaleByPowerOfTen(6);
+				} else if (str.equals("b")) {
+					dec = dec.scaleByPowerOfTen(9);
+				}
+				super.remove(0, offset);
+				String outcome = dec.toBigIntegerExact().toString();
+				outcome = outcome.replace('.', decimalSeparator);
+				super.insertString(0, outcome, a);
+				fireUserInputChange();
+			}
 
-        }
+		}
 
-        private boolean isShortCut(String str)
-        {
-            return str.equals("k") || str.equals("m") || str.equals("b");
-        }
+		private boolean isShortCut(String str) {
+			return str.equals("k") || str.equals("m") || str.equals("b");
+		}
 
 		/**
 		 * Will trigger the UserInputListeners once after removing.
 		 *
 		 * @inheritDoc
 		 */
+		@Override
 		public void remove(int offs, int len) throws BadLocationException {
 			super.remove(offs, len);
 			fireUserInputChange();
@@ -526,6 +515,7 @@ public class BigDecimalTextField extends JTextField {
 		 *
 		 * @inheritDoc
 		 */
+		@Override
 		public void replace(int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
 			boolean oldInternallySettingText = internallySettingText;
 			internallySettingText = true;

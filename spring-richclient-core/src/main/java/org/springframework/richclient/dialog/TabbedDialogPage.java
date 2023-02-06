@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2006 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -33,14 +33,14 @@ import org.springframework.richclient.dialog.control.VetoableSingleSelectionMode
  * A concrete implementation of <code>CompositeDialogPage</code> that presents
  * the child pages in a <code>JTabbedPane</code>.
  * <p>
- * Each child page is placed into a separate tab of the <code>JTabbedPane</code>.
- * This class also decorates the tab titles to indicate the page completed
- * status.
+ * Each child page is placed into a separate tab of the
+ * <code>JTabbedPane</code>. This class also decorates the tab titles to
+ * indicate the page completed status.
  * <p>
  * Has support for hiding/showing <code>DialogPage</code>s; on
  * <code>DialogPage.setVisible(false)</code> the tab for the page is removed
  * from the ui, on <code>DialogPage.setVisible(true)</code> it is shown again.
- * 
+ *
  * @author Oliver Hutchison
  * @author Peter De Bruycker
  */
@@ -61,6 +61,7 @@ public class TabbedDialogPage extends CompositeDialogPage {
 		super(pageId, autoConfigure);
 	}
 
+	@Override
 	protected JComponent createControl() {
 		createPageControls();
 		final JTabbedPane tabbedPane = getComponentFactory().createTabbedPane();
@@ -83,40 +84,43 @@ public class TabbedDialogPage extends CompositeDialogPage {
 			tab2Page.put(tab, page);
 			tabbedPaneView.addTab(tab);
 		}
-		
+
 		tabbedPane.setModel(new VetoableSingleSelectionModel() {
+			private static final long serialVersionUID = 1L;
+
+			@Override
 			protected boolean selectionAllowed(int index) {
 				return canChangeTabs();
 			}
 		});
-		
+
 		tabbedPaneView.addChangeListener(new ChangeListener() {
+			@Override
 			public void stateChanged(ChangeEvent e) {
 				int index = tabbedPane.getSelectedIndex();
-				
+
 				if (index >= 0) {
 					index = tabbedPaneView.convertUIIndexToModelIndex(index);
 					Tab tab = tabbedPaneView.getTab(index);
 					setActivePage((DialogPage) tab2Page.get(tab));
-				}
-				else {
+				} else {
 					setActivePage(null);
 				}
 			}
 		});
-		
+
 		// show first visible tab
 		setActivePage((DialogPage) pages.get(tabbedPaneView.convertUIIndexToModelIndex(0)));
 		return tabbedPane;
 	}
 
 	/**
-	 * Sets the active page of this TabbedDialogPage. This method will also
-	 * select the tab wich displays the new active page.
-	 * 
-	 * @param activePage the page to be made active. Must be one of the child
-	 * pages.
+	 * Sets the active page of this TabbedDialogPage. This method will also select
+	 * the tab wich displays the new active page.
+	 *
+	 * @param activePage the page to be made active. Must be one of the child pages.
 	 */
+	@Override
 	public void setActivePage(DialogPage page) {
 		if (settingSelection) {
 			return;
@@ -130,8 +134,7 @@ public class TabbedDialogPage extends CompositeDialogPage {
 				Tab tab = (Tab) page2tab.get(page);
 				tabbedPaneView.selectTab(tab);
 			}
-		}
-		finally {
+		} finally {
 			settingSelection = false;
 		}
 	}
@@ -140,6 +143,7 @@ public class TabbedDialogPage extends CompositeDialogPage {
 		return true;
 	}
 
+	@Override
 	protected void updatePageComplete(DialogPage page) {
 		super.updatePageComplete(page);
 
@@ -158,16 +162,19 @@ public class TabbedDialogPage extends CompositeDialogPage {
 		tab.setIcon(page.getIcon());
 	}
 
+	@Override
 	protected void updatePageVisibility(DialogPage page) {
 		Tab tab = getTab(page);
 		tab.setVisible(page.isVisible());
 	}
-	
+
+	@Override
 	protected void updatePageEnabled(DialogPage page) {
 		Tab tab = getTab(page);
 		tab.setEnabled(page.isEnabled());
 	}
 
+	@Override
 	protected void updatePageLabels(DialogPage page) {
 		Tab tab = getTab(page);
 		tab.setTitle(getDecoratedPageTitle(page));

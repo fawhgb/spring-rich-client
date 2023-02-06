@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2006 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -26,10 +26,12 @@ import org.springframework.richclient.samples.simple.domain.ContactDataStore;
 import org.springframework.util.Assert;
 
 /**
- * This is a dialog for editing the properties of a Contact object. It is a simple "form backed" dialog, meaning that
- * the body of the dialog is provided from a "form backed" dialog page. The Ok (finish) button will be wired into the
- * "page complete" state of the dialog page, which in turn gets its state from the automatic validation of the
- * properties on the form.
+ * This is a dialog for editing the properties of a Contact object. It is a
+ * simple "form backed" dialog, meaning that the body of the dialog is provided
+ * from a "form backed" dialog page. The Ok (finish) button will be wired into
+ * the "page complete" state of the dialog page, which in turn gets its state
+ * from the automatic validation of the properties on the form.
+ *
  * @author Larry Streepy
  * @see FormBackedDialogPage
  * @see ContactForm
@@ -65,19 +67,20 @@ public class ContactPropertiesDialog extends TitledPageApplicationDialog {
 		return (Contact) form.getFormModel().getFormObject();
 	}
 
+	@Override
 	protected void onAboutToShow() {
 		if (creatingNew) {
 			getMessage("contactProperties.new.title");
 			setTitle(getMessage("contactProperties.new.title"));
-		}
-		else {
+		} else {
 			Contact contact = getEditingContact();
-			String title = getMessage("contactProperties.edit.title", new Object[] { contact.getFirstName(),
-					contact.getLastName() });
+			String title = getMessage("contactProperties.edit.title",
+					new Object[] { contact.getFirstName(), contact.getLastName() });
 			setTitle(title);
 		}
 	}
 
+	@Override
 	protected boolean onFinish() {
 		// commit any buffered edits to the model
 		form.getFormModel().commit();
@@ -86,8 +89,7 @@ public class ContactPropertiesDialog extends TitledPageApplicationDialog {
 		if (creatingNew) {
 			eventType = LifecycleApplicationEvent.CREATED;
 			dataStore.add(getEditingContact());
-		}
-		else {
+		} else {
 			eventType = LifecycleApplicationEvent.MODIFIED;
 		}
 		// And notify the rest of the application of the change
@@ -95,19 +97,20 @@ public class ContactPropertiesDialog extends TitledPageApplicationDialog {
 		return true;
 	}
 
+	@Override
 	protected void onCancel() {
 		// Warn the user if they are about to discard their changes
 		if (form.getFormModel().isDirty()) {
 			String msg = getMessage("contactProperties.dirtyCancelMessage");
 			String title = getMessage("contactProperties.dirtyCancelTitle");
 			ConfirmationDialog dlg = new ConfirmationDialog(title, msg) {
+				@Override
 				protected void onConfirm() {
 					ContactPropertiesDialog.super.onCancel();
 				}
 			};
 			dlg.showDialog();
-		}
-		else {
+		} else {
 			super.onCancel();
 		}
 	}

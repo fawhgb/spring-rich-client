@@ -38,8 +38,8 @@ public interface ValidationResultsModel extends ValidationResults, PropertyChang
 	String HAS_INFO_PROPERTY = "hasInfo";
 
 	/**
-	 * Adds a listener that will be notified when there is any change to the set
-	 * of validation messages.
+	 * Adds a listener that will be notified when there is any change to the set of
+	 * validation messages.
 	 */
 	void addValidationListener(ValidationListener listener);
 
@@ -60,8 +60,8 @@ public interface ValidationResultsModel extends ValidationResults, PropertyChang
 	void removeValidationListener(String propertyName, ValidationListener listener);
 
 	/**
-	 * Add a validationResultsModel as a child to this one. Results originating
-	 * from child models have to be taken into account by the parent.
+	 * Add a validationResultsModel as a child to this one. Results originating from
+	 * child models have to be taken into account by the parent.
 	 *
 	 * @param validationResultsModel
 	 */

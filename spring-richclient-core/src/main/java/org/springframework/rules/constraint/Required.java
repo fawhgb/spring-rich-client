@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -18,7 +18,6 @@ package org.springframework.rules.constraint;
 import java.util.Collection;
 import java.util.Map;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.reporting.TypeResolvable;
 import org.springframework.util.StringUtils;
 
@@ -26,7 +25,7 @@ import org.springframework.util.StringUtils;
  * Validates a required property. Required is defined as non-null and, if the
  * object is a string, not empty and not blank. If the object is an instance of
  * {@link Collection}, {@link Map} or an array it will test if it is empty.
- * 
+ *
  * @author Keith Donald
  * @author Mathias Broekelmann
  */
@@ -38,10 +37,10 @@ public class Required implements Constraint, TypeResolvable {
 	private final String type;
 
 	/**
-	 * Creates a required constraint by using a custom type. This is primarly
-	 * used to separate required and present constraint. These constraints where
-	 * equaly implemented but where used differently
-	 * 
+	 * Creates a required constraint by using a custom type. This is primarly used
+	 * to separate required and present constraint. These constraints where equaly
+	 * implemented but where used differently
+	 *
 	 * @param type the type of the constraint. see {@link #getType()}
 	 */
 	public Required(String type) {
@@ -58,26 +57,23 @@ public class Required implements Constraint, TypeResolvable {
 
 	/**
 	 * Tests if this argument is present (non-null, not-empty, not blank)
-	 * 
+	 *
 	 * @see Constraint#test(java.lang.Object)
 	 */
+	@Override
 	public boolean test(Object argument) {
 		if (argument != null) {
 			if (argument instanceof String) {
 				if (StringUtils.hasText((String) argument)) {
 					return true;
 				}
-			}
-			else if (argument instanceof Collection) {
+			} else if (argument instanceof Collection) {
 				return !((Collection) argument).isEmpty();
-			}
-			else if (argument instanceof Map) {
+			} else if (argument instanceof Map) {
 				return !((Map) argument).isEmpty();
-			}
-			else if (argument.getClass().isArray()) {
+			} else if (argument.getClass().isArray()) {
 				return ((Object[]) argument).length > 0;
-			}
-			else {
+			} else {
 				return true;
 			}
 		}
@@ -86,7 +82,7 @@ public class Required implements Constraint, TypeResolvable {
 
 	/**
 	 * returns the required instance
-	 * 
+	 *
 	 * @return the required instance (never null)
 	 */
 	public static Required instance() {
@@ -95,17 +91,19 @@ public class Required implements Constraint, TypeResolvable {
 
 	/**
 	 * returns the present instance
-	 * 
+	 *
 	 * @return the present instance (never null)
 	 */
 	public static Required present() {
 		return present;
 	}
 
+	@Override
 	public String toString() {
 		return getType();
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}

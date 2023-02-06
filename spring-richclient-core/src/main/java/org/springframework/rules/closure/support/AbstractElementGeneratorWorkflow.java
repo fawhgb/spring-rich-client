@@ -31,6 +31,7 @@ public abstract class AbstractElementGeneratorWorkflow extends AbstractElementGe
 	 *
 	 * Defines the workflow sequence.
 	 */
+	@Override
 	public final void run(Closure templateCallback) {
 		reset();
 		setRunning();

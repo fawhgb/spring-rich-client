@@ -26,42 +26,44 @@ import org.springframework.richclient.form.binding.BindingFactory;
 import org.springframework.util.Assert;
 
 /**
- * Abstract <code>FormUIProvider</code> implementation. Extenders only need to implement
- * the <code>createControl()</code> and <code>getComponent(String id)</code> methods.
- * 
+ * Abstract <code>FormUIProvider</code> implementation. Extenders only need to
+ * implement the <code>createControl()</code> and
+ * <code>getComponent(String id)</code> methods.
+ *
  * @author Peter De Bruycker
  */
 public abstract class AbstractFormUIProvider extends AbstractControlFactory implements FormUIProvider {
-    private boolean bound = false;
-    private String[] properties;
-    private Map contextMap = new HashMap();
+	private boolean bound = false;
+	private String[] properties;
+	private Map contextMap = new HashMap();
 
-    public void bind(BindingFactory factory, Form form) {
-        Assert.state(properties != null && properties.length > 0, "Properties must be set");
+	@Override
+	public void bind(BindingFactory factory, Form form) {
+		Assert.state(properties != null && properties.length > 0, "Properties must be set");
 
-        bound = true;
+		bound = true;
 
-        for (int i = 0; i < properties.length; i++) {
-            factory.bindControl(getComponent(properties[i]), properties[i], getContext(properties[i]));
-        }
-    }
+		for (int i = 0; i < properties.length; i++) {
+			factory.bindControl(getComponent(properties[i]), properties[i], getContext(properties[i]));
+		}
+	}
 
-    public Map getContext(String propertyPath) {
-        return contextMap.containsKey(propertyPath) ? (Map)contextMap.get(propertyPath) : Collections.EMPTY_MAP;
-    }
+	public Map getContext(String propertyPath) {
+		return contextMap.containsKey(propertyPath) ? (Map) contextMap.get(propertyPath) : Collections.EMPTY_MAP;
+	}
 
-    public void setContext(String propertyPath, Map context) {
-        contextMap.put(propertyPath, context);
-    }
+	public void setContext(String propertyPath, Map context) {
+		contextMap.put(propertyPath, context);
+	}
 
-    public void setProperties(String[] properties) {
-        Assert.state(!bound, "You cannot set the form properties after the binding");
+	public void setProperties(String[] properties) {
+		Assert.state(!bound, "You cannot set the form properties after the binding");
 
-        this.properties = properties;
-    }
+		this.properties = properties;
+	}
 
-    public String[] getProperties() {
-        return properties;
-    }
+	public String[] getProperties() {
+		return properties;
+	}
 
 }

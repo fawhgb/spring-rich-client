@@ -33,9 +33,9 @@ import org.springframework.richclient.factory.ControlFactory;
  * Additional methods that link with the model are:
  *
  * <ul>
- * <li>{@link #newSingleLineResultsReporter(Messagable)}: combine the
- * validation results of the model with a messagable component to show
- * validation messages.</li>
+ * <li>{@link #newSingleLineResultsReporter(Messagable)}: combine the validation
+ * results of the model with a messagable component to show validation
+ * messages.</li>
  * <li>{@link #addGuarded(Guarded)}, {@link #addGuarded(Guarded, int)} and
  * {@link #removeGuarded(Guarded)} to bind objects to the formModel state and
  * implement a suitable reaction. This can translate in eg a save-button that
@@ -91,14 +91,14 @@ public interface Form extends ControlFactory {
 	public void removeValidationListener(ValidationListener listener);
 
 	/**
-	 * Create a {@link ValidationResultsReporter} for this form, sending input
-	 * to the given {@link Messagable}.
+	 * Create a {@link ValidationResultsReporter} for this form, sending input to
+	 * the given {@link Messagable}.
 	 *
-	 * TODO check why it's specifically mentioning "singleLine" in the method
-	 * name (can be any validationResultsReporter)
+	 * TODO check why it's specifically mentioning "singleLine" in the method name
+	 * (can be any validationResultsReporter)
 	 *
 	 * @param messageAreaPane the message receiver used by the created
-	 * resultsReporter.
+	 *                        resultsReporter.
 	 * @return a new ResultsReporter.
 	 */
 	public ValidationResultsReporter newSingleLineResultsReporter(Messagable messageAreaPane);
@@ -141,20 +141,19 @@ public interface Form extends ControlFactory {
 	void removeValidationResultsReporter(ValidationResultsReporter validationResultsReporter);
 
 	/**
-	 * Add the given Form as a child to this Form. FormModels and other aspects
-	 * of this form must behave according to the parent-child relation.
+	 * Add the given Form as a child to this Form. FormModels and other aspects of
+	 * this form must behave according to the parent-child relation.
 	 */
 	void addChildForm(Form form);
 
 	/**
-	 * Remove the given Form as child from this Form. Parent-child relation will
-	 * be removed from their FormModels and other aspects as well.
+	 * Remove the given Form as child from this Form. Parent-child relation will be
+	 * removed from their FormModels and other aspects as well.
 	 */
 	void removeChildForm(Form form);
 
 	/**
-	 * Returns <code>true</code> if the inner <code>FormModel</code> has
-	 * errors.
+	 * Returns <code>true</code> if the inner <code>FormModel</code> has errors.
 	 */
 	boolean hasErrors();
 

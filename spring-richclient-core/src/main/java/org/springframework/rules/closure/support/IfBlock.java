@@ -40,7 +40,7 @@ public class IfBlock extends Block {
 	 * Constructor.
 	 *
 	 * @param constraint Constraint to test against.
-	 * @param closure closure to be executed if object passes the test.
+	 * @param closure    closure to be executed if object passes the test.
 	 */
 	public IfBlock(Constraint constraint, Closure closure) {
 		this.constraint = constraint;
@@ -51,6 +51,7 @@ public class IfBlock extends Block {
 	 * Only invoke the wrapped closure against the provided argument if the
 	 * constraint permits, else take no action.
 	 */
+	@Override
 	protected void handle(Object argument) {
 		if (constraint.test(argument)) {
 			closure.call(argument);

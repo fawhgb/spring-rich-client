@@ -26,7 +26,7 @@ import org.springframework.richclient.application.mdi.contextmenu.DesktopCommand
 
 /**
  * Factory for <code>DesktopApplicationPage</code> instances
- * 
+ *
  * @author Peter De Bruycker
  */
 public class DesktopApplicationPageFactory implements ApplicationPageFactory {
@@ -41,19 +41,20 @@ public class DesktopApplicationPageFactory implements ApplicationPageFactory {
 		this.dragMode = dragMode;
 	}
 
+	@Override
 	public ApplicationPage createApplicationPage(ApplicationWindow window, PageDescriptor descriptor) {
 		return new DesktopApplicationPage(window, descriptor, dragMode, desktopCommandGroupFactory);
 	}
-	
+
 	public void setDesktopCommandGroupFactory(DesktopCommandGroupFactory desktopCommandGroupFactory) {
 		this.desktopCommandGroupFactory = desktopCommandGroupFactory;
 	}
-	
+
 	public DesktopCommandGroupFactory getDesktopCommandGroupFactory() {
-		if(desktopCommandGroupFactory == null) {
+		if (desktopCommandGroupFactory == null) {
 			desktopCommandGroupFactory = new DefaultDesktopCommandGroupFactory();
 		}
-		
+
 		return desktopCommandGroupFactory;
 	}
 }

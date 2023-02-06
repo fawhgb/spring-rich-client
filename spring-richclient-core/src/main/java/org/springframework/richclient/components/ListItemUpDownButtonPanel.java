@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -36,150 +36,150 @@ import org.springframework.util.Assert;
  */
 public class ListItemUpDownButtonPanel extends AbstractControlFactory {
 
-    private static final String DOWN_BUTTON_MESSAGE_CODE = "button.down";
+	private static final String DOWN_BUTTON_MESSAGE_CODE = "button.down";
 
-    private static final String UP_BUTTON_MESSAGE_CODE = "button.up";
-    
-    private final ListSelectionListener listSelectionChangeHandler = new ListSelectionChangeHandler();
+	private static final String UP_BUTTON_MESSAGE_CODE = "button.up";
 
-    private final UpAction upAction = new UpAction();
+	private final ListSelectionListener listSelectionChangeHandler = new ListSelectionChangeHandler();
 
-    private final DownAction downAction = new DownAction();
+	private final UpAction upAction = new UpAction();
 
-    private final JList list;
+	private final DownAction downAction = new DownAction();
 
-    private JButton upButton;
+	private final JList list;
 
-    private JButton downButton;
+	private JButton upButton;
 
-    public ListItemUpDownButtonPanel(JList list) {
-        this.list = list;
-        Assert.isTrue(list.getModel() instanceof List, "List model must implement the List collection interface");
-        subscribe();
-    }
+	private JButton downButton;
 
-    protected JList getList() {
-        return list;
-    }
+	public ListItemUpDownButtonPanel(JList list) {
+		this.list = list;
+		Assert.isTrue(list.getModel() instanceof List, "List model must implement the List collection interface");
+		subscribe();
+	}
 
-    protected List getListModel() {
-        return (List)list.getModel();
-    }
+	protected JList getList() {
+		return list;
+	}
 
-    protected JComponent createControl() {
-        return createUpDownButtonPanel();
-    }
+	protected List getListModel() {
+		return (List) list.getModel();
+	}
 
-    private void subscribe() {
-        this.list.addListSelectionListener(listSelectionChangeHandler);
-    }
+	@Override
+	protected JComponent createControl() {
+		return createUpDownButtonPanel();
+	}
 
-    protected void onEmptySelection() {
-        upButton.setEnabled(false);
-        downButton.setEnabled(false);
-    }
+	private void subscribe() {
+		this.list.addListSelectionListener(listSelectionChangeHandler);
+	}
 
-    protected void onSelection() {
-        if (!isContiguousSelection(getList())) {
-            upButton.setEnabled(false);
-            downButton.setEnabled(false);
-        }
-        else {
-            if (getList().getMinSelectionIndex() == 0) {
-                upButton.setEnabled(false);
-            }
-            else {
-                upButton.setEnabled(true);
-            }
-            if (getList().getMaxSelectionIndex() == (getListModel().size() - 1)) {
-                downButton.setEnabled(false);
-            }
-            else {
-                downButton.setEnabled(true);
-            }
-        }
-    }
+	protected void onEmptySelection() {
+		upButton.setEnabled(false);
+		downButton.setEnabled(false);
+	}
 
-    private boolean isContiguousSelection(JList list) {
-        for (int i = list.getMinSelectionIndex(); i <= list.getMaxSelectionIndex(); i++) {
-            if (!list.isSelectedIndex(i)) {
-                return false;
-            }
-        }
-        return true;
-    }
+	protected void onSelection() {
+		if (!isContiguousSelection(getList())) {
+			upButton.setEnabled(false);
+			downButton.setEnabled(false);
+		} else {
+			if (getList().getMinSelectionIndex() == 0) {
+				upButton.setEnabled(false);
+			} else {
+				upButton.setEnabled(true);
+			}
+			if (getList().getMaxSelectionIndex() == (getListModel().size() - 1)) {
+				downButton.setEnabled(false);
+			} else {
+				downButton.setEnabled(true);
+			}
+		}
+	}
 
-    private JComponent createUpDownButtonPanel() {
-        upButton = getComponentFactory().createButton(UP_BUTTON_MESSAGE_CODE);
-        upButton.setEnabled(false);
-        upButton.addActionListener(upAction);
+	private boolean isContiguousSelection(JList list) {
+		for (int i = list.getMinSelectionIndex(); i <= list.getMaxSelectionIndex(); i++) {
+			if (!list.isSelectedIndex(i)) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-        downButton = getComponentFactory().createButton(DOWN_BUTTON_MESSAGE_CODE);
-        downButton.setEnabled(false);
-        downButton.addActionListener(downAction);
+	private JComponent createUpDownButtonPanel() {
+		upButton = getComponentFactory().createButton(UP_BUTTON_MESSAGE_CODE);
+		upButton.setEnabled(false);
+		upButton.addActionListener(upAction);
 
-        JComponent panel = GuiStandardUtils.createCommandButtonColumn(new JButton[] {upButton, downButton});
-        panel.setBorder(GuiStandardUtils.createLeftAndRightBorder(UIConstants.ONE_SPACE));
-        return panel;
-    }
+		downButton = getComponentFactory().createButton(DOWN_BUTTON_MESSAGE_CODE);
+		downButton.setEnabled(false);
+		downButton.addActionListener(downAction);
 
-    private class ListSelectionChangeHandler implements ListSelectionListener {
+		JComponent panel = GuiStandardUtils.createCommandButtonColumn(new JButton[] { upButton, downButton });
+		panel.setBorder(GuiStandardUtils.createLeftAndRightBorder(UIConstants.ONE_SPACE));
+		return panel;
+	}
 
-        public void valueChanged(ListSelectionEvent e) {
-            if (!e.getValueIsAdjusting()) {
-                if (list.isSelectionEmpty()) {
-                    onEmptySelection();
-                }
-                else {
-                    onSelection();
-                }
-            }
-        }
-    }
+	private class ListSelectionChangeHandler implements ListSelectionListener {
 
-    private class DownAction implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            int[] indices = getList().getSelectedIndices();
-            Object[] array = new Object[indices.length];
-            Arrays.sort(indices);
-            List model = getListModel();
-            if (indices[indices.length - 1] == model.size() - 1) {
-                return;
-            }
-            for (int i = 0; i < indices.length; i++) {
-                array[i] = model.get(indices[i] - i);
-                model.remove(indices[i] - i);
-            }
-            int[] newIndices = new int[indices.length];
-            for (int i = 0; i < indices.length; i++) {
-                int newIndex = indices[0] + 1 + i;
-                model.add(newIndex, array[i]);
-                newIndices[i] = newIndex;
-            }
-            getList().setSelectedIndices(newIndices);
-        }
-    }
+		@Override
+		public void valueChanged(ListSelectionEvent e) {
+			if (!e.getValueIsAdjusting()) {
+				if (list.isSelectionEmpty()) {
+					onEmptySelection();
+				} else {
+					onSelection();
+				}
+			}
+		}
+	}
 
-    private class UpAction implements ActionListener {
-        public void actionPerformed(ActionEvent e) {
-            int[] indices = getList().getSelectedIndices();
-            Object[] array = new Object[indices.length];
-            Arrays.sort(indices);
-            if (indices[0] == 0) {
-                return;
-            }
-            List model = getListModel();
-            for (int i = 0; i < indices.length; i++) {
-                array[i] = model.get(indices[i] - i);
-                model.remove(indices[i] - i);
-            }
-            int[] newIndices = new int[indices.length];
-            for (int i = 0; i < indices.length; i++) {
-                int newIndex = indices[0] - 1 + i;
-                model.add(newIndex, array[i]);
-                newIndices[i] = newIndex;
-            }
-            getList().setSelectedIndices(newIndices);
-        }
-    }
+	private class DownAction implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int[] indices = getList().getSelectedIndices();
+			Object[] array = new Object[indices.length];
+			Arrays.sort(indices);
+			List model = getListModel();
+			if (indices[indices.length - 1] == model.size() - 1) {
+				return;
+			}
+			for (int i = 0; i < indices.length; i++) {
+				array[i] = model.get(indices[i] - i);
+				model.remove(indices[i] - i);
+			}
+			int[] newIndices = new int[indices.length];
+			for (int i = 0; i < indices.length; i++) {
+				int newIndex = indices[0] + 1 + i;
+				model.add(newIndex, array[i]);
+				newIndices[i] = newIndex;
+			}
+			getList().setSelectedIndices(newIndices);
+		}
+	}
+
+	private class UpAction implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			int[] indices = getList().getSelectedIndices();
+			Object[] array = new Object[indices.length];
+			Arrays.sort(indices);
+			if (indices[0] == 0) {
+				return;
+			}
+			List model = getListModel();
+			for (int i = 0; i < indices.length; i++) {
+				array[i] = model.get(indices[i] - i);
+				model.remove(indices[i] - i);
+			}
+			int[] newIndices = new int[indices.length];
+			for (int i = 0; i < indices.length; i++) {
+				int newIndex = indices[0] - 1 + i;
+				model.add(newIndex, array[i]);
+				newIndices[i] = newIndex;
+			}
+			getList().setSelectedIndices(newIndices);
+		}
+	}
 }

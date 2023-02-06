@@ -17,6 +17,7 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 
@@ -27,10 +28,11 @@ public class ButtonStackBarSample extends ApplicationDialog {
 
 	@Override
 	protected JComponent createDialogContentPane() {
-		JPanel panel = new JPanel(new FormLayout(new ColumnSpec[] {FormFactory.DEFAULT_COLSPEC , FormFactory.RELATED_GAP_COLSPEC, new ColumnSpec(ColumnSpec.LEFT, Sizes.DEFAULT,
-				ColumnSpec.DEFAULT_GROW)}, new RowSpec[] { FormFactory.DEFAULT_ROWSPEC, FormFactory.LINE_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC, FormFactory.LINE_GAP_ROWSPEC,
-				FormFactory.DEFAULT_ROWSPEC }));
+		JPanel panel = new JPanel(new FormLayout(
+				new ColumnSpec[] { FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC,
+						new ColumnSpec(ColumnSpec.LEFT, Sizes.DEFAULT, FormSpec.DEFAULT_GROW) },
+				new RowSpec[] { FormFactory.DEFAULT_ROWSPEC, FormFactory.LINE_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+						FormFactory.LINE_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC }));
 		CommandManager commandManager = Application.instance().getActiveWindow().getCommandManager();
 		List<Object> members = new ArrayList<Object>();
 		for (int i = 0; i < commandIds.length; i++) {

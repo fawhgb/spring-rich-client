@@ -2,8 +2,8 @@ package org.springframework.richclient.exceptionhandling;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -15,17 +15,17 @@ import org.jdesktop.swingx.error.ErrorInfo;
 import org.jdesktop.swingx.error.ErrorReporter;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.richclient.application.ApplicationServicesLocator;
 
 /**
  * <p>
  * This email reporter can be added as {@link ErrorReporter} to the
  * {@link JXErrorDialogExceptionHandler}. The email reporter uses the
- * <a href="https://jdic.dev.java.net/">JDIC</a> library to access your mail client. To
- * use and deploy this correctly, you need to have the correct native libraries
- * for your platform and have them added to your VM startup
+ * <a href="https://jdic.dev.java.net/">JDIC</a> library to access your mail
+ * client. To use and deploy this correctly, you need to have the correct native
+ * libraries for your platform and have them added to your VM startup
  * (-Djava.library.path).
  * </p>
  * <p>
@@ -56,131 +56,127 @@ import org.springframework.richclient.application.ApplicationServicesLocator;
  */
 public class JdicEmailNotifierErrorReporter implements ErrorReporter, BeanNameAware, InitializingBean {
 
-    private MessageSourceAccessor messageSourceAccessor;
+	private MessageSourceAccessor messageSourceAccessor;
 
-    private boolean outlookWorkaroundEnabled = true;
-    
-    private String id = null;
+	private boolean outlookWorkaroundEnabled = true;
 
-    public void setOutlookWorkaroundEnabled(boolean outlookWorkaroundEnabled) {
-        this.outlookWorkaroundEnabled = outlookWorkaroundEnabled;
-    }
+	private String id = null;
 
-    public String getId() {
-        return id;
-    }
+	public void setOutlookWorkaroundEnabled(boolean outlookWorkaroundEnabled) {
+		this.outlookWorkaroundEnabled = outlookWorkaroundEnabled;
+	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public void setBeanName(String beanName) {
-        if (getId() == null) {
-            setId(beanName);
-        }
-    }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    public void afterPropertiesSet() {
-        if (messageSourceAccessor == null) {
-            messageSourceAccessor = (MessageSourceAccessor) ApplicationServicesLocator.services().getService(
-                    MessageSourceAccessor.class);
-        }
-    }
+	@Override
+	public void setBeanName(String beanName) {
+		if (getId() == null) {
+			setId(beanName);
+		}
+	}
 
-    public void reportError(ErrorInfo info) {
-        Message mail = new Message();
+	@Override
+	public void afterPropertiesSet() {
+		if (messageSourceAccessor == null) {
+			messageSourceAccessor = (MessageSourceAccessor) ApplicationServicesLocator.services()
+					.getService(MessageSourceAccessor.class);
+		}
+	}
 
-        String mailTo = getMessageByKeySuffix(".mailTo");
-        if (!StringUtils.isEmpty(mailTo)) {
-            boolean doOutlookWorkaround = false;
-            if (outlookWorkaroundEnabled) {
-                boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
-                if (isWindows) {
-                    doOutlookWorkaround = JOptionPane.showConfirmDialog(null,
-                            getMessageByKeySuffix(".isOutlook.message"),
-                            getMessageByKeySuffix(".isOutlook.title"),
-                            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE)
-                            == JOptionPane.YES_OPTION;
-                }
-            }
-            String[] mailToTokens = mailTo.split(";");
-            List<String> toAddrs = new ArrayList<String>(mailToTokens.length);
-            for (String mailToToken : mailToTokens)
-            {
-                String trimmedMailToToken = mailToToken.trim();
-                if (!StringUtils.isEmpty(trimmedMailToToken)) {
-                    if (doOutlookWorkaround) {
-                        // The standard is no prefix SMTP
-                        // Outlook Express supposidly works with or without prefix SMTP
-                        // Outlook (like in Office) works only with prefix SMTP
-                        // Thunderbird works always without prefix SMTP.
-                        // Thunderbirds works sometimes with prefix SMTP: it even differs from Vista to Vista
-                        trimmedMailToToken = "SMTP:" + trimmedMailToToken;
-                    }
-                    toAddrs.add(trimmedMailToToken);
-                }
-            }
-            mail.setToAddrs(toAddrs);
-        }
+	@Override
+	public void reportError(ErrorInfo info) {
+		Message mail = new Message();
 
-        Throwable errorException = info.getErrorException();
-        Object[] messageParams;
-        if (errorException != null) {
-            messageParams = new Object[] {
-                errorException,
-                getStackTraceString(errorException)
-            };
-        } else {
-            messageParams = new Object[] {
-                info.getBasicErrorMessage(),
-                info.getDetailedErrorMessage()
-            };
-        }
+		String mailTo = getMessageByKeySuffix(".mailTo");
+		if (!StringUtils.isEmpty(mailTo)) {
+			boolean doOutlookWorkaround = false;
+			if (outlookWorkaroundEnabled) {
+				boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
+				if (isWindows) {
+					doOutlookWorkaround = JOptionPane.showConfirmDialog(null,
+							getMessageByKeySuffix(".isOutlook.message"), getMessageByKeySuffix(".isOutlook.title"),
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION;
+				}
+			}
+			String[] mailToTokens = mailTo.split(";");
+			List<String> toAddrs = new ArrayList<String>(mailToTokens.length);
+			for (String mailToToken : mailToTokens) {
+				String trimmedMailToToken = mailToToken.trim();
+				if (!StringUtils.isEmpty(trimmedMailToToken)) {
+					if (doOutlookWorkaround) {
+						// The standard is no prefix SMTP
+						// Outlook Express supposidly works with or without prefix SMTP
+						// Outlook (like in Office) works only with prefix SMTP
+						// Thunderbird works always without prefix SMTP.
+						// Thunderbirds works sometimes with prefix SMTP: it even differs from Vista to
+						// Vista
+						trimmedMailToToken = "SMTP:" + trimmedMailToToken;
+					}
+					toAddrs.add(trimmedMailToToken);
+				}
+			}
+			mail.setToAddrs(toAddrs);
+		}
 
-        String subject = getMessageByKeySuffix(".subject", messageParams);
-        mail.setSubject(subject);
+		Throwable errorException = info.getErrorException();
+		Object[] messageParams;
+		if (errorException != null) {
+			messageParams = new Object[] { errorException, getStackTraceString(errorException) };
+		} else {
+			messageParams = new Object[] { info.getBasicErrorMessage(), info.getDetailedErrorMessage() };
+		}
 
-        String body = getMessageByKeySuffix(".body", messageParams);
-        mail.setBody(body);
+		String subject = getMessageByKeySuffix(".subject", messageParams);
+		mail.setSubject(subject);
 
-        try {
-            Desktop.mail(mail);
-        } catch (LinkageError e) {
-            // Thrown by JDIC 0.9.3 on linux (and probably windows too) when native jars are not used properly
-            String message = getMessageByKeySuffix(".noNativeJdic");
-            throw new IllegalStateException(message, e);
-        } catch (NullPointerException e) {
-            String message = getMessageByKeySuffix(".noDefaultMailClient");
-            throw new IllegalStateException(message, e);
-        } catch (DesktopException e) {
-            String message = getMessageByKeySuffix(".mailException");
-            throw new IllegalStateException(message, e);
-        }
-    }
+		String body = getMessageByKeySuffix(".body", messageParams);
+		mail.setBody(body);
 
-    protected String getMessageByKeySuffix(String keySuffix) {
-        return getMessageByKeySuffix(keySuffix, null);
-    }
+		try {
+			Desktop.mail(mail);
+		} catch (LinkageError e) {
+			// Thrown by JDIC 0.9.3 on linux (and probably windows too) when native jars are
+			// not used properly
+			String message = getMessageByKeySuffix(".noNativeJdic");
+			throw new IllegalStateException(message, e);
+		} catch (NullPointerException e) {
+			String message = getMessageByKeySuffix(".noDefaultMailClient");
+			throw new IllegalStateException(message, e);
+		} catch (DesktopException e) {
+			String message = getMessageByKeySuffix(".mailException");
+			throw new IllegalStateException(message, e);
+		}
+	}
 
-    protected String getMessageByKeySuffix(String keySuffix, Object[] params) {
-        List<String> messageKeyList = new ArrayList<String>();
-        if (getId() != null) {
-            messageKeyList.add(getId() + keySuffix);
-        }
-        messageKeyList.add("jdicEmailNotifierErrorReporter" + keySuffix);
-        messageKeyList.add("emailNotifierErrorReporter" + keySuffix);
-        String[] messagesKeys = messageKeyList.toArray(new String[messageKeyList.size()]);
-        return messageSourceAccessor.getMessage(new DefaultMessageSourceResolvable(
-                messagesKeys, params, messagesKeys[0]));
-    }
+	protected String getMessageByKeySuffix(String keySuffix) {
+		return getMessageByKeySuffix(keySuffix, null);
+	}
 
-    protected String getStackTraceString(Throwable t) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter, true);
-        t.printStackTrace(printWriter);
-        printWriter.flush();
-        stringWriter.flush();
-        return stringWriter.toString();
-    }
+	protected String getMessageByKeySuffix(String keySuffix, Object[] params) {
+		List<String> messageKeyList = new ArrayList<String>();
+		if (getId() != null) {
+			messageKeyList.add(getId() + keySuffix);
+		}
+		messageKeyList.add("jdicEmailNotifierErrorReporter" + keySuffix);
+		messageKeyList.add("emailNotifierErrorReporter" + keySuffix);
+		String[] messagesKeys = messageKeyList.toArray(new String[messageKeyList.size()]);
+		return messageSourceAccessor
+				.getMessage(new DefaultMessageSourceResolvable(messagesKeys, params, messagesKeys[0]));
+	}
+
+	protected String getStackTraceString(Throwable t) {
+		StringWriter stringWriter = new StringWriter();
+		PrintWriter printWriter = new PrintWriter(stringWriter, true);
+		t.printStackTrace(printWriter);
+		printWriter.flush();
+		stringWriter.flush();
+		return stringWriter.toString();
+	}
 
 }

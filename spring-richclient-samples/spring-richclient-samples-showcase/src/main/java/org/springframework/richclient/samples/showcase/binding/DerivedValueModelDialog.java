@@ -4,7 +4,6 @@ import javax.swing.JComponent;
 
 import org.springframework.binding.form.ConfigurableFormModel;
 import org.springframework.binding.form.FieldMetadata;
-import org.springframework.binding.form.support.DefaultFieldMetadata;
 import org.springframework.binding.form.support.ReadOnlyFieldMetadata;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.MessageFormatValueModel;
@@ -64,8 +63,8 @@ public class DerivedValueModelDialog extends TitledApplicationDialog {
 			builder.add("title");
 			builder.row();
 			ConfigurableFormModel formModel = getFormModel();
-			ValueModel derivedValueModel = new MessageFormatValueModel("{2} {1} {0}", new ValueModel[] {
-					getValueModel("name"), getValueModel("surname"), getValueModel("title") });
+			ValueModel derivedValueModel = new MessageFormatValueModel("{2} {1} {0}",
+					new ValueModel[] { getValueModel("name"), getValueModel("surname"), getValueModel("title") });
 			FieldMetadata fieldMetaData = new ReadOnlyFieldMetadata(getFormModel(), String.class);
 			formModel.add("derivedValue", derivedValueModel, fieldMetaData);
 			builder.add("derivedValue");

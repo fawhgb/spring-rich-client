@@ -16,19 +16,22 @@
 package org.springframework.richclient.form.binding;
 
 import org.springframework.binding.form.FormModel;
+import org.springframework.richclient.application.ApplicationServices;
 
 /**
  * Implementations provide {@link BindingFactory} instances on demand.
+ *
  * @author Larry Streepy
  * @see ApplicationServices#getBindingFactoryProvider()
- * 
+ *
  */
 public interface BindingFactoryProvider {
 
-    /**
-     * Produce a BindingFactory using the provided form model.
-     * @param formModel Form model on which to construct the BindingFactory
-     * @return BindingFactory
-     */
-    BindingFactory getBindingFactory(FormModel formModel);
+	/**
+	 * Produce a BindingFactory using the provided form model.
+	 *
+	 * @param formModel Form model on which to construct the BindingFactory
+	 * @return BindingFactory
+	 */
+	BindingFactory getBindingFactory(FormModel formModel);
 }

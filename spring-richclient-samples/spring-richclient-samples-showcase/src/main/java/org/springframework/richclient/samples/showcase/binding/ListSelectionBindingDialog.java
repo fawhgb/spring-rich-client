@@ -1,5 +1,15 @@
 package org.springframework.richclient.samples.showcase.binding;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JComponent;
+
 import org.springframework.binding.value.support.RefreshableValueHolder;
 import org.springframework.binding.value.support.ValueHolder;
 import org.springframework.richclient.dialog.TitledApplicationDialog;
@@ -11,11 +21,6 @@ import org.springframework.richclient.form.builder.TableFormBuilder;
 import org.springframework.richclient.selection.binding.ListSelectionDialogBinder;
 import org.springframework.richclient.selection.binding.support.LabelProvider;
 import org.springframework.rules.closure.Closure;
-
-import javax.swing.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.*;
 
 public class ListSelectionBindingDialog extends TitledApplicationDialog {
 
@@ -49,6 +54,7 @@ public class ListSelectionBindingDialog extends TitledApplicationDialog {
 		}
 	}
 
+	@Override
 	protected void init() {
 		Country belgium = new Country("Belgium");
 		Country netherlands = new Country("Netherlands");
@@ -116,6 +122,7 @@ public class ListSelectionBindingDialog extends TitledApplicationDialog {
 			super(FormModelHelper.createFormModel(new Selection()));
 		}
 
+		@Override
 		protected JComponent createFormControl() {
 			SwingBindingFactory bf = new SwingBindingFactory(getFormModel());
 			TableFormBuilder formBuilder = new TableFormBuilder(bf);
@@ -124,6 +131,7 @@ public class ListSelectionBindingDialog extends TitledApplicationDialog {
 			Map<String, Object> countryContext = new HashMap<String, Object>();
 			countryContext.put(ListSelectionDialogBinder.SELECTABLE_ITEMS_HOLDER_KEY, new ValueHolder(countries));
 			countryContext.put(ListSelectionDialogBinder.LABEL_PROVIDER_KEY, new LabelProvider() {
+				@Override
 				public String getLabel(Object item) {
 					Country country = (Country) item;
 					return country == null ? "" : country.getName();
@@ -131,32 +139,34 @@ public class ListSelectionBindingDialog extends TitledApplicationDialog {
 			});
 			countryContext.put(ListSelectionDialogBinder.FILTERED_KEY, Boolean.TRUE);
 			countryContext.put(ListSelectionDialogBinder.FILTER_PROPERTIES_KEY, new String[] { "name" });
-		    
-			// this works ... but unfortunately ListSelectionDialogBinder has no public constructor
+
+			// this works ... but unfortunately ListSelectionDialogBinder has no public
+			// constructor
 //          ListSelectionDialogBinder binder = new ListSelectionDialogBinder();
 //          Binding binding = binder.bind(getFormModel(), "country", countryContext);
 //          formBuilder.add(binding, "colSpan=2");
 
-            // this works if the binderSelectionStrategy is configured in richclient-application-context.xml
-            formBuilder.add(bf.createBinding("country", countryContext), "colSpan=2");
+			// this works if the binderSelectionStrategy is configured in
+			// richclient-application-context.xml
+			formBuilder.add(bf.createBinding("country", countryContext), "colSpan=2");
 
-            formBuilder.row();
+			formBuilder.row();
 
 			this.addFormValueChangeListener("country", new ChangeCountryListener());
 
 			refreshableTownValueHolder = new RefreshableValueHolder(new Closure() {
+				@Override
 				public Object call(Object object) {
 					Country country = (Country) getValue("country");
 					List<Town> towns = getTowns(country);
 					if (towns == null) {
-                        towns = Collections.EMPTY_LIST;
-                    }
+						towns = Collections.EMPTY_LIST;
+					}
 					return towns;
 				}
 			}, true, false);
 			refreshableTownValueHolder.setValue(Collections.EMPTY_LIST);
-			formBuilder
-					.add(bf.createBoundComboBox("town", refreshableTownValueHolder, "name"), "colSpan=2 align=left");
+			formBuilder.add(bf.createBoundComboBox("town", refreshableTownValueHolder, "name"), "colSpan=2 align=left");
 			formBuilder.row();
 
 			return formBuilder.getForm();
@@ -167,16 +177,19 @@ public class ListSelectionBindingDialog extends TitledApplicationDialog {
 		public ChangeCountryListener() {
 		}
 
+		@Override
 		public void propertyChange(final PropertyChangeEvent evt) {
 			refreshableTownValueHolder.refresh();
 		}
 	}
 
+	@Override
 	protected JComponent createTitledDialogContentPane() {
 		Form form = new ListSelectionBindingForm();
 		return form.getControl();
 	}
 
+	@Override
 	protected boolean onFinish() {
 		return true;
 	}

@@ -28,8 +28,7 @@ import org.springframework.rules.constraint.property.PropertyConstraint;
 /**
  * @author Keith Donald
  */
-public class BeanValidationResultsBuilder extends ValidationResultsBuilder
-		implements BeanValidationResults {
+public class BeanValidationResultsBuilder extends ValidationResultsBuilder implements BeanValidationResults {
 
 	private String currentProperty;
 
@@ -43,21 +42,22 @@ public class BeanValidationResultsBuilder extends ValidationResultsBuilder
 		super();
 		if (bean instanceof PropertyAccessStrategy) {
 			this.beanPropertyAccessStrategy = (PropertyAccessStrategy) bean;
-		}
-		else {
-			this.beanPropertyAccessStrategy = new BeanPropertyAccessStrategy(
-					bean);
+		} else {
+			this.beanPropertyAccessStrategy = new BeanPropertyAccessStrategy(bean);
 		}
 	}
 
+	@Override
 	public Map getResults() {
 		return Collections.unmodifiableMap(beanResults);
 	}
 
+	@Override
 	public PropertyResults getResults(String propertyName) {
 		return (PropertyResults) beanResults.get(propertyName);
 	}
 
+	@Override
 	public int getViolatedCount() {
 		int count = 0;
 		Iterator it = beanResults.values().iterator();
@@ -67,21 +67,21 @@ public class BeanValidationResultsBuilder extends ValidationResultsBuilder
 		return count;
 	}
 
+	@Override
 	protected void constraintViolated(Constraint constraint) {
 		if (logger.isDebugEnabled()) {
-			logger.debug("[Done] collecting results for property '"
-					+ getCurrentPropertyName() + "'.  Constraints violated: ["
-					+ constraint + "]");
+			logger.debug("[Done] collecting results for property '" + getCurrentPropertyName()
+					+ "'.  Constraints violated: [" + constraint + "]");
 		}
-		PropertyResults results = new PropertyResults(getCurrentPropertyName(),
-				getCurrentPropertyValue(), constraint);
+		PropertyResults results = new PropertyResults(getCurrentPropertyName(), getCurrentPropertyValue(), constraint);
 		beanResults.put(getCurrentPropertyName(), results);
 	}
 
+	@Override
 	protected void constraintSatisfied() {
 		if (logger.isDebugEnabled()) {
-			logger.debug("[Done] collecting results for property '"
-					+ getCurrentPropertyName() + "'.  All constraints met.");
+			logger.debug(
+					"[Done] collecting results for property '" + getCurrentPropertyName() + "'.  All constraints met.");
 		}
 	}
 
@@ -93,8 +93,7 @@ public class BeanValidationResultsBuilder extends ValidationResultsBuilder
 		return currentPropertyValue;
 	}
 
-	public void setCurrentBeanPropertyExpression(
-			PropertyConstraint expression) {
+	public void setCurrentBeanPropertyExpression(PropertyConstraint expression) {
 		this.currentProperty = expression.getPropertyName();
 		this.currentPropertyValue = getPropertyValue(this.currentProperty);
 		super.clear();

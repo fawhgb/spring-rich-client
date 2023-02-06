@@ -60,7 +60,8 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 		setTarget(target);
 	}
 
-	public DefaultMemberPropertyAccessor(Class targetClass, Object target, boolean fieldAccessEnabled, boolean strictNullHandlingEnabled) {
+	public DefaultMemberPropertyAccessor(Class targetClass, Object target, boolean fieldAccessEnabled,
+			boolean strictNullHandlingEnabled) {
 		super(targetClass, fieldAccessEnabled, strictNullHandlingEnabled);
 		fixedTargetClass = true;
 		setTarget(target);
@@ -70,11 +71,11 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 		super(parent, baseProperty);
 	}
 
+	@Override
 	public Object getTarget() {
 		if (target != null) {
 			return target;
-		}
-		else {
+		} else {
 			return super.getTarget();
 		}
 	}
@@ -90,6 +91,7 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 		}
 	}
 
+	@Override
 	public Object getIndexedPropertyValue(String propertyName) throws BeansException {
 		if (getPropertyType(propertyName) == null) {
 			throw new NotReadablePropertyException(getTargetClass(), propertyName,
@@ -105,25 +107,23 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 		if (rootProperty == null) {
 			if (isStrictNullHandlingEnabled()) {
 				throw new NullValueInNestedPathException(getTargetClass(), propertyName);
-			}
-			else if (isWritableProperty(rootPropertyName)) {
+			} else if (isWritableProperty(rootPropertyName)) {
 				return null;
-			}
-			else {
+			} else {
 				throw new NotReadablePropertyException(getTargetClass(), propertyName);
 			}
 		}
 		Object[] indices;
 		try {
 			indices = getIndices(propertyName);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			// could not convert indices
 			throw createNotReadablePropertyException(propertyName, e);
 		}
 		return getPropertyValue(rootProperty, indices);
 	}
 
+	@Override
 	public Object getSimplePropertyValue(String propertyName) throws BeansException {
 		Member readAccessor = getReadPropertyAccessor(propertyName);
 		if (readAccessor == null) {
@@ -138,16 +138,13 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 			ReflectionUtils.makeAccessible(readAccessor);
 			if (readAccessor instanceof Field) {
 				return ((Field) readAccessor).get(target);
-			}
-			else {// readAccessor instanceof Method
+			} else {// readAccessor instanceof Method
 				return ((Method) readAccessor).invoke(target, null);
 			}
-		}
-		catch (IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			throw new InvalidPropertyException(getTargetClass(), propertyName, "Property is not accessible", e);
-		}
-		catch (InvocationTargetException e) {
-			ReflectionUtils.handleInvocationTargetException(e);
+		} catch (InvocationTargetException e) {
+			org.springframework.util.ReflectionUtils.handleInvocationTargetException(e);
 			throw new IllegalStateException(
 					"An unexpected state occured during getSimplePropertyValue(String). This may be a bug.");
 		}
@@ -161,25 +158,20 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 		if (assemblage == null) {
 			if (isStrictNullHandlingEnabled()) {
 				throw new NullValueInNestedPathException(getTargetClass(), "");
-			}
-			else {
+			} else {
 				return null;
 			}
 		}
 		Object value = null;
 		if (assemblage.getClass().isArray()) {
 			value = getArrayValue(assemblage, (Integer) indices[parameterIndex]);
-		}
-		else if (assemblage instanceof List) {
+		} else if (assemblage instanceof List) {
 			value = getListValue((List) assemblage, (Integer) indices[parameterIndex]);
-		}
-		else if (assemblage instanceof Map) {
+		} else if (assemblage instanceof Map) {
 			value = getMapValue((Map) assemblage, indices[parameterIndex]);
-		}
-		else if (assemblage instanceof Collection) {
+		} else if (assemblage instanceof Collection) {
 			value = getCollectionValue((Collection) assemblage, (Integer) indices[parameterIndex]);
-		}
-		else {
+		} else {
 			throw new IllegalStateException(
 					"getPropertyValue(Object, Object[], int) called with neither array nor collection nor map");
 		}
@@ -189,8 +181,7 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 		if (value == null) {
 			if (isStrictNullHandlingEnabled()) {
 				throw new InvalidPropertyException(getTargetClass(), "", "");
-			}
-			else {
+			} else {
 				return null;
 			}
 		}
@@ -200,11 +191,9 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 	private Object getArrayValue(Object array, Integer index) {
 		if (Array.getLength(array) > index.intValue()) {
 			return Array.get(array, index.intValue());
-		}
-		else if (isStrictNullHandlingEnabled()) {
+		} else if (isStrictNullHandlingEnabled()) {
 			throw new InvalidPropertyException(getTargetClass(), "", "");
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -212,11 +201,9 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 	private Object getListValue(List list, Integer index) {
 		if (list.size() > index.intValue()) {
 			return list.get(index.intValue());
-		}
-		else if (isStrictNullHandlingEnabled()) {
+		} else if (isStrictNullHandlingEnabled()) {
 			throw new InvalidPropertyException(getTargetClass(), "", "");
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
@@ -224,16 +211,14 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 	private Object getMapValue(Map map, Object key) {
 		if (map.containsKey(key)) {
 			return map.get(key);
-		}
-		else {
+		} else {
 			if (!JdkVersion.isAtLeastJava15()) {
 				// we don't know the type of the keys, so we fall back to
 				// comparing toString()
 				for (Iterator i = map.entrySet().iterator(); i.hasNext();) {
 					Map.Entry entry = (Map.Entry) i.next();
-					if (entry.getKey() == key
-							|| (entry.getKey() != null && key != null && entry.getKey().toString().equals(
-									key.toString()))) {
+					if (entry.getKey() == key || (entry.getKey() != null && key != null
+							&& entry.getKey().toString().equals(key.toString()))) {
 						return entry.getValue();
 					}
 				}
@@ -249,37 +234,34 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 				iterator.next();
 			}
 			return iterator.next();
-		}
-		else if (isStrictNullHandlingEnabled()) {
+		} else if (isStrictNullHandlingEnabled()) {
 			throw new InvalidPropertyException(getTargetClass(), "", "");
-		}
-		else {
+		} else {
 			return null;
 		}
 	}
 
+	@Override
 	public void setIndexedPropertyValue(String propertyName, Object value) throws BeansException {
 		String parentPropertyName = getParentPropertyName(propertyName);
 		Object parentValue;
 		try {
 			parentValue = getPropertyValue(parentPropertyName);
-		}
-		catch (NotReadablePropertyException e) {
-			throw new NotWritablePropertyException(getTargetClass(), propertyName, "parent property is not readable", e);
+		} catch (NotReadablePropertyException e) {
+			throw new NotWritablePropertyException(getTargetClass(), propertyName, "parent property is not readable",
+					e);
 		}
 		if (parentValue == null) {
 			if (isWritableProperty(parentPropertyName)) {
 				throw new NullValueInNestedPathException(getTargetClass(), propertyName);
-			}
-			else {
+			} else {
 				throw new NotWritablePropertyException(getTargetClass(), propertyName);
 			}
 		}
 		Object[] indices;
 		try {
 			indices = getIndices(propertyName);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			throw new NotWritablePropertyException(getTargetClass(), propertyName, "wrong index type", e);
 		}
 		Object index = indices[indices.length - 1];
@@ -289,6 +271,7 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 		}
 	}
 
+	@Override
 	public void setSimplePropertyValue(String propertyName, Object value) throws BeansException {
 		Member writeAccessor = getWritePropertyAccessor(propertyName);
 		if (writeAccessor == null) {
@@ -303,25 +286,24 @@ public class DefaultMemberPropertyAccessor extends AbstractNestedMemberPropertyA
 			ReflectionUtils.makeAccessible(writeAccessor);
 			if (writeAccessor instanceof Field) {
 				((Field) writeAccessor).set(target, value);
-			}
-			else {// writeAccessor instanceof Method
+			} else {// writeAccessor instanceof Method
 				((Method) writeAccessor).invoke(target, new Object[] { value });
 			}
-		}
-		catch (IllegalAccessException e) {
+		} catch (IllegalAccessException e) {
 			throw new InvalidPropertyException(getTargetClass(), propertyName, "Property is not accessible", e);
-		}
-		catch (InvocationTargetException e) {
-			ReflectionUtils.handleInvocationTargetException(e);
+		} catch (InvocationTargetException e) {
+			org.springframework.util.ReflectionUtils.handleInvocationTargetException(e);
 			throw new IllegalStateException(
 					"An unexpected state occured during setPropertyValue(String, Object). This may be a bug.");
 		}
 	}
 
+	@Override
 	protected AbstractNestedMemberPropertyAccessor createChildPropertyAccessor(String propertyName) {
 		return new DefaultMemberPropertyAccessor(this, propertyName);
 	}
 
+	@Override
 	public Object convertIfNecessary(Object value, Class requiredType, MethodParameter methodParam)
 			throws TypeMismatchException {
 		// TODO Auto-generated method stub

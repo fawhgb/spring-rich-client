@@ -32,30 +32,32 @@ import org.springframework.util.comparator.CompoundComparator;
  */
 public class LabeledEnumComboBoxBinding extends ComboBoxBinding {
 
-    private MessageSource messageSource;
+	private MessageSource messageSource;
 
-    public LabeledEnumComboBoxBinding(JComboBox comboBox, FormModel formModel, String formPropertyPath) {
-        super(comboBox, formModel, formPropertyPath);
-    }
+	public LabeledEnumComboBoxBinding(JComboBox comboBox, FormModel formModel, String formPropertyPath) {
+		super(comboBox, formModel, formPropertyPath);
+	}
 
-    protected void doBindControl(ListModel bindingModel) {
-        setRenderer(new LabeledEnumListRenderer(getMessageSource()));
-        setEditor(new LabeledEnumComboBoxEditor(getMessageSource(), getEditor()));
-        CompoundComparator comparator = new CompoundComparator();
-        comparator.addComparator(LabeledEnum.LABEL_ORDER);
-        comparator.addComparator(new ComparableComparator());
-        setComparator(comparator);
-        super.doBindControl(bindingModel);
-    }
+	@Override
+	protected void doBindControl(ListModel bindingModel) {
+		setRenderer(new LabeledEnumListRenderer(getMessageSource()));
+		setEditor(new LabeledEnumComboBoxEditor(getMessageSource(), getEditor()));
+		CompoundComparator comparator = new CompoundComparator();
+		comparator.addComparator(LabeledEnum.LABEL_ORDER);
+		comparator.addComparator(new ComparableComparator());
+		setComparator(comparator);
+		super.doBindControl(bindingModel);
+	}
 
-    public void setMessageSource(MessageSource messageSource) {
-        this.messageSource = messageSource;
-    }
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
 
-    protected MessageSource getMessageSource() {
-        if (messageSource == null) {
-            messageSource = (MessageSource) ApplicationServicesLocator.services().getService(MessageSource.class);
-        }
-        return messageSource;
-    }
+	@Override
+	protected MessageSource getMessageSource() {
+		if (messageSource == null) {
+			messageSource = (MessageSource) ApplicationServicesLocator.services().getService(MessageSource.class);
+		}
+		return messageSource;
+	}
 }

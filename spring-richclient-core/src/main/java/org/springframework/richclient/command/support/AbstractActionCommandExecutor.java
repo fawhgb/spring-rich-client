@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -27,104 +27,121 @@ import org.springframework.richclient.core.SecurityControllable;
 /**
  * @author Keith Donald
  */
-public class AbstractActionCommandExecutor implements ParameterizableActionCommandExecutor,
-        GuardedActionCommandExecutor, SecurityControllable {
+public class AbstractActionCommandExecutor
+		implements ParameterizableActionCommandExecutor, GuardedActionCommandExecutor, SecurityControllable {
 
-    private ValueModel enabled = new ValueHolder(Boolean.FALSE);
+	private ValueModel enabled = new ValueHolder(Boolean.FALSE);
 
-    private boolean authorized = true;
-    private boolean maskedEnabledState = false;
-    private String securityControllerId = null;
+	private boolean authorized = true;
+	private boolean maskedEnabledState = false;
+	private String securityControllerId = null;
 
-    /**
-     * Set the Id of the security controller that should manage this object.
-     * @param controllerId Id (bean name) of the security controller
-     */
-    public void setSecurityControllerId(String controllerId) {
-        this.securityControllerId = controllerId;
-    }
+	/**
+	 * Set the Id of the security controller that should manage this object.
+	 *
+	 * @param controllerId Id (bean name) of the security controller
+	 */
+	@Override
+	public void setSecurityControllerId(String controllerId) {
+		this.securityControllerId = controllerId;
+	}
 
-    /**
-     * Get the id (bean name) of the security controller that should manage this object.
-     * @return controller id
-     */
-    public String getSecurityControllerId() {
-        return securityControllerId;
-    }
+	/**
+	 * Get the id (bean name) of the security controller that should manage this
+	 * object.
+	 *
+	 * @return controller id
+	 */
+	@Override
+	public String getSecurityControllerId() {
+		return securityControllerId;
+	}
 
-    /**
-     * Set the authorized state.  Setting authorized to false will override any call
-     * to {@link #setEnabled(boolean)}.  As long as this object is unauthorized,
-     * it can not be enabled.
-     * @param authorized Pass <code>true</code> if the object is to be authorized
-     */
-    public void setAuthorized( boolean authorized ) {
+	/**
+	 * Set the authorized state. Setting authorized to false will override any call
+	 * to {@link #setEnabled(boolean)}. As long as this object is unauthorized, it
+	 * can not be enabled.
+	 *
+	 * @param authorized Pass <code>true</code> if the object is to be authorized
+	 */
+	@Override
+	public void setAuthorized(boolean authorized) {
 
-        if( isAuthorized() != authorized ) {
-            
-            this.authorized = authorized;
+		if (isAuthorized() != authorized) {
 
-            // We need to apply a change to our enabled state depending on our
-            // new authorized state.
-            if( authorized ) {
-                // install the last requested enabled state
-                setEnabled(maskedEnabledState);
-            } else {
-                // Record the current enabled state and then disable
-                maskedEnabledState = isEnabled();
-                internalSetEnabled(false);
-            }
-        }
-    }
+			this.authorized = authorized;
 
-    /**
-     * Get the authorized state.
-     * @return authorized
-     */
-    public boolean isAuthorized() {
-        return authorized;
-    }
+			// We need to apply a change to our enabled state depending on our
+			// new authorized state.
+			if (authorized) {
+				// install the last requested enabled state
+				setEnabled(maskedEnabledState);
+			} else {
+				// Record the current enabled state and then disable
+				maskedEnabledState = isEnabled();
+				internalSetEnabled(false);
+			}
+		}
+	}
 
-    public boolean isEnabled() {
-        return ((Boolean)enabled.getValue()).booleanValue();
-    }
+	/**
+	 * Get the authorized state.
+	 *
+	 * @return authorized
+	 */
+	@Override
+	public boolean isAuthorized() {
+		return authorized;
+	}
 
-    /**
-     * Set the enabled state of this command.  Note that if we are currently not
-     * authorized, then the new value will just be recorded and no change in the
-     * current enabled state will be made.
-     * @param enabled state
-     */
-    public void setEnabled(boolean enabled) {
-        maskedEnabledState = enabled;
-        if( isAuthorized() ) {
-            internalSetEnabled( enabled );
-        }
-    }
+	@Override
+	public boolean isEnabled() {
+		return ((Boolean) enabled.getValue()).booleanValue();
+	}
 
-    /**
-     * Internal method to set the enabled state.  This is needed so that calls
-     * made to the public setEnabled and this method can be handled differently.
-     * @param enabled state
-     * @see #setAuthorized(boolean)
-     */
-    protected void internalSetEnabled( boolean enabled ) {
-        this.enabled.setValue(Boolean.valueOf(enabled));
-    }
+	/**
+	 * Set the enabled state of this command. Note that if we are currently not
+	 * authorized, then the new value will just be recorded and no change in the
+	 * current enabled state will be made.
+	 *
+	 * @param enabled state
+	 */
+	@Override
+	public void setEnabled(boolean enabled) {
+		maskedEnabledState = enabled;
+		if (isAuthorized()) {
+			internalSetEnabled(enabled);
+		}
+	}
 
-    public void addEnabledListener(PropertyChangeListener listener) {
-        enabled.addValueChangeListener(listener);
-    }
+	/**
+	 * Internal method to set the enabled state. This is needed so that calls made
+	 * to the public setEnabled and this method can be handled differently.
+	 *
+	 * @param enabled state
+	 * @see #setAuthorized(boolean)
+	 */
+	protected void internalSetEnabled(boolean enabled) {
+		this.enabled.setValue(Boolean.valueOf(enabled));
+	}
 
-    public void removeEnabledListener(PropertyChangeListener listener) {
-        enabled.removeValueChangeListener(listener);
-    }
+	@Override
+	public void addEnabledListener(PropertyChangeListener listener) {
+		enabled.addValueChangeListener(listener);
+	}
 
-    public void execute(Map parameters) {
-        execute();
-    }
+	@Override
+	public void removeEnabledListener(PropertyChangeListener listener) {
+		enabled.removeValueChangeListener(listener);
+	}
 
-    public void execute() {
-    }
+	@Override
+	public void execute(Map parameters) {
+		execute();
+	}
+
+	@Override
+	public void execute() {
+	}
 
 }

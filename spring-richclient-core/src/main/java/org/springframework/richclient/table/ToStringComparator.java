@@ -18,19 +18,21 @@ package org.springframework.richclient.table;
 import java.util.Comparator;
 
 /**
- * {@link Comparator} implementation that compares the {@link #toString()} representation of the argument.
- *  
+ * {@link Comparator} implementation that compares the {@link #toString()}
+ * representation of the argument.
+ * 
  * @author Peter De Bruycker
  */
 public class ToStringComparator implements Comparator {
 
-    public static final ToStringComparator INSTANCE = new ToStringComparator();
-    
-    public int compare(Object o1, Object o2) {
-        String s1 = o1.toString();
-        String s2 = o2.toString();
-        
-        return s1.compareTo(s2);
-    }
-    
+	public static final ToStringComparator INSTANCE = new ToStringComparator();
+
+	@Override
+	public int compare(Object o1, Object o2) {
+		String s1 = o1.toString();
+		String s2 = o2.toString();
+
+		return s1.compareTo(s2);
+	}
+
 }

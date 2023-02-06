@@ -77,16 +77,19 @@ public class SetupLicenseWizardPage extends AbstractWizardPage {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	protected JComponent createControl() {
 		initLicenseTextPane();
 
 		ToggleCommand acceptCommand = new ToggleCommand("acceptLicenseCommand") {
+			@Override
 			protected void onSelection() {
 				SetupLicenseWizardPage.this.setEnabled(true);
 			}
 		};
 
 		ToggleCommand doNotAcceptCommand = new ToggleCommand("doNotAcceptLicenseCommand") {
+			@Override
 			protected void onSelection() {
 				SetupLicenseWizardPage.this.setEnabled(false);
 			}
@@ -118,13 +121,12 @@ public class SetupLicenseWizardPage extends AbstractWizardPage {
 	private void updateLicenseTextPane() {
 		try {
 			Assert.state(licenseTextLocation != null, "License text location is not set");
-			String text = FileCopyUtils.copyToString(new BufferedReader(new InputStreamReader(licenseTextLocation
-					.getInputStream())));
+			String text = FileCopyUtils
+					.copyToString(new BufferedReader(new InputStreamReader(licenseTextLocation.getInputStream())));
 			licenseTextPane.setText(LabelUtils.htmlBlock(text));
-		}
-		catch (IOException e) {
-			final IllegalStateException exp = new IllegalStateException("License text not accessible: "
-					+ e.getMessage());
+		} catch (IOException e) {
+			final IllegalStateException exp = new IllegalStateException(
+					"License text not accessible: " + e.getMessage());
 			exp.setStackTrace(e.getStackTrace());
 			throw exp;
 		}

@@ -65,9 +65,10 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 
 	/**
 	 * Creates a new <tt>AbstractMemberPropertyAccessor</tt>.
-	 * @param targetClass the target class.
-	 * @param fieldAccessEnabled whether field access should be used for
-	 * property type determination.
+	 *
+	 * @param targetClass        the target class.
+	 * @param fieldAccessEnabled whether field access should be used for property
+	 *                           type determination.
 	 */
 	protected AbstractMemberPropertyAccessor(Class targetClass, boolean fieldAccessEnabled) {
 		this.fieldAccessEnabled = fieldAccessEnabled;
@@ -92,10 +93,10 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	}
 
 	/**
-	 * Introspect fields of a class. This excludes static fields and handles
-	 * final fields as readOnly.
+	 * Introspect fields of a class. This excludes static fields and handles final
+	 * fields as readOnly.
 	 *
-	 * @param type the class to inspect.
+	 * @param type                the class to inspect.
 	 * @param introspectedClasses a set of already inspected classes.
 	 */
 	private void introspectFields(Class type, Set introspectedClasses) {
@@ -116,10 +117,10 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	}
 
 	/**
-	 * Introspect class for accessor methods. This includes methods starting
-	 * with 'get', 'set' and 'is'.
+	 * Introspect class for accessor methods. This includes methods starting with
+	 * 'get', 'set' and 'is'.
 	 *
-	 * @param type class to introspect.
+	 * @param type                class to introspect.
 	 * @param introspectedClasses set of already inspected classes.
 	 */
 	private void introspectMethods(Class type, Set introspectedClasses) {
@@ -137,11 +138,9 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 			String methodName = methods[i].getName();
 			if (methodName.startsWith("get") && methods[i].getParameterTypes().length == 0) {
 				readAccessors.put(getPropertyName(methodName, 3), methods[i]);
-			}
-			else if (methodName.startsWith("is") && methods[i].getParameterTypes().length == 0) {
+			} else if (methodName.startsWith("is") && methods[i].getParameterTypes().length == 0) {
 				readAccessors.put(getPropertyName(methodName, 2), methods[i]);
-			}
-			else if (methodName.startsWith("set") && methods[i].getParameterTypes().length == 1) {
+			} else if (methodName.startsWith("set") && methods[i].getParameterTypes().length == 1) {
 				writeAccessors.put(getPropertyName(methodName, 3), methods[i]);
 			}
 		}
@@ -190,8 +189,7 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	protected Member getPropertyAccessor(String propertyName) {
 		if (readAccessors.containsKey(propertyName)) {
 			return (Member) readAccessors.get(propertyName);
-		}
-		else {
+		} else {
 			return (Member) writeAccessors.get(propertyName);
 		}
 	}
@@ -199,16 +197,17 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isReadableProperty(String propertyName) {
 		if (PropertyAccessorUtils.isIndexedProperty(propertyName)) {
 			String rootProperty = getRootPropertyName(propertyName);
 			String parentProperty = getParentPropertyName(propertyName);
-			return isReadableProperty(rootProperty)
-					&& checkKeyTypes(propertyName)
-					&& (!getPropertyType(parentProperty).isArray() || checkSize(propertyName) || isWritableProperty(parentProperty))
-					&& ((isReadableProperty(parentProperty) && getPropertyValue(parentProperty) != null) || isWritableProperty(parentProperty));
-		}
-		else {
+			return isReadableProperty(rootProperty) && checkKeyTypes(propertyName)
+					&& (!getPropertyType(parentProperty).isArray() || checkSize(propertyName)
+							|| isWritableProperty(parentProperty))
+					&& ((isReadableProperty(parentProperty) && getPropertyValue(parentProperty) != null)
+							|| isWritableProperty(parentProperty));
+		} else {
 			return readAccessors.containsKey(propertyName);
 		}
 	}
@@ -216,12 +215,12 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isWritableProperty(String propertyName) {
 		if (PropertyAccessorUtils.isIndexedProperty(propertyName)) {
 			// if an indexed property is readable it is writable, too
 			return isReadableProperty(propertyName);
-		}
-		else {
+		} else {
 			return writeAccessors.containsKey(propertyName);
 		}
 	}
@@ -229,6 +228,7 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Class getPropertyType(String propertyName) {
 		if (PropertyAccessorUtils.isIndexedProperty(propertyName)) {
 			int nestingLevel = PropertyAccessorUtils.getNestingLevel(propertyName);
@@ -236,41 +236,35 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 				Member accessor = getPropertyAccessor(getRootPropertyName(propertyName));
 				if (accessor instanceof Field) {
 					return GenericCollectionTypeResolver.getIndexedValueFieldType((Field) accessor, nestingLevel);
-				}
-				else {
+				} else {
 					Method accessorMethod = (Method) accessor;
 					MethodParameter parameter = new MethodParameter(accessorMethod,
 							accessorMethod.getParameterTypes().length - 1);
 					return GenericCollectionTypeResolver.getIndexedValueMethodType(parameter, nestingLevel);
 				}
-			}
-			else {
+			} else {
 				// we can only resolve array types in Java 1.4
 				Class type = getPropertyType(getRootPropertyName(propertyName));
 				for (int i = 0; i < nestingLevel; i++) {
 					if (type.isArray()) {
 						type = type.getComponentType();
-					}
-					else {
+					} else {
 						return Object.class; // cannot resolve type
 					}
 				}
 				return type;
 			}
-		}
-		else {
+		} else {
 			Member readAccessor = (Member) readAccessors.get(propertyName);
 			if (readAccessor instanceof Field) {
 				return ((Field) readAccessor).getType();
-			}
-			else if (readAccessor instanceof Method) {
+			} else if (readAccessor instanceof Method) {
 				return ((Method) readAccessor).getReturnType();
 			}
 			Member writeAccessor = (Member) writeAccessors.get(propertyName);
 			if (writeAccessor instanceof Field) {
 				return ((Field) writeAccessor).getType();
-			}
-			else if (writeAccessor instanceof Method) {
+			} else if (writeAccessor instanceof Method) {
 				return ((Method) writeAccessor).getParameterTypes()[0];
 			}
 		}
@@ -278,13 +272,13 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	}
 
 	/**
-	 * Determine the type of the key used to index the collection/map. When jdk
-	 * is at least 1.5, maps can be specified with generics and their key type
-	 * can be resolved.
+	 * Determine the type of the key used to index the collection/map. When jdk is
+	 * at least 1.5, maps can be specified with generics and their key type can be
+	 * resolved.
 	 *
 	 * @param propertyName name of the property.
-	 * @return the type of the key. An integer if it's not a map, {@link String}
-	 * if the jdk is less than 1.5, a specific type if the map was generified.
+	 * @return the type of the key. An integer if it's not a map, {@link String} if
+	 *         the jdk is less than 1.5, a specific type if the map was generified.
 	 */
 	public Class getIndexedPropertyKeyType(String propertyName) {
 		if (!PropertyAccessorUtils.isIndexedProperty(propertyName)) {
@@ -299,17 +293,14 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 			Member accessor = getPropertyAccessor(getRootPropertyName(propertyName));
 			if (accessor instanceof Field) {
 				return GenericCollectionTypeResolver.getMapKeyFieldType((Field) accessor, nestingLevel);
-			}
-			else if (accessor instanceof Method) {
-				MethodParameter parameter = new MethodParameter((Method) accessor, ((Method) accessor)
-						.getParameterTypes().length - 1, nestingLevel);
+			} else if (accessor instanceof Method) {
+				MethodParameter parameter = new MethodParameter((Method) accessor,
+						((Method) accessor).getParameterTypes().length - 1, nestingLevel);
 				return GenericCollectionTypeResolver.getMapKeyParameterType(parameter);
-			}
-			else {
+			} else {
 				throw new InvalidPropertyException(getTargetClass(), propertyName, "property not accessable");
 			}
-		}
-		else {
+		} else {
 			return String.class; // the default for Java 1.4
 		}
 	}
@@ -317,11 +308,11 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public Object getPropertyValue(String propertyName) throws BeansException {
 		if (PropertyAccessorUtils.isIndexedProperty(propertyName)) {
 			return getIndexedPropertyValue(propertyName);
-		}
-		else {
+		} else {
 			return getSimplePropertyValue(propertyName);
 		}
 	}
@@ -329,11 +320,11 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setPropertyValue(String propertyName, Object value) throws BeansException {
 		if (PropertyAccessorUtils.isIndexedProperty(propertyName)) {
 			setIndexedPropertyValue(propertyName, value);
-		}
-		else {
+		} else {
 			setSimplePropertyValue(propertyName, value);
 		}
 	}
@@ -358,7 +349,7 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	 * Set the value of an indexed property.
 	 *
 	 * @param propertyName name of the property.
-	 * @param value new value for the property.
+	 * @param value        new value for the property.
 	 */
 	protected abstract void setIndexedPropertyValue(String propertyName, Object value);
 
@@ -366,7 +357,7 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	 * Set the value of a simple property (non-indexed).
 	 *
 	 * @param propertyName name of the property.
-	 * @param value new value for the property.
+	 * @param value        new value for the property.
 	 */
 	protected abstract void setSimplePropertyValue(String propertyName, Object value);
 
@@ -374,7 +365,7 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	 * Returns the propertyName based on the methodName. Cuts of the prefix and
 	 * removes first capital.
 	 *
-	 * @param methodName name of method to convert.
+	 * @param methodName   name of method to convert.
 	 * @param prefixLength length of prefix to cut of.
 	 * @return property name.
 	 */
@@ -383,8 +374,8 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	}
 
 	/**
-	 * Returns the root property of an indexed property. The root property is
-	 * the property that contains no indices.
+	 * Returns the root property of an indexed property. The root property is the
+	 * property that contains no indices.
 	 *
 	 * @param propertyName the name of the property.
 	 * @return the root property.
@@ -403,8 +394,7 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	protected String getParentPropertyName(String propertyName) {
 		if (!PropertyAccessorUtils.isIndexedProperty(propertyName)) {
 			return "";
-		}
-		else {
+		} else {
 			return propertyName.substring(0, propertyName.lastIndexOf(PROPERTY_KEY_PREFIX_CHAR));
 		}
 	}
@@ -413,8 +403,7 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 		try {
 			getIndices(propertyName);
 			return true;
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			return false;
 		}
 	}
@@ -466,8 +455,7 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 				// collections are considered to be expandable
 				// so if it is not null, any index matches
 				return getPropertyValue(parentPropertyName) != null;
-			}
-			catch (NotReadablePropertyException e) {
+			} catch (NotReadablePropertyException e) {
 				return false;
 			}
 		}
@@ -477,8 +465,7 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 		try {
 			Object parentProperty = getPropertyValue(parentPropertyName);
 			return parentProperty != null && Array.getLength(parentProperty) > index;
-		}
-		catch (NotReadablePropertyException e) {
+		} catch (NotReadablePropertyException e) {
 			return false;
 		}
 	}
@@ -489,8 +476,7 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 					propertyName);
 			beanException.initCause(e);
 			return beanException;
-		}
-		else {
+		} else {
 			ByteArrayOutputStream stackTrace = new ByteArrayOutputStream();
 			PrintWriter stackTraceWriter = new PrintWriter(stackTrace);
 			e.printStackTrace(stackTraceWriter);
@@ -505,9 +491,9 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 	 * map-values, collection-values or array-values.
 	 *
 	 * @param assemblageType either map or collection or array
-	 * @param assemblage the assemblage to set the value on
-	 * @param index the index to set the value at
-	 * @param value the value to set
+	 * @param assemblage     the assemblage to set the value on
+	 * @param index          the index to set the value at
+	 * @param value          the value to set
 	 * @return the assemblage
 	 */
 	protected Object setAssemblageValue(Class assemblageType, Object assemblage, Object index, Object value) {
@@ -519,27 +505,22 @@ public abstract class AbstractMemberPropertyAccessor extends AbstractPropertyAcc
 				assemblage = newAssemblage;
 			}
 			Array.set(assemblage, i, value);
-		}
-		else if (List.class.isAssignableFrom(assemblageType)) {
+		} else if (List.class.isAssignableFrom(assemblageType)) {
 			int i = ((Integer) index).intValue();
 			List list = (List) assemblage;
 			if (list.size() > i) {
 				list.set(i, value);
-			}
-			else {
+			} else {
 				while (list.size() < i) {
 					list.add(null);
 				}
 				list.add(value);
 			}
-		}
-		else if (Map.class.isAssignableFrom(assemblageType)) {
+		} else if (Map.class.isAssignableFrom(assemblageType)) {
 			((Map) assemblage).put(index, value);
-		}
-		else if (assemblage instanceof Collection) {
+		} else if (assemblage instanceof Collection) {
 			((Collection) assemblage).add(value);
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("assemblage must be of type array, collection or map.");
 		}
 		return assemblage;

@@ -22,25 +22,26 @@ import javax.swing.JInternalFrame;
 import org.springframework.richclient.command.ActionCommand;
 
 /**
- * Command to show a <code>JInternalFrame</code>, i.e. restore it, and bring it to the
- * front.
- * 
+ * Command to show a <code>JInternalFrame</code>, i.e. restore it, and bring it
+ * to the front.
+ *
  * @author Peter De Bruycker
  */
 public class ShowFrameCommand extends ActionCommand {
 
-    private JInternalFrame frame;
+	private JInternalFrame frame;
 
-    public ShowFrameCommand( JInternalFrame frame ) {
-        this.frame = frame;
-    }
+	public ShowFrameCommand(JInternalFrame frame) {
+		this.frame = frame;
+	}
 
-    protected void doExecuteCommand() {
-        try {
-            frame.setSelected( true );
-            frame.setIcon( false );
-        } catch( PropertyVetoException e ) {
-            // ignore
-        }
-    }
+	@Override
+	protected void doExecuteCommand() {
+		try {
+			frame.setSelected(true);
+			frame.setIcon(false);
+		} catch (PropertyVetoException e) {
+			// ignore
+		}
+	}
 }

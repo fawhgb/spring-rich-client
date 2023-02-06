@@ -1,17 +1,19 @@
 package org.springframework.richclient.components;
 
+import java.awt.Component;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
+
+import javax.swing.Icon;
+import javax.swing.JTabbedPane;
+
+import org.springframework.richclient.application.ApplicationServicesLocator;
 import org.springframework.richclient.core.Message;
 import org.springframework.richclient.core.Severity;
 import org.springframework.richclient.image.IconSource;
-import org.springframework.richclient.application.ApplicationServicesLocator;
-
-import javax.swing.*;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Stack;
-import java.util.Map;
-import java.awt.*;
 
 /**
  * @author Jan Hoskens
@@ -19,126 +21,129 @@ import java.awt.*;
  */
 public class MessagableTabbedPane extends JTabbedPane implements MessagableTab {
 
-    private List<TabMetaData> tabMetaDatas = new ArrayList<TabMetaData>();
+	private static final long serialVersionUID = 1L;
 
-    private IconSource iconSource;
+	private List<TabMetaData> tabMetaDatas = new ArrayList<TabMetaData>();
 
-    public MessagableTabbedPane() {
-        super();
-    }
+	private IconSource iconSource;
 
-    public MessagableTabbedPane(int tabPlacement) {
-        super(tabPlacement);
-    }
+	public MessagableTabbedPane() {
+		super();
+	}
 
-    public MessagableTabbedPane(int tabPlacement, int tabPolicy) {
-        super(tabPlacement, tabPolicy);
-    }
+	public MessagableTabbedPane(int tabPlacement) {
+		super(tabPlacement);
+	}
 
-    @Override
-    public void insertTab(String title, Icon icon, Component component, String tip, int index) {
-        super.insertTab(title, icon, component, tip, index);
-        tabMetaDatas.add(index, new TabMetaData());
-    }
+	public MessagableTabbedPane(int tabPlacement, int tabPolicy) {
+		super(tabPlacement, tabPolicy);
+	}
 
-    @Override
-    public void setIconAt(int index, Icon icon) {
-        // Hack to allow the error icon to overwrite the real icon
-        TabMetaData tabMetaData = tabMetaDatas.get(index);
-        tabMetaData.setIcon(icon);
-        if (!tabMetaData.hasErrors()) {
-            super.setIconAt(index, icon);
-        }
-    }
+	@Override
+	public void insertTab(String title, Icon icon, Component component, String tip, int index) {
+		super.insertTab(title, icon, component, tip, index);
+		tabMetaDatas.add(index, new TabMetaData());
+	}
 
-    @Override
-    public void setToolTipTextAt(int index, String toolTipText) {
-        // Hack to allow the error toolTipText to overwrite the real toolTipText
-        TabMetaData tabMetaData = tabMetaDatas.get(index);
-        tabMetaData.setToolTipText(toolTipText);
-        if (!tabMetaData.hasErrors()) {
-            super.setToolTipTextAt(index, toolTipText);
-        }
-    }
+	@Override
+	public void setIconAt(int index, Icon icon) {
+		// Hack to allow the error icon to overwrite the real icon
+		TabMetaData tabMetaData = tabMetaDatas.get(index);
+		tabMetaData.setIcon(icon);
+		if (!tabMetaData.hasErrors()) {
+			super.setIconAt(index, icon);
+		}
+	}
 
-    public void setMessage(Object source, Message message, int index) {
-        TabMetaData tabMetaData = tabMetaDatas.get(index);
-        tabMetaData.put(source, message);
-        if (tabMetaData.hasErrors()) {
-            // Calling super to avoid the error icon/toolTipText overwrite hack
-            super.setIconAt(index, loadIcon(Severity.ERROR.getLabel()));
-            super.setToolTipTextAt(index, tabMetaData.getFirstErrorMessage());
-        } else {
-            // Calling super to avoid the error icon/toolTipText overwrite hack
-            super.setIconAt(index, tabMetaData.getIcon());
-            super.setToolTipTextAt(index, tabMetaData.getToolTipText());
-        }
-    }
+	@Override
+	public void setToolTipTextAt(int index, String toolTipText) {
+		// Hack to allow the error toolTipText to overwrite the real toolTipText
+		TabMetaData tabMetaData = tabMetaDatas.get(index);
+		tabMetaData.setToolTipText(toolTipText);
+		if (!tabMetaData.hasErrors()) {
+			super.setToolTipTextAt(index, toolTipText);
+		}
+	}
 
-    private Icon loadIcon(String severityLabel) {
-        if (iconSource == null) {
-            iconSource = (IconSource) ApplicationServicesLocator.services().getService(IconSource.class);
-        }
-        return iconSource.getIcon("severity." + severityLabel + ".overlay");
-    }
+	@Override
+	public void setMessage(Object source, Message message, int index) {
+		TabMetaData tabMetaData = tabMetaDatas.get(index);
+		tabMetaData.put(source, message);
+		if (tabMetaData.hasErrors()) {
+			// Calling super to avoid the error icon/toolTipText overwrite hack
+			super.setIconAt(index, loadIcon(Severity.ERROR.getLabel()));
+			super.setToolTipTextAt(index, tabMetaData.getFirstErrorMessage());
+		} else {
+			// Calling super to avoid the error icon/toolTipText overwrite hack
+			super.setIconAt(index, tabMetaData.getIcon());
+			super.setToolTipTextAt(index, tabMetaData.getToolTipText());
+		}
+	}
 
-    private static class TabMetaData {
+	private Icon loadIcon(String severityLabel) {
+		if (iconSource == null) {
+			iconSource = (IconSource) ApplicationServicesLocator.services().getService(IconSource.class);
+		}
+		return iconSource.getIcon("severity." + severityLabel + ".overlay");
+	}
 
-        private Map<Object, Message> messageMap = new HashMap<Object, Message>();
-        private Stack<Message> errorMessageStack = new Stack<Message>();
+	private static class TabMetaData {
 
-        private Icon icon = null;
-        private String toolTipText = null;
+		private Map<Object, Message> messageMap = new HashMap<Object, Message>();
+		private Stack<Message> errorMessageStack = new Stack<Message>();
 
-        public void put(Object key, Message message) {
-            Message oldMessage = messageMap.get(key);
-            if (oldMessage != message) {
-                // Update errorMessageStack
-                if ((oldMessage != null) && (oldMessage.getSeverity() == Severity.ERROR)) {
-                    errorMessageStack.remove(oldMessage);
-                }
-                if ((message != null) && (message.getSeverity() == Severity.ERROR)) {
-                    errorMessageStack.add(message);
-                }
-                // Update messageMap
-                if (message != null) {
-                    messageMap.put(key, message);
-                } else {
-                    messageMap.remove(key);
-                }
-            }
-        }
+		private Icon icon = null;
+		private String toolTipText = null;
 
-        public Message get(Object key) {
-            return messageMap.get(key);
-        }
+		public void put(Object key, Message message) {
+			Message oldMessage = messageMap.get(key);
+			if (oldMessage != message) {
+				// Update errorMessageStack
+				if ((oldMessage != null) && (oldMessage.getSeverity() == Severity.ERROR)) {
+					errorMessageStack.remove(oldMessage);
+				}
+				if ((message != null) && (message.getSeverity() == Severity.ERROR)) {
+					errorMessageStack.add(message);
+				}
+				// Update messageMap
+				if (message != null) {
+					messageMap.put(key, message);
+				} else {
+					messageMap.remove(key);
+				}
+			}
+		}
 
-        public String getFirstErrorMessage() {
-            if (!hasErrors()) {
-                return null;
-            }
-            return errorMessageStack.firstElement().getMessage();
-        }
+		public Message get(Object key) {
+			return messageMap.get(key);
+		}
 
-        public boolean hasErrors() {
-            return errorMessageStack.size() > 0;
-        }
+		public String getFirstErrorMessage() {
+			if (!hasErrors()) {
+				return null;
+			}
+			return errorMessageStack.firstElement().getMessage();
+		}
 
-        public Icon getIcon() {
-            return icon;
-        }
+		public boolean hasErrors() {
+			return errorMessageStack.size() > 0;
+		}
 
-        public void setIcon(Icon icon) {
-            this.icon = icon;
-        }
+		public Icon getIcon() {
+			return icon;
+		}
 
-        public String getToolTipText() {
-            return toolTipText;
-        }
+		public void setIcon(Icon icon) {
+			this.icon = icon;
+		}
 
-        public void setToolTipText(String toolTipText) {
-            this.toolTipText = toolTipText;
-        }
-    }
+		public String getToolTipText() {
+			return toolTipText;
+		}
+
+		public void setToolTipText(String toolTipText) {
+			this.toolTipText = toolTipText;
+		}
+	}
 
 }

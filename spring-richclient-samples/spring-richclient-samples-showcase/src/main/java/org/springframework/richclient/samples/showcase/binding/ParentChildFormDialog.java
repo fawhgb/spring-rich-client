@@ -60,6 +60,7 @@ public class ParentChildFormDialog extends AbstractReporterTitledApplicationDial
 			return "childName = " + childName + ", childDescription = " + childDescription;
 		}
 
+		@Override
 		public PropertyConstraint getPropertyConstraint(String propertyName) {
 			return propertyConstraints.get(propertyName);
 		}
@@ -98,6 +99,7 @@ public class ParentChildFormDialog extends AbstractReporterTitledApplicationDial
 			return "parentName = " + parentName + ", parentDescription = " + parentDescription;
 		}
 
+		@Override
 		public PropertyConstraint getPropertyConstraint(String propertyName) {
 			return propertyConstraints.get(propertyName);
 		}
@@ -134,12 +136,14 @@ public class ParentChildFormDialog extends AbstractReporterTitledApplicationDial
 			builder.add("parentName");
 			builder.row();
 			builder.add("parentDescription");
-			JPanel panel = new JPanel(new FormLayout(new ColumnSpec[] { FormFactory.DEFAULT_COLSPEC,
-					FormFactory.RELATED_GAP_COLSPEC, FormFactory.DEFAULT_COLSPEC }, new RowSpec[] {
-					FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.UNRELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC,
-					FormFactory.DEFAULT_ROWSPEC, FormFactory.UNRELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
-					FormFactory.UNRELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC }));
+			JPanel panel = new JPanel(new FormLayout(
+					new ColumnSpec[] { FormFactory.DEFAULT_COLSPEC, FormFactory.RELATED_GAP_COLSPEC,
+							FormFactory.DEFAULT_COLSPEC },
+					new RowSpec[] { FormFactory.DEFAULT_ROWSPEC, FormFactory.RELATED_GAP_ROWSPEC,
+							FormFactory.DEFAULT_ROWSPEC, FormFactory.UNRELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.RELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.UNRELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC,
+							FormFactory.UNRELATED_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC }));
 			CellConstraints cc = new CellConstraints();
 			panel.add(new JLabel(getMessage("parentForm.label")), cc.xy(1, 1));
 			panel.add(builder.getForm(), cc.xy(3, 3));
@@ -150,9 +154,9 @@ public class ParentChildFormDialog extends AbstractReporterTitledApplicationDial
 			childForm = new ChildForm();
 			childForm.setMessageArea(getMessageArea());
 			panel.add(childForm.getControl(), cc.xy(3, 9));
-			CommandGroup childFormcommandGroup = CommandGroup.createCommandGroup(new ActionCommand[] {
-					childForm.getEnableFormModelCommand(), childForm.getReadOnlyFormModelCommand(),
-					childForm.getValidatingFormModelCommand() });
+			CommandGroup childFormcommandGroup = CommandGroup
+					.createCommandGroup(new ActionCommand[] { childForm.getEnableFormModelCommand(),
+							childForm.getReadOnlyFormModelCommand(), childForm.getValidatingFormModelCommand() });
 			panel.add(childFormcommandGroup.createButtonBar(), cc.xy(3, 11));
 			addChildForm(childForm);
 			newSingleLineResultsReporter(ParentChildFormDialog.this);

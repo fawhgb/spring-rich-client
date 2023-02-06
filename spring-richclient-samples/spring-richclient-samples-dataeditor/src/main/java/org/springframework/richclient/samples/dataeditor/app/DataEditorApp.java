@@ -4,9 +4,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.richclient.application.ApplicationLauncher;
 
-public class DataEditorApp
-{
-    private static final Log logger = LogFactory.getLog(DataEditorApp.class);
+public class DataEditorApp {
+	private static final Log logger = LogFactory.getLog(DataEditorApp.class);
 
 	public static void main(String[] args) {
 		logger.info("Data editor sample starting up");
@@ -19,8 +18,7 @@ public class DataEditorApp
 
 		try {
 			new ApplicationLauncher(startupContextPath, new String[] { richclientApplicationContextPath });
-		}
-		catch (RuntimeException e) {
+		} catch (RuntimeException e) {
 			logger.error("RuntimeException during startup", e);
 		}
 	}

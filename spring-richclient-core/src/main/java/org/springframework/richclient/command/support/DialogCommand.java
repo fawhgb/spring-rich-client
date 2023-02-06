@@ -23,6 +23,7 @@ public class DialogCommand extends ActionCommand {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	protected void doExecuteCommand() {
 		dialog.showDialog();
 	}

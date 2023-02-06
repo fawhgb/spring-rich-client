@@ -1,9 +1,7 @@
 package org.springframework.richclient.form;
 
-import javax.swing.*;
+import javax.swing.JComponent;
 
-public interface HasValidationComponent
-{
-    public JComponent getValidationComponent();
+public interface HasValidationComponent {
+	public JComponent getValidationComponent();
 }
-

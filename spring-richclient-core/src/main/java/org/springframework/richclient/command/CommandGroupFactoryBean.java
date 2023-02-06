@@ -15,6 +15,8 @@
  */
 package org.springframework.richclient.command;
 
+import java.awt.Component;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.BeanNameAware;
@@ -25,8 +27,6 @@ import org.springframework.richclient.command.config.CommandConfigurer;
 import org.springframework.richclient.core.SecurityControllable;
 import org.springframework.richclient.util.Assert;
 import org.springframework.util.StringUtils;
-
-import java.awt.*;
 
 /**
  * A {@link FactoryBean} that produces a {@link CommandGroup}.
@@ -41,8 +41,8 @@ import java.awt.*;
  * represent the identifier of the command. Some strings have special meaning:
  *
  * <ul>
- * <li>{@value #GLUE_MEMBER_CODE}: Represents a 'glue' component between
- * command group members.</li>
+ * <li>{@value #GLUE_MEMBER_CODE}: Represents a 'glue' component between command
+ * group members.</li>
  * <li>{@value #SEPARATOR_MEMBER_CODE}: Represents a separator between command
  * group members.</li>
  * </ul>
@@ -53,20 +53,18 @@ import java.awt.*;
 public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, SecurityControllable, InitializingBean {
 
 	/**
-	 * The string that represents a glue component, to be used between other
-	 * members of the command group.
+	 * The string that represents a glue component, to be used between other members
+	 * of the command group.
 	 */
 	public static final String GLUE_MEMBER_CODE = "glue";
 
 	/**
-	 * The string that represents a separator between commands in the command
-	 * group.
+	 * The string that represents a separator between commands in the command group.
 	 */
 	public static final String SEPARATOR_MEMBER_CODE = "separator";
 
 	/**
-	 * The string prefix that indicates a command group member that is a
-	 * command.
+	 * The string prefix that indicates a command group member that is a command.
 	 */
 	public static final String COMMAND_MEMBER_PREFIX = "command:";
 
@@ -96,12 +94,12 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	private String securityControllerId;
 
 	/**
-	 * Creates a new uninitialized {@code CommandGroupFactoryBean}. If created
-	 * by the Spring IoC container, the {@code groupId} assigned to this
-	 * instance will be the bean name of the bean as declared in the bean
-	 * definition file. If using this constructor, a non-null list of command
-	 * group members must be provided by calling the
-	 * {@link #setMembers(Object[])} method before this instance is used.
+	 * Creates a new uninitialized {@code CommandGroupFactoryBean}. If created by
+	 * the Spring IoC container, the {@code groupId} assigned to this instance will
+	 * be the bean name of the bean as declared in the bean definition file. If
+	 * using this constructor, a non-null list of command group members must be
+	 * provided by calling the {@link #setMembers(Object[])} method before this
+	 * instance is used.
 	 */
 	public CommandGroupFactoryBean() {
 		// do nothing
@@ -112,14 +110,16 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	 * command group members.
 	 *
 	 * @param groupId The identifier that will be assigned to the command group
-	 * produced by this factory. Note that if this instance is created by a
-	 * Spring IoC container, the group ID provided here will be overwritten by
-	 * the bean name of this instance's bean definition.
+	 *                produced by this factory. Note that if this instance is
+	 *                created by a Spring IoC container, the group ID provided here
+	 *                will be overwritten by the bean name of this instance's bean
+	 *                definition.
 	 *
 	 * @param members The collection of objects that specify the members of the
-	 * command group. These objects are expected to be either instances of
-	 * {@link AbstractCommand} or strings. See the class documentation for
-	 * details on how these strings will be interpreted. Must not be null.
+	 *                command group. These objects are expected to be either
+	 *                instances of {@link AbstractCommand} or strings. See the class
+	 *                documentation for details on how these strings will be
+	 *                interpreted. Must not be null.
 	 *
 	 * @throws IllegalArgumentException if {@code members} is null.
 	 */
@@ -130,15 +130,17 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	/**
 	 * Creates a new {@code CommandGroupFactoryBean}.
 	 *
-	 * @param groupId The value to be used as the command identifier of the
-	 * command group produced by this factory.
-	 * @param commandRegistry The registry that will be used to retrieve the
-	 * actual instances of the command group members as specified in
-	 * {@code members}.
-	 * @param members The collection of objects that specify the members of the
-	 * command group. These objects are expected to be either instances of
-	 * {@link AbstractCommand} or strings. See the class documentation for
-	 * details on how these strings will be interpreted. Must not be null.
+	 * @param groupId         The value to be used as the command identifier of the
+	 *                        command group produced by this factory.
+	 * @param commandRegistry The registry that will be used to retrieve the actual
+	 *                        instances of the command group members as specified in
+	 *                        {@code members}.
+	 * @param members         The collection of objects that specify the members of
+	 *                        the command group. These objects are expected to be
+	 *                        either instances of {@link AbstractCommand} or
+	 *                        strings. See the class documentation for details on
+	 *                        how these strings will be interpreted. Must not be
+	 *                        null.
 	 *
 	 * @throws IllegalArgumentException if {@code members} is null.
 	 */
@@ -149,22 +151,25 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	/**
 	 * Creates a new {@code CommandGroupFactoryBean}.
 	 *
-	 * @param groupId The value to be used as the command identifier of the
-	 * command group produced by this factory.
-	 * @param commandRegistry The registry that will be used to retrieve the
-	 * actual instances of the command group members as specified in
-	 * {@code members}.
-	 * @param members The collection of objects that specify the members of the
-	 * command group. These objects are expected to be either instances of
-	 * {@link AbstractCommand} or strings. See the class documentation for
-	 * details on how these strings will be interpreted. Must not be null.
+	 * @param groupId           The value to be used as the command identifier of
+	 *                          the command group produced by this factory.
+	 * @param commandRegistry   The registry that will be used to retrieve the
+	 *                          actual instances of the command group members as
+	 *                          specified in {@code members}.
+	 * @param members           The collection of objects that specify the members
+	 *                          of the command group. These objects are expected to
+	 *                          be either instances of {@link AbstractCommand} or
+	 *                          strings. See the class documentation for details on
+	 *                          how these strings will be interpreted. Must not be
+	 *                          null.
 	 * @param commandConfigurer The object that will be used to configure the
-	 * command objects contained in this factory's command group.
+	 *                          command objects contained in this factory's command
+	 *                          group.
 	 *
 	 * @throws IllegalArgumentException if {@code members} is null.
 	 */
-	public CommandGroupFactoryBean(String groupId, CommandRegistry commandRegistry,
-			CommandConfigurer commandConfigurer, Object[] members) {
+	public CommandGroupFactoryBean(String groupId, CommandRegistry commandRegistry, CommandConfigurer commandConfigurer,
+			Object[] members) {
 
 		Assert.required(members, "members");
 
@@ -178,16 +183,17 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void afterPropertiesSet() {
 		PropertyNotSetException.throwIfNull(this.members, "members", getClass());
 	}
 
 	/**
-	 * Sets the registry that will be used to retrieve the actual instances of
-	 * the command group members as specified in the encoded members collection.
+	 * Sets the registry that will be used to retrieve the actual instances of the
+	 * command group members as specified in the encoded members collection.
 	 *
-	 * @param commandRegistry The registry containing commands for the command
-	 * group produced by this factory. May be null.
+	 * @param commandRegistry The registry containing commands for the command group
+	 *                        produced by this factory. May be null.
 	 */
 	public void setCommandRegistry(CommandRegistry commandRegistry) {
 		this.commandRegistry = commandRegistry;
@@ -211,14 +217,13 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	}
 
 	/**
-	 * Sets the collection of objects that specify the members of the command
-	 * group produced by this factory. The objects in {@code members} are
-	 * expected to be either instances of {@link AbstractCommand} or strings.
-	 * See the class documentation for details on how these strings will be
-	 * interpreted.
+	 * Sets the collection of objects that specify the members of the command group
+	 * produced by this factory. The objects in {@code members} are expected to be
+	 * either instances of {@link AbstractCommand} or strings. See the class
+	 * documentation for details on how these strings will be interpreted.
 	 *
 	 * @param members The (possibly) encoded representation of the command group
-	 * members. Must not be null.
+	 *                members. Must not be null.
 	 *
 	 * @throws IllegalArgumentException if {@code members} is null.
 	 */
@@ -235,10 +240,11 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	}
 
 	/**
-	 * Accepts notification from the IoC container of this instance's bean name
-	 * as declared in the bean definition file. This value is used as the id of
-	 * the command group produced by this factory.
+	 * Accepts notification from the IoC container of this instance's bean name as
+	 * declared in the bean definition file. This value is used as the id of the
+	 * command group produced by this factory.
 	 */
+	@Override
 	public void setBeanName(String beanName) {
 		this.groupId = beanName;
 	}
@@ -253,6 +259,7 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	/**
 	 * Returns the value of the flag that indicates whether or not this factory
 	 * produces an exclusive command group.
+	 *
 	 * @return The exclusive flag.
 	 * @see ExclusiveCommandGroup
 	 */
@@ -264,8 +271,8 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	 * Sets the flag that indicates whether or not this factory produces an
 	 * exclusive command group.
 	 *
-	 * @param exclusive {@code true} to produce an exclusive command group,
-	 * false otherwise.
+	 * @param exclusive {@code true} to produce an exclusive command group, false
+	 *                  otherwise.
 	 * @see ExclusiveCommandGroup
 	 */
 	public void setExclusive(boolean exclusive) {
@@ -274,19 +281,19 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 
 	/**
 	 * Sets the flag that indicates whether or not the command group produced by
-	 * this factory allows no items in the group to be selected, default is
-	 * false. This is only relevant for exclusive command groups.
+	 * this factory allows no items in the group to be selected, default is false.
+	 * This is only relevant for exclusive command groups.
 	 *
-	 * @param allowsEmptySelection Set {@code true} for the command group to
-	 * allow none of its members to be selected.
+	 * @param allowsEmptySelection Set {@code true} for the command group to allow
+	 *                             none of its members to be selected.
 	 */
 	public void setAllowsEmptySelection(boolean allowsEmptySelection) {
 		this.allowsEmptySelection = allowsEmptySelection;
 	}
 
 	/**
-	 * @return <code>true</code> if the exclusive commandGroup can have no
-	 * item selected.
+	 * @return <code>true</code> if the exclusive commandGroup can have no item
+	 *         selected.
 	 */
 	protected boolean isAllowsEmptySelection() {
 		return this.allowsEmptySelection;
@@ -297,6 +304,7 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	 *
 	 * @return The factory's command group, never null.
 	 */
+	@Override
 	public Object getObject() throws Exception {
 		return getCommandGroup();
 	}
@@ -314,9 +322,9 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	}
 
 	/**
-	 * Creates the command group for this factory and assigns it an identifier
-	 * equal to the group id of the factory. The command group will also be
-	 * assigned the security controller id, if any, that was provided via the
+	 * Creates the command group for this factory and assigns it an identifier equal
+	 * to the group id of the factory. The command group will also be assigned the
+	 * security controller id, if any, that was provided via the
 	 * {@link #setSecurityControllerId(String)} method and the values from the
 	 * encoded members list will be used to retrieve the corresponding command
 	 * objects from the command registry.
@@ -331,8 +339,7 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 			ExclusiveCommandGroup g = new ExclusiveCommandGroup(getBeanName(), getCommandRegistry());
 			g.setAllowsEmptySelection(isAllowsEmptySelection());
 			group = g;
-		}
-		else {
+		} else {
 			group = new CommandGroup(getBeanName(), getCommandRegistry());
 		}
 
@@ -344,14 +351,14 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	}
 
 	/**
-	 * Iterates over the collection of encoded members and adds them to the
-	 * given command group.
+	 * Iterates over the collection of encoded members and adds them to the given
+	 * command group.
 	 *
 	 * @param group The group that is to contain the commands from the encoded
-	 * members list. Must not be null.
+	 *              members list. Must not be null.
 	 *
-	 * @throws InvalidGroupMemberEncodingException if a member prefix is
-	 * provided without a command id.
+	 * @throws InvalidGroupMemberEncodingException if a member prefix is provided
+	 *                                             without a command id.
 	 */
 	protected void initCommandGroupMembers(CommandGroup group) {
 		for (int i = 0; i < members.length; i++) {
@@ -360,19 +367,15 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 			if (o instanceof AbstractCommand) {
 				group.addInternal((AbstractCommand) o);
 				configureIfNecessary((AbstractCommand) o);
-			}
-			else if (o instanceof Component) {
+			} else if (o instanceof Component) {
 				group.addComponentInternal((Component) o);
-			}
-			else if (o instanceof String) {
+			} else if (o instanceof String) {
 				String str = (String) o;
 				if (str.equalsIgnoreCase(SEPARATOR_MEMBER_CODE)) {
 					group.addSeparatorInternal();
-				}
-				else if (str.equalsIgnoreCase(GLUE_MEMBER_CODE)) {
+				} else if (str.equalsIgnoreCase(GLUE_MEMBER_CODE)) {
 					group.addGlueInternal();
-				}
-				else if (str.startsWith(COMMAND_MEMBER_PREFIX)) {
+				} else if (str.startsWith(COMMAND_MEMBER_PREFIX)) {
 
 					String commandId = str.substring(COMMAND_MEMBER_PREFIX.length());
 
@@ -382,8 +385,7 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 					}
 
 					addCommandMember(str.substring(COMMAND_MEMBER_PREFIX.length()), group);
-				}
-				else if (str.startsWith(GROUP_MEMBER_PREFIX)) {
+				} else if (str.startsWith(GROUP_MEMBER_PREFIX)) {
 
 					String commandId = str.substring(GROUP_MEMBER_PREFIX.length());
 
@@ -393,8 +395,7 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 					}
 
 					addCommandMember(commandId, group);
-				}
-				else {
+				} else {
 					addCommandMember(str, group);
 				}
 			}
@@ -402,16 +403,16 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	}
 
 	/**
-	 * Adds the command object with the given id to the given command group. If
-	 * a command registry has not yet been provided to this factory, the command
-	 * id will be passed as a 'lazy placeholder' to the group instead.
+	 * Adds the command object with the given id to the given command group. If a
+	 * command registry has not yet been provided to this factory, the command id
+	 * will be passed as a 'lazy placeholder' to the group instead.
 	 *
 	 * @param commandId The id of the command to be added to the group. This is
-	 * expected to be in decoded form, i.e. any command prefixes have been
-	 * removed. Must not be null.
-	 * @param isGroup indicates if the command is actually a command group.
-	 * @param group The group that the commands will be added to. Must not be
-	 * null.
+	 *                  expected to be in decoded form, i.e. any command prefixes
+	 *                  have been removed. Must not be null.
+	 * @param isGroup   indicates if the command is actually a command group.
+	 * @param group     The group that the commands will be added to. Must not be
+	 *                  null.
 	 *
 	 */
 	private void addCommandMember(String commandId, CommandGroup group) {
@@ -439,8 +440,8 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	}
 
 	/**
-	 * Configures the given command if it has not already been configured and
-	 * this instance has been provided with a {@link CommandConfigurer}.
+	 * Configures the given command if it has not already been configured and this
+	 * instance has been provided with a {@link CommandConfigurer}.
 	 *
 	 * @param command The command to be configured.
 	 * @throws IllegalArgumentException if {@code command} is null.
@@ -459,17 +460,21 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 
 	/**
 	 * Returns the Class object for {@link CommandGroup}.
+	 *
 	 * @return CommandGroup.class
 	 */
+	@Override
 	public Class getObjectType() {
 		return CommandGroup.class;
 	}
 
 	/**
-	 * Always returns true. The command groups produced by this factory are
-	 * always singletons.
+	 * Always returns true. The command groups produced by this factory are always
+	 * singletons.
+	 *
 	 * @return {@code true} always.
 	 */
+	@Override
 	public boolean isSingleton() {
 		return true;
 	}
@@ -477,6 +482,7 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setSecurityControllerId(String controllerId) {
 		this.securityControllerId = controllerId;
 	}
@@ -484,6 +490,7 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public String getSecurityControllerId() {
 		return securityControllerId;
 	}
@@ -491,6 +498,7 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void setAuthorized(boolean authorized) {
 		// nothing to do on the factory. This method is only implemented because
 		// it is declared on the SecurityControllable interface, which we need
@@ -501,6 +509,7 @@ public class CommandGroupFactoryBean implements BeanNameAware, FactoryBean, Secu
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public boolean isAuthorized() {
 		return false;
 	}

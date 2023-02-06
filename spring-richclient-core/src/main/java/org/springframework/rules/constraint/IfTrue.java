@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,12 @@
  */
 package org.springframework.rules.constraint;
 
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.reporting.TypeResolvable;
 import org.springframework.util.Assert;
 
-public class IfTrue extends AbstractConstraint implements TypeResolvable{
+public class IfTrue extends AbstractConstraint implements TypeResolvable {
+
+	private static final long serialVersionUID = 1L;
 
 	private Constraint constraint;
 
@@ -28,11 +29,11 @@ public class IfTrue extends AbstractConstraint implements TypeResolvable{
 	private Constraint elseTrueConstraint;
 
 	private String type;
-	
+
 	public IfTrue(Constraint constraint, Constraint mustAlsoBeTrue) {
-		this(constraint, mustAlsoBeTrue, (Constraint)null);
+		this(constraint, mustAlsoBeTrue, (Constraint) null);
 	}
-	
+
 	public IfTrue(Constraint constraint, Constraint mustAlsoBeTrue, String type) {
 		this(constraint, mustAlsoBeTrue, null, type);
 	}
@@ -40,7 +41,7 @@ public class IfTrue extends AbstractConstraint implements TypeResolvable{
 	public IfTrue(Constraint constraint, Constraint mustAlsoBeTrue, Constraint elseMustAlsoBeTrue) {
 		this(constraint, mustAlsoBeTrue, elseMustAlsoBeTrue, "ifTrue");
 	}
-	
+
 	public IfTrue(Constraint constraint, Constraint mustAlsoBeTrue, Constraint elseMustAlsoBeTrue, String type) {
 		Assert.notNull(constraint, "The constraint that may be true is required");
 		Assert.notNull(mustAlsoBeTrue, "The constraint that must be true IF the first constraint is true is required");
@@ -50,16 +51,20 @@ public class IfTrue extends AbstractConstraint implements TypeResolvable{
 		this.type = type;
 	}
 
+	@Override
 	public boolean test(Object argument) {
-		if (constraint.test(argument))
+		if (constraint.test(argument)) {
 			return mustBeTrueConstraint.test(argument);
+		}
 
-		if (elseTrueConstraint != null)
+		if (elseTrueConstraint != null) {
 			return elseTrueConstraint.test(argument);
+		}
 
-        return true;
+		return true;
 	}
 
+	@Override
 	public String getType() {
 		return type;
 	}

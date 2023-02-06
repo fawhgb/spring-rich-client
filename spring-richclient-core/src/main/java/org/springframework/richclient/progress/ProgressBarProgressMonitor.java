@@ -15,10 +15,10 @@
  */
 package org.springframework.richclient.progress;
 
+import javax.swing.JProgressBar;
+
 import org.springframework.richclient.util.SwingUtilitiesHelper;
 import org.springframework.util.Assert;
-
-import javax.swing.*;
 
 /**
  * <code>ProgressMonitor</code> implementation that delegates to a
@@ -28,59 +28,65 @@ import javax.swing.*;
  */
 public class ProgressBarProgressMonitor implements ProgressMonitor {
 
-    private JProgressBar progressBar;
-    private boolean canceled;
+	private JProgressBar progressBar;
+	private boolean canceled;
 
-    public ProgressBarProgressMonitor(JProgressBar progressBar) {
-        Assert.notNull(progressBar, "ProgressBar cannot be null.");
-        this.progressBar = progressBar;
-    }
+	public ProgressBarProgressMonitor(JProgressBar progressBar) {
+		Assert.notNull(progressBar, "ProgressBar cannot be null.");
+		this.progressBar = progressBar;
+	}
 
-    public JProgressBar getProgressBar() {
-        return progressBar;
-    }
+	public JProgressBar getProgressBar() {
+		return progressBar;
+	}
 
-    public boolean isCanceled() {
-        return canceled;
-    }
+	@Override
+	public boolean isCanceled() {
+		return canceled;
+	}
 
-    public void setCanceled(boolean b) {
-        this.canceled = b;
-    }
+	@Override
+	public void setCanceled(boolean b) {
+		this.canceled = b;
+	}
 
-    public void done() {
-        // not used
-    }
+	@Override
+	public void done() {
+		// not used
+	}
 
-    public void subTaskStarted(final String name) {
-        SwingUtilitiesHelper.executeWithEDTCheck(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setString(name);
-            }
-        });
+	@Override
+	public void subTaskStarted(final String name) {
+		SwingUtilitiesHelper.executeWithEDTCheck(new Runnable() {
+			@Override
+			public void run() {
+				progressBar.setString(name);
+			}
+		});
 
-    }
+	}
 
-    public void taskStarted(final String name, final int totalWork) {
-        SwingUtilitiesHelper.executeWithEDTCheck(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setIndeterminate(false);
-                progressBar.setMinimum(0);
-                progressBar.setMaximum(totalWork);
-                progressBar.setString(name);
-            }
-        });
-    }
+	@Override
+	public void taskStarted(final String name, final int totalWork) {
+		SwingUtilitiesHelper.executeWithEDTCheck(new Runnable() {
+			@Override
+			public void run() {
+				progressBar.setIndeterminate(false);
+				progressBar.setMinimum(0);
+				progressBar.setMaximum(totalWork);
+				progressBar.setString(name);
+			}
+		});
+	}
 
-    public void worked(final int work) {
-        SwingUtilitiesHelper.executeWithEDTCheck(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setValue(progressBar.getValue() + work);
-            }
-        });
+	@Override
+	public void worked(final int work) {
+		SwingUtilitiesHelper.executeWithEDTCheck(new Runnable() {
+			@Override
+			public void run() {
+				progressBar.setValue(progressBar.getValue() + work);
+			}
+		});
 
-    }
+	}
 }

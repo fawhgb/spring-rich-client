@@ -5,6 +5,8 @@ import javax.swing.SwingConstants;
 import org.springframework.core.enums.ShortCodedLabeledEnum;
 
 public final class LabelOrientation extends ShortCodedLabeledEnum {
+	private static final long serialVersionUID = 1L;
+
 	public static final LabelOrientation TOP = new LabelOrientation(SwingConstants.TOP, "Top");
 
 	public static final LabelOrientation BOTTOM = new LabelOrientation(SwingConstants.BOTTOM, "Bottom");

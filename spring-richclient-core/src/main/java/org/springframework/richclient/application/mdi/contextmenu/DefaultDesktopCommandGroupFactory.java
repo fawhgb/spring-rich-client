@@ -31,7 +31,7 @@ import org.springframework.richclient.command.CommandManager;
  * <li>a separator</li>
  * <li>a "show" command for each frame in the desktop pane</li>
  * </ul>
- * 
+ *
  * @author Peter De Bruycker
  */
 public class DefaultDesktopCommandGroupFactory implements DesktopCommandGroupFactory {
@@ -40,8 +40,10 @@ public class DefaultDesktopCommandGroupFactory implements DesktopCommandGroupFac
 
 	/**
 	 * Create a window menu CommandGroup
+	 *
 	 * @return the window menu CommandGroup
 	 */
+	@Override
 	public CommandGroup createWindowMenuCommandGroup(CommandManager commandManager, JDesktopPane desktopPane) {
 		// TODO implement this
 		return null;
@@ -49,8 +51,10 @@ public class DefaultDesktopCommandGroupFactory implements DesktopCommandGroupFac
 
 	/**
 	 * Create a desktop pane context menu CommandGroup.
+	 *
 	 * @return the context menu CommandGroup
 	 */
+	@Override
 	public CommandGroup createContextMenuCommandGroup(CommandManager commandManager, JDesktopPane desktop) {
 		CommandGroup commandGroup = new CommandGroup();
 
@@ -93,7 +97,7 @@ public class DefaultDesktopCommandGroupFactory implements DesktopCommandGroupFac
 	public void setCascadeResizesFrames(boolean resizeFrames) {
 		cascadeResizesFrames = resizeFrames;
 	}
-	
+
 	public void setCascadeOffset(int offset) {
 		cascadeOffset = offset;
 	}

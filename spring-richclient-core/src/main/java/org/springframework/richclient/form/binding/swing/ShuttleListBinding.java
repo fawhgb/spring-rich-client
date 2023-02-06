@@ -23,14 +23,15 @@ import org.springframework.binding.value.support.BufferedCollectionValueModel;
 import org.springframework.binding.value.support.ListListModel;
 import org.springframework.context.MessageSource;
 import org.springframework.richclient.application.ApplicationServicesLocator;
+import org.springframework.richclient.components.ShuttleList;
 import org.springframework.richclient.form.binding.support.AbstractBinding;
 import org.springframework.richclient.image.IconSource;
 import org.springframework.richclient.list.DynamicListModel;
-import org.springframework.richclient.components.ShuttleList;
 
 /**
- * Binding to manage a {@link org.springframework.richclient.components.ShuttleList} component.
- * 
+ * Binding to manage a
+ * {@link org.springframework.richclient.components.ShuttleList} component.
+ *
  * @author lstreepy
  */
 public class ShuttleListBinding extends AbstractBinding {
@@ -53,9 +54,9 @@ public class ShuttleListBinding extends AbstractBinding {
 
 	/**
 	 * Construct a binding.
-	 * 
-	 * @param list ShuttleList to bind
-	 * @param formModel The form model holding the bound property
+	 *
+	 * @param list             ShuttleList to bind
+	 * @param formModel        The form model holding the bound property
 	 * @param formPropertyPath Path to the property to bind
 	 */
 	public ShuttleListBinding(final ShuttleList list, final FormModel formModel, final String formPropertyPath) {
@@ -100,6 +101,7 @@ public class ShuttleListBinding extends AbstractBinding {
 		return this.selectedItemType;
 	}
 
+	@Override
 	protected JComponent doBindControl() {
 		list.setModel(createModel());
 		if (selectedItemsHolder != null) {
@@ -128,7 +130,7 @@ public class ShuttleListBinding extends AbstractBinding {
 	/**
 	 * Look for Edit Text by searching the ApplicationServices for:
 	 * formId.shuttleList.editText if nothing try shuttleList.editText
-	 * 
+	 *
 	 * @return string
 	 */
 	private String getEditIconText() {
@@ -136,15 +138,15 @@ public class ShuttleListBinding extends AbstractBinding {
 	}
 
 	private String getMsgText(String key, String defaultMsg) {
-		final MessageSource messageSource = (MessageSource) ApplicationServicesLocator.services().getService(
-				MessageSource.class);
+		final MessageSource messageSource = (MessageSource) ApplicationServicesLocator.services()
+				.getService(MessageSource.class);
 		String text = null;
 
 		if (getFormId() != null) {
 			if (getProperty() != null) {
 				text = messageSource.getMessage(getFormId() + "." + getProperty() + "." + key, null, null, null);
 			}
-			
+
 			if (text == null) {
 				text = messageSource.getMessage(getFormId() + "." + key, null, null, null);
 			}
@@ -160,7 +162,7 @@ public class ShuttleListBinding extends AbstractBinding {
 	/**
 	 * Using the application services, check for: formId.shuttleList.edit if not
 	 * there shuttleList.edit
-	 * 
+	 *
 	 * @return an Icon
 	 */
 	private Icon getEditIcon() {
@@ -179,11 +181,11 @@ public class ShuttleListBinding extends AbstractBinding {
 	}
 
 	/**
-	 * Determine if the selected item type can be multi-valued (is a collection
-	 * or an array.
-	 * 
-	 * @return boolean <code>true</code> if the <code>selectedItemType</code>
-	 * is a Collection or an Array.
+	 * Determine if the selected item type can be multi-valued (is a collection or
+	 * an array.
+	 *
+	 * @return boolean <code>true</code> if the <code>selectedItemType</code> is a
+	 *         Collection or an Array.
 	 */
 	protected boolean isSelectedItemAnArray() {
 		Class itemType = getSelectedItemType();
@@ -198,8 +200,7 @@ public class ShuttleListBinding extends AbstractBinding {
 		if (concreteSelectedType == null) {
 			if (isSelectedItemACollection()) {
 				concreteSelectedType = BufferedCollectionValueModel.getConcreteCollectionType(getSelectedItemType());
-			}
-			else if (isSelectedItemAnArray()) {
+			} else if (isSelectedItemAnArray()) {
 				concreteSelectedType = getSelectedItemType().getComponentType();
 			}
 		}
@@ -210,8 +211,7 @@ public class ShuttleListBinding extends AbstractBinding {
 		final int[] indices = indicesOf(selectedItemsHolder.getValue());
 		if (indices.length < 1) {
 			list.clearSelection();
-		}
-		else {
+		} else {
 			list.setSelectedIndices(indices);
 			// The selection may now be different than what is reflected in
 			// collection property if this is SINGLE_INTERVAL_SELECTION, so
@@ -223,10 +223,10 @@ public class ShuttleListBinding extends AbstractBinding {
 	/**
 	 * Return an array of indices in the selectableItems for each element in the
 	 * provided set. The set can be either a Collection or an Array.
-	 * 
+	 *
 	 * @param itemSet Either an array or a Collection of items
 	 * @return array of indices of the elements in itemSet within the
-	 * selectableItems
+	 *         selectableItems
 	 */
 	protected int[] indicesOf(final Object itemSet) {
 		int[] ret = null;
@@ -238,18 +238,15 @@ public class ShuttleListBinding extends AbstractBinding {
 			for (Iterator iter = collection.iterator(); iter.hasNext(); i++) {
 				ret[i] = indexOf(iter.next());
 			}
-		}
-		else if (itemSet == null) {
+		} else if (itemSet == null) {
 			ret = new int[0];
-		}
-		else if (itemSet.getClass().isArray()) {
+		} else if (itemSet.getClass().isArray()) {
 			Object[] items = (Object[]) itemSet;
 			ret = new int[items.length];
 			for (int i = 0; i < items.length; i++) {
 				ret[i] = indexOf(items[i]);
 			}
-		}
-		else {
+		} else {
 			throw new IllegalArgumentException("itemSet must be eithe an Array or a Collection");
 		}
 
@@ -269,14 +266,14 @@ public class ShuttleListBinding extends AbstractBinding {
 	}
 
 	private ListModel createModel() {
-		if (model != null)
+		if (model != null) {
 			return model;
+		}
 
 		ListListModel model;
 		if (selectableItemsHolder != null) {
 			model = new DynamicListModel(selectableItemsHolder);
-		}
-		else {
+		} else {
 			model = new ListListModel();
 		}
 		model.setComparator(comparator);
@@ -305,20 +302,17 @@ public class ShuttleListBinding extends AbstractBinding {
 						|| !collectionsEqual(oldSelection, newSelection)) {
 					if (silentValueChangeHandler != null) {
 						selectedItemsHolder.setValueSilently(newSelection, silentValueChangeHandler);
-					}
-					else {
+					} else {
 						selectedItemsHolder.setValue(newSelection);
 					}
 				}
-			}
-			catch (InstantiationException e1) {
-				throw new RuntimeException("Unable to instantiate new concrete collection class for new selection.", e1);
-			}
-			catch (IllegalAccessException e1) {
+			} catch (InstantiationException e1) {
+				throw new RuntimeException("Unable to instantiate new concrete collection class for new selection.",
+						e1);
+			} catch (IllegalAccessException e1) {
 				throw new RuntimeException(e1);
 			}
-		}
-		else if (isSelectedItemAnArray()) {
+		} else if (isSelectedItemAnArray()) {
 
 			final Object[] newSelection = (Object[]) Array.newInstance(getConcreteSelectedType(), selected.length);
 			for (int i = 0; i < selected.length; i++) {
@@ -332,8 +326,7 @@ public class ShuttleListBinding extends AbstractBinding {
 					|| !arraysEqual(oldSelection, newSelection)) {
 				if (silentValueChangeHandler != null) {
 					selectedItemsHolder.setValueSilently(newSelection, silentValueChangeHandler);
-				}
-				else {
+				} else {
 					selectedItemsHolder.setValue(newSelection);
 				}
 			}
@@ -342,7 +335,7 @@ public class ShuttleListBinding extends AbstractBinding {
 
 	/**
 	 * Compare two arrays for equality using the configured comparator.
-	 * 
+	 *
 	 * @param a1 First array to compare
 	 * @param a2 Second array to compare
 	 * @return boolean true if they are equal
@@ -356,17 +349,16 @@ public class ShuttleListBinding extends AbstractBinding {
 				}
 			}
 			return true;
-		}
-		else if (a1 == null && a2 == null) {
+		} else if (a1 == null && a2 == null) {
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * Compare two collections for equality using the configured comparator.
-	 * Element order must be the same for the collections to compare equal.
-	 * 
+	 * Compare two collections for equality using the configured comparator. Element
+	 * order must be the same for the collections to compare equal.
+	 *
 	 * @param a1 First collection to compare
 	 * @param a2 Second collection to compare
 	 * @return boolean true if they are equal
@@ -381,17 +373,16 @@ public class ShuttleListBinding extends AbstractBinding {
 					return false;
 				}
 			}
-		}
-		else if (a1 == null && a2 == null) {
+		} else if (a1 == null && a2 == null) {
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * Using the configured comparator (or equals if not configured), determine
-	 * if two objects are equal.
-	 * 
+	 * Using the configured comparator (or equals if not configured), determine if
+	 * two objects are equal.
+	 *
 	 * @param o1 Object to compare
 	 * @param o2 Object to compare
 	 * @return boolean true if objects are equal
@@ -400,10 +391,12 @@ public class ShuttleListBinding extends AbstractBinding {
 		return comparator == null ? o1.equals(o2) : comparator.compare(o1, o2) == 0;
 	}
 
+	@Override
 	protected void readOnlyChanged() {
 		list.setEnabled(isEnabled() && !isReadOnly());
 	}
 
+	@Override
 	protected void enabledChanged() {
 		list.setEnabled(isEnabled() && !isReadOnly());
 	}
@@ -432,6 +425,7 @@ public class ShuttleListBinding extends AbstractBinding {
 
 		public ListSelectedValueMediator() {
 			valueChangeHandler = new PropertyChangeListener() {
+				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
 					setSelectedValue(valueChangeHandler);
 				}
@@ -439,6 +433,7 @@ public class ShuttleListBinding extends AbstractBinding {
 			selectedItemsHolder.addValueChangeListener(valueChangeHandler);
 		}
 
+		@Override
 		public void valueChanged(ListSelectionEvent e) {
 			if (!e.getValueIsAdjusting()) {
 				updateSelectionHolderFromList(valueChangeHandler);

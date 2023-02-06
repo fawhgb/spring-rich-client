@@ -16,11 +16,11 @@
 package org.springframework.rules.reporting;
 
 /**
- * A interface for rendering bean properties.  For example, a
- * SpacedBeanPropertyRenderer might render the property
- * 'source.address.netmask' like 'Source Address Netmask'
+ * A interface for rendering bean properties. For example, a
+ * SpacedBeanPropertyRenderer might render the property 'source.address.netmask'
+ * like 'Source Address Netmask'
  *
- * @author  Keith Donald
+ * @author Keith Donald
  */
 public interface BeanPropertyNameRenderer {
 

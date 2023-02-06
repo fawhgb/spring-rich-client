@@ -23,9 +23,9 @@ import org.springframework.binding.value.support.ValueHolder;
 import org.springframework.richclient.beans.DefaultMemberPropertyAccessor;
 
 /**
- * An implementation of <code>MutablePropertyAccessStrategy</code> that
- * provides type-save access to data specified by a class. The data is stored in
- * a backing map.
+ * An implementation of <code>MutablePropertyAccessStrategy</code> that provides
+ * type-save access to data specified by a class. The data is stored in a
+ * backing map.
  *
  * <p>
  * As this class delegates to a <code>MapPropertyAccessor</code> for property
@@ -41,6 +41,7 @@ public class ClassPropertyAccessStrategy extends AbstractPropertyAccessStrategy 
 
 	/**
 	 * Creates a new instance of <tt>ClassPropertyAccessStrategy</tt>.
+	 *
 	 * @param targetClass the target class
 	 */
 	public ClassPropertyAccessStrategy(Class targetClass) {
@@ -50,6 +51,7 @@ public class ClassPropertyAccessStrategy extends AbstractPropertyAccessStrategy 
 
 	/**
 	 * Creates a new instance of <tt>ClassPropertyAccessStrategy</tt>.
+	 *
 	 * @param target the domain object
 	 */
 	public ClassPropertyAccessStrategy(Object target) {
@@ -58,6 +60,7 @@ public class ClassPropertyAccessStrategy extends AbstractPropertyAccessStrategy 
 
 	/**
 	 * Creates a new instance of <tt>ClassPropertyAccessStrategy</tt>.
+	 *
 	 * @param domainObjectHolder the value model containing the domain object
 	 */
 	public ClassPropertyAccessStrategy(final ValueModel domainObjectHolder) {
@@ -66,9 +69,11 @@ public class ClassPropertyAccessStrategy extends AbstractPropertyAccessStrategy 
 
 	/**
 	 * Creates a new instance of <tt>ClassPropertyAccessStrategy</tt>.
+	 *
 	 * @param domainObjectHolder the value model containing the domain object
 	 * @param fieldAccessEnabled whether the fields of the objects should be
-	 * accessed directly where possible instead of using methods
+	 *                           accessed directly where possible instead of using
+	 *                           methods
 	 */
 	public ClassPropertyAccessStrategy(final ValueModel domainObjectHolder, boolean fieldAccessEnabled) {
 		this(domainObjectHolder, fieldAccessEnabled, true);
@@ -76,12 +81,15 @@ public class ClassPropertyAccessStrategy extends AbstractPropertyAccessStrategy 
 
 	/**
 	 * Creates a new instance of <tt>ClassPropertyAccessStrategy</tt>.
-	 * @param domainObjectHolder the value model containing the domain object
-	 * @param fieldAccessEnabled whether the fields of the objects should be
-	 * accessed directly where possible instead of using methods
+	 *
+	 * @param domainObjectHolder      the value model containing the domain object
+	 * @param fieldAccessEnabled      whether the fields of the objects should be
+	 *                                accessed directly where possible instead of
+	 *                                using methods
 	 * @param strictNullValueHandling whether a
-	 * <tt>NullValueInNestedPathException</tt> should be thrown on nested
-	 * null-values or <tt>null</tt> should be returned
+	 *                                <tt>NullValueInNestedPathException</tt> should
+	 *                                be thrown on nested null-values or
+	 *                                <tt>null</tt> should be returned
 	 */
 	public ClassPropertyAccessStrategy(final ValueModel domainObjectHolder, boolean fieldAccessEnabled,
 			boolean strictNullValueHandling) {
@@ -94,27 +102,33 @@ public class ClassPropertyAccessStrategy extends AbstractPropertyAccessStrategy 
 	 * Creates a child instance of <tt>ClassPropertyAccessStrategy<tt>
 	 * that will delegate to its parent for property access.
 	 *
-	 * @param parent <tt>ClassPropertyAccessStrategy</tt> which will be used to provide property access
-	 * @param basePropertyPath property path that will as a base when accessing
-	 *                         the parent <tt>ClassPropertyAccessStrategy</tt>
+	 * &#64;param parent <tt>ClassPropertyAccessStrategy</tt> which will be used to
+	 * provide property access
+	 * 
+	 * @param basePropertyPath property path that will as a base when accessing the
+	 *                         parent <tt>ClassPropertyAccessStrategy</tt>
 	 */
 	public ClassPropertyAccessStrategy(ClassPropertyAccessStrategy parent, String basePropertyPath) {
 		super(parent, basePropertyPath);
 		propertyAccessor = parent.propertyAccessor;
 	}
 
+	@Override
 	protected PropertyAccessor getPropertyAccessor() {
 		return propertyAccessor;
 	}
 
+	@Override
 	public MutablePropertyAccessStrategy getPropertyAccessStrategyForPath(String propertyPath) throws BeansException {
 		return new ClassPropertyAccessStrategy(this, getFullPropertyPath(propertyPath));
 	}
 
+	@Override
 	public MutablePropertyAccessStrategy newPropertyAccessStrategy(ValueModel domainObjectHolder) {
 		return new ClassPropertyAccessStrategy(domainObjectHolder);
 	}
 
+	@Override
 	protected void domainObjectChanged() {
 		propertyAccessor.setTarget(getDomainObject());
 	}

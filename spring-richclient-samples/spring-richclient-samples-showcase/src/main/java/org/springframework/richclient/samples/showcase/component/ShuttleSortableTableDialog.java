@@ -24,6 +24,7 @@ import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import com.jgoodies.forms.layout.Sizes;
 
@@ -73,11 +74,12 @@ public class ShuttleSortableTableDialog extends TitledApplicationDialog {
 
 	@Override
 	protected JComponent createTitledDialogContentPane() {
-		JPanel panel = new JPanel(new FormLayout(new ColumnSpec[] {
-				new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, ColumnSpec.DEFAULT_GROW),
-				FormFactory.RELATED_GAP_COLSPEC,
-				new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, ColumnSpec.DEFAULT_GROW) }, new RowSpec[] {
-				FormFactory.DEFAULT_ROWSPEC, FormFactory.LINE_GAP_ROWSPEC, FormFactory.DEFAULT_ROWSPEC }));
+		JPanel panel = new JPanel(new FormLayout(
+				new ColumnSpec[] { new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW),
+						FormFactory.RELATED_GAP_COLSPEC,
+						new ColumnSpec(ColumnSpec.FILL, Sizes.DEFAULT, FormSpec.DEFAULT_GROW) },
+				new RowSpec[] { FormFactory.DEFAULT_ROWSPEC, FormFactory.LINE_GAP_ROWSPEC,
+						FormFactory.DEFAULT_ROWSPEC }));
 		// create all columns, needed to add/remove them
 		TableColumn column;
 		for (int i = 0; i < headers.size(); ++i) {
@@ -102,8 +104,8 @@ public class ShuttleSortableTableDialog extends TitledApplicationDialog {
 	}
 
 	/**
-	 * Returns an actionCommand that adds a column if possible. Maximum number
-	 * of rows is the number of headers as defined in constructor.
+	 * Returns an actionCommand that adds a column if possible. Maximum number of
+	 * rows is the number of headers as defined in constructor.
 	 */
 	private ActionCommand createAddCommand() {
 		ActionCommand addCommand = new ActionCommand("addCommand") {
@@ -118,8 +120,8 @@ public class ShuttleSortableTableDialog extends TitledApplicationDialog {
 			}
 
 		};
-		CommandConfigurer commandConfigurer = (CommandConfigurer) ApplicationServicesLocator.services().getService(
-				CommandConfigurer.class);
+		CommandConfigurer commandConfigurer = (CommandConfigurer) ApplicationServicesLocator.services()
+				.getService(CommandConfigurer.class);
 		commandConfigurer.configure(addCommand);
 		return addCommand;
 	}
@@ -140,8 +142,8 @@ public class ShuttleSortableTableDialog extends TitledApplicationDialog {
 			}
 
 		};
-		CommandConfigurer commandConfigurer = (CommandConfigurer) ApplicationServicesLocator.services().getService(
-				CommandConfigurer.class);
+		CommandConfigurer commandConfigurer = (CommandConfigurer) ApplicationServicesLocator.services()
+				.getService(CommandConfigurer.class);
 		commandConfigurer.configure(removeCommand);
 		return removeCommand;
 	}
@@ -156,24 +158,33 @@ public class ShuttleSortableTableDialog extends TitledApplicationDialog {
 	 */
 	private class CustomerTableModel extends AbstractTableModel {
 
+		private static final long serialVersionUID = 1L;
+
+		@Override
 		public int getColumnCount() {
 			return columnModel.getColumnCount();
 		}
 
+		@Override
 		public int getRowCount() {
 			return customerData.size();
 		}
 
+		@Override
 		public Object getValueAt(int rowIndex, int columnIndex) {
 			Customer customer = customerData.get(rowIndex);
-			if (columnIndex == 0)
+			if (columnIndex == 0) {
 				return customer.getFirstName();
-			if (columnIndex == 1)
+			}
+			if (columnIndex == 1) {
 				return customer.getLastName();
-			if (columnIndex == 2)
+			}
+			if (columnIndex == 2) {
 				return customer.getComment();
-			if (columnIndex == 3)
+			}
+			if (columnIndex == 3) {
 				return customer.getXfactor();
+			}
 			return null;
 		}
 

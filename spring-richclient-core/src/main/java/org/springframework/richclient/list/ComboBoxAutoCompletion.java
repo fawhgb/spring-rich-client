@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2004 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
  * the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -40,268 +40,279 @@ import org.springframework.util.Assert;
  * model. <br>
  * Based on code contributed to the public domain by Thomas Bierhance
  * (http://www.orbital-computer.de/JComboBox/)
- * 
+ *
  * @author Peter De Bruycker
  * @author Thomas Bierhance
  */
 public class ComboBoxAutoCompletion extends PlainDocument {
 
-    private final ChangeHandler changeHandler = new ChangeHandler();
+	private static final long serialVersionUID = 1L;
 
-    private final JComboBox comboBox;
+	private final ChangeHandler changeHandler = new ChangeHandler();
 
-    private final JTextComponent editor;
+	private final JComboBox comboBox;
 
-    boolean hitBackspace;
+	private final JTextComponent editor;
 
-    boolean hitBackspaceOnSelection;
+	boolean hitBackspace;
 
-    private Map item2string = new HashMap();
+	boolean hitBackspaceOnSelection;
 
-    private ComboBoxModel model;
+	private Map item2string = new HashMap();
 
-    private boolean selectingValue;
+	private ComboBoxModel model;
 
-    /**
-     * Adds autocompletion support to the given <code>JComboBox</code>.
-     * 
-     * @param comboBox
-     *            the combobox
-     */
-    public ComboBoxAutoCompletion(final JComboBox comboBox) {
-        Assert.notNull(comboBox, "The ComboBox cannot be null.");
-        Assert.isTrue(!comboBox.isEditable(), "The ComboBox must not be editable.");
-        Assert.isTrue(comboBox.getEditor().getEditorComponent() instanceof JTextComponent,
-                "Only ComboBoxes with JTextComponent as editor are supported.");
+	private boolean selectingValue;
 
-        this.comboBox = comboBox;
-        comboBox.setEditable(true);
+	/**
+	 * Adds autocompletion support to the given <code>JComboBox</code>.
+	 * 
+	 * @param comboBox the combobox
+	 */
+	public ComboBoxAutoCompletion(final JComboBox comboBox) {
+		Assert.notNull(comboBox, "The ComboBox cannot be null.");
+		Assert.isTrue(!comboBox.isEditable(), "The ComboBox must not be editable.");
+		Assert.isTrue(comboBox.getEditor().getEditorComponent() instanceof JTextComponent,
+				"Only ComboBoxes with JTextComponent as editor are supported.");
 
-        model = comboBox.getModel();
-        model.addListDataListener(changeHandler);
+		this.comboBox = comboBox;
+		comboBox.setEditable(true);
 
-        editor = (JTextComponent)comboBox.getEditor().getEditorComponent();
-        editor.setDocument(this);
-        editor.addFocusListener(changeHandler);
-        editor.addKeyListener(changeHandler);
+		model = comboBox.getModel();
+		model.addListDataListener(changeHandler);
 
-        fillItem2StringMap();
+		editor = (JTextComponent) comboBox.getEditor().getEditorComponent();
+		editor.setDocument(this);
+		editor.addFocusListener(changeHandler);
+		editor.addKeyListener(changeHandler);
 
-        // Handle initially selected object
-        Object selected = comboBox.getSelectedItem();
-        comboBox.getEditor().setItem(selected);
-    }
+		fillItem2StringMap();
 
-    private void fillItem2StringMap() {
-        editor.setDocument(new PlainDocument());
+		// Handle initially selected object
+		Object selected = comboBox.getSelectedItem();
+		comboBox.getEditor().setItem(selected);
+	}
 
-        item2string.clear();
+	private void fillItem2StringMap() {
+		editor.setDocument(new PlainDocument());
 
-        JTextComponent editor = (JTextComponent)comboBox.getEditor().getEditorComponent();
+		item2string.clear();
 
-        // get current item of editor
-        Object currentItem = comboBox.getEditor().getItem();
-        for (int i = 0; i < comboBox.getItemCount(); i++) {
-            Object item = comboBox.getItemAt(i);
-            comboBox.getEditor().setItem(item);
-            item2string.put(item, editor.getText());
-        }
-        // reset item in editor
-        comboBox.getEditor().setItem(currentItem);
+		JTextComponent editor = (JTextComponent) comboBox.getEditor().getEditorComponent();
 
-        editor.setDocument(this);
-    }
+		// get current item of editor
+		Object currentItem = comboBox.getEditor().getItem();
+		for (int i = 0; i < comboBox.getItemCount(); i++) {
+			Object item = comboBox.getItemAt(i);
+			comboBox.getEditor().setItem(item);
+			item2string.put(item, editor.getText());
+		}
+		// reset item in editor
+		comboBox.getEditor().setItem(currentItem);
 
-    private String getStringFor(Object item) {
-        return (String)item2string.get(item);
-    }
+		editor.setDocument(this);
+	}
 
-    private void highlightCompletedText(int start) {
-        editor.setCaretPosition(getLength());
-        editor.moveCaretPosition(start);
-    }
+	private String getStringFor(Object item) {
+		return (String) item2string.get(item);
+	}
 
-    /**
-     * @see javax.swing.text.Document#insertString(int, java.lang.String,
-     *      javax.swing.text.AttributeSet)
-     */
-    public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
-        // ignore empty insert
-        if (str == null || str.length() == 0)
-            return;
-        if(selectingValue)
-            return;
-        // check offset position
-        if (offs < 0 || offs > getLength())
-            throw new BadLocationException("Invalid offset - must be >= 0 and <= " + getLength(), offs);
+	private void highlightCompletedText(int start) {
+		editor.setCaretPosition(getLength());
+		editor.moveCaretPosition(start);
+	}
 
-        // construct the resulting string
-        String currentText = getText(0, getLength());
-        String beforeOffset = currentText.substring(0, offs);
-        String afterOffset = currentText.substring(offs, currentText.length());
-        String futureText = beforeOffset + str + afterOffset;
+	/**
+	 * @see javax.swing.text.Document#insertString(int, java.lang.String,
+	 *      javax.swing.text.AttributeSet)
+	 */
+	@Override
+	public void insertString(int offs, String str, AttributeSet a) throws BadLocationException {
+		// ignore empty insert
+		if (str == null || str.length() == 0 || selectingValue) {
+			return;
+		}
+		// check offset position
+		if (offs < 0 || offs > getLength()) {
+			throw new BadLocationException("Invalid offset - must be >= 0 and <= " + getLength(), offs);
+		}
 
-        // lookup and select a matching item
-        Object item = lookupItem(futureText);
-        if (item != null) {
-            selectingValue = true; 
-            try {
-                comboBox.setSelectedItem(item);
-            } finally {
-                selectingValue = false;
-            }            
-        }
-        else {
-            // keep old item selected if there is no match
-            item = comboBox.getSelectedItem();
-            // imitate no insert (later on offs will be incremented by
-            // str.length(): selection won't move forward)
-            offs = offs - str.length();
-            // provide feedback to the user that his input has been received but
-            // can not be accepted
-            // comboBox.getToolkit().beep();
-            // when available use:
-            UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
-        }
+		// construct the resulting string
+		String currentText = getText(0, getLength());
+		String beforeOffset = currentText.substring(0, offs);
+		String afterOffset = currentText.substring(offs, currentText.length());
+		String futureText = beforeOffset + str + afterOffset;
 
-        // display the completed string
-        String itemString = item == null ? "" : getStringFor(item);
-        setText(itemString);
+		// lookup and select a matching item
+		Object item = lookupItem(futureText);
+		if (item != null) {
+			selectingValue = true;
+			try {
+				comboBox.setSelectedItem(item);
+			} finally {
+				selectingValue = false;
+			}
+		} else {
+			// keep old item selected if there is no match
+			item = comboBox.getSelectedItem();
+			// imitate no insert (later on offs will be incremented by
+			// str.length(): selection won't move forward)
+			offs = offs - str.length();
+			// provide feedback to the user that his input has been received but
+			// can not be accepted
+			// comboBox.getToolkit().beep();
+			// when available use:
+			UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
+		}
 
-        // if the user selects an item via mouse the the whole string will be
-        // inserted.
-        // highlight the entire text if this happens.
-        if (itemString != null) {
-            if (itemString.equals(str) && offs == 0) {
-                highlightCompletedText(0);
-            }
-            else {
-                highlightCompletedText(offs + str.length());
-                // show popup when the user types
-                if (comboBox.isShowing()) {
-                    comboBox.setPopupVisible(true);
-                }
-            }
-        }
-    }
+		// display the completed string
+		String itemString = item == null ? "" : getStringFor(item);
+		setText(itemString);
 
-    private Object lookupItem(String pattern) {
-        Object selectedItem = model.getSelectedItem();
-        // only search for a different item if the currently selected does not
-        // match
-        if (selectedItem != null && startsWithIgnoreCase(getStringFor(selectedItem), pattern)) {
-            return selectedItem;
-        }
+		// if the user selects an item via mouse the the whole string will be
+		// inserted.
+		// highlight the entire text if this happens.
+		if (itemString != null) {
+			if (itemString.equals(str) && offs == 0) {
+				highlightCompletedText(0);
+			} else {
+				highlightCompletedText(offs + str.length());
+				// show popup when the user types
+				if (comboBox.isShowing()) {
+					comboBox.setPopupVisible(true);
+				}
+			}
+		}
+	}
 
-        // iterate over all items
-        for (int i = 0, n = model.getSize(); i < n; i++) {
-            Object currentItem = model.getElementAt(i);
-            // current item starts with the pattern?
-            if (startsWithIgnoreCase(getStringFor(currentItem), pattern)) {
-                return currentItem;
-            }
-        }
+	private Object lookupItem(String pattern) {
+		Object selectedItem = model.getSelectedItem();
+		// only search for a different item if the currently selected does not
+		// match
+		if (selectedItem != null && startsWithIgnoreCase(getStringFor(selectedItem), pattern)) {
+			return selectedItem;
+		}
 
-        // no item starts with the pattern => return null
-        return null;
-    }
+		// iterate over all items
+		for (int i = 0, n = model.getSize(); i < n; i++) {
+			Object currentItem = model.getElementAt(i);
+			// current item starts with the pattern?
+			if (startsWithIgnoreCase(getStringFor(currentItem), pattern)) {
+				return currentItem;
+			}
+		}
 
-    /**
-     * @see javax.swing.text.Document#remove(int, int)
-     */
-    public void remove(int offs, int length) throws BadLocationException {
-        // ignore no deletion
-        if (length == 0)
-            return;
-        // check positions
-        if (offs < 0 || offs > getLength() || length < 0 || (offs + length) > getLength())
-            throw new BadLocationException("Invalid parameters.", offs);
+		// no item starts with the pattern => return null
+		return null;
+	}
 
-        if (hitBackspace) {
-            // user hit backspace => move the selection backwards
-            // old item keeps being selected
-            if (offs > 0) {
-                if (hitBackspaceOnSelection)
-                    offs--;
-            }
-            else {
-                // User hit backspace with the cursor positioned on the start =>
-                // beep
-                comboBox.getToolkit().beep();
-                // when available use:
-                // UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
-            }
-            highlightCompletedText(offs);
-            // show popup when the user types
-            if (comboBox.isShowing())
-                comboBox.setPopupVisible(true);
-        }
-        else {
-            super.remove(offs, length);
-        }
-    }
+	/**
+	 * @see javax.swing.text.Document#remove(int, int)
+	 */
+	@Override
+	public void remove(int offs, int length) throws BadLocationException {
+		// ignore no deletion
+		if (length == 0) {
+			return;
+		}
+		// check positions
+		if (offs < 0 || offs > getLength() || length < 0 || (offs + length) > getLength()) {
+			throw new BadLocationException("Invalid parameters.", offs);
+		}
 
-    private void setText(String text) throws BadLocationException {
-        // remove all text and insert the new text
-        super.remove(0, getLength());
-        super.insertString(0, text, null);
-    }
+		if (hitBackspace) {
+			// user hit backspace => move the selection backwards
+			// old item keeps being selected
+			if (offs > 0) {
+				if (hitBackspaceOnSelection) {
+					offs--;
+				}
+			} else {
+				// User hit backspace with the cursor positioned on the start =>
+				// beep
+				comboBox.getToolkit().beep();
+				// when available use:
+				// UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
+			}
+			highlightCompletedText(offs);
+			// show popup when the user types
+			if (comboBox.isShowing()) {
+				comboBox.setPopupVisible(true);
+			}
+		} else {
+			super.remove(offs, length);
+		}
+	}
 
-    // checks if str1 starts with str2 - ignores case
-    private boolean startsWithIgnoreCase(String str1, String str2) {
-        return str1 != null && str2 != null && str1.toUpperCase().startsWith(str2.toUpperCase());
-    }
+	private void setText(String text) throws BadLocationException {
+		// remove all text and insert the new text
+		super.remove(0, getLength());
+		super.insertString(0, text, null);
+	}
 
-    private final class ChangeHandler extends KeyAdapter implements FocusListener, ListDataListener {
+	// checks if str1 starts with str2 - ignores case
+	private boolean startsWithIgnoreCase(String str1, String str2) {
+		return str1 != null && str2 != null && str1.toUpperCase().startsWith(str2.toUpperCase());
+	}
 
-        // Highlight whole text when user hits enter
-        // Register when user hits backspace
-        public void keyPressed(KeyEvent e) {
-            hitBackspace = false;
-            switch (e.getKeyCode()) {
-            case KeyEvent.VK_ENTER:
-                highlightCompletedText(0);
-                break;
-            // determine if the pressed key is backspace (needed by the remove
-            // method)
-            case KeyEvent.VK_BACK_SPACE:
-                hitBackspace = true;
-                hitBackspaceOnSelection = editor.getSelectionStart() != editor.getSelectionEnd();
-                break;
-            // ignore delete key
-            case KeyEvent.VK_DELETE:
-                e.consume();
-                ComboBoxAutoCompletion.this.comboBox.getToolkit().beep();
-                break;
-            }
-        }
+	private final class ChangeHandler extends KeyAdapter implements FocusListener, ListDataListener {
 
-        // Bug 5100422 on Java 1.5: Editable JComboBox won't hide popup when
-        // tabbing out
-        private boolean hidePopupOnFocusLoss = System.getProperty("java.version").startsWith("1.5");
+		// Highlight whole text when user hits enter
+		// Register when user hits backspace
+		@Override
+		public void keyPressed(KeyEvent e) {
+			hitBackspace = false;
+			switch (e.getKeyCode()) {
+			case KeyEvent.VK_ENTER:
+				highlightCompletedText(0);
+				break;
+			// determine if the pressed key is backspace (needed by the remove
+			// method)
+			case KeyEvent.VK_BACK_SPACE:
+				hitBackspace = true;
+				hitBackspaceOnSelection = editor.getSelectionStart() != editor.getSelectionEnd();
+				break;
+			// ignore delete key
+			case KeyEvent.VK_DELETE:
+				e.consume();
+				ComboBoxAutoCompletion.this.comboBox.getToolkit().beep();
+				break;
+			}
+		}
 
-        public void focusGained(FocusEvent e) {
-            // Highlight whole text when gaining focus
-            highlightCompletedText(0);
-        }
+		// Bug 5100422 on Java 1.5: Editable JComboBox won't hide popup when
+		// tabbing out
+		private boolean hidePopupOnFocusLoss = System.getProperty("java.version").startsWith("1.5");
 
-        public void focusLost(FocusEvent e) {
-            // Workaround for Bug 5100422 - Hide Popup on focus loss
-            if (hidePopupOnFocusLoss)
-                ComboBoxAutoCompletion.this.comboBox.setPopupVisible(false);
-        }
+		@Override
+		public void focusGained(FocusEvent e) {
+			// Highlight whole text when gaining focus
+			highlightCompletedText(0);
+		}
 
-        public void contentsChanged(ListDataEvent e) {
-            if(!selectingValue)
-                fillItem2StringMap();
-        }
+		@Override
+		public void focusLost(FocusEvent e) {
+			// Workaround for Bug 5100422 - Hide Popup on focus loss
+			if (hidePopupOnFocusLoss) {
+				ComboBoxAutoCompletion.this.comboBox.setPopupVisible(false);
+			}
+		}
 
-        public void intervalAdded(ListDataEvent e) {
-            fillItem2StringMap();
-        }
+		@Override
+		public void contentsChanged(ListDataEvent e) {
+			if (!selectingValue) {
+				fillItem2StringMap();
+			}
+		}
 
-        public void intervalRemoved(ListDataEvent e) {
-            fillItem2StringMap();
-        }
-    }
+		@Override
+		public void intervalAdded(ListDataEvent e) {
+			fillItem2StringMap();
+		}
+
+		@Override
+		public void intervalRemoved(ListDataEvent e) {
+			fillItem2StringMap();
+		}
+	}
 }

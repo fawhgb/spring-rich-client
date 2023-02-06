@@ -23,56 +23,57 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.binding.value.ValueModel;
 
 /**
- * Abstract base class for objects that adapt a value model to some other 
- * model. e.g. a GUI component.
- * 
+ * Abstract base class for objects that adapt a value model to some other model.
+ * e.g. a GUI component.
+ *
  * @author Oliver Hutchison
  */
 public abstract class AbstractValueModelAdapter {
-    protected static final Log logger = LogFactory.getLog(AbstractValueModelAdapter.class);
+	protected static final Log logger = LogFactory.getLog(AbstractValueModelAdapter.class);
 
-    private final ValueModelChangeHandler valueModelChangeHandler = new ValueModelChangeHandler();
+	private final ValueModelChangeHandler valueModelChangeHandler = new ValueModelChangeHandler();
 
-    private ValueModel valueModel;
+	private ValueModel valueModel;
 
-    public AbstractValueModelAdapter(ValueModel valueModel) {
-        this.valueModel = valueModel;
-        this.valueModel.addValueChangeListener(valueModelChangeHandler);
-    }
-    
-    /**
-     * Must be called to initialize the adapted value. Usually the
-     * last call in the constructor. 
-     */
-    protected void initalizeAdaptedValue() {
-        valueModelValueChanged(valueModel.getValue());
-    }
+	public AbstractValueModelAdapter(ValueModel valueModel) {
+		this.valueModel = valueModel;
+		this.valueModel.addValueChangeListener(valueModelChangeHandler);
+	}
 
-    protected ValueModel getValueModel() {
-        return valueModel;
-    }
-        
-    /**
-     * Subclasses must called this when the value being adapted has changed.
-     * 
-     * @param newValue the new adapted value 
-     */
-    protected void adaptedValueChanged(Object newValue) {
-        if (valueModel != null) {
-            valueModel.setValueSilently(newValue, valueModelChangeHandler);
-        }
-    }
+	/**
+	 * Must be called to initialize the adapted value. Usually the last call in the
+	 * constructor.
+	 */
+	protected void initalizeAdaptedValue() {
+		valueModelValueChanged(valueModel.getValue());
+	}
 
-    /**
-     * Called when the value held by the value model has changes
-     * 
-     * @param newValue the new value held by the value model
-     */
-    protected abstract void valueModelValueChanged(Object newValue);
+	protected ValueModel getValueModel() {
+		return valueModel;
+	}
 
-    private class ValueModelChangeHandler implements PropertyChangeListener {
-        public void propertyChange(PropertyChangeEvent evt) {
-            valueModelValueChanged(valueModel.getValue());
-        }
-    }
+	/**
+	 * Subclasses must called this when the value being adapted has changed.
+	 * 
+	 * @param newValue the new adapted value
+	 */
+	protected void adaptedValueChanged(Object newValue) {
+		if (valueModel != null) {
+			valueModel.setValueSilently(newValue, valueModelChangeHandler);
+		}
+	}
+
+	/**
+	 * Called when the value held by the value model has changes
+	 * 
+	 * @param newValue the new value held by the value model
+	 */
+	protected abstract void valueModelValueChanged(Object newValue);
+
+	private class ValueModelChangeHandler implements PropertyChangeListener {
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			valueModelValueChanged(valueModel.getValue());
+		}
+	}
 }

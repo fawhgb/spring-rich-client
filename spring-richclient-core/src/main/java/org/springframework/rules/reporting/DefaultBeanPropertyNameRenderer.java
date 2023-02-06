@@ -22,9 +22,11 @@ public class DefaultBeanPropertyNameRenderer implements BeanPropertyNameRenderer
 	/**
 	 * Renders a unqualified bean property string in the format:
 	 * "parentProperty.myBeanProperty" like "ParentProperty.MyBeanProperty".
+	 *
 	 * @param qualifiedName
 	 * @return the formatted string
 	 */
+	@Override
 	public String renderQualifiedName(String qualifiedName) {
 		Assert.notNull(qualifiedName, "No qualified name specified");
 		StringBuffer sb = new StringBuffer(qualifiedName.length() + 5);
@@ -38,16 +40,13 @@ public class DefaultBeanPropertyNameRenderer implements BeanPropertyNameRenderer
 					if (foundDot) {
 						sb.append(Character.toUpperCase(c));
 						foundDot = false;
-					}
-					else {
+					} else {
 						sb.append(c);
 					}
-				}
-				else {
+				} else {
 					sb.append(c);
 				}
-			}
-			else if (c == '.') {
+			} else if (c == '.') {
 				sb.append(c);
 				foundDot = true;
 			}
@@ -56,10 +55,12 @@ public class DefaultBeanPropertyNameRenderer implements BeanPropertyNameRenderer
 	}
 
 	/**
-	 * Renders a unqualified bean property string in the format:
-	 * "myBeanProperty" like "My Bean Property".
+	 * Renders a unqualified bean property string in the format: "myBeanProperty"
+	 * like "My Bean Property".
+	 *
 	 * @return the formatted string
 	 */
+	@Override
 	public String renderShortName(String shortName) {
 		Assert.notNull(shortName, "No short name specified");
 		StringBuffer sb = new StringBuffer(shortName.length() + 5);

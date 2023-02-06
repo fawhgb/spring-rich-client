@@ -2,7 +2,7 @@
  * $Header$
  * $Revision$
  * $Date$
- * 
+ *
  * Copyright Computer Science Innovations (CSI), 2004. All rights reserved.
  */
 package org.springframework.richclient.factory;
@@ -19,28 +19,34 @@ import javax.swing.JRadioButtonMenuItem;
  */
 public class DefaultMenuFactory implements MenuFactory {
 
-    public JMenu createMenu() {
-        return new JMenu();
-    }
+	@Override
+	public JMenu createMenu() {
+		return new JMenu();
+	}
 
-    public JMenuItem createMenuItem() {
-        return new JMenuItem();
-    }
+	@Override
+	public JMenuItem createMenuItem() {
+		return new JMenuItem();
+	}
 
-    public JCheckBoxMenuItem createCheckBoxMenuItem() {
-        return new JCheckBoxMenuItem();
-    }
+	@Override
+	public JCheckBoxMenuItem createCheckBoxMenuItem() {
+		return new JCheckBoxMenuItem();
+	}
 
-    public JRadioButtonMenuItem createRadioButtonMenuItem() {
-        return new JRadioButtonMenuItem();
-    }
+	@Override
+	public JRadioButtonMenuItem createRadioButtonMenuItem() {
+		return new JRadioButtonMenuItem();
+	}
 
-    public JPopupMenu createPopupMenu() {
-        return new JPopupMenu();
-    }
+	@Override
+	public JPopupMenu createPopupMenu() {
+		return new JPopupMenu();
+	}
 
-    public JMenuBar createMenuBar() {
-        return new JMenuBar();
-    }
+	@Override
+	public JMenuBar createMenuBar() {
+		return new JMenuBar();
+	}
 
 }

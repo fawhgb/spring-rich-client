@@ -19,20 +19,22 @@ import org.springframework.util.comparator.ComparableComparator;
 import org.springframework.util.comparator.NullSafeComparator;
 
 /**
- * Returns the maximum of two <code>Comparable</code> objects; with nulls regarded a 
- * being less than non null.
+ * Returns the maximum of two <code>Comparable</code> objects; with nulls
+ * regarded a being less than non null.
  *
  * @author Keith Donald
  */
 public class Minimum extends AbstractBinaryClosure {
 
+	private static final long serialVersionUID = 1L;
+
 	private static final Minimum INSTANCE = new Minimum();
-    
-    private static final NullSafeComparator COMPARATOR = new NullSafeComparator(new ComparableComparator(), true);
+
+	private static final NullSafeComparator COMPARATOR = new NullSafeComparator(new ComparableComparator(), true);
 
 	/**
-	 * Returns the shared instance--this is possible as the default functor for
-	 * this class is immutable and stateless.
+	 * Returns the shared instance--this is possible as the default functor for this
+	 * class is immutable and stateless.
 	 *
 	 * @return the shared instance
 	 */
@@ -43,24 +45,22 @@ public class Minimum extends AbstractBinaryClosure {
 	/**
 	 * Return the minimum of two Comparable objects.
 	 *
-	 * @param comparable1
-	 *            the first comparable
-	 * @param comparable2
-	 *            the second comparable
+	 * @param comparable1 the first comparable
+	 * @param comparable2 the second comparable
 	 * @return the minimum
 	 */
+	@Override
 	public Object call(Object comparable1, Object comparable2) {
-		int result = COMPARATOR.compare(comparable1,
-				comparable2);
+		int result = COMPARATOR.compare(comparable1, comparable2);
 		if (result < 0) {
 			return comparable1;
-		}
-		else if (result > 0) {
+		} else if (result > 0) {
 			return comparable2;
 		}
 		return comparable1;
 	}
 
+	@Override
 	public String toString() {
 		return "min(arg1, arg2)";
 	}

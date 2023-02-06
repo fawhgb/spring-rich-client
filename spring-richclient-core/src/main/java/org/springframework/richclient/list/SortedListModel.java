@@ -1,12 +1,12 @@
 /*
  * Copyright 2002-2006 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy
  * of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
@@ -33,99 +33,106 @@ import org.springframework.util.comparator.ComparableComparator;
  */
 public class SortedListModel extends AbstractFilteredListModel {
 
-    private static Comparator comparableComparator = new ComparableComparator();
+	private static final long serialVersionUID = 1L;
 
-    private Comparator comparator;
+	private static Comparator comparableComparator = new ComparableComparator();
 
-    private Integer[] indexes;
+	private Comparator comparator;
 
-    private final Observer comparatorObserver = new ComparatorObserver();
+	private Integer[] indexes;
 
-    public SortedListModel(ListModel model) {
-        this(model, comparableComparator);
-    }
+	private final Observer comparatorObserver = new ComparatorObserver();
 
-    public SortedListModel(ListModel model, Comparator comparator) {
-        super(model);
-        Assert.notNull(comparator);
-        this.comparator = comparator;
-        if (comparator instanceof Observable) {
-            ((Observable) comparator).addObserver(comparatorObserver);
-        }
-        reallocateIndexes();
-    }
+	public SortedListModel(ListModel model) {
+		this(model, comparableComparator);
+	}
 
-    public void setComparator(Comparator comparator) {
-        Assert.notNull(comparator);
-        if (this.comparator instanceof Observable) {
-            ((Observable) comparator).deleteObserver(comparatorObserver);
-        }
-        this.comparator = comparator;
-        if (this.comparator instanceof Observable) {
-            ((Observable) comparator).addObserver(comparatorObserver);
-        }
-        applyComparator();
-    }
+	public SortedListModel(ListModel model, Comparator comparator) {
+		super(model);
+		Assert.notNull(comparator);
+		this.comparator = comparator;
+		if (comparator instanceof Observable) {
+			((Observable) comparator).addObserver(comparatorObserver);
+		}
+		reallocateIndexes();
+	}
 
-    /**
-     * Internally called to reallocate the indexes. This method should be called when the filtered model changes its
-     * element size
-     */
-    protected void reallocateIndexes() {
-        indexes = new Integer[getFilteredModel().getSize()];
-        for (int i = 0; i < indexes.length; i++) {
-            indexes[i] = new Integer(i);
-        }
-        applyComparator();
-    }
+	public void setComparator(Comparator comparator) {
+		Assert.notNull(comparator);
+		if (this.comparator instanceof Observable) {
+			((Observable) comparator).deleteObserver(comparatorObserver);
+		}
+		this.comparator = comparator;
+		if (this.comparator instanceof Observable) {
+			((Observable) comparator).addObserver(comparatorObserver);
+		}
+		applyComparator();
+	}
 
-    /**
-     * Returns the element index for a sorted index
-     * 
-     * @param sortedIndex
-     *            the sorted index
-     * @return the unsorted index of the filtered model
-     */
-    public int getElementIndex(int sortedIndex) {
-        return indexes[sortedIndex].intValue();
-    }
+	/**
+	 * Internally called to reallocate the indexes. This method should be called
+	 * when the filtered model changes its element size
+	 */
+	protected void reallocateIndexes() {
+		indexes = new Integer[getFilteredModel().getSize()];
+		for (int i = 0; i < indexes.length; i++) {
+			indexes[i] = new Integer(i);
+		}
+		applyComparator();
+	}
 
-    protected void applyComparator() {
-        Integer[] indexes = new Integer[this.indexes.length];
-        System.arraycopy(this.indexes, 0, indexes, 0, indexes.length);
-        Arrays.sort(indexes, new TransformingComparator(new IndexToElementTransformer(getFilteredModel()), comparator));
-        this.indexes = indexes;
-        fireContentsChanged(this, -1, -1);
-    }
+	/**
+	 * Returns the element index for a sorted index
+	 * 
+	 * @param sortedIndex the sorted index
+	 * @return the unsorted index of the filtered model
+	 */
+	@Override
+	public int getElementIndex(int sortedIndex) {
+		return indexes[sortedIndex].intValue();
+	}
 
-    public void contentsChanged(ListDataEvent e) {
-        reallocateIndexes();
-    }
+	protected void applyComparator() {
+		Integer[] indexes = new Integer[this.indexes.length];
+		System.arraycopy(this.indexes, 0, indexes, 0, indexes.length);
+		Arrays.sort(indexes, new TransformingComparator(new IndexToElementTransformer(getFilteredModel()), comparator));
+		this.indexes = indexes;
+		fireContentsChanged(this, -1, -1);
+	}
 
-    public void intervalAdded(ListDataEvent e) {
-        reallocateIndexes();
-    }
+	@Override
+	public void contentsChanged(ListDataEvent e) {
+		reallocateIndexes();
+	}
 
-    public void intervalRemoved(ListDataEvent e) {
-        reallocateIndexes();
-    }
+	@Override
+	public void intervalAdded(ListDataEvent e) {
+		reallocateIndexes();
+	}
 
-    private static class IndexToElementTransformer implements Transformer {
-        private final ListModel model;
+	@Override
+	public void intervalRemoved(ListDataEvent e) {
+		reallocateIndexes();
+	}
 
-        public IndexToElementTransformer(ListModel model) {
-            this.model = model;
-        }
+	private static class IndexToElementTransformer implements Transformer {
+		private final ListModel model;
 
-        public Object transform(Object input) {
-            return model.getElementAt(((Integer) input).intValue());
-        }
+		public IndexToElementTransformer(ListModel model) {
+			this.model = model;
+		}
 
-    }
+		@Override
+		public Object transform(Object input) {
+			return model.getElementAt(((Integer) input).intValue());
+		}
 
-    private class ComparatorObserver implements Observer {
-        public void update(Observable o, Object arg) {
-            applyComparator();
-        }
-    }
+	}
+
+	private class ComparatorObserver implements Observer {
+		@Override
+		public void update(Observable o, Object arg) {
+			applyComparator();
+		}
+	}
 }
