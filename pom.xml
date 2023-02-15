@@ -320,7 +320,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.4.3</version>
+                    <version>3.0.0-M9</version>
                     <configuration>
                         <!--<testFailureIgnore>true</testFailureIgnore>-->
                         <forkMode>never</forkMode>
@@ -337,7 +337,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.2</version>
+                    <version>3.3.0</version>
                     <executions>
                         <execution>
                             <!-- So tests can reuse testcode from dependencies -->
@@ -358,7 +358,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.0.4</version>
+                    <version>3.2.1</version>
                     <executions>
                         <execution>
                             <!-- To deploy the sources automatically -->
@@ -372,38 +372,38 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-war-plugin</artifactId>
-                    <version>2.1-alpha-2</version>
+                    <version>3.3.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>2.2-beta-2</version>
+                    <version>3.4.2</version>
                 </plugin>
                 <plugin>
                     <!-- Only used in profile production -->
-                    <groupId>org.codehaus.mojo</groupId>
+                    <groupId>org.codehaus.mojo.webstart</groupId>
                     <artifactId>webstart-maven-plugin</artifactId>
-                    <version>1.0-alpha-1</version>
+                    <version>1.0-beta-2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-archetype-plugin</artifactId>
-                    <version>2.0-alpha-4</version>
+                    <version>3.2.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>2.2</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>3.1.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
-                    <version>2.0-beta-7</version>
+                    <version>3.0.0-M7</version>
                     <configuration>
                         <tagBase>https://spring-rich-c.svn.sourceforge.net/svnroot/spring-rich-c/tags</tagBase>
                     </configuration>
@@ -413,7 +413,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-eclipse-plugin</artifactId>
-                    <version>2.5.1</version>
+                    <version>2.10</version>
                     <configuration>
                         <downloadSources>true</downloadSources>
                     </configuration>
@@ -421,7 +421,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-idea-plugin</artifactId>
-                    <version>2.2</version>
+                    <version>2.2.1</version>
                     <configuration>
                         <downloadSources>true</downloadSources>
                         <!--<downloadJavadocs>true</downloadJavadocs>-->
@@ -433,7 +433,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>2.0-beta-7</version>
+                    <version>4.0.0-M4</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -449,32 +449,32 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>2.1</version>
+                <version>3.4.2</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>2.4.3</version>
+                <version>3.0.0-M9</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>taglist-maven-plugin</artifactId>
-                <version>2.2</version>
+                <version>3.0.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>2.4</version>
+                <version>3.20.0</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javancss-maven-plugin</artifactId>
-                <version>2.0-beta-2</version>
+                <version>2.1</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.1</version>
+                <version>3.3.0</version>
                 <configuration>
                     <aggregate>true</aggregate>
                 </configuration>
@@ -482,7 +482,7 @@
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <source>1.5</source>
+                    <source>1.8</source>
                     <aggregate>true</aggregate>
                     <doclet>org.umlgraph.doclet.UmlGraphDoc</doclet>
                     <docletArtifact>
@@ -651,9 +651,9 @@
 
             <!-- Lang -->
             <dependency>
-                <groupId>commons-lang</groupId>
-                <artifactId>commons-lang</artifactId>
-                <version>2.1</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.12.0</version>
             </dependency>
 
             <!-- Testing -->
