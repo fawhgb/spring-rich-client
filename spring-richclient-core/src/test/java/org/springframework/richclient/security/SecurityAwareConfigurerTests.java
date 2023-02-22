@@ -15,8 +15,13 @@
  */
 package org.springframework.richclient.security;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationServicesLocator;
@@ -30,129 +35,136 @@ import org.springframework.security.BadCredentialsException;
  * @author Larry Streepy
  * 
  */
-public class SecurityAwareConfigurerTests extends TestCase {
+public class SecurityAwareConfigurerTests {
 
-    private ClassPathXmlApplicationContext applicationContext;
-    private AuthAwareBean authAwareBean;
-    private LoginAwareBean loginAwareBean;
-    private static int sequence = 0;
-    private ApplicationSecurityManager securityManager;
+	private ClassPathXmlApplicationContext applicationContext;
+	private AuthAwareBean authAwareBean;
+	private LoginAwareBean loginAwareBean;
+	private static int sequence = 0;
+	private ApplicationSecurityManager securityManager;
 
-    protected void setUp() throws Exception {
-        super.setUp();
-        applicationContext = new ClassPathXmlApplicationContext(
-            "org/springframework/richclient/security/security-test-configurer-ctx.xml" );
-        Application.load( null );
-        Application app = new Application( new DefaultApplicationLifecycleAdvisor() );
-        app.setApplicationContext( applicationContext );
+	@BeforeEach
+	protected void setUp() throws Exception {
+		applicationContext = new ClassPathXmlApplicationContext(
+				"org/springframework/richclient/security/security-test-configurer-ctx.xml");
+		Application.load(null);
+		Application app = new Application(new DefaultApplicationLifecycleAdvisor());
+		app.setApplicationContext(applicationContext);
 
-        securityManager = (ApplicationSecurityManager)ApplicationServicesLocator.services().getService(ApplicationSecurityManager.class);
-        authAwareBean = (AuthAwareBean) applicationContext.getBean( "authAwareBean" );
-        loginAwareBean = (LoginAwareBean) applicationContext.getBean( "loginAwareBean" );
-    }
+		securityManager = (ApplicationSecurityManager) ApplicationServicesLocator.services()
+				.getService(ApplicationSecurityManager.class);
+		authAwareBean = (AuthAwareBean) applicationContext.getBean("authAwareBean");
+		loginAwareBean = (LoginAwareBean) applicationContext.getBean("loginAwareBean");
+	}
 
-    public void testConfiguration() {
-        Object asm = applicationContext.getBean( "applicationSecurityManager" );
-        Object am = applicationContext.getBean( "authenticationManager" );
-        Object sc = applicationContext.getBean( "securityConfigurer" );
+	@Test
+	public void testConfiguration() {
+		Object asm = applicationContext.getBean("applicationSecurityManager");
+		Object am = applicationContext.getBean("authenticationManager");
+		Object sc = applicationContext.getBean("securityConfigurer");
 
-        assertTrue( "securityManager must implement ApplicationSecurityManager",
-            asm instanceof ApplicationSecurityManager );
-        assertTrue( "securityManager must be instance of DefaultApplicationSecurityManager",
-            asm instanceof DefaultApplicationSecurityManager );
-        assertTrue( "authenticationManager must implement AuthenticationManager", am instanceof AuthenticationManager );
-        assertTrue( "authenticationManager must be instance of TestAuthenticationManager",
-            am instanceof TestAuthenticationManager );
-        assertEquals( asm, ApplicationServicesLocator.services().getService(ApplicationSecurityManager.class) );
-        assertTrue( "securityConfigurer must implement SecurityAwareConfigurer", sc instanceof SecurityAwareConfigurer );
-    }
+		assertTrue(asm instanceof ApplicationSecurityManager,
+				"securityManager must implement ApplicationSecurityManager");
+		assertTrue(asm instanceof DefaultApplicationSecurityManager,
+				"securityManager must be instance of DefaultApplicationSecurityManager");
+		assertTrue(am instanceof AuthenticationManager, "authenticationManager must implement AuthenticationManager");
+		assertTrue(am instanceof TestAuthenticationManager,
+				"authenticationManager must be instance of TestAuthenticationManager");
+		assertEquals(asm, ApplicationServicesLocator.services().getService(ApplicationSecurityManager.class));
+		assertTrue(sc instanceof SecurityAwareConfigurer, "securityConfigurer must implement SecurityAwareConfigurer");
+	}
 
-    public void testAuthenticationAware() {
+	@Test
+	public void testAuthenticationAware() {
 
-        securityManager.doLogin( TestAuthenticationManager.VALID_USER1 );
-        assertEquals( "Authentication token should be VALID_USER1", authAwareBean.authentication,
-            TestAuthenticationManager.VALID_USER1 );
+		securityManager.doLogin(TestAuthenticationManager.VALID_USER1);
+		assertEquals(authAwareBean.authentication, TestAuthenticationManager.VALID_USER1,
+				"Authentication token should be VALID_USER1");
 
-        securityManager.doLogin( TestAuthenticationManager.VALID_USER2 );
-        assertEquals( "Authentication token should be VALID_USER2", authAwareBean.authentication,
-            TestAuthenticationManager.VALID_USER2 );
+		securityManager.doLogin(TestAuthenticationManager.VALID_USER2);
+		assertEquals(authAwareBean.authentication, TestAuthenticationManager.VALID_USER2,
+				"Authentication token should be VALID_USER2");
 
-        try {
-            securityManager.doLogin( TestAuthenticationManager.BAD_CREDENTIALS );
-            fail( "Exception should have been thrown" );
-        } catch( BadCredentialsException e ) {
-            // Shouldn't have been changed
-            assertEquals( "Authentication token should be VALID_USER2", authAwareBean.authentication,
-                TestAuthenticationManager.VALID_USER2 );
-        }
+		try {
+			securityManager.doLogin(TestAuthenticationManager.BAD_CREDENTIALS);
+			fail("Exception should have been thrown");
+		} catch (BadCredentialsException e) {
+			// Shouldn't have been changed
+			assertEquals(authAwareBean.authentication, TestAuthenticationManager.VALID_USER2,
+					"Authentication token should be VALID_USER2");
+		}
 
-        securityManager.doLogout();
-        assertNull( "Authentication token should have been cleared", authAwareBean.authentication );
-    }
+		securityManager.doLogout();
+		assertNull(authAwareBean.authentication, "Authentication token should have been cleared");
+	}
 
-    public void testLoginAware() {
+	@Test
+	public void testLoginAware() {
 
-        securityManager.doLogin( TestAuthenticationManager.VALID_USER1 );
-        assertEquals( "Authentication token should be VALID_USER1", loginAwareBean.authentication,
-            TestAuthenticationManager.VALID_USER1 );
-        assertEquals( "Authentication tokens on beans should be equal ", authAwareBean.authentication,
-            loginAwareBean.authentication );
-        assertTrue( "LoginAware notifications should happen after AuthAware",
-            authAwareBean.sequence < loginAwareBean.sequence );
+		securityManager.doLogin(TestAuthenticationManager.VALID_USER1);
+		assertEquals(loginAwareBean.authentication, TestAuthenticationManager.VALID_USER1,
+				"Authentication token should be VALID_USER1");
+		assertEquals(authAwareBean.authentication, loginAwareBean.authentication,
+				"Authentication tokens on beans should be equal ");
+		assertTrue(authAwareBean.sequence < loginAwareBean.sequence,
+				"LoginAware notifications should happen after AuthAware");
 
-        loginAwareBean.reset();
-        securityManager.doLogout();
-        assertTrue( "Logout should be called", loginAwareBean.logoutCalled );
-        assertEquals( "Previous token should be VALID_USER1", loginAwareBean.oldAuthentication,
-            TestAuthenticationManager.VALID_USER1 );
-        assertTrue( "LoginAware notifications should happen after AuthAware",
-            authAwareBean.sequence < loginAwareBean.sequence );
-    }
+		loginAwareBean.reset();
+		securityManager.doLogout();
+		assertTrue(loginAwareBean.logoutCalled, "Logout should be called");
+		assertEquals(loginAwareBean.oldAuthentication, TestAuthenticationManager.VALID_USER1,
+				"Previous token should be VALID_USER1");
+		assertTrue(authAwareBean.sequence < loginAwareBean.sequence,
+				"LoginAware notifications should happen after AuthAware");
+	}
 
-    /**
-     * Class to test automatic notification.
-     */
-    public static class AuthAwareBean implements AuthenticationAware {
+	/**
+	 * Class to test automatic notification.
+	 */
+	public static class AuthAwareBean implements AuthenticationAware {
 
-        public Authentication authentication = null;
-        public int sequence;
+		public Authentication authentication = null;
+		public int sequence;
 
-        public void setAuthenticationToken(Authentication authentication) {
-            this.authentication = authentication;
-            sequence = SecurityAwareConfigurerTests.sequence++;
-        }
+		@Override
+		public void setAuthenticationToken(Authentication authentication) {
+			this.authentication = authentication;
+			sequence = SecurityAwareConfigurerTests.sequence++;
+		}
 
-        public void reset() {
-            authentication = null;
-            sequence = 0;
-        }
-    }
+		public void reset() {
+			authentication = null;
+			sequence = 0;
+		}
+	}
 
-    /**
-     * Class to test automatic notification of login/logout events.
-     */
-    public static class LoginAwareBean implements LoginAware {
-        public Authentication authentication = null;
-        public Authentication oldAuthentication = null;
-        public int sequence;
-        public boolean logoutCalled = false;
+	/**
+	 * Class to test automatic notification of login/logout events.
+	 */
+	public static class LoginAwareBean implements LoginAware {
+		public Authentication authentication = null;
+		public Authentication oldAuthentication = null;
+		public int sequence;
+		public boolean logoutCalled = false;
 
-        public void userLogin(Authentication authentication) {
-            this.authentication = authentication;
-            sequence = SecurityAwareConfigurerTests.sequence++;
-        }
+		@Override
+		public void userLogin(Authentication authentication) {
+			this.authentication = authentication;
+			sequence = SecurityAwareConfigurerTests.sequence++;
+		}
 
-        public void userLogout(Authentication authentication) {
-            this.oldAuthentication = authentication;
-            logoutCalled = true;
-            sequence = SecurityAwareConfigurerTests.sequence++;
-        }
+		@Override
+		public void userLogout(Authentication authentication) {
+			this.oldAuthentication = authentication;
+			logoutCalled = true;
+			sequence = SecurityAwareConfigurerTests.sequence++;
+		}
 
-        public void reset() {
-            authentication = null;
-            oldAuthentication = null;
-            sequence = 0;
-            logoutCalled = false;
-        }
-    }
+		public void reset() {
+			authentication = null;
+			oldAuthentication = null;
+			sequence = 0;
+			logoutCalled = false;
+		}
+	}
 }

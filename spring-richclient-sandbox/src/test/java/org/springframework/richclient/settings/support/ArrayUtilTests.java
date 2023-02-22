@@ -15,38 +15,44 @@
  */
 package org.springframework.richclient.settings.support;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Peter De Bruycker
  */
-public class ArrayUtilTests extends TestCase {
+public class ArrayUtilTests {
 
-    public void testToIntArray() {
-        String[] stringArray = { "2", "3", "5", "0" };
-        int[] result = ArrayUtil.toIntArray(stringArray);
+	@Test
+	public void testToIntArray() {
+		String[] stringArray = { "2", "3", "5", "0" };
+		int[] result = ArrayUtil.toIntArray(stringArray);
 
-        assertNotNull(result);
-        assertEquals(stringArray.length, result.length);
-        int expected[] = { 2, 3, 5, 0 };
+		assertNotNull(result);
+		assertEquals(stringArray.length, result.length);
+		int expected[] = { 2, 3, 5, 0 };
 
-        for (int i = 0; i < expected.length; i++) {
-            assertEquals(expected[i], result[i]);
-        }
-    }
+		for (int i = 0; i < expected.length; i++) {
+			assertEquals(expected[i], result[i]);
+		}
+	}
 
-    public void testToIntArrayInvalidArguments() {
-        String[] stringArray = { "2", "3", "notAnInt", "0" };
-        try {
-            ArrayUtil.toIntArray(stringArray);
-            fail("Should throw IllegalArgumentException");
-        } catch (IllegalArgumentException e) {
-            pass();
-        }
-    }
+	@Test
+	public void testToIntArrayInvalidArguments() {
+		String[] stringArray = { "2", "3", "notAnInt", "0" };
+		try {
+			ArrayUtil.toIntArray(stringArray);
+			fail("Should throw IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			pass();
+		}
+	}
 
-    private static void pass() {
-        // test passes
-    }
+	private static void pass() {
+		// test passes
+	}
 
 }

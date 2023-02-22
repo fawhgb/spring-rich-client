@@ -15,6 +15,12 @@
  */
 package org.springframework.binding.value.swing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.support.TestPropertyChangeListener;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.ValueHolder;
@@ -27,44 +33,68 @@ import org.springframework.richclient.test.SpringRichTestCase;
  */
 public class FocusLostTextComponentAdapterTests extends SpringRichTestCase {
 
-    private ValueModel valueModel;
+	private ValueModel valueModel;
 
-    private TestPropertyChangeListener valueListener;
+	private TestPropertyChangeListener valueListener;
 
-    private TestableJTextComponent comp;
+	private TestableJTextComponent comp;
 
-    public void doSetUp() throws Exception {
-        valueModel = new ValueHolder("");
-        valueListener = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
-        valueModel.addValueChangeListener(valueListener);
-        comp = new TestableJTextComponent();
-        new FocusLostTextComponentAdapter(comp, valueModel);
-    }
+	@Override
+	public void doSetUp() throws Exception {
+		valueModel = new ValueHolder("");
+		valueListener = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
+		valueModel.addValueChangeListener(valueListener);
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				comp = new TestableJTextComponent();
+			}
+		});
+		new FocusLostTextComponentAdapter(comp, valueModel);
+	}
 
-    public void testComponentChangeDoesNotUpdateValueModel() {
-        comp.setText("newValue");
-        assertTrue(!valueModel.getValue().equals("newValue"));
-        assertEquals(0, valueListener.eventCount());
-    }
+	@Test
+	public void testComponentChangeDoesNotUpdateValueModel() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				comp.setText("newValue");
+				assertTrue(!valueModel.getValue().equals("newValue"));
+				assertEquals(0, valueListener.eventCount());
+			}
+		});
+	}
 
-    public void testValueModelChangeUpdatesComponent() {
-        valueModel.setValue("newValue");
-        assertEquals("newValue", comp.getText());
-        assertEquals(1, valueListener.eventCount());
-    }
+	@Test
+	public void testValueModelChangeUpdatesComponent() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				valueModel.setValue("newValue");
+				assertEquals("newValue", comp.getText());
+				assertEquals(1, valueListener.eventCount());
+			}
+		});
+	}
 
-    public void testFocusChangeUpdatesValueModel() {
-        comp.typeText("a");
-        assertEquals("", valueModel.getValue());
-        assertEquals(0, valueListener.eventCount());
+	@Test
+	public void testFocusChangeUpdatesValueModel() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				comp.typeText("a");
+				assertEquals("", valueModel.getValue());
+				assertEquals(0, valueListener.eventCount());
 
-        comp.gainFocus();
-        comp.typeText("b");
-        assertEquals("", valueModel.getValue());
-        assertEquals(0, valueListener.eventCount());
+				comp.gainFocus();
+				comp.typeText("b");
+				assertEquals("", valueModel.getValue());
+				assertEquals(0, valueListener.eventCount());
 
-        comp.loseFocus();
-        assertEquals("ab", valueModel.getValue());
-        assertEquals(1, valueListener.eventCount());
-    }
+				comp.loseFocus();
+				assertEquals("ab", valueModel.getValue());
+				assertEquals(1, valueListener.eventCount());
+			}
+		});
+	}
 }

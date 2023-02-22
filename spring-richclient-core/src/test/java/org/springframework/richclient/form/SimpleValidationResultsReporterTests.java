@@ -1,7 +1,10 @@
 package org.springframework.richclient.form;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.validation.ValidationMessage;
 import org.springframework.binding.validation.support.DefaultValidationMessage;
 import org.springframework.binding.validation.support.DefaultValidationResultsModel;
@@ -10,12 +13,13 @@ import org.springframework.richclient.core.Message;
 import org.springframework.richclient.core.Severity;
 import org.springframework.richclient.dialog.Messagable;
 
-public class SimpleValidationResultsReporterTests extends TestCase {
+public class SimpleValidationResultsReporterTests {
 
 	private class SimpleMessagable extends AbstractPropertyChangePublisher implements Messagable {
 
 		private Message message;
 
+		@Override
 		public void setMessage(Message message) {
 			this.message = message;
 		}
@@ -34,6 +38,7 @@ public class SimpleValidationResultsReporterTests extends TestCase {
 			this.timeStamp = timeStamp;
 		}
 
+		@Override
 		public long getTimestamp() {
 			return timeStamp;
 		}
@@ -43,11 +48,13 @@ public class SimpleValidationResultsReporterTests extends TestCase {
 
 	SimpleMessagable messagable = new SimpleMessagable();
 
-	SimpleValidationResultsReporter simpleValidationResultsReporter = new SimpleValidationResultsReporter(defaultValidationResultsModel, messagable);
+	SimpleValidationResultsReporter simpleValidationResultsReporter = new SimpleValidationResultsReporter(
+			defaultValidationResultsModel, messagable);
 
 	/**
 	 * Clear all validation results before testing.
 	 */
+	@BeforeEach
 	protected void setUp() throws Exception {
 		defaultValidationResultsModel.clearAllValidationResults();
 	}
@@ -55,6 +62,7 @@ public class SimpleValidationResultsReporterTests extends TestCase {
 	/**
 	 * Test set error message on messagable.
 	 */
+	@Test
 	public void testErrorMessage() {
 		singleMessage(Severity.ERROR);
 	}
@@ -62,6 +70,7 @@ public class SimpleValidationResultsReporterTests extends TestCase {
 	/**
 	 * Test set warning message on messagable.
 	 */
+	@Test
 	public void testWarningMessage() {
 		singleMessage(Severity.WARNING);
 	}
@@ -69,6 +78,7 @@ public class SimpleValidationResultsReporterTests extends TestCase {
 	/**
 	 * Test set info message on messagable.
 	 */
+	@Test
 	public void testInfoMessage() {
 		singleMessage(Severity.INFO);
 	}
@@ -82,6 +92,7 @@ public class SimpleValidationResultsReporterTests extends TestCase {
 	/**
 	 * Test sequence of error messages.
 	 */
+	@Test
 	public void testErrorMessageSequence() {
 		messageSequence(Severity.ERROR);
 	}
@@ -89,6 +100,7 @@ public class SimpleValidationResultsReporterTests extends TestCase {
 	/**
 	 * Test sequence of warning messages.
 	 */
+	@Test
 	public void testWarningMessageSequence() {
 		messageSequence(Severity.WARNING);
 	}
@@ -96,6 +108,7 @@ public class SimpleValidationResultsReporterTests extends TestCase {
 	/**
 	 * Test sequence of info messages.
 	 */
+	@Test
 	public void testInfoMessageSequence() {
 		messageSequence(Severity.INFO);
 	}
@@ -126,8 +139,10 @@ public class SimpleValidationResultsReporterTests extends TestCase {
 	}
 
 	/**
-	 * Test random severity message sequence. (first error, then warning and then info)
+	 * Test random severity message sequence. (first error, then warning and then
+	 * info)
 	 */
+	@Test
 	public void testRandomSeverityMessageSequence() {
 		ValidationMessage error1 = new TimeSpecifiedValidationMessage("error1", Severity.ERROR, "error1", 1);
 		defaultValidationResultsModel.addMessage(error1);

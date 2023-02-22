@@ -15,45 +15,48 @@
  */
 package org.springframework.richclient.form.binding.swing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import junit.framework.Assert;
-
 /**
- * Implementation of {@link ListDataListener} that eases testing of 
- * Swing's list related classes.
+ * Implementation of {@link ListDataListener} that eases testing of Swing's list
+ * related classes.
  * 
  * @author Oliver Hutchison
  */
 public class TestListDataListener implements ListDataListener {
-    private ListDataEvent lastEvent;
+	private ListDataEvent lastEvent;
 
-    private int calls;
+	private int calls;
 
-    public void assertCalls(int calls) {
-        Assert.assertEquals("ListDataListener has not been called expected number of times.", calls, this.calls);
-    }
+	public void assertCalls(int calls) {
+		assertEquals(calls, this.calls, "ListDataListener has not been called expected number of times.");
+	}
 
-    public void assertEvent(int calls, int eventType, int index0, int index1) {
-        assertCalls(calls);
-        Assert.assertEquals("Last ListDataEvent has unexpected type.", eventType, lastEvent.getType());
-        Assert.assertEquals("Last ListDataEvent has unexpected index0.", index0, lastEvent.getIndex0());
-        Assert.assertEquals("Last ListDataEvent has unexpected index1.", index1, lastEvent.getIndex1());
-    }
+	public void assertEvent(int calls, int eventType, int index0, int index1) {
+		assertCalls(calls);
+		assertEquals(eventType, lastEvent.getType(), "Last ListDataEvent has unexpected type.");
+		assertEquals(index0, lastEvent.getIndex0(), "Last ListDataEvent has unexpected index0.");
+		assertEquals(index1, lastEvent.getIndex1(), "Last ListDataEvent has unexpected index1.");
+	}
 
-    public void intervalAdded(ListDataEvent e) {
-        calls++;
-        lastEvent = e;
-    }
+	@Override
+	public void intervalAdded(ListDataEvent e) {
+		calls++;
+		lastEvent = e;
+	}
 
-    public void intervalRemoved(ListDataEvent e) {
-        calls++;
-        lastEvent = e;
-    }
+	@Override
+	public void intervalRemoved(ListDataEvent e) {
+		calls++;
+		lastEvent = e;
+	}
 
-    public void contentsChanged(ListDataEvent e) {
-        calls++;
-        lastEvent = e;
-    }
+	@Override
+	public void contentsChanged(ListDataEvent e) {
+		calls++;
+		lastEvent = e;
+	}
 }

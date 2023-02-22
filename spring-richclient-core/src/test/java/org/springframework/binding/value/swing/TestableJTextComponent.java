@@ -32,62 +32,59 @@ import javax.swing.text.Document;
  */
 public class TestableJTextComponent extends JFormattedTextField {
 
-    private List focusListeners = new ArrayList();
+	private List focusListeners = new ArrayList();
 
-    /**
-     * Simulates gaining focus.
-     */
-    public void gainFocus() {
-        FocusEvent focusEvent = new FocusEvent(this, FocusEvent.FOCUS_GAINED);
-        for (Iterator i = focusListeners.iterator(); i.hasNext();) {
-            ((FocusListener)i.next()).focusGained(focusEvent);
-        }
-    }
+	/**
+	 * Simulates gaining focus.
+	 */
+	public void gainFocus() {
+		FocusEvent focusEvent = new FocusEvent(this, FocusEvent.FOCUS_GAINED);
+		for (Iterator i = focusListeners.iterator(); i.hasNext();) {
+			((FocusListener) i.next()).focusGained(focusEvent);
+		}
+	}
 
-    /**
-     * Simulates losing focus.
-     */
-    public void loseFocus() {
-        FocusEvent focusEvent = new FocusEvent(this, FocusEvent.FOCUS_LOST);
-        for (Iterator i = focusListeners.iterator(); i.hasNext();) {
-            ((FocusListener)i.next()).focusLost(focusEvent);
-        }
-    }
+	/**
+	 * Simulates losing focus.
+	 */
+	public void loseFocus() {
+		FocusEvent focusEvent = new FocusEvent(this, FocusEvent.FOCUS_LOST);
+		for (Iterator i = focusListeners.iterator(); i.hasNext();) {
+			((FocusListener) i.next()).focusLost(focusEvent);
+		}
+	}
 
-    /**
-     * Simulates text being typed.
-     */
-    public void typeText(String text) {
-        Document doc = getDocument();
-        for (int i = 0; i < text.length(); i++) {
-            try {
-                doc.insertString(getCaretPosition(), new String(text.substring(i, i + 1)), null);
-                setCaretPosition(getCaretPosition() + 1);
-            }
-            catch (BadLocationException e) {
-                throw new UnsupportedOperationException(e.getMessage());
-            }
-        }
-    }
+	/**
+	 * Simulates text being typed.
+	 */
+	public void typeText(String text) {
+		Document doc = getDocument();
+		for (int i = 0; i < text.length(); i++) {
+			try {
+				doc.insertString(getCaretPosition(), new String(text.substring(i, i + 1)), null);
+			} catch (BadLocationException e) {
+				throw new UnsupportedOperationException(e.getMessage());
+			}
+		}
+	}
 
-    /**
-     * Simulates backspace being pressed.
-     */
-    public void typeBackSpace() {
-        Document doc = getDocument();
-        try {
-            doc.remove(getCaretPosition() - 1, 1);
-            setCaretPosition(getCaretPosition() - 1);
-        }
-        catch (BadLocationException e) {
-            throw new UnsupportedOperationException(e.getMessage());
-        }
-    }
+	/**
+	 * Simulates backspace being pressed.
+	 */
+	public void typeBackSpace() {
+		Document doc = getDocument();
+		try {
+			doc.remove(getCaretPosition() - 1, 1);
+		} catch (BadLocationException e) {
+			throw new UnsupportedOperationException(e.getMessage());
+		}
+	}
 
-    public void addFocusListener(FocusListener listener) {
-        super.addFocusListener(listener);
-        if (focusListeners != null) {
-            focusListeners.add(listener);
-        }
-    }
+	@Override
+	public void addFocusListener(FocusListener listener) {
+		super.addFocusListener(listener);
+		if (focusListeners != null) {
+			focusListeners.add(listener);
+		}
+	}
 }

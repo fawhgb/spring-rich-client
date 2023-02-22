@@ -15,21 +15,27 @@
  */
 package org.springframework.richclient.settings.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import javax.swing.JTable;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.settings.TransientSettings;
 
 /**
  * @author Peter De Bruycker
  */
-public class TableMementoTests extends TestCase {
+public class TableMementoTests {
 
 	private JTable table;
 
 	private TableMemento memento;
 
+	@Test
 	public void testSaveSelectionRowsWithoutSelection() {
 		TransientSettings settings = new TransientSettings();
 		memento.saveSelectedRows(settings);
@@ -37,6 +43,7 @@ public class TableMementoTests extends TestCase {
 		assertFalse(settings.contains("table.selectedRows"));
 	}
 
+	@Test
 	public void testSaveSelectionRowsWithoutOneRow() {
 		TransientSettings settings = new TransientSettings();
 
@@ -46,6 +53,7 @@ public class TableMementoTests extends TestCase {
 		assertEquals("1", settings.getString("table.selectedRows"));
 	}
 
+	@Test
 	public void testSaveSelectionRowsWithoutTwoRows() {
 		TransientSettings settings = new TransientSettings();
 
@@ -56,6 +64,7 @@ public class TableMementoTests extends TestCase {
 		assertEquals("0,2", settings.getString("table.selectedRows"));
 	}
 
+	@Test
 	public void testSaveSelectionRowsWithOneInterval() {
 		TransientSettings settings = new TransientSettings();
 
@@ -66,6 +75,7 @@ public class TableMementoTests extends TestCase {
 		assertEquals("0-2,4", settings.getString("table.selectedRows"));
 	}
 
+	@Test
 	public void testSaveSelectionRowsWithTwoIntervals() {
 		TransientSettings settings = new TransientSettings();
 
@@ -76,6 +86,7 @@ public class TableMementoTests extends TestCase {
 		assertEquals("0-1,3-4", settings.getString("table.selectedRows"));
 	}
 
+	@Test
 	public void testSaveColumnWidths() {
 		TransientSettings settings = new TransientSettings();
 
@@ -90,6 +101,7 @@ public class TableMementoTests extends TestCase {
 		assertEquals("30,120,50,70", settings.getString("table.columnWidths"));
 	}
 
+	@Test
 	public void testRestoreColumnWidths() {
 		TransientSettings settings = new TransientSettings();
 		settings.setString("table.columnWidths", "30,120,50,70");
@@ -107,6 +119,7 @@ public class TableMementoTests extends TestCase {
 		assertEquals(70, table.getColumnModel().getColumn(3).getPreferredWidth());
 	}
 
+	@Test
 	public void testRestoreColumnWidthsWithIncorrectColumnCount() {
 		int width0 = table.getColumnModel().getColumn(0).getWidth();
 		int width1 = table.getColumnModel().getColumn(1).getWidth();
@@ -124,6 +137,7 @@ public class TableMementoTests extends TestCase {
 		assertEquals(width3, table.getColumnModel().getColumn(3).getWidth());
 	}
 
+	@Test
 	public void testRestoreColumnWidthsWithIllegalSettingsString() {
 		int width0 = table.getColumnModel().getColumn(0).getWidth();
 		int width1 = table.getColumnModel().getColumn(1).getWidth();
@@ -141,6 +155,7 @@ public class TableMementoTests extends TestCase {
 		assertEquals(width3, table.getColumnModel().getColumn(3).getWidth());
 	}
 
+	@Test
 	public void testSaveColumnOrder() {
 		TransientSettings settings = new TransientSettings();
 
@@ -153,6 +168,7 @@ public class TableMementoTests extends TestCase {
 		assertEquals("1,3,2,0", settings.getString("table.columnOrder"));
 	}
 
+	@Test
 	public void testRestoreColumnOrderWithIncorrectColumnCount() {
 		TransientSettings settings = new TransientSettings();
 		settings.setString("table.columnOrder", "1,3,2");
@@ -168,6 +184,7 @@ public class TableMementoTests extends TestCase {
 	 * Still got a bug in it. This was tested under jdk1.3.1 and it worked :-(,
 	 * switched to jdk1.4.2, and it fails
 	 */
+	@Test
 	public void testRestoreColumnOrder() {
 		TransientSettings settings = new TransientSettings();
 		settings.setString("table.columnOrder", "0,3,1,2");
@@ -179,6 +196,7 @@ public class TableMementoTests extends TestCase {
 		assertEquals("0,3,1,2", settings.getString("table.columnOrder"));
 	}
 
+	@Test
 	public void testRestoreColumnOrderWithIllegalSettingsString() {
 		TransientSettings settings = new TransientSettings();
 		settings.setString("table.columnOrder", "illegalPref");
@@ -190,18 +208,21 @@ public class TableMementoTests extends TestCase {
 		assertEquals("0,1,2,3", settings.getString("table.columnOrder"));
 	}
 
+	@BeforeEach
 	protected void setUp() throws Exception {
-		table = new JTable(new Object[][] { { "cel(0,0)", "cell(0,1)", "cell(0,2)", "cell(0,3)" },
-				{ "cell(1,0)", "cell(1,1)", "cell(1,2)", "cell(1,3)" },
-				{ "cell(2,0)", "cell(2,1)", "cell(2,2)", "cell(2,3)" },
-				{ "cell(3,0)", "cell(3,1)", "cell(3,2)", "cell(3,3)" },
-				{ "cell(4,0)", "cell(4,1)", "cell(4,2)", "cell(4,3)" } },
+		table = new JTable(
+				new Object[][] { { "cel(0,0)", "cell(0,1)", "cell(0,2)", "cell(0,3)" },
+						{ "cell(1,0)", "cell(1,1)", "cell(1,2)", "cell(1,3)" },
+						{ "cell(2,0)", "cell(2,1)", "cell(2,2)", "cell(2,3)" },
+						{ "cell(3,0)", "cell(3,1)", "cell(3,2)", "cell(3,3)" },
+						{ "cell(4,0)", "cell(4,1)", "cell(4,2)", "cell(4,3)" } },
 				new Object[] { "col0", "col1", "col2", "col3" });
 		assertEquals(-1, table.getSelectedRow());
 
 		memento = new TableMemento(table, "table");
 	}
-	
+
+	@Test
 	public void testConstructor() {
 		try {
 			new TableMemento(null);
@@ -223,7 +244,7 @@ public class TableMementoTests extends TestCase {
 		TableMemento memento = new TableMemento(table);
 		assertEquals(table, memento.getTable());
 		assertEquals("table0", memento.getKey());
-		
+
 		memento = new TableMemento(table, "key");
 		assertEquals(table, memento.getTable());
 		assertEquals("key", memento.getKey());

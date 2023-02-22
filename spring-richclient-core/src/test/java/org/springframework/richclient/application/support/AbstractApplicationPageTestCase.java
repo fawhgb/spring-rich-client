@@ -15,11 +15,20 @@
  */
 package org.springframework.richclient.application.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import junit.framework.TestCase;
-
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.application.ApplicationPage;
 
 /**
@@ -27,126 +36,161 @@ import org.springframework.richclient.application.ApplicationPage;
  * 
  * @author Peter De Bruycker
  */
-public abstract class AbstractApplicationPageTestCase extends TestCase {
+public abstract class AbstractApplicationPageTestCase {
 
-    private AbstractApplicationPage applicationPage;
-    private TestView testView1;
-    private TestView testView2;
+	private AbstractApplicationPage applicationPage;
+	private TestView testView1;
+	private TestView testView2;
 
-    @Override
-    protected void setUp() throws Exception {
-        setUpViews();
+	@BeforeEach
+	protected void setUp() throws Exception {
+		setUpViews();
 
-        applicationPage = (AbstractApplicationPage) createApplicationPage();
-        assertNotNull("createApplicationPage returns null", applicationPage);
+		applicationPage = (AbstractApplicationPage) createApplicationPage();
+		assertNotNull(applicationPage, "createApplicationPage returns null");
 
-        SimpleViewDescriptorRegistry viewDescriptorRegistry = new SimpleViewDescriptorRegistry();
-        viewDescriptorRegistry.addViewDescriptor(new SimpleViewDescriptor("testView1", testView1));
-        viewDescriptorRegistry.addViewDescriptor(new SimpleViewDescriptor("testView2", testView2));
+		SimpleViewDescriptorRegistry viewDescriptorRegistry = new SimpleViewDescriptorRegistry();
+		viewDescriptorRegistry.addViewDescriptor(new SimpleViewDescriptor("testView1", testView1));
+		viewDescriptorRegistry.addViewDescriptor(new SimpleViewDescriptor("testView2", testView2));
 
-        applicationPage.setViewDescriptorRegistry(viewDescriptorRegistry);
+		applicationPage.setViewDescriptorRegistry(viewDescriptorRegistry);
 
-        applicationPage.setPageComponentPaneFactory(new SimplePageComponentPaneFactory());
+		applicationPage.setPageComponentPaneFactory(new SimplePageComponentPaneFactory());
 
-        applicationPage.setDescriptor(new EmptyPageDescriptor());
+		applicationPage.setDescriptor(new EmptyPageDescriptor());
 
-        // trigger control creation
-        JComponent control = applicationPage.getControl();
-        assertNotNull("getControl cannot return null", control);
-    }
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				// trigger control creation
+				JComponent control = applicationPage.getControl();
+				assertNotNull(control, "getControl cannot return null");
+			}
+		});
+	}
 
-    private void setUpViews() {
-        testView1 = new TestView("this is test view 1");
-        testView2 = new TestView("this is test view 2");
-    }
+	private void setUpViews() {
+		testView1 = new TestView("this is test view 1");
+		testView2 = new TestView("this is test view 2");
+	}
 
-    protected abstract ApplicationPage createApplicationPage();
+	protected abstract ApplicationPage createApplicationPage();
 
-    public void testShowViewAndClose() {
-        assertNull(applicationPage.getView("testView1"));
+	@Test
+	public void testShowViewAndClose() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				assertNull(applicationPage.getView("testView1"));
 
-        applicationPage.showView("testView1");
+				applicationPage.showView("testView1");
 
-        TestView view = (TestView) applicationPage.getView("testView1");
+				TestView view = (TestView) applicationPage.getView("testView1");
 
-        assertNotNull(view);
-        assertEquals("testView1", view.getId());
+				assertNotNull(view);
+				assertEquals("testView1", view.getId());
 
-        applicationPage.close(view);
-        assertNull(applicationPage.getView("testView1"));
-    }
+				applicationPage.close(view);
+				assertNull(applicationPage.getView("testView1"));
+			}
+		});
+	}
 
-    public void testShowViewWithInput() {
-        Object input = "the input";
+	@Test
+	public void testShowViewWithInput() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				Object input = "the input";
 
-        applicationPage.showView("testView1", input);
+				applicationPage.showView("testView1", input);
 
-        TestView view = applicationPage.getView("testView1");
-        assertNotNull(view);
+				TestView view = applicationPage.getView("testView1");
+				assertNotNull(view);
 
-        assertTrue(view.isSetInputCalled());
-        assertEquals(input, view.getInput());
-    }
-    
-    public void testShowView() {
-        assertSame(testView1, applicationPage.showView("testView1"));
-        assertSame(testView1, applicationPage.getActiveComponent());
-        
-        assertSame(testView2, applicationPage.showView("testView2"));
-        assertSame(testView2, applicationPage.getActiveComponent());
-    }
-    
-    public void testShowViewWithoutInput() {
-        applicationPage.showView("testView1");
+				assertTrue(view.isSetInputCalled());
+				assertEquals(input, view.getInput());
+			}
+		});
+	}
 
-        TestView view = applicationPage.getView("testView1");
-        assertNotNull(view);
+	@Test
+	public void testShowView() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				assertSame(testView1, applicationPage.showView("testView1"));
+				assertSame(testView1, applicationPage.getActiveComponent());
 
-        assertFalse(view.isSetInputCalled());
-    }
+				assertSame(testView2, applicationPage.showView("testView2"));
+				assertSame(testView2, applicationPage.getActiveComponent());
+			}
+		});
+	}
 
-    public void testGetView() {
-        assertNull(applicationPage.getView("testView1"));
+	@Test
+	public void testShowViewWithoutInput() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				applicationPage.showView("testView1");
 
-        applicationPage.showView("testView1");
+				TestView view = applicationPage.getView("testView1");
+				assertNotNull(view);
 
-        TestView view = applicationPage.getView("testView1");
+				assertFalse(view.isSetInputCalled());
+			}
+		});
+	}
 
-        assertNotNull(view);
-        assertEquals("testView1", view.getId());
+	@Test
+	public void testGetView() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				assertNull(applicationPage.getView("testView1"));
 
-        applicationPage.close(view);
-        assertNull(applicationPage.getView("testView1"));
-    }
+				applicationPage.showView("testView1");
 
-    private static class TestView extends AbstractView {
+				TestView view = applicationPage.getView("testView1");
 
-        private String label;
-        private Object input;
-        private boolean setInputCalled;
+				assertNotNull(view);
+				assertEquals("testView1", view.getId());
 
-        public TestView(String label) {
-            this.label = label;
-        }
+				applicationPage.close(view);
+				assertNull(applicationPage.getView("testView1"));
+			}
+		});
+	}
 
-        @Override
-        protected JComponent createControl() {
-            return new JLabel(label);
-        }
+	private static class TestView extends AbstractView {
 
-        @Override
-        public void setInput(Object input) {
-            this.input = input;
-            setInputCalled = true;
-        }
+		private String label;
+		private Object input;
+		private boolean setInputCalled;
 
-        public Object getInput() {
-            return input;
-        }
-        
-        public boolean isSetInputCalled() {
-            return setInputCalled;
-        }
+		public TestView(String label) {
+			this.label = label;
+		}
 
-    }
+		@Override
+		protected JComponent createControl() {
+			return new JLabel(label);
+		}
+
+		@Override
+		public void setInput(Object input) {
+			this.input = input;
+			setInputCalled = true;
+		}
+
+		public Object getInput() {
+			return input;
+		}
+
+		public boolean isSetInputCalled() {
+			return setInputCalled;
+		}
+
+	}
 }

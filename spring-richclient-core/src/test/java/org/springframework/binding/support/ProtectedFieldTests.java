@@ -15,6 +15,9 @@
  */
 package org.springframework.binding.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.support.DefaultFormModel;
 import org.springframework.binding.form.support.UserMetadata;
@@ -26,22 +29,23 @@ import org.springframework.richclient.test.SpringRichTestCase;
  */
 public class ProtectedFieldTests extends SpringRichTestCase {
 
-    public static class AnnotatedTestBean {
-        private String password;
+	public static class AnnotatedTestBean {
+		private String password;
 
-        @ProtectedField
-        public String getPassword() {
-            return password;
-        }
+		@ProtectedField
+		public String getPassword() {
+			return password;
+		}
 
-        public void setPassword(String password) {
-            this.password = password;
-        }
+		public void setPassword(String password) {
+			this.password = password;
+		}
 
-    }
+	}
 
-    public void testAnnotation() throws Exception {
-        FormModel model = new DefaultFormModel(new AnnotationAwareBeanPropertyAccessStrategy(new AnnotatedTestBean()));
-        assertEquals(true, model.getFieldMetadata("password").getUserMetadata(UserMetadata.PROTECTED_FIELD));
-    }
+	@Test
+	public void testAnnotation() throws Exception {
+		FormModel model = new DefaultFormModel(new AnnotationAwareBeanPropertyAccessStrategy(new AnnotatedTestBean()));
+		assertEquals(true, model.getFieldMetadata("password").getUserMetadata(UserMetadata.PROTECTED_FIELD));
+	}
 }

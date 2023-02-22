@@ -15,40 +15,49 @@
  */
 package org.springframework.richclient.command.config;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import javax.swing.JButton;
 
-import junit.framework.TestCase;
-
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.image.EmptyIcon;
 
 /**
- * Abstract base class for <code>CommandButtonConfigurer</code>
- * implementations
+ * Abstract base class for <code>CommandButtonConfigurer</code> implementations
  * 
  * @author Peter De Bruycker
  */
-public abstract class CommandButtonConfigurerTestCase extends TestCase {
+public abstract class CommandButtonConfigurerTestCase {
 
 	private CommandButtonConfigurer configurer;
 
 	private CommandFaceDescriptor descriptor;
 
+	@Test
 	public final void testConfigureWithNullDescriptor() {
 		try {
-			configurer.configure(new JButton(), null, null);
-			fail("Should throw IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			GuiActionRunner.execute(new GuiTask() {
+				@Override
+				protected void executeInEDT() throws Throwable {
+					configurer.configure(new JButton(), null, null);
+					fail("Should throw IllegalArgumentException");
+				}
+			});
+		} catch (IllegalArgumentException e) {
 			pass();
 		}
 	}
 
+	@Test
 	public final void testConfigureWithNullButton() {
 		try {
 			configurer.configure(null, null, descriptor);
 			fail("Should throw IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			pass();
 		}
 	}
@@ -57,9 +66,10 @@ public abstract class CommandButtonConfigurerTestCase extends TestCase {
 		// test passes
 	}
 
+	@BeforeEach
 	protected final void setUp() throws Exception {
 		configurer = createConfigurer();
-		assertNotNull("Configurer cannot be null", configurer);
+		assertNotNull(configurer, "Configurer cannot be null");
 
 		descriptor = new CommandFaceDescriptor();
 		CommandButtonIconInfo iconInfo = new CommandButtonIconInfo(EmptyIcon.SMALL);

@@ -15,6 +15,8 @@
  */
 package org.springframework.richclient.list;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,140 +26,153 @@ import java.util.Observer;
 import javax.swing.DefaultListModel;
 import javax.swing.ListModel;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.rules.constraint.Constraint;
 
 /**
  * @author Mathias Broekelmann
  * 
  */
-public class FilteredListModelTests extends TestCase {
+public class FilteredListModelTests {
 
-    private TestListModel listModel;
+	private TestListModel listModel;
 
-    private TestConstraint filter;
+	private TestConstraint filter;
 
-    private Object[] elements = new Object[] { "1", "2", "3", "4" };
+	private Object[] elements = new Object[] { "1", "2", "3", "4" };
 
-    protected void setUp() throws Exception {
-        listModel = new TestListModel();
-        for (int i = 0; i < elements.length; i++) {
-            listModel.addElement(elements[i]);
-        }
-        filter = new TestConstraint();
-    }
+	@BeforeEach
+	protected void setUp() throws Exception {
+		listModel = new TestListModel();
+		for (int i = 0; i < elements.length; i++) {
+			listModel.addElement(elements[i]);
+		}
+		filter = new TestConstraint();
+	}
 
-    protected void tearDown() throws Exception {
-        listModel = null;
-        filter = null;
-        elements = null;
-    }
+	@AfterEach
+	protected void tearDown() throws Exception {
+		listModel = null;
+		filter = null;
+		elements = null;
+	}
 
-    public void testFilterWithoutElements() throws Exception {
-        ListModel filteredModel = new FilteredListModel(new DefaultListModel(), filter);
-        assertEquals(0, filteredModel.getSize());
-        assertEquals(1, filter.observeradded);
-    }
+	@Test
+	public void testFilterWithoutElements() throws Exception {
+		ListModel filteredModel = new FilteredListModel(new DefaultListModel(), filter);
+		assertEquals(0, filteredModel.getSize());
+		assertEquals(1, filter.observeradded);
+	}
 
-    public void testNoFilterWithElements() throws Exception {
-        filter.filter = false;
-        ListModel filteredModel = new FilteredListModel(listModel, filter);
-        assertEquals(listModel.getSize(), filteredModel.getSize());
-        assertEquals(listModel.getSize(), filter.testCalled);
-    }
+	@Test
+	public void testNoFilterWithElements() throws Exception {
+		filter.filter = false;
+		ListModel filteredModel = new FilteredListModel(listModel, filter);
+		assertEquals(listModel.getSize(), filteredModel.getSize());
+		assertEquals(listModel.getSize(), filter.testCalled);
+	}
 
-    public void testPassThroughFilterWithElements() throws Exception {
-        ListModel filteredModel = new FilteredListModel(listModel, filter);
-        assertEquals(0, filteredModel.getSize());
-    }
+	@Test
+	public void testPassThroughFilterWithElements() throws Exception {
+		ListModel filteredModel = new FilteredListModel(listModel, filter);
+		assertEquals(0, filteredModel.getSize());
+	}
 
-    public void testFilterWithElements1() throws Exception {
-        filter.elements = Arrays.asList(new Object[] { "2", "4" });
-        ListModel filteredModel = new FilteredListModel(listModel, filter);
-        assertEquals(filter.elements.size(), filteredModel.getSize());
-    }
+	@Test
+	public void testFilterWithElements1() throws Exception {
+		filter.elements = Arrays.asList(new Object[] { "2", "4" });
+		ListModel filteredModel = new FilteredListModel(listModel, filter);
+		assertEquals(filter.elements.size(), filteredModel.getSize());
+	}
 
-    public void testFilterWithElements2() throws Exception {
-        filter.elements = Arrays.asList(new Object[] { "2", "4", "9999" });
-        ListModel filteredModel = new FilteredListModel(listModel, filter);
-        assertEquals(2, filteredModel.getSize());
-        assertEquals("2", filteredModel.getElementAt(0));
-        assertEquals("4", filteredModel.getElementAt(1));
-    }
+	@Test
+	public void testFilterWithElements2() throws Exception {
+		filter.elements = Arrays.asList(new Object[] { "2", "4", "9999" });
+		ListModel filteredModel = new FilteredListModel(listModel, filter);
+		assertEquals(2, filteredModel.getSize());
+		assertEquals("2", filteredModel.getElementAt(0));
+		assertEquals("4", filteredModel.getElementAt(1));
+	}
 
-    public void testRedefineFilter() throws Exception {
-        filter.elements = Arrays.asList(new Object[] { "2", "4", "9999" });
-        FilteredListModel filteredModel = new FilteredListModel(listModel, filter);
-        assertEquals(2, filteredModel.getSize());
-        assertEquals("2", filteredModel.getElementAt(0));
-        assertEquals("4", filteredModel.getElementAt(1));
-        TestConstraint newFilter = new TestConstraint();
-        newFilter.filter = false;
-        filteredModel.setConstraint(newFilter);
-        assertEquals(listModel.getSize(), filteredModel.getSize());
-    }
+	@Test
+	public void testRedefineFilter() throws Exception {
+		filter.elements = Arrays.asList(new Object[] { "2", "4", "9999" });
+		FilteredListModel filteredModel = new FilteredListModel(listModel, filter);
+		assertEquals(2, filteredModel.getSize());
+		assertEquals("2", filteredModel.getElementAt(0));
+		assertEquals("4", filteredModel.getElementAt(1));
+		TestConstraint newFilter = new TestConstraint();
+		newFilter.filter = false;
+		filteredModel.setConstraint(newFilter);
+		assertEquals(listModel.getSize(), filteredModel.getSize());
+	}
 
-    public void testFilterWithUpdatingModel() throws Exception {
-        filter.elements = Arrays.asList(new Object[] { "2", "4", "9999" });
-        ListModel filteredModel = new FilteredListModel(listModel, filter);
-        assertEquals(2, filteredModel.getSize());
-        filter.testCalled = 0;
-        listModel.addElement("1234");
-        assertEquals(listModel.getSize(), filter.testCalled);
-        assertEquals("2", filteredModel.getElementAt(0));
-        assertEquals("4", filteredModel.getElementAt(1));
-        listModel.addElement("9999");
-        assertEquals(3, filteredModel.getSize());
-        assertEquals("2", filteredModel.getElementAt(0));
-        assertEquals("4", filteredModel.getElementAt(1));
-        assertEquals("9999", filteredModel.getElementAt(2));
-        listModel.removeElement("2");
-        assertEquals(2, filteredModel.getSize());
-        assertEquals("4", filteredModel.getElementAt(0));
-        assertEquals("9999", filteredModel.getElementAt(1));
-    }
+	@Test
+	public void testFilterWithUpdatingModel() throws Exception {
+		filter.elements = Arrays.asList(new Object[] { "2", "4", "9999" });
+		ListModel filteredModel = new FilteredListModel(listModel, filter);
+		assertEquals(2, filteredModel.getSize());
+		filter.testCalled = 0;
+		listModel.addElement("1234");
+		assertEquals(listModel.getSize(), filter.testCalled);
+		assertEquals("2", filteredModel.getElementAt(0));
+		assertEquals("4", filteredModel.getElementAt(1));
+		listModel.addElement("9999");
+		assertEquals(3, filteredModel.getSize());
+		assertEquals("2", filteredModel.getElementAt(0));
+		assertEquals("4", filteredModel.getElementAt(1));
+		assertEquals("9999", filteredModel.getElementAt(2));
+		listModel.removeElement("2");
+		assertEquals(2, filteredModel.getSize());
+		assertEquals("4", filteredModel.getElementAt(0));
+		assertEquals("9999", filteredModel.getElementAt(1));
+	}
 
-    public void testObserver() throws Exception {
-        filter.elements = Arrays.asList(new Object[] { "2", "4" });
-        ListModel filteredModel = new FilteredListModel(listModel, filter);
-        assertEquals(2, filteredModel.getSize());
-        filter.testCalled = 0;
-        filter.elements = Arrays.asList(new Object[] { "1" });
-        filter.changed();
-        filter.notifyObservers();
-        assertEquals(listModel.getSize(), filter.testCalled);
-        assertEquals(filter.elements.size(), filteredModel.getSize());
-    }
+	@Test
+	public void testObserver() throws Exception {
+		filter.elements = Arrays.asList(new Object[] { "2", "4" });
+		ListModel filteredModel = new FilteredListModel(listModel, filter);
+		assertEquals(2, filteredModel.getSize());
+		filter.testCalled = 0;
+		filter.elements = Arrays.asList(new Object[] { "1" });
+		filter.changed();
+		filter.notifyObservers();
+		assertEquals(listModel.getSize(), filter.testCalled);
+		assertEquals(filter.elements.size(), filteredModel.getSize());
+	}
 
-    private static class TestConstraint extends Observable implements Constraint {
+	private static class TestConstraint extends Observable implements Constraint {
 
-        boolean filter = true;
+		boolean filter = true;
 
-        int testCalled = 0;
+		int testCalled = 0;
 
-        Collection elements = Collections.EMPTY_LIST;
+		Collection elements = Collections.EMPTY_LIST;
 
-        int observeradded = 0;
+		int observeradded = 0;
 
-        public boolean test(Object argument) {
-            testCalled++;
-            if (filter) {
-                return elements.contains(argument);
-            }
-            return true;
-        }
+		@Override
+		public boolean test(Object argument) {
+			testCalled++;
+			if (filter) {
+				return elements.contains(argument);
+			}
+			return true;
+		}
 
-        void changed() {
-            setChanged();
-        }
+		void changed() {
+			setChanged();
+		}
 
-        public synchronized void addObserver(Observer o) {
-            observeradded++;
-            super.addObserver(o);
-        }
-    }
+		@Override
+		public synchronized void addObserver(Observer o) {
+			observeradded++;
+			super.addObserver(o);
+		}
+	}
 
-    private static class TestListModel extends DefaultListModel {
-    }
+	private static class TestListModel extends DefaultListModel {
+	}
 }

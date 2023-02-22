@@ -15,7 +15,11 @@
  */
 package org.springframework.richclient.application.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.application.ApplicationWindow;
 import org.springframework.richclient.test.SpringRichTestCase;
 
@@ -26,16 +30,17 @@ import org.springframework.richclient.test.SpringRichTestCase;
  */
 public class DefaultApplicationPageFactoryTests extends SpringRichTestCase {
 
+	@Test
 	public void testCreate() {
 		DefaultApplicationPageFactory factory = new DefaultApplicationPageFactory();
-		
+
 		ApplicationWindow window = (ApplicationWindow) EasyMock.createMock(ApplicationWindow.class);
-		SingleViewPageDescriptor descriptor= new SingleViewPageDescriptor(new DefaultViewDescriptor());
-		
+		SingleViewPageDescriptor descriptor = new SingleViewPageDescriptor(new DefaultViewDescriptor());
+
 		DefaultApplicationPage page = (DefaultApplicationPage) factory.createApplicationPage(window, descriptor);
-		assertNotNull("page cannot be null", page);
+		assertNotNull(page, "page cannot be null");
 		assertEquals(window, page.getWindow());
 		assertEquals(descriptor, page.getPageDescriptor());
 	}
-	
+
 }

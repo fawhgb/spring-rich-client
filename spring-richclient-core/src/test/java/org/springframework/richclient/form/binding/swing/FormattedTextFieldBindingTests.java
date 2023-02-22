@@ -15,79 +15,112 @@
  */
 package org.springframework.richclient.form.binding.swing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.text.NumberFormat;
 
 import javax.swing.JFormattedTextField;
 
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.form.FieldMetadata;
 import org.springframework.binding.support.TestBean;
 
 public class FormattedTextFieldBindingTests extends BindingAbstractTests {
 
-    private static final Long initialValue = new Long(99);
+	private static final Long initialValue = new Long(99);
 
-    private JFormattedTextField ftc;
+	private JFormattedTextField ftc;
 
-    private FormattedTextFieldBinding b;
-    
-    protected TestBean createTestBean() {
-        TestBean testBean = super.createTestBean();
-        testBean.setNumberProperty(initialValue);
-        return testBean;
-    }
+	private FormattedTextFieldBinding b;
 
-    protected String setUpBinding() {   
-        b = new FormattedTextFieldBinding(new JFormattedTextField(NumberFormat.getInstance()), fm, "numberProperty", null);
-        ftc = (JFormattedTextField)b.getControl();
-        return "numberProperty";
-    }
-    
-    public void testInitialValue() {
-        assertEquals(initialValue, vm.getValue());
-        assertEquals(initialValue, ftc.getValue());
-    }
+	@Override
+	protected TestBean createTestBean() {
+		TestBean testBean = super.createTestBean();
+		testBean.setNumberProperty(initialValue);
+		return testBean;
+	}
 
-    public void testComponentTracksEnabledChanges() {
-        assertEquals(true, ftc.isEnabled());
-        fm.setEnabled(false);
-        assertEquals(false, ftc.isEnabled());
-        fm.setEnabled(true);
-        assertEquals(true, ftc.isEnabled());
-    }
+	@Override
+	protected String setUpBinding() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				b = new FormattedTextFieldBinding(new JFormattedTextField(NumberFormat.getInstance()), fm,
+						"numberProperty", null);
+				ftc = (JFormattedTextField) b.getControl();
+			}
+		});
+		return "numberProperty";
+	}
 
-    public void testComponentTracksReadOnlyChanges() {
-        FieldMetadata state = fm.getFieldMetadata("numberProperty");
-        assertEquals(true, ftc.isEditable());
-        state.setReadOnly(true);
-        assertEquals(false, ftc.isEditable());
-        state.setReadOnly(false);
-        assertEquals(true, ftc.isEditable());
-    }
+	@Test
+	public void testInitialValue() {
+		assertEquals(initialValue, vm.getValue());
+		assertEquals(initialValue, ftc.getValue());
+	}
 
-    public void testComponentUpdatesValueModel() {
-        Long one = new Long(1);
-        Long two = new Long(2);
-        ftc.setValue(one);
-        assertTrue(vm.getValue() instanceof Long);
-        assertTrue(one.compareTo((Long)vm.getValue()) == 0);
-        ftc.setValue(null);
-        assertEquals(null, vm.getValue());
-        ftc.setValue(two);
-        assertEquals(two, vm.getValue());
-        ftc.setValue(null);
-        assertEquals(null, vm.getValue());
-    }
+	@Override
+	@Test
+	public void testComponentTracksEnabledChanges() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				assertEquals(true, ftc.isEnabled());
+				fm.setEnabled(false);
+				assertEquals(false, ftc.isEnabled());
+				fm.setEnabled(true);
+				assertEquals(true, ftc.isEnabled());
+			}
+		});
+	}
 
-    public void testValueModelUpdatesComponent() {
-        Long one = new Long(1);
-        Long two = new Long(2);
-        vm.setValue(one);
-        assertEquals(one, ftc.getValue());
-        vm.setValue(null);
-        assertEquals(null, ftc.getValue());
-        vm.setValue(two);
-        assertEquals(two, ftc.getValue());
-        vm.setValue(null);
-        assertEquals(null, ftc.getValue());
-    }
+	@Override
+	@Test
+	public void testComponentTracksReadOnlyChanges() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				FieldMetadata state = fm.getFieldMetadata("numberProperty");
+				assertEquals(true, ftc.isEditable());
+				state.setReadOnly(true);
+				assertEquals(false, ftc.isEditable());
+				state.setReadOnly(false);
+				assertEquals(true, ftc.isEditable());
+			}
+		});
+	}
+
+	@Override
+	@Test
+	public void testComponentUpdatesValueModel() {
+		Long one = new Long(1);
+		Long two = new Long(2);
+		ftc.setValue(one);
+		assertTrue(vm.getValue() instanceof Long);
+		assertTrue(one.compareTo((Long) vm.getValue()) == 0);
+		ftc.setValue(null);
+		assertEquals(null, vm.getValue());
+		ftc.setValue(two);
+		assertEquals(two, vm.getValue());
+		ftc.setValue(null);
+		assertEquals(null, vm.getValue());
+	}
+
+	@Override
+	@Test
+	public void testValueModelUpdatesComponent() {
+		Long one = new Long(1);
+		Long two = new Long(2);
+		vm.setValue(one);
+		assertEquals(one, ftc.getValue());
+		vm.setValue(null);
+		assertEquals(null, ftc.getValue());
+		vm.setValue(two);
+		assertEquals(two, ftc.getValue());
+		vm.setValue(null);
+		assertEquals(null, ftc.getValue());
+	}
 }

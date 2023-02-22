@@ -15,6 +15,11 @@
  */
 package org.springframework.richclient.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -23,22 +28,23 @@ import java.awt.EventQueue;
 import java.awt.LayoutManager;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
-import java.lang.ref.ReferenceQueue;
 import java.lang.ref.PhantomReference;
+import java.lang.ref.ReferenceQueue;
 import java.lang.reflect.InvocationTargetException;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.Callable;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.Scrollable;
-import javax.swing.JRootPane;
-import javax.swing.JLayeredPane;
 import javax.swing.SwingUtilities;
 
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.test.SpringRichTestCase;
 
 /**
@@ -47,307 +53,414 @@ import org.springframework.richclient.test.SpringRichTestCase;
  */
 public class OverlayHelperTests extends SpringRichTestCase {
 
-    /**
-     * OverlayHelper installs the overlay as the View of a JScrollPane viewport, if the component is in a JScrollPane,
-     * so that the overlay is shown in the proper location when scrolled. However, to accomplish this, it will remove
-     * the component that was in the viewport, add it to a JLayeredPane, and then add that JLayeredPane to the viewport
-     * instead. This introduced a bug if the viewport's view happened to implement the Scrollable interface, since
-     * JScrollPane does <i>not</i> implement the Scrollable interface. See issue RCP-344.
-     * 
-     * @throws Exception
-     */
-    public void testRegressionScrollableProxy() throws Exception {
-        performScrollableTest();
-        performNonScrollableTest();
-    }
+	private JRootPane rootPane;
 
+	private int lpcount;
 
-    /**
-     * See <a href="http://opensource.atlassian.com/projects/spring/browse/RCP-492">RCP-492<a/>
-     * for details on this test and related bug.
-     *
-     * @throws Exception
-     */
-    public void testRegressionOverlayHelperLeak() throws Exception {
-        // Basically, this test will simulate adding a component to a
-        // JRootPane, then attach an overlay to it.  The overlay will be
-        // installed into the layered pane of the JRootPane at the
-        // PALETTE_LAYER.  This test will then remove the component from the
-        // JRootPane, ensure the overlay is removed from the layered pane,
-        // and then further ensure that nothing else holds a strong reference
-        // to the component (by waiting for the component to be garbage
-        // collected).
-        JComponent component = createTestComponent();
-        JComponent overlay = createTestOverlay();
-        final ReferenceQueue rq = new ReferenceQueue();
-        final PhantomReference componentRef = new PhantomReference(component, rq);
+	private JComponent component;
 
-        final JRootPane rootPane = new JRootPane() {
-            public boolean isVisible() {
-                return true;
-            }
-            public boolean isShowing() {
-                return true;
-            }
-            protected JLayeredPane createLayeredPane() {
-                return new JLayeredPane() {
-                    public boolean isVisible() {
-                        return true;
-                    }
-                    public boolean isShowing() {
-                        return true;
-                    }
-                };
-            }
-        };
-        
-        final int lpcount = rootPane.getLayeredPane().getComponentCountInLayer(JLayeredPane.PALETTE_LAYER.intValue());
-        
-        OverlayHelper.attachOverlay(overlay, component, 0, 0, 0);
-        
-        assertEquals(lpcount, rootPane.getLayeredPane().getComponentCountInLayer(JLayeredPane.PALETTE_LAYER.intValue()));
-        rootPane.getContentPane().add(component);
-        // updateOverlay is "invokedLater", so wait for it...
-        waitUntilEventQueueIsEmpty();
-        assertEquals(lpcount + 1, rootPane.getLayeredPane().getComponentCountInLayer(JLayeredPane.PALETTE_LAYER.intValue()));
-        
-        rootPane.getContentPane().remove(component);
-        
-        // the remove operation make be invoked later, so wait for it...
-        waitUntilEventQueueIsEmpty();
-        
-        // Clear out our strong references so it gets garbage collected.
-        component = null;
-        overlay = null;
-        
-        // Make sure the overlay was removed from the layered pane.
-        assertEquals("It appears the overlay was not removed from the layered pane when its component was removed from the content pane", lpcount, rootPane.getLayeredPane().getComponentCountInLayer(JLayeredPane.PALETTE_LAYER.intValue()));
-        
-        // Make sure no other references are held... wait up to 15 seconds for
-        // the object to be garbage collected.
-        // Note: we may want to remove this section from the test as it
-        // presumes the VM will garbage collect the reference fairly quickly
-        // once a System.gc() is invoked.
-        // There is no guarantee this will happen, so the assumption may be
-        // faulty.  If it ends up being a problem, or starts yielding
-        // inconsistent test results, then feel free to yank it.
-        PhantomReference pr;
-        final long end = System.currentTimeMillis() + 15000;
-        do {
-            System.gc();
-        } while((pr = (PhantomReference)rq.remove(100)) == null && System.currentTimeMillis() < end);
-        if(pr != null) {
-            pr.clear();
-        }
-        assertSame("Either something else is still holding a strong reference to the component, or the VM is not garbage collecting it.  See comments in OverlayHelperTests.testRegressionOverlayHelperLeak() for more detail", pr, componentRef);
-    }
+	private JComponent overlay;
 
-    /**
-     * Ensures that OverlayHelper supports the Scrollable interface and properly proxies Scrollable methods.
-     * 
-     * @throws Exception
-     */
-    private void performScrollableTest() throws Exception {
-        final ScrollablePanel view = new ScrollablePanel(new BorderLayout());
-        view.setScrollableUnitIncrement(5);
-        view.setScrollableBlockIncrement(30);
-        view.setScrollableTracksViewportWidth(true);
+	private ReferenceQueue rq;
 
-        final JComponent overlay = createTestOverlay();
-        final JComponent someField = createTestComponent();
+	private PhantomReference componentRef;
 
-        OverlayHelper.attachOverlay(overlay, someField, 0, 0, 0);
+	private ScrollablePanel view;
 
-        view.add(someField);
+	private JScrollPane scrollPane;
 
-        final JScrollPane scrollPane = new JScrollPane(view);
+	private JComponent view2;
 
-        waitUntilEventQueueIsEmpty();
+	private JComponent someField;
 
-        final Component viewportView = scrollPane.getViewport().getView();
+	private Component viewportView;
 
-        // If OverlayHelper changes the way it handles scrollable overlays,
-        // then the test will need to be revisited - this makes sure it
-        // won't get ignored. :)
-//        assertFalse(viewportView == view);
+	/**
+	 * OverlayHelper installs the overlay as the View of a JScrollPane viewport, if
+	 * the component is in a JScrollPane, so that the overlay is shown in the proper
+	 * location when scrolled. However, to accomplish this, it will remove the
+	 * component that was in the viewport, add it to a JLayeredPane, and then add
+	 * that JLayeredPane to the viewport instead. This introduced a bug if the
+	 * viewport's view happened to implement the Scrollable interface, since
+	 * JScrollPane does <i>not</i> implement the Scrollable interface. See issue
+	 * RCP-344.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testRegressionScrollableProxy() throws Exception {
+		performScrollableTest();
+		performNonScrollableTest();
+	}
 
-        assertTrue(viewportView instanceof Scrollable);
-        assertTrue(((Scrollable) viewportView).getScrollableTracksViewportWidth());
-        assertFalse(((Scrollable) viewportView).getScrollableTracksViewportHeight());
-        assertEquals(5, ((Scrollable) viewportView).getScrollableUnitIncrement(null, 0, 0));
-        assertEquals(30, ((Scrollable) viewportView).getScrollableBlockIncrement(null, 0, 0));
-        assertEquals(view.getPreferredScrollableViewportSize(), ((Scrollable) viewportView)
-                .getPreferredScrollableViewportSize());
-    }
+	/**
+	 * See <a href=
+	 * "http://opensource.atlassian.com/projects/spring/browse/RCP-492">RCP-492<a/>
+	 * for details on this test and related bug.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testRegressionOverlayHelperLeak() throws Exception {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				// Basically, this test will simulate adding a component to a
+				// JRootPane, then attach an overlay to it. The overlay will be
+				// installed into the layered pane of the JRootPane at the
+				// PALETTE_LAYER. This test will then remove the component from the
+				// JRootPane, ensure the overlay is removed from the layered pane,
+				// and then further ensure that nothing else holds a strong reference
+				// to the component (by waiting for the component to be garbage
+				// collected).
+				component = createTestComponent();
+				overlay = createTestOverlay();
+				rq = new ReferenceQueue();
+				componentRef = new PhantomReference(component, rq);
 
-    private void waitUntilEventQueueIsEmpty() throws InterruptedException, InvocationTargetException {
-        // we have to sleep here until the asynchronously attachement of JLayeredPane and the overlay is finished
-        EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-        AWTEvent peekEvent;
-        while((peekEvent = eventQueue.peekEvent()) != null) {
-            System.out.println("got event in queue: " + peekEvent);
-            Thread.currentThread().sleep(0);
-        }
-        // Added 10/10/07 AlD: Sometimes the above loop fails to work!?  This
-        // should further ensure the event loop is empty.
-        SwingUtilities.invokeAndWait(new Runnable() {
-            public void run() { }
-        });
-    }
+				rootPane = new JRootPane() {
+					@Override
+					public boolean isVisible() {
+						return true;
+					}
 
-    /**
-     * Ensures that OverlayHelper will NOT implement the Scrollable interface if the view component does not implement
-     * the Scrollable interface.
-     * 
-     * @throws Exception
-     */
-    private void performNonScrollableTest() throws Exception {
-        final JPanel view = new JPanel(new BorderLayout());
-        final JComponent overlay = createTestOverlay();
-        final JComponent someField = createTestComponent();
+					@Override
+					public boolean isShowing() {
+						return true;
+					}
 
-        OverlayHelper.attachOverlay(overlay, someField, 0, 0, 0);
+					@Override
+					protected JLayeredPane createLayeredPane() {
+						return new JLayeredPane() {
+							@Override
+							public boolean isVisible() {
+								return true;
+							}
 
-        view.add(someField);
+							@Override
+							public boolean isShowing() {
+								return true;
+							}
+						};
+					}
+				};
 
-        final JScrollPane scrollPane = new JScrollPane(view);
+				lpcount = rootPane.getLayeredPane().getComponentCountInLayer(JLayeredPane.PALETTE_LAYER.intValue());
 
-        waitUntilEventQueueIsEmpty();
+				OverlayHelper.attachOverlay(overlay, component, 0, 0, 0);
 
-        final Component viewportView = scrollPane.getViewport().getView();
-//        assertFalse(viewportView == view);
-        assertFalse(viewportView instanceof Scrollable);
-    }
+				assertEquals(lpcount,
+						rootPane.getLayeredPane().getComponentCountInLayer(JLayeredPane.PALETTE_LAYER.intValue()));
+				rootPane.getContentPane().add(component);
+			}
+		});
+		// updateOverlay is "invokedLater", so wait for it...
+		waitUntilEventQueueIsEmpty();
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				assertEquals(lpcount + 1,
+						rootPane.getLayeredPane().getComponentCountInLayer(JLayeredPane.PALETTE_LAYER.intValue()));
 
-    public void testSwapScrollableForNonScrollable() throws Exception {
-        JComponent view = new ScrollablePanel(new BorderLayout());
+				rootPane.getContentPane().remove(component);
+			}
+		});
+		// the remove operation make be invoked later, so wait for it...
+		waitUntilEventQueueIsEmpty();
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				// Clear out our strong references so it gets garbage collected.
+				component = null;
+				overlay = null;
 
-        final JComponent overlay = createTestOverlay();
-        final JComponent someField = createTestComponent();
+				// Make sure the overlay was removed from the layered pane.
+				assertEquals(lpcount,
+						rootPane.getLayeredPane().getComponentCountInLayer(JLayeredPane.PALETTE_LAYER.intValue()),
+						"It appears the overlay was not removed from the layered pane when its component was removed from the content pane");
 
-        OverlayHelper.attachOverlay(overlay, someField, 0, 0, 0);
+				// Make sure no other references are held... wait up to 15 seconds for
+				// the object to be garbage collected.
+				// Note: we may want to remove this section from the test as it
+				// presumes the VM will garbage collect the reference fairly quickly
+				// once a System.gc() is invoked.
+				// There is no guarantee this will happen, so the assumption may be
+				// faulty. If it ends up being a problem, or starts yielding
+				// inconsistent test results, then feel free to yank it.
+				PhantomReference pr;
+				final long end = System.currentTimeMillis() + 15000;
+				do {
+					System.gc();
+				} while ((pr = (PhantomReference) rq.remove(100)) == null && System.currentTimeMillis() < end);
+				if (pr != null) {
+					pr.clear();
+				}
+				assertSame(pr, componentRef,
+						"Either something else is still holding a strong reference to the component, or the VM is not garbage collecting it.  See comments in OverlayHelperTests.testRegressionOverlayHelperLeak() for more detail");
+			}
+		});
+	}
 
-        view.add(someField);
+	/**
+	 * Ensures that OverlayHelper supports the Scrollable interface and properly
+	 * proxies Scrollable methods.
+	 * 
+	 * @throws Exception
+	 */
+	private void performScrollableTest() throws Exception {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				view = new ScrollablePanel(new BorderLayout());
+				view.setScrollableUnitIncrement(5);
+				view.setScrollableBlockIncrement(30);
+				view.setScrollableTracksViewportWidth(true);
 
-        final JScrollPane scrollPane = new JScrollPane(view);
+				final JComponent overlay = createTestOverlay();
+				final JComponent someField = createTestComponent();
 
-        waitUntilEventQueueIsEmpty();
+				OverlayHelper.attachOverlay(overlay, someField, 0, 0, 0);
 
-        Component viewportView = scrollPane.getViewport().getView();
-//        assertFalse(viewportView == view);
-        assertTrue(viewportView instanceof Scrollable);
+				view.add(someField);
 
-        view.remove(someField);
-        view = new JPanel(new BorderLayout());
-        view.add(someField);
-        scrollPane.setViewportView(view);
+				scrollPane = new JScrollPane(view);
+			}
+		});
 
-        waitUntilEventQueueIsEmpty();
+		waitUntilEventQueueIsEmpty();
 
-        viewportView = scrollPane.getViewport().getView();
-//        assertFalse(viewportView == view);
-        assertFalse(viewportView instanceof Scrollable);
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				final Component viewportView = scrollPane.getViewport().getView();
 
-        view.remove(someField);
-        view = new ScrollablePanel(new BorderLayout());
-        view.add(someField);
-        scrollPane.setViewportView(view);
+				// If OverlayHelper changes the way it handles scrollable overlays,
+				// then the test will need to be revisited - this makes sure it
+				// won't get ignored. :)
+//		        assertFalse(viewportView == view);
 
-        waitUntilEventQueueIsEmpty();
+				assertTrue(viewportView instanceof Scrollable);
+				assertTrue(((Scrollable) viewportView).getScrollableTracksViewportWidth());
+				assertFalse(((Scrollable) viewportView).getScrollableTracksViewportHeight());
+				assertEquals(5, ((Scrollable) viewportView).getScrollableUnitIncrement(null, 0, 0));
+				assertEquals(30, ((Scrollable) viewportView).getScrollableBlockIncrement(null, 0, 0));
+				assertEquals(view.getPreferredScrollableViewportSize(),
+						((Scrollable) viewportView).getPreferredScrollableViewportSize());
+			}
+		});
+	}
 
-        viewportView = scrollPane.getViewport().getView();
-//        assertFalse(viewportView == view);
-        assertTrue(viewportView instanceof Scrollable);
-    }
+	private void waitUntilEventQueueIsEmpty() throws InterruptedException, InvocationTargetException {
+		// we have to sleep here until the asynchronously attachement of JLayeredPane
+		// and the overlay is finished
+		EventQueue eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
+		AWTEvent peekEvent;
+		while ((peekEvent = eventQueue.peekEvent()) != null) {
+			System.out.println("got event in queue: " + peekEvent);
+			Thread.currentThread().sleep(0);
+		}
+		// Added 10/10/07 AlD: Sometimes the above loop fails to work!? This
+		// should further ensure the event loop is empty.
+		SwingUtilities.invokeAndWait(new Runnable() {
+			@Override
+			public void run() {
+			}
+		});
+	}
 
-    private JComponent createTestComponent() {
-        return new JTextField("Hello, world!") {
-            // This is to force the OverlayHelper to install the overlay,
-            // even though we don't have a UI visible.
-            public boolean isVisible() {
-                return true;
-            }
+	/**
+	 * Ensures that OverlayHelper will NOT implement the Scrollable interface if the
+	 * view component does not implement the Scrollable interface.
+	 * 
+	 * @throws Exception
+	 */
+	private void performNonScrollableTest() throws Exception {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				final JPanel view = new JPanel(new BorderLayout());
+				final JComponent overlay = createTestOverlay();
+				final JComponent someField = createTestComponent();
 
-            public boolean isShowing() {
-                return true;
-            }
-        };
-    }
+				OverlayHelper.attachOverlay(overlay, someField, 0, 0, 0);
 
-    private JComponent createTestOverlay() {
-        final JComponent overlay = new JLabel("x") {
-            // This is to force the OverlayHelper to install the overlay,
-            // even though we don't have a UI visible.
-            public boolean isVisible() {
-                return true;
-            }
+				view.add(someField);
 
-            public boolean isShowing() {
-                return true;
-            }
-        };
-        overlay.setOpaque(false);
-        return overlay;
-    }
+				scrollPane = new JScrollPane(view);
+			}
+		});
 
-    public static class ScrollablePanel extends JPanel implements Scrollable {
-        private int scrollableUnitIncrement = 10;
+		waitUntilEventQueueIsEmpty();
 
-        private int scrollableBlockIncrement = 40;
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				final Component viewportView = scrollPane.getViewport().getView();
+//		        assertFalse(viewportView == view);
+				assertFalse(viewportView instanceof Scrollable);
+			}
+		});
+	}
 
-        private boolean scrollableTracksViewportWidth = false;
+	@Test
+	public void testSwapScrollableForNonScrollable() throws Exception {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				view2 = new ScrollablePanel(new BorderLayout());
 
-        private boolean scrollableTracksViewportHeight = false;
+				final JComponent overlay = createTestOverlay();
+				someField = createTestComponent();
 
-        public ScrollablePanel(LayoutManager layout, boolean isDoubleBuffered) {
-            super(layout, isDoubleBuffered);
-        }
+				OverlayHelper.attachOverlay(overlay, someField, 0, 0, 0);
 
-        public ScrollablePanel(LayoutManager layout) {
-            super(layout);
-        }
+				view2.add(someField);
 
-        public ScrollablePanel(boolean isDoubleBuffered) {
-            super(isDoubleBuffered);
-        }
+				scrollPane = new JScrollPane(view2);
+			}
+		});
 
-        public ScrollablePanel() {
-        }
+		waitUntilEventQueueIsEmpty();
 
-        public void setScrollableUnitIncrement(final int scrollableUnitIncrement) {
-            this.scrollableUnitIncrement = scrollableUnitIncrement;
-        }
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				viewportView = scrollPane.getViewport().getView();
+//		        assertFalse(viewportView == view);
+				assertTrue(viewportView instanceof Scrollable);
 
-        public void setScrollableBlockIncrement(final int scrollableBlockIncrement) {
-            this.scrollableBlockIncrement = scrollableBlockIncrement;
-        }
+				view2.remove(someField);
+				view2 = new JPanel(new BorderLayout());
+				view2.add(someField);
+				scrollPane.setViewportView(view2);
+			}
+		});
 
-        public void setScrollableTracksViewportWidth(final boolean scrollableTracksViewportWidth) {
-            this.scrollableTracksViewportWidth = scrollableTracksViewportWidth;
-        }
+		waitUntilEventQueueIsEmpty();
 
-        public void setScrollableTracksViewportHeight(final boolean scrollableTracksViewportHeight) {
-            this.scrollableTracksViewportHeight = scrollableTracksViewportHeight;
-        }
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				viewportView = scrollPane.getViewport().getView();
+//		        assertFalse(viewportView == view);
+				assertFalse(viewportView instanceof Scrollable);
 
-        public Dimension getPreferredScrollableViewportSize() {
-            return getPreferredSize();
-        }
+				view2.remove(someField);
+				view2 = new ScrollablePanel(new BorderLayout());
+				view2.add(someField);
+				scrollPane.setViewportView(view2);
+			}
+		});
 
-        public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return this.scrollableUnitIncrement;
-        }
+		waitUntilEventQueueIsEmpty();
 
-        public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
-            return this.scrollableBlockIncrement;
-        }
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				viewportView = scrollPane.getViewport().getView();
+//		        assertFalse(viewportView == view);
+				assertTrue(viewportView instanceof Scrollable);
+			}
+		});
+	}
 
-        public boolean getScrollableTracksViewportWidth() {
-            return this.scrollableTracksViewportWidth;
-        }
+	private JComponent createTestComponent() {
+		return new JTextField("Hello, world!") {
+			// This is to force the OverlayHelper to install the overlay,
+			// even though we don't have a UI visible.
+			@Override
+			public boolean isVisible() {
+				return true;
+			}
 
-        public boolean getScrollableTracksViewportHeight() {
-            return this.scrollableTracksViewportHeight;
-        }
-    }
+			@Override
+			public boolean isShowing() {
+				return true;
+			}
+		};
+	}
+
+	private JComponent createTestOverlay() {
+		final JComponent overlay = new JLabel("x") {
+			// This is to force the OverlayHelper to install the overlay,
+			// even though we don't have a UI visible.
+			@Override
+			public boolean isVisible() {
+				return true;
+			}
+
+			@Override
+			public boolean isShowing() {
+				return true;
+			}
+		};
+		overlay.setOpaque(false);
+		return overlay;
+	}
+
+	public static class ScrollablePanel extends JPanel implements Scrollable {
+		private int scrollableUnitIncrement = 10;
+
+		private int scrollableBlockIncrement = 40;
+
+		private boolean scrollableTracksViewportWidth = false;
+
+		private boolean scrollableTracksViewportHeight = false;
+
+		public ScrollablePanel(LayoutManager layout, boolean isDoubleBuffered) {
+			super(layout, isDoubleBuffered);
+		}
+
+		public ScrollablePanel(LayoutManager layout) {
+			super(layout);
+		}
+
+		public ScrollablePanel(boolean isDoubleBuffered) {
+			super(isDoubleBuffered);
+		}
+
+		public ScrollablePanel() {
+		}
+
+		public void setScrollableUnitIncrement(final int scrollableUnitIncrement) {
+			this.scrollableUnitIncrement = scrollableUnitIncrement;
+		}
+
+		public void setScrollableBlockIncrement(final int scrollableBlockIncrement) {
+			this.scrollableBlockIncrement = scrollableBlockIncrement;
+		}
+
+		public void setScrollableTracksViewportWidth(final boolean scrollableTracksViewportWidth) {
+			this.scrollableTracksViewportWidth = scrollableTracksViewportWidth;
+		}
+
+		public void setScrollableTracksViewportHeight(final boolean scrollableTracksViewportHeight) {
+			this.scrollableTracksViewportHeight = scrollableTracksViewportHeight;
+		}
+
+		@Override
+		public Dimension getPreferredScrollableViewportSize() {
+			return getPreferredSize();
+		}
+
+		@Override
+		public int getScrollableUnitIncrement(Rectangle visibleRect, int orientation, int direction) {
+			return this.scrollableUnitIncrement;
+		}
+
+		@Override
+		public int getScrollableBlockIncrement(Rectangle visibleRect, int orientation, int direction) {
+			return this.scrollableBlockIncrement;
+		}
+
+		@Override
+		public boolean getScrollableTracksViewportWidth() {
+			return this.scrollableTracksViewportWidth;
+		}
+
+		@Override
+		public boolean getScrollableTracksViewportHeight() {
+			return this.scrollableTracksViewportHeight;
+		}
+	}
 }

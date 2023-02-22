@@ -15,11 +15,12 @@
  */
 package org.springframework.richclient.application;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Locale;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.richclient.progress.NullProgressMonitor;
@@ -33,20 +34,20 @@ import org.springframework.richclient.progress.ProgressMonitor;
  * @since 0.3.0
  * 
  */
-public class ProgressMonitoringBeanFactoryPostProcessorTests extends TestCase {
+public class ProgressMonitoringBeanFactoryPostProcessorTests {
 
 	/**
 	 * Confirms that the post-processor's constructor throws an
-	 * IllegalArgumentException if a ProgressMonitor is not provided, but allows
-	 * a null MessageSource.
+	 * IllegalArgumentException if a ProgressMonitor is not provided, but allows a
+	 * null MessageSource.
 	 */
+	@Test
 	public void testConstructor() {
 
 		try {
 			new ProgressMonitoringBeanFactoryPostProcessor(null, null);
 			fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// do nothing, test succeeded
 		}
 
@@ -55,24 +56,25 @@ public class ProgressMonitoringBeanFactoryPostProcessorTests extends TestCase {
 	}
 
 	/**
-	 * Confirms that the post processor correctly notifies a given progress
-	 * monitor as the bean factory is loaded, providing the expected localized
-	 * messages. The following assertions are made:
+	 * Confirms that the post processor correctly notifies a given progress monitor
+	 * as the bean factory is loaded, providing the expected localized messages. The
+	 * following assertions are made:
 	 * 
 	 * <ul>
-	 * <li>The {@link ProgressMonitor#taskStarted(String, int)} method is
-	 * called exactly once with a localized message, provided by the key
-	 * {@link ProgressMonitoringBeanPostProcessor#LOADING_APP_CONTEXT_KEY}, and
-	 * the number of singleton beans in the bean factory.</li>
-	 * <li>The {@link ProgressMonitor#subTaskStarted(String)} method is called,
-	 * with the localized message provided by
+	 * <li>The {@link ProgressMonitor#taskStarted(String, int)} method is called
+	 * exactly once with a localized message, provided by the key
+	 * {@link ProgressMonitoringBeanPostProcessor#LOADING_APP_CONTEXT_KEY}, and the
+	 * number of singleton beans in the bean factory.</li>
+	 * <li>The {@link ProgressMonitor#subTaskStarted(String)} method is called, with
+	 * the localized message provided by
 	 * {@link ProgressMonitoringBeanPostProcessor#LOADING_BEAN_KEY}, for each
 	 * singleton bean defined in the bean factory being loaded.</li>
 	 * <li>The {@link ProgressMonitor#worked(int)} method is called with the
-	 * argument '1' the same number of times as there are singleton beans
-	 * defined in the bean factory.</li>
+	 * argument '1' the same number of times as there are singleton beans defined in
+	 * the bean factory.</li>
 	 * </ul>
 	 */
+	@Test
 	public void testLoadingBeansWithMessageSource() {
 		String loadingAppCtxMessage = "Loading Application Context Message Test";
 		int expectedSingletonBeanCount = 2;
@@ -90,8 +92,8 @@ public class ProgressMonitoringBeanFactoryPostProcessorTests extends TestCase {
 
 		StaticMessageSource messageSource = new StaticMessageSource();
 
-		messageSource.addMessage(ProgressMonitoringBeanFactoryPostProcessor.LOADING_APP_CONTEXT_KEY, Locale
-				.getDefault(), loadingAppCtxMessage);
+		messageSource.addMessage(ProgressMonitoringBeanFactoryPostProcessor.LOADING_APP_CONTEXT_KEY,
+				Locale.getDefault(), loadingAppCtxMessage);
 
 		messageSource.addMessage(ProgressMonitoringBeanFactoryPostProcessor.LOADING_BEAN_KEY, Locale.getDefault(),
 				loadingBeanMessage);
@@ -115,22 +117,23 @@ public class ProgressMonitoringBeanFactoryPostProcessorTests extends TestCase {
 	}
 
 	/**
-	 * Confirms that the post processor correctly notifies a given progress
-	 * monitor as the bean factory is loaded. The following assertions are made:
+	 * Confirms that the post processor correctly notifies a given progress monitor
+	 * as the bean factory is loaded. The following assertions are made:
 	 * 
 	 * <ul>
-	 * <li>The {@link ProgressMonitor#taskStarted(String, int)} method is
-	 * called exactly once with any message and the number of singleton beans in
-	 * the bean factory.</li>
-	 * <li>The {@link ProgressMonitor#subTaskStarted(String)} method is called,
-	 * with the localized message provided by
+	 * <li>The {@link ProgressMonitor#taskStarted(String, int)} method is called
+	 * exactly once with any message and the number of singleton beans in the bean
+	 * factory.</li>
+	 * <li>The {@link ProgressMonitor#subTaskStarted(String)} method is called, with
+	 * the localized message provided by
 	 * {@link ProgressMonitoringBeanPostProcessor#LOADING_BEAN_KEY}, for each
 	 * singleton bean defined in the bean factory being loaded.</li>
 	 * <li>The {@link ProgressMonitor#worked(int)} method is called with the
-	 * argument '1' the same number of times as there are singleton beans
-	 * defined in the bean factory.</li>
+	 * argument '1' the same number of times as there are singleton beans defined in
+	 * the bean factory.</li>
 	 * </ul>
 	 */
+	@Test
 	public void testLoadingBeansWithoutMessageSource() {
 		int expectedSingletonBeanCount = 2;
 		String beanName1 = "beanName1";

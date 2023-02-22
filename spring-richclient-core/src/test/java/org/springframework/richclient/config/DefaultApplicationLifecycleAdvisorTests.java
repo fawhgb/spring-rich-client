@@ -15,9 +15,10 @@
  */
 package org.springframework.richclient.config;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
@@ -30,63 +31,63 @@ import org.springframework.richclient.application.config.DefaultApplicationLifec
 /**
  * Test cases for {@link DefaultApplicationLifecycleAdvisor}
  */
-public class DefaultApplicationLifecycleAdvisorTests extends TestCase {
+public class DefaultApplicationLifecycleAdvisorTests {
 
-    public void testApplicationEventNotification() throws Exception {
-        TestAdvisor advisor = new TestAdvisor();
-        advisor.afterPropertiesSet();
-        Application.load(null);
-        new Application(advisor);
-        StaticApplicationContext applicationContext = new StaticApplicationContext();
-        Application.instance().setApplicationContext(applicationContext);
-        applicationContext.registerSingleton( "eventMulticaster", SimpleApplicationEventMulticaster.class );
-        applicationContext.refresh();
+	@Test
+	public void testApplicationEventNotification() throws Exception {
+		TestAdvisor advisor = new TestAdvisor();
+		advisor.afterPropertiesSet();
+		Application.load(null);
+		new Application(advisor);
+		StaticApplicationContext applicationContext = new StaticApplicationContext();
+		Application.instance().setApplicationContext(applicationContext);
+		applicationContext.registerSingleton("eventMulticaster", SimpleApplicationEventMulticaster.class);
+		applicationContext.refresh();
 
-        advisor.setWindowCommandBarDefinitions(
-            "org/springframework/richclient/config/app-lifecycle-test-ctx.xml");
+		advisor.setWindowCommandBarDefinitions("org/springframework/richclient/config/app-lifecycle-test-ctx.xml");
 
-        // Fire up test.....
-        advisor.testInit();
+		// Fire up test.....
+		advisor.testInit();
 
-        TestCommand cmd = (TestCommand)advisor.getBeanFactory().getBean("testCommand");
-        assertEquals("Command must be notified of refresh", 1, cmd.getCount());
+		TestCommand cmd = (TestCommand) advisor.getBeanFactory().getBean("testCommand");
+		assertEquals(1, cmd.getCount(), "Command must be notified of refresh");
 
-        advisor.onApplicationEvent(new ApplicationEvent(this) {});
-        assertEquals("Command must be notified", 2, cmd.getCount());
-    }
+		advisor.onApplicationEvent(new ApplicationEvent(this) {
+		});
+		assertEquals(2, cmd.getCount(), "Command must be notified");
+	}
 
-    // ===============================================================================
-    // Helper classes:
+	// ===============================================================================
+	// Helper classes:
 
-    public static class TestAdvisor extends DefaultApplicationLifecycleAdvisor {
-        public TestAdvisor() {
-            setStartingPageId("whatever");
-            ApplicationWindow window = (ApplicationWindow) EasyMock.createMock(ApplicationWindow.class);
-            setOpeningWindow(window);
-        }
-        
+	public static class TestAdvisor extends DefaultApplicationLifecycleAdvisor {
+		public TestAdvisor() {
+			setStartingPageId("whatever");
+			ApplicationWindow window = (ApplicationWindow) EasyMock.createMock(ApplicationWindow.class);
+			setOpeningWindow(window);
+		}
 
-        public void testInit() {
-            initNewWindowCommandBarFactory();
-        }
+		public void testInit() {
+			initNewWindowCommandBarFactory();
+		}
 
-        public BeanFactory getBeanFactory() {
-            return getCommandBarFactory();
-        }
-        
-        
-    }
+		public BeanFactory getBeanFactory() {
+			return getCommandBarFactory();
+		}
 
-    public static class TestCommand implements ApplicationListener {
+	}
 
-        int count = 0;
+	public static class TestCommand implements ApplicationListener {
 
-        public void onApplicationEvent(ApplicationEvent event) {
-            count++;
-        }
+		int count = 0;
 
-        public int getCount() {
-            return count;
-        }
-    }
+		@Override
+		public void onApplicationEvent(ApplicationEvent event) {
+			count++;
+		}
+
+		public int getCount() {
+			return count;
+		}
+	}
 }

@@ -15,80 +15,90 @@
  */
 package org.springframework.binding.value.support;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.value.ValueChangeDetector;
-import org.springframework.rules.closure.Closure;
 import org.springframework.richclient.application.ApplicationServices;
 import org.springframework.richclient.application.ApplicationServicesLocator;
+import org.springframework.rules.closure.Closure;
 
 /**
  * Testcase for <code>RefreshableValueHolder</code>
  * 
  * @author Peter De Bruycker
  */
-public class RefreshableValueHolderTests extends TestCase {
-    public void testWithLazyInitTrueAndAlwaysRefreshFalse() {
-        Object returnValue = new Object();
+public class RefreshableValueHolderTests {
 
-        Closure refreshFunction = (Closure) EasyMock.createMock(Closure.class);
-        EasyMock.expect(refreshFunction.call(null)).andReturn(returnValue);
-        EasyMock.replay(refreshFunction);
+	@Test
+	public void testWithLazyInitTrueAndAlwaysRefreshFalse() {
+		Object returnValue = new Object();
 
-        RefreshableValueHolder valueHolder = new RefreshableValueHolder(refreshFunction);
-        // lazy init
-        assertNull(valueHolder.getValue());
-        valueHolder.refresh();
-        assertSame(returnValue, valueHolder.getValue());
+		Closure refreshFunction = (Closure) EasyMock.createMock(Closure.class);
+		EasyMock.expect(refreshFunction.call(null)).andReturn(returnValue);
+		EasyMock.replay(refreshFunction);
 
-        EasyMock.verify(refreshFunction);
-    }
+		RefreshableValueHolder valueHolder = new RefreshableValueHolder(refreshFunction);
+		// lazy init
+		assertNull(valueHolder.getValue());
+		valueHolder.refresh();
+		assertSame(returnValue, valueHolder.getValue());
 
-    public void testWithLazyInitFalseAndAlwaysRefreshFalse() {
-        Object returnValue = new Object();
+		EasyMock.verify(refreshFunction);
+	}
 
-        Closure refreshFunction = (Closure) EasyMock.createMock(Closure.class);
-        EasyMock.expect(refreshFunction.call(null)).andReturn(returnValue);
-        EasyMock.replay(refreshFunction);
+	@Test
+	public void testWithLazyInitFalseAndAlwaysRefreshFalse() {
+		Object returnValue = new Object();
 
-        RefreshableValueHolder valueHolder = new RefreshableValueHolder(refreshFunction, false, false);
-        assertSame(returnValue, valueHolder.getValue());
+		Closure refreshFunction = (Closure) EasyMock.createMock(Closure.class);
+		EasyMock.expect(refreshFunction.call(null)).andReturn(returnValue);
+		EasyMock.replay(refreshFunction);
 
-        EasyMock.verify(refreshFunction);
-    }
+		RefreshableValueHolder valueHolder = new RefreshableValueHolder(refreshFunction, false, false);
+		assertSame(returnValue, valueHolder.getValue());
 
-    public void testWithLazyInitFalseAndAlwaysRefreshTrue() {
-        Object returnValue1 = new Object();
-        Object returnValue2 = new Object();
-        Object returnValue3 = new Object();
+		EasyMock.verify(refreshFunction);
+	}
 
-        Closure refreshFunction = (Closure) EasyMock.createMock(Closure.class);
-        EasyMock.expect(refreshFunction.call(null)).andReturn(returnValue1);
-        EasyMock.expect(refreshFunction.call(null)).andReturn(returnValue2);
-        EasyMock.expect(refreshFunction.call(null)).andReturn(returnValue3);
-        EasyMock.replay(refreshFunction);
+	@Test
+	public void testWithLazyInitFalseAndAlwaysRefreshTrue() {
+		Object returnValue1 = new Object();
+		Object returnValue2 = new Object();
+		Object returnValue3 = new Object();
 
-        RefreshableValueHolder valueHolder = new RefreshableValueHolder(refreshFunction, true, true);
-        assertSame(returnValue1, valueHolder.getValue());
-        assertSame(returnValue2, valueHolder.getValue());
-        assertSame(returnValue3, valueHolder.getValue());
+		Closure refreshFunction = (Closure) EasyMock.createMock(Closure.class);
+		EasyMock.expect(refreshFunction.call(null)).andReturn(returnValue1);
+		EasyMock.expect(refreshFunction.call(null)).andReturn(returnValue2);
+		EasyMock.expect(refreshFunction.call(null)).andReturn(returnValue3);
+		EasyMock.replay(refreshFunction);
 
-        EasyMock.verify(refreshFunction);
-    }
+		RefreshableValueHolder valueHolder = new RefreshableValueHolder(refreshFunction, true, true);
+		assertSame(returnValue1, valueHolder.getValue());
+		assertSame(returnValue2, valueHolder.getValue());
+		assertSame(returnValue3, valueHolder.getValue());
 
-    protected void setUp() throws Exception {
-        ApplicationServices services = new ApplicationServices() {
+		EasyMock.verify(refreshFunction);
+	}
 
-            public Object getService(Class serviceType) {
-                return new DefaultValueChangeDetector();
-            }
+	@BeforeEach
+	protected void setUp() throws Exception {
+		ApplicationServices services = new ApplicationServices() {
 
-            public boolean containsService(Class serviceType) {
-                return ValueChangeDetector.class.equals(serviceType);
-            }
+			@Override
+			public Object getService(Class serviceType) {
+				return new DefaultValueChangeDetector();
+			}
 
-        };
-        ApplicationServicesLocator.load(new ApplicationServicesLocator(services));
-    }
+			@Override
+			public boolean containsService(Class serviceType) {
+				return ValueChangeDetector.class.equals(serviceType);
+			}
+
+		};
+		ApplicationServicesLocator.load(new ApplicationServicesLocator(services));
+	}
 }

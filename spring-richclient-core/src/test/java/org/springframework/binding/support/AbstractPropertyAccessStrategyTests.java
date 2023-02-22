@@ -15,12 +15,16 @@
  */
 package org.springframework.binding.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.beans.NotWritablePropertyException;
@@ -28,273 +32,298 @@ import org.springframework.beans.NullValueInNestedPathException;
 import org.springframework.binding.MutablePropertyAccessStrategy;
 import org.springframework.binding.PropertyMetadataAccessStrategy;
 import org.springframework.binding.value.ValueModel;
+import org.springframework.richclient.test.SpringRichTestCase;
 import org.springframework.rules.closure.Closure;
 import org.springframework.rules.closure.support.Block;
-import org.springframework.richclient.test.SpringRichTestCase;
 
 /**
  * Tests class {@link AbstractPropertyAccessStrategy}.
  *
  * @author Oliver Hutchison
-* @author Arne Limburg
+ * @author Arne Limburg
  */
 public abstract class AbstractPropertyAccessStrategyTests extends SpringRichTestCase {
 
-    protected AbstractPropertyAccessStrategy pas;
+	protected AbstractPropertyAccessStrategy pas;
 
-    protected TestBean testBean;
+	protected TestBean testBean;
 
-    protected ValueModel vm;
+	protected ValueModel vm;
 
-    protected TestPropertyChangeListener pcl;
+	protected TestPropertyChangeListener pcl;
 
-    protected void doSetUp() throws Exception {
-        testBean = new TestBean();
-        pas = createPropertyAccessStrategy(testBean);
-        pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
-    }
+	@Override
+	protected void doSetUp() throws Exception {
+		testBean = new TestBean();
+		pas = createPropertyAccessStrategy(testBean);
+		pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
+	}
 
-    protected abstract AbstractPropertyAccessStrategy createPropertyAccessStrategy(Object target);
+	protected abstract AbstractPropertyAccessStrategy createPropertyAccessStrategy(Object target);
 
-    protected boolean isStrictNullHandlingEnabled() {
-    	return true;
-    }
+	protected boolean isStrictNullHandlingEnabled() {
+		return true;
+	}
 
-    public void testSimpleProperty() {
-        vm = pas.getPropertyValueModel("simpleProperty");
-        Block setValueDirectly = new Block() {
-           public void handle(Object newValue) {
-                testBean.setSimpleProperty((String)newValue);
-            }
-        };
-        Closure getValueDirectly = new Closure() {
-            public Object call(Object ignore) {
-                return testBean.getSimpleProperty();
-            }
-        };
-        Object[] valuesToTest = new Object[] {"1", "2", null, "3"};
+	@Test
+	public void testSimpleProperty() {
+		vm = pas.getPropertyValueModel("simpleProperty");
+		Block setValueDirectly = new Block() {
+			@Override
+			public void handle(Object newValue) {
+				testBean.setSimpleProperty((String) newValue);
+			}
+		};
+		Closure getValueDirectly = new Closure() {
+			@Override
+			public Object call(Object ignore) {
+				return testBean.getSimpleProperty();
+			}
+		};
+		Object[] valuesToTest = new Object[] { "1", "2", null, "3" };
 
-        testSettingAndGetting(valuesToTest, getValueDirectly, setValueDirectly);
-    }
+		testSettingAndGetting(valuesToTest, getValueDirectly, setValueDirectly);
+	}
 
-    public void testNestedProperty() {
-        final TestBean nestedProperty = new TestBean();
-        testBean.setNestedProperty(nestedProperty);
-        vm = pas.getPropertyValueModel("nestedProperty.simpleProperty");
-        Block setValueDirectly = new Block() {
-            public void handle(Object newValue) {
-                nestedProperty.setSimpleProperty((String)newValue);
-            }
-        };
-        Closure getValueDirectly = new Closure() {
-            public Object call(Object ignored) {
-                return nestedProperty.getSimpleProperty();
-            }
-        };
-        Object[] valuesToTest = new Object[] {"1", "2", null, "3"};
+	@Test
+	public void testNestedProperty() {
+		final TestBean nestedProperty = new TestBean();
+		testBean.setNestedProperty(nestedProperty);
+		vm = pas.getPropertyValueModel("nestedProperty.simpleProperty");
+		Block setValueDirectly = new Block() {
+			@Override
+			public void handle(Object newValue) {
+				nestedProperty.setSimpleProperty((String) newValue);
+			}
+		};
+		Closure getValueDirectly = new Closure() {
+			@Override
+			public Object call(Object ignored) {
+				return nestedProperty.getSimpleProperty();
+			}
+		};
+		Object[] valuesToTest = new Object[] { "1", "2", null, "3" };
 
-        testSettingAndGetting(valuesToTest, getValueDirectly, setValueDirectly);
-    }
+		testSettingAndGetting(valuesToTest, getValueDirectly, setValueDirectly);
+	}
 
-    public void testChildPropertyAccessStrategy() {
-        final TestBean nestedProperty = new TestBean();
-        testBean.setNestedProperty(nestedProperty);
-        MutablePropertyAccessStrategy cpas = pas.getPropertyAccessStrategyForPath("nestedProperty");
+	@Test
+	public void testChildPropertyAccessStrategy() {
+		final TestBean nestedProperty = new TestBean();
+		testBean.setNestedProperty(nestedProperty);
+		MutablePropertyAccessStrategy cpas = pas.getPropertyAccessStrategyForPath("nestedProperty");
 
-        assertEquals("Child domainObjectHolder should equal equivalent parent ValueModel",
-                pas.getPropertyValueModel("nestedProperty"), cpas.getDomainObjectHolder());
+		assertEquals(pas.getPropertyValueModel("nestedProperty"), cpas.getDomainObjectHolder(),
+				"Child domainObjectHolder should equal equivalent parent ValueModel");
 
-        vm = cpas.getPropertyValueModel("simpleProperty");
-        assertEquals("Child should return the same ValueModel as parent",
-                pas.getPropertyValueModel("nestedProperty.simpleProperty"), vm);
+		vm = cpas.getPropertyValueModel("simpleProperty");
+		assertEquals(pas.getPropertyValueModel("nestedProperty.simpleProperty"), vm,
+				"Child should return the same ValueModel as parent");
 
-        Block setValueDirectly = new Block() {
-            public void handle(Object newValue) {
-                nestedProperty.setSimpleProperty((String)newValue);
-            }
-        };
-        Closure getValueDirectly = new Closure() {
-            public Object call(Object ignore) {
-                return nestedProperty.getSimpleProperty();
-            }
-        };
-        Object[] valuesToTest = new Object[] {"1", "2", null, "3"};
+		Block setValueDirectly = new Block() {
+			@Override
+			public void handle(Object newValue) {
+				nestedProperty.setSimpleProperty((String) newValue);
+			}
+		};
+		Closure getValueDirectly = new Closure() {
+			@Override
+			public Object call(Object ignore) {
+				return nestedProperty.getSimpleProperty();
+			}
+		};
+		Object[] valuesToTest = new Object[] { "1", "2", null, "3" };
 
-        testSettingAndGetting(valuesToTest, getValueDirectly, setValueDirectly);
+		testSettingAndGetting(valuesToTest, getValueDirectly, setValueDirectly);
 
-        try {
-            pas.getPropertyValueModel("nestedProperty").setValue(null);
-            if (isStrictNullHandlingEnabled())
-            	fail("Should have thrown a NullValueInNestedPathException");
-        }
-        catch (NullValueInNestedPathException e) {
-            if (!isStrictNullHandlingEnabled())
-            	fail("Should not have thrown a NullValueInNestedPathException");
-        }
-    }
+		try {
+			pas.getPropertyValueModel("nestedProperty").setValue(null);
+			if (isStrictNullHandlingEnabled())
+				fail("Should have thrown a NullValueInNestedPathException");
+		} catch (NullValueInNestedPathException e) {
+			if (!isStrictNullHandlingEnabled())
+				fail("Should not have thrown a NullValueInNestedPathException");
+		}
+	}
 
-    public void testMapProperty() {
-        final Map map = new HashMap();
-        testBean.setMapProperty(map);
-        vm = pas.getPropertyValueModel("mapProperty[.key]");
-        Block setValueDirectly = new Block() {
-            public void handle(Object newValue) {
-                map.put(".key", newValue);
-            }
-        };
-        Closure getValueDirectly = new Closure() {
-            public Object call(Object ignore) {
-                return map.get(".key");
-            }
-        };
-        Object[] valuesToTest = new Object[] {"1", "2", null, "3"};
-        testSettingAndGetting(valuesToTest, getValueDirectly, setValueDirectly);
+	@Test
+	public void testMapProperty() {
+		final Map map = new HashMap();
+		testBean.setMapProperty(map);
+		vm = pas.getPropertyValueModel("mapProperty[.key]");
+		Block setValueDirectly = new Block() {
+			@Override
+			public void handle(Object newValue) {
+				map.put(".key", newValue);
+			}
+		};
+		Closure getValueDirectly = new Closure() {
+			@Override
+			public Object call(Object ignore) {
+				return map.get(".key");
+			}
+		};
+		Object[] valuesToTest = new Object[] { "1", "2", null, "3" };
+		testSettingAndGetting(valuesToTest, getValueDirectly, setValueDirectly);
 
-        try {
-            pas.getPropertyValueModel("mapProperty").setValue(null);
-            if (isStrictNullHandlingEnabled())
-            	fail("Should have thrown a NullValueInNestedPathException");
-        }
-        catch (NullValueInNestedPathException e) {
-            if (!isStrictNullHandlingEnabled())
-            	fail("Should not have thrown a NullValueInNestedPathException");
-        }
-    }
+		try {
+			pas.getPropertyValueModel("mapProperty").setValue(null);
+			if (isStrictNullHandlingEnabled())
+				fail("Should have thrown a InvalidPropertyException");
+		} catch (InvalidPropertyException e) {
+			if (!isStrictNullHandlingEnabled())
+				fail("Should not have thrown a InvalidPropertyException");
+			if (!(e instanceof NullValueInNestedPathException)
+					&& !(e.getCause() instanceof NullValueInNestedPathException))
+				fail("Cause should be a NullValueInNestedPathException");
+		}
+	}
 
-    public void testListProperty() {
-        final List list = new ArrayList();
-        list.add(null);
-        testBean.setListProperty(list);
-        vm = pas.getPropertyValueModel("listProperty[0]");
+	@Test
+	public void testListProperty() {
+		final List list = new ArrayList();
+		list.add(null);
+		testBean.setListProperty(list);
+		vm = pas.getPropertyValueModel("listProperty[0]");
 
-        Block setValueDirectly = new Block() {
-            public void handle(Object newValue) {
-                list.set(0, newValue);
-            }
-        };
-        Closure getValueDirectly = new Closure() {
-            public Object call(Object ignore) {
-                return list.get(0);
-            }
-        };
-        Object[] valuesToTest = new Object[] {"1", "2", null, "3"};
-        testSettingAndGetting(valuesToTest, getValueDirectly, setValueDirectly);
+		Block setValueDirectly = new Block() {
+			@Override
+			public void handle(Object newValue) {
+				list.set(0, newValue);
+			}
+		};
+		Closure getValueDirectly = new Closure() {
+			@Override
+			public Object call(Object ignore) {
+				return list.get(0);
+			}
+		};
+		Object[] valuesToTest = new Object[] { "1", "2", null, "3" };
+		testSettingAndGetting(valuesToTest, getValueDirectly, setValueDirectly);
 
-        list.add("a");
-        ValueModel vm2 = pas.getPropertyValueModel("listProperty[1]");
-        assertEquals("a", vm2.getValue());
+		list.add("a");
+		ValueModel vm2 = pas.getPropertyValueModel("listProperty[1]");
+		assertEquals("a", vm2.getValue());
 
-        try {
-            List newList = new ArrayList();
-            pas.getPropertyValueModel("listProperty").setValue(newList);
-            if (isStrictNullHandlingEnabled())
-            	fail("Should have thrown an InvalidPropertyException");
-        }
-        catch (InvalidPropertyException e) {
-            if (!isStrictNullHandlingEnabled())
-            	fail("Should not have thrown an InvalidPropertyException");
-        }
+		try {
+			List newList = new ArrayList();
+			pas.getPropertyValueModel("listProperty").setValue(newList);
+			if (isStrictNullHandlingEnabled())
+				fail("Should have thrown an InvalidPropertyException");
+		} catch (InvalidPropertyException e) {
+			if (!isStrictNullHandlingEnabled())
+				fail("Should not have thrown an InvalidPropertyException");
+		}
 
-        try {
-            pas.getPropertyValueModel("listProperty").setValue(null);
-            if (isStrictNullHandlingEnabled())
-            	fail("Should have thrown a NullValueInNestedPathException");
-        }
-        catch (NullValueInNestedPathException e) {
-            if (!isStrictNullHandlingEnabled())
-            	fail("Should not have thrown a NullValueInNestedPathException");
-        }
-    }
+		try {
+			pas.getPropertyValueModel("listProperty").setValue(null);
+			if (isStrictNullHandlingEnabled())
+				fail("Should have thrown a InvalidPropertyException");
+		} catch (InvalidPropertyException e) {
+			if (!isStrictNullHandlingEnabled())
+				fail("Should not have thrown a InvalidPropertyException");
+			if (!(e instanceof NullValueInNestedPathException)
+					&& !(e.getCause() instanceof NullValueInNestedPathException))
+				fail("Cause should be a NullValueInNestedPathException");
+		}
+	}
 
-    public void testReadOnlyProperty() {
-        vm = pas.getPropertyValueModel("readOnly");
+	@Test
+	public void testReadOnlyProperty() {
+		vm = pas.getPropertyValueModel("readOnly");
 
-        testBean.readOnly = "1";
-        assertEquals(testBean.readOnly, vm.getValue());
+		testBean.readOnly = "1";
+		assertEquals(testBean.readOnly, vm.getValue());
 
-        try {
-            vm.setValue("2");
-            fail("should have thrown NotWritablePropertyException");
-        } catch(NotWritablePropertyException e) {
-            // expected
-        }
-    }
+		try {
+			vm.setValue("2");
+			fail("should have thrown NotWritablePropertyException");
+		} catch (NotWritablePropertyException e) {
+			// expected
+		}
+	}
 
-    public void testWriteOnlyProperty() {
-        vm = pas.getPropertyValueModel("writeOnly");
+	@Test
+	public void testWriteOnlyProperty() {
+		vm = pas.getPropertyValueModel("writeOnly");
 
-        vm.setValue("2");
-        assertEquals("2" , testBean.writeOnly);
+		vm.setValue("2");
+		assertEquals("2", testBean.writeOnly);
 
-        try {
-            vm.getValue();
-            fail("should have thrown NotReadablePropertyException");
-        } catch(NotReadablePropertyException e) {
-            // expected
-        }
-    }
+		try {
+			vm.getValue();
+			fail("should have thrown NotReadablePropertyException");
+		} catch (NotReadablePropertyException e) {
+			// expected
+		}
+	}
 
-    public void testBeanThatImplementsPropertyChangePublisher() {
-        TestBeanWithPCP testBeanPCP = new TestBeanWithPCP();
-        pas.getDomainObjectHolder().setValue(testBeanPCP);
+	@Test
+	public void testBeanThatImplementsPropertyChangePublisher() {
+		TestBeanWithPCP testBeanPCP = new TestBeanWithPCP();
+		pas.getDomainObjectHolder().setValue(testBeanPCP);
 
-        vm = pas.getPropertyValueModel("boundProperty");
-        assertEquals("ValueModel should have registered a PropertyChangeListener", 1,
-                testBeanPCP.getPropertyChangeListeners("boundProperty").length);
+		vm = pas.getPropertyValueModel("boundProperty");
+		assertEquals(1, testBeanPCP.getPropertyChangeListeners("boundProperty").length,
+				"ValueModel should have registered a PropertyChangeListener");
 
-        vm.addValueChangeListener(pcl);
-        testBeanPCP.setBoundProperty("1");
-        assertEquals("Change to bound property should have been detected by ValueModel", 1, pcl.getEventsRecevied()
-                .size());
-        PropertyChangeEvent e = (PropertyChangeEvent)pcl.getEventsRecevied().get(0);
-        assertEquals(vm, e.getSource());
-        assertEquals(null, e.getOldValue());
-        assertEquals("1", e.getNewValue());
+		vm.addValueChangeListener(pcl);
+		testBeanPCP.setBoundProperty("1");
+		assertEquals(1, pcl.getEventsRecevied().size(),
+				"Change to bound property should have been detected by ValueModel");
+		PropertyChangeEvent e = (PropertyChangeEvent) pcl.getEventsRecevied().get(0);
+		assertEquals(vm, e.getSource());
+		assertEquals(null, e.getOldValue());
+		assertEquals("1", e.getNewValue());
 
-        pcl.reset();
-        vm.setValue("2");
-        assertEquals("Change to bound property should have been detected by ValueModel", 1, pcl.getEventsRecevied().size());
-        e = (PropertyChangeEvent)pcl.getEventsRecevied().get(0);
-        assertEquals(vm, e.getSource());
-        assertEquals("1", e.getOldValue());
-        assertEquals("2", e.getNewValue());
+		pcl.reset();
+		vm.setValue("2");
+		assertEquals(1, pcl.getEventsRecevied().size(),
+				"Change to bound property should have been detected by ValueModel");
+		e = (PropertyChangeEvent) pcl.getEventsRecevied().get(0);
+		assertEquals(vm, e.getSource());
+		assertEquals("1", e.getOldValue());
+		assertEquals("2", e.getNewValue());
 
-        TestBeanWithPCP testBeanPCP2 = new TestBeanWithPCP();
-        pas.getDomainObjectHolder().setValue(testBeanPCP2);
+		TestBeanWithPCP testBeanPCP2 = new TestBeanWithPCP();
+		pas.getDomainObjectHolder().setValue(testBeanPCP2);
 
-        assertEquals("ValueModel should have removed the PropertyChangeListener", 0,
-                testBeanPCP.getPropertyChangeListeners("boundProperty").length);
-        assertEquals("ValueModel should have registered a PropertyChangeListener", 1,
-                testBeanPCP2.getPropertyChangeListeners("boundProperty").length);
-    }
+		assertEquals(0, testBeanPCP.getPropertyChangeListeners("boundProperty").length,
+				"ValueModel should have removed the PropertyChangeListener");
+		assertEquals(1, testBeanPCP2.getPropertyChangeListeners("boundProperty").length,
+				"ValueModel should have registered a PropertyChangeListener");
+	}
 
-    private void testSettingAndGetting(Object[] valuesToTest, Closure getValueDirectly, Block setValueDirectly) {
-        vm.addValueChangeListener(pcl);
-        for (int i = 0; i < valuesToTest.length; i++) {
-            final Object valueToTest = valuesToTest[i];
-            pcl.reset();
-            assertEquals("ValueModel does not have same value as bean property", getValueDirectly.call(null), vm.getValue());
-            setValueDirectly.call(valueToTest);
-            assertEquals("Change to bean not picked up by ValueModel", valueToTest, vm.getValue());
-            setValueDirectly.call(null);
-            assertEquals("Change to bean not picked up by ValueModel", null, vm.getValue());
-            vm.setValue(valueToTest);
-            assertEquals("Change to ValueModel not reflected in bean", valueToTest, getValueDirectly.call(null));
-            assertEquals("Change to ValueModel had no effect", valueToTest, vm.getValue());
-            if (valueToTest != null) {
-                assertEquals("Incorrect number of property change events fired by value model",
-                    1, pcl.getEventsRecevied().size());
-                PropertyChangeEvent e = (PropertyChangeEvent)pcl.getEventsRecevied().get(0);
-                assertEquals(vm, e.getSource());
-                assertEquals(null, e.getOldValue());
-                assertEquals(valueToTest, e.getNewValue());
-            }
-        }
-    }
+	@Test
+	private void testSettingAndGetting(Object[] valuesToTest, Closure getValueDirectly, Block setValueDirectly) {
+		vm.addValueChangeListener(pcl);
+		for (int i = 0; i < valuesToTest.length; i++) {
+			final Object valueToTest = valuesToTest[i];
+			pcl.reset();
+			assertEquals(getValueDirectly.call(null), vm.getValue(),
+					"ValueModel does not have same value as bean property");
+			setValueDirectly.call(valueToTest);
+			assertEquals(valueToTest, vm.getValue(), "Change to bean not picked up by ValueModel");
+			setValueDirectly.call(null);
+			assertEquals(null, vm.getValue(), "Change to bean not picked up by ValueModel");
+			vm.setValue(valueToTest);
+			assertEquals(valueToTest, getValueDirectly.call(null), "Change to ValueModel not reflected in bean");
+			assertEquals(valueToTest, vm.getValue(), "Change to ValueModel had no effect");
+			if (valueToTest != null) {
+				assertEquals(1, pcl.getEventsRecevied().size(),
+						"Incorrect number of property change events fired by value model");
+				PropertyChangeEvent e = (PropertyChangeEvent) pcl.getEventsRecevied().get(0);
+				assertEquals(vm, e.getSource());
+				assertEquals(null, e.getOldValue());
+				assertEquals(valueToTest, e.getNewValue());
+			}
+		}
+	}
 
-    protected void assertPropertyMetadata(PropertyMetadataAccessStrategy mas, String property, Class type, boolean isReadable, boolean isWriteable) {
-        assertEquals(type, mas.getPropertyType(property));
-        assertEquals(isReadable, mas.isReadable(property));
-        assertEquals(isWriteable, mas.isWriteable(property));
-    }
+	protected void assertPropertyMetadata(PropertyMetadataAccessStrategy mas, String property, Class type,
+			boolean isReadable, boolean isWriteable) {
+		assertEquals(type, mas.getPropertyType(property));
+		assertEquals(isReadable, mas.isReadable(property));
+		assertEquals(isWriteable, mas.isWriteable(property));
+	}
 }

@@ -15,111 +15,120 @@
  */
 package org.springframework.richclient.application;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.beans.PropertyEditor;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.propertyeditors.ClassEditor;
 import org.springframework.richclient.application.support.DefaultPropertyEditorRegistry;
 
 /**
  * Test cases for {@link DefaultPropertyEditorRegistry}
  */
-public class DefaultPropertyEditorRegistryTests extends TestCase {
+public class DefaultPropertyEditorRegistryTests {
 
-    public void testRegisteringClass() throws Exception {
-        PropertyEditor pe;
+	@Test
+	public void testRegisteringClass() throws Exception {
+		PropertyEditor pe;
 
-        DefaultPropertyEditorRegistry registry = new DefaultPropertyEditorRegistry();
+		DefaultPropertyEditorRegistry registry = new DefaultPropertyEditorRegistry();
 
-        registry.setPropertyEditor(D.class, ClassEditor.class);
-        pe = registry.getPropertyEditor(E.class);
-        assertNotNull(pe);
-        assertEquals(ClassEditor.class, pe.getClass());
+		registry.setPropertyEditor(D.class, ClassEditor.class);
+		pe = registry.getPropertyEditor(E.class);
+		assertNotNull(pe);
+		assertEquals(ClassEditor.class, pe.getClass());
 
-        registry.setPropertyEditor(A.class, ClassEditor.class);
-        pe = registry.getPropertyEditor(B.class);
-        assertNull(pe);
+		registry.setPropertyEditor(A.class, ClassEditor.class);
+		pe = registry.getPropertyEditor(B.class);
+		assertNull(pe);
 
-        pe = registry.getPropertyEditor(E.class);
-        assertNotNull(pe);
-        assertEquals(ClassEditor.class, pe.getClass());
+		pe = registry.getPropertyEditor(E.class);
+		assertNotNull(pe);
+		assertEquals(ClassEditor.class, pe.getClass());
 
-        pe = registry.getPropertyEditor(C.class);
-        assertNotNull(pe);
-        assertEquals(ClassEditor.class, pe.getClass());
-    }
+		pe = registry.getPropertyEditor(C.class);
+		assertNotNull(pe);
+		assertEquals(ClassEditor.class, pe.getClass());
+	}
 
-    public void testRegisteringProperty() throws Exception {
-        PropertyEditor pe;
+	@Test
+	public void testRegisteringProperty() throws Exception {
+		PropertyEditor pe;
 
-        DefaultPropertyEditorRegistry registry = new DefaultPropertyEditorRegistry();
+		DefaultPropertyEditorRegistry registry = new DefaultPropertyEditorRegistry();
 
-        registry.setPropertyEditor(A.class, "something", ClassEditor.class);
+		registry.setPropertyEditor(A.class, "something", ClassEditor.class);
 
-        try {
-            registry.getPropertyEditor(B.class, "something");
-            fail("Should have thrown an IllegalArgumentException");
-        }
-        catch (IllegalArgumentException e) {
-            // should have been thrown
-        }
+		try {
+			registry.getPropertyEditor(B.class, "something");
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			// should have been thrown
+		}
 
-        pe = registry.getPropertyEditor(E.class, "something");
-        assertNotNull(pe);
-        assertEquals(ClassEditor.class, pe.getClass());
+		pe = registry.getPropertyEditor(E.class, "something");
+		assertNotNull(pe);
+		assertEquals(ClassEditor.class, pe.getClass());
 
-        pe = registry.getPropertyEditor(C.class, "something");
-        assertNotNull(pe);
-        assertEquals(ClassEditor.class, pe.getClass());
+		pe = registry.getPropertyEditor(C.class, "something");
+		assertNotNull(pe);
+		assertEquals(ClassEditor.class, pe.getClass());
 
-        pe = registry.getPropertyEditor(B.class, "bar");
-        assertNotNull(pe);
+		pe = registry.getPropertyEditor(B.class, "bar");
+		assertNotNull(pe);
 
-        registry.setPropertyEditor(Long.class, ClassEditor.class);
-        pe = registry.getPropertyEditor(B.class, "bar");
-        assertNotNull(pe);
-        assertEquals(ClassEditor.class, pe.getClass());
-    }
+		registry.setPropertyEditor(Long.class, ClassEditor.class);
+		pe = registry.getPropertyEditor(B.class, "bar");
+		assertNotNull(pe);
+		assertEquals(ClassEditor.class, pe.getClass());
+	}
 
-    interface A {
-        public String getSomething();
+	interface A {
+		public String getSomething();
 
-        public void setSomething(String newSomething);
-    }
+		public void setSomething(String newSomething);
+	}
 
-    interface B {
-        public Long getBar();
+	interface B {
+		public Long getBar();
 
-        public void setBar(Long newBar);
-    }
+		public void setBar(Long newBar);
+	}
 
-    interface C extends A {
-    }
+	interface C extends A {
+	}
 
-    static class D implements B, C {
-        private String something;
+	static class D implements B, C {
+		private String something;
 
-        private Long bar;
+		private Long bar;
 
-        public String getSomething() {
-            return something;
-        }
+		@Override
+		public String getSomething() {
+			return something;
+		}
 
-        public void setSomething(String something) {
-            this.something = something;
-        }
+		@Override
+		public void setSomething(String something) {
+			this.something = something;
+		}
 
-        public Long getBar() {
-            return bar;
-        }
+		@Override
+		public Long getBar() {
+			return bar;
+		}
 
-        public void setBar(Long bar) {
-            this.bar = bar;
-        }
-    }
+		@Override
+		public void setBar(Long bar) {
+			this.bar = bar;
+		}
+	}
 
-    static class E extends D {
+	static class E extends D {
 
-    }
+	}
 }

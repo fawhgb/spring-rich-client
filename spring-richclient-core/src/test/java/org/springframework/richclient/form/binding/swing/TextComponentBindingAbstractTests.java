@@ -15,58 +15,97 @@
  */
 package org.springframework.richclient.form.binding.swing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import javax.swing.JTextField;
 
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.form.FieldMetadata;
 
 public class TextComponentBindingAbstractTests extends BindingAbstractTests {
 
-    private JTextField tc;
+	private JTextField tc;
 
-    private TextComponentBinding b;
+	private TextComponentBinding b;
 
-    protected String setUpBinding() {        
-        b = new TextComponentBinding(new JTextField(), fm, "simpleProperty");
-        tc = (JTextField)b.getControl();
-        return "simpleProperty";
-    }
+	@Override
+	protected String setUpBinding() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				b = new TextComponentBinding(new JTextField(), fm, "simpleProperty");
+				tc = (JTextField) b.getControl();
+			}
+		});
+		return "simpleProperty";
+	}
 
-    public void testComponentTracksEnabledChanges() {
-        assertEquals(true, tc.isEnabled());
-        fm.setEnabled(false);
-        assertEquals(false, tc.isEnabled());
-        fm.setEnabled(true);
-        assertEquals(true, tc.isEnabled());
-    }
+	@Override
+	@Test
+	public void testComponentTracksEnabledChanges() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				assertEquals(true, tc.isEnabled());
+				fm.setEnabled(false);
+				assertEquals(false, tc.isEnabled());
+				fm.setEnabled(true);
+				assertEquals(true, tc.isEnabled());
+			}
+		});
+	}
 
-    public void testComponentTracksReadOnlyChanges() {
-        FieldMetadata state = fm.getFieldMetadata("simpleProperty");
-        assertEquals(true, tc.isEditable());
-        state.setReadOnly(true);
-        assertEquals(false, tc.isEditable());
-        state.setReadOnly(false);
-        assertEquals(true, tc.isEditable());
-    }
+	@Override
+	@Test
+	public void testComponentTracksReadOnlyChanges() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				FieldMetadata state = fm.getFieldMetadata("simpleProperty");
+				assertEquals(true, tc.isEditable());
+				state.setReadOnly(true);
+				assertEquals(false, tc.isEditable());
+				state.setReadOnly(false);
+				assertEquals(true, tc.isEditable());
+			}
+		});
+	}
 
-    public void testComponentUpdatesValueModel() {
-        tc.setText("1");
-        assertEquals("1", vm.getValue());
-        tc.setText(null);
-        assertEquals("", vm.getValue());
-        tc.setText("2");
-        assertEquals("2", vm.getValue());
-        tc.setText("");
-        assertEquals("", vm.getValue());
-    }
+	@Override
+	@Test
+	public void testComponentUpdatesValueModel() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				tc.setText("1");
+				assertEquals("1", vm.getValue());
+				tc.setText(null);
+				assertEquals("", vm.getValue());
+				tc.setText("2");
+				assertEquals("2", vm.getValue());
+				tc.setText("");
+				assertEquals("", vm.getValue());
+			}
+		});
+	}
 
-    public void testValueModelUpdatesComponent() {
-        vm.setValue("1");
-        assertEquals("1", tc.getText());
-        vm.setValue(null);
-        assertEquals("", tc.getText());
-        vm.setValue("2");
-        assertEquals("2", tc.getText());
-        vm.setValue("");
-        assertEquals("", tc.getText());
-    }
+	@Override
+	@Test
+	public void testValueModelUpdatesComponent() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				vm.setValue("1");
+				assertEquals("1", tc.getText());
+				vm.setValue(null);
+				assertEquals("", tc.getText());
+				vm.setValue("2");
+				assertEquals("2", tc.getText());
+				vm.setValue("");
+				assertEquals("", tc.getText());
+			}
+		});
+	}
 }

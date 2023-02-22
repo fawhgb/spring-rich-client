@@ -15,11 +15,14 @@
  */
 package org.springframework.richclient.image;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
@@ -27,19 +30,20 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * 
  * @author oliverh
  */
-public class HandlerTestsIgnored extends TestCase {
+public class HandlerTestsIgnored {
 
-    private static boolean imageHasNotBeenInstalledInThisJVM = true;
+	private static boolean imageHasNotBeenInstalledInThisJVM = true;
 
-    /**
-     * NOTE: This must be one big test method because of the static dependency
-     * introduced by the strange way Java requires custom URL handlers to be
-     * registered.
-     */
-    public void testHandler() throws IOException {
-        assertTrue("This test can only be run once in a single JVM", imageHasNotBeenInstalledInThisJVM);
+	/**
+	 * NOTE: This must be one big test method because of the static dependency
+	 * introduced by the strange way Java requires custom URL handlers to be
+	 * registered.
+	 */
+	@Test
+	public void testHandler() throws IOException {
+		assertTrue(imageHasNotBeenInstalledInThisJVM, "This test can only be run once in a single JVM");
 
-        URL url;
+		URL url;
 
 //        // make sure a handler is not installed
 //        try {
@@ -50,31 +54,30 @@ public class HandlerTestsIgnored extends TestCase {
 //            // expected
 //        }
 
-        // test install
-        ImageSource urlHandlerImageSource = (ImageSource) new ClassPathXmlApplicationContext(
-                "org/springframework/richclient/image/application-context.xml").getBean("imageSource");
-        // Handler.installImageUrlHandler(urlHandlerImageSource); is not needed because imageSource calls it itself
-        try {
-            url = new URL("image:test");
-            imageHasNotBeenInstalledInThisJVM = false;
-        }
-        catch (MalformedURLException e) {
-            fail("protocol was not installed");
-        }
+		// test install
+		ImageSource urlHandlerImageSource = (ImageSource) new ClassPathXmlApplicationContext(
+				"org/springframework/richclient/image/application-context.xml").getBean("imageSource");
+		// Handler.installImageUrlHandler(urlHandlerImageSource); is not needed because
+		// imageSource calls it itself
+		try {
+			url = new URL("image:test");
+			imageHasNotBeenInstalledInThisJVM = false;
+		} catch (MalformedURLException e) {
+			fail("protocol was not installed");
+		}
 
-        // test invalid key
-        url = new URL("image:image.that.does.not.exist");
-        try {
-            url.openConnection();
-            fail();
-        }
-        catch (NoSuchImageResourceException e) {
-            // expected
-        }
+		// test invalid key
+		url = new URL("image:image.that.does.not.exist");
+		try {
+			url.openConnection();
+			fail();
+		} catch (NoSuchImageResourceException e) {
+			// expected
+		}
 
-        // test valid key
-        url = new URL("image:test.image.key");
-        url.openConnection();
-    }
+		// test valid key
+		url = new URL("image:test.image.key");
+		url.openConnection();
+	}
 
 }

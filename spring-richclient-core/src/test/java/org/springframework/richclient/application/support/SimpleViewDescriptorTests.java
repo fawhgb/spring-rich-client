@@ -15,44 +15,50 @@
  */
 package org.springframework.richclient.application.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * testcase for {@link SimpleViewDescriptor}
  * 
  * @author Peter De Bruycker
  */
-public class SimpleViewDescriptorTests extends TestCase {
+public class SimpleViewDescriptorTests {
 
-    private AbstractView view;
+	private AbstractView view;
 
-    public void testConstructor() {
-        SimpleViewDescriptor descriptor = new SimpleViewDescriptor("id", view);
-        assertEquals("id", descriptor.getId());
-        assertEquals(descriptor, view.getDescriptor());
-    }
+	@Test
+	public void testConstructor() {
+		SimpleViewDescriptor descriptor = new SimpleViewDescriptor("id", view);
+		assertEquals("id", descriptor.getId());
+		assertEquals(descriptor, view.getDescriptor());
+	}
 
-    @Override
-    protected void setUp() throws Exception {
-        view = new AbstractView() {
+	@BeforeEach
+	protected void setUp() throws Exception {
+		view = new AbstractView() {
 
-            @Override
-            protected JComponent createControl() {
-                return new JLabel("hello");
-            }
-        };
+			@Override
+			protected JComponent createControl() {
+				return new JLabel("hello");
+			}
+		};
 
-    }
+	}
 
-    public void testCreatePageComponent() {
-        SimpleViewDescriptor descriptor = new SimpleViewDescriptor("id", view);
+	@Test
+	public void testCreatePageComponent() {
+		SimpleViewDescriptor descriptor = new SimpleViewDescriptor("id", view);
 
-        assertSame(view, descriptor.createPageComponent());
-        // must always return the same
-        assertSame(view, descriptor.createPageComponent());
-    }
+		assertSame(view, descriptor.createPageComponent());
+		// must always return the same
+		assertSame(view, descriptor.createPageComponent());
+	}
 
 }

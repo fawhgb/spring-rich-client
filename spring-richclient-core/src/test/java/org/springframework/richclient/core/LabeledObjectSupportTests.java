@@ -15,15 +15,16 @@
  */
 package org.springframework.richclient.core;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.KeyStroke;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.command.config.CommandButtonLabelInfo;
 
 /**
@@ -31,16 +32,17 @@ import org.springframework.richclient.command.config.CommandButtonLabelInfo;
  * 
  * @author Peter De Bruycker
  */
-public class LabeledObjectSupportTests extends TestCase {
+public class LabeledObjectSupportTests {
 
+	@Test
 	public void testSetTitle() {
 		LabeledObjectSupport support = new LabeledObjectSupport();
 
 		PropertyChangeListener mockPropertyChangeListener = (PropertyChangeListener) EasyMock
 				.createMock(PropertyChangeListener.class);
 
-		mockPropertyChangeListener.propertyChange(eqPropertyChangeEvent(new PropertyChangeEvent(support,
-				LabeledObjectSupport.DISPLAY_NAME_PROPERTY, null, "new title")));
+		mockPropertyChangeListener.propertyChange(eqPropertyChangeEvent(
+				new PropertyChangeEvent(support, LabeledObjectSupport.DISPLAY_NAME_PROPERTY, null, "new title")));
 		support.addPropertyChangeListener(LabeledObjectSupport.DISPLAY_NAME_PROPERTY, mockPropertyChangeListener);
 
 		EasyMock.replay(mockPropertyChangeListener);
@@ -50,6 +52,7 @@ public class LabeledObjectSupportTests extends TestCase {
 		EasyMock.verify(mockPropertyChangeListener);
 	}
 
+	@Test
 	public void testGetDisplayName() {
 		LabeledObjectSupport support = new LabeledObjectSupport();
 		assertEquals("displayName", support.getDisplayName());
@@ -64,6 +67,7 @@ public class LabeledObjectSupportTests extends TestCase {
 		assertEquals("label info", support.getDisplayName());
 	}
 
+	@Test
 	public void testSetLabelInfo() {
 		LabeledObjectSupport support = new LabeledObjectSupport();
 
@@ -72,18 +76,18 @@ public class LabeledObjectSupportTests extends TestCase {
 		PropertyChangeListener mockPropertyChangeListener = (PropertyChangeListener) EasyMock
 				.createMock(PropertyChangeListener.class);
 
-		mockPropertyChangeListener.propertyChange(eqPropertyChangeEvent(new PropertyChangeEvent(support,
-				LabeledObjectSupport.DISPLAY_NAME_PROPERTY, null, "Save")));
-		mockPropertyChangeListener.propertyChange(eqPropertyChangeEvent(new PropertyChangeEvent(support,
-				"mnemonic", Integer.valueOf(0), Integer.valueOf('S'))));
-		mockPropertyChangeListener.propertyChange(eqPropertyChangeEvent(new PropertyChangeEvent(support,
-				"accelerator", null, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK))));
+		mockPropertyChangeListener.propertyChange(eqPropertyChangeEvent(
+				new PropertyChangeEvent(support, LabeledObjectSupport.DISPLAY_NAME_PROPERTY, null, "Save")));
+		mockPropertyChangeListener.propertyChange(eqPropertyChangeEvent(
+				new PropertyChangeEvent(support, "mnemonic", Integer.valueOf(0), Integer.valueOf('S'))));
+		mockPropertyChangeListener.propertyChange(eqPropertyChangeEvent(new PropertyChangeEvent(support, "accelerator",
+				null, KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK))));
 		support.addPropertyChangeListener(mockPropertyChangeListener);
 
 		EasyMock.replay(mockPropertyChangeListener);
-		
+
 		support.setLabelInfo(labelInfo);
-		
+
 		EasyMock.verify(mockPropertyChangeListener);
 	}
 

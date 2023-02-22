@@ -15,78 +15,87 @@
  */
 package org.springframework.richclient.application.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * testcase for {@link DefaultViewDescriptor}
  * 
  * @author Peter De Bruycker
  */
-public class DefaultViewDescriptorTests extends TestCase {
-    public void testConstructor() {
-        DefaultViewDescriptor descriptor = new DefaultViewDescriptor("theView", TestView.class);
+public class DefaultViewDescriptorTests {
 
-        assertEquals("theView", descriptor.getId());
-        assertEquals(TestView.class, descriptor.getViewClass());
-    }
+	@Test
+	public void testConstructor() {
+		DefaultViewDescriptor descriptor = new DefaultViewDescriptor("theView", TestView.class);
 
-    public void testViewCreation() {
-        DefaultViewDescriptor descriptor = new DefaultViewDescriptor("theView", TestView.class);
+		assertEquals("theView", descriptor.getId());
+		assertEquals(TestView.class, descriptor.getViewClass());
+	}
 
-        TestView view = (TestView) descriptor.createPageComponent();
-        assertNotNull(view);
-    }
+	@Test
+	public void testViewCreation() {
+		DefaultViewDescriptor descriptor = new DefaultViewDescriptor("theView", TestView.class);
 
-    public void testViewCreationWithProperties() {
-        Map<String, Object> viewProperties = new HashMap<String, Object>();
-        viewProperties.put("stringProperty", "test value");
+		TestView view = (TestView) descriptor.createPageComponent();
+		assertNotNull(view);
+	}
 
-        DefaultViewDescriptor descriptor = new DefaultViewDescriptor("theView", TestView.class, viewProperties);
+	@Test
+	public void testViewCreationWithProperties() {
+		Map<String, Object> viewProperties = new HashMap<String, Object>();
+		viewProperties.put("stringProperty", "test value");
 
-        TestView view = (TestView) descriptor.createPageComponent();
-        assertNotNull(view);
+		DefaultViewDescriptor descriptor = new DefaultViewDescriptor("theView", TestView.class, viewProperties);
 
-        assertEquals("test value", view.getStringProperty());
-    }
+		TestView view = (TestView) descriptor.createPageComponent();
+		assertNotNull(view);
 
-    public void testSetViewClass() throws Exception {
-        DefaultViewDescriptor descriptor = new DefaultViewDescriptor();
+		assertEquals("test value", view.getStringProperty());
+	}
 
-        descriptor.setId("viewId");
+	@Test
+	public void testSetViewClass() throws Exception {
+		DefaultViewDescriptor descriptor = new DefaultViewDescriptor();
 
-        Class notAViewClass = String.class;
+		descriptor.setId("viewId");
 
-        try {
-            descriptor.setViewClass(notAViewClass);
-            fail("Must throw exception");
-        } catch (IllegalArgumentException e) {
-            // test passes
-        }
+		Class notAViewClass = String.class;
 
-    }
+		try {
+			descriptor.setViewClass(notAViewClass);
+			fail("Must throw exception");
+		} catch (IllegalArgumentException e) {
+			// test passes
+		}
 
-    public static class TestView extends AbstractView {
+	}
 
-        private String stringProperty;
+	public static class TestView extends AbstractView {
 
-        @Override
-        protected JComponent createControl() {
-            return new JLabel("test");
-        }
+		private String stringProperty;
 
-        public void setStringProperty(String stringProperty) {
-            this.stringProperty = stringProperty;
-        }
+		@Override
+		protected JComponent createControl() {
+			return new JLabel("test");
+		}
 
-        public String getStringProperty() {
-            return stringProperty;
-        }
+		public void setStringProperty(String stringProperty) {
+			this.stringProperty = stringProperty;
+		}
 
-    }
+		public String getStringProperty() {
+			return stringProperty;
+		}
+
+	}
 }

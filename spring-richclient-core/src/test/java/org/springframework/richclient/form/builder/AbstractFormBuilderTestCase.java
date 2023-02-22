@@ -15,12 +15,17 @@
  */
 package org.springframework.richclient.form.builder;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.support.DefaultFormModel;
 import org.springframework.richclient.factory.ComponentFactory;
@@ -38,81 +43,87 @@ public abstract class AbstractFormBuilderTestCase extends SpringRichTestCase {
 	private FormModel formModel;
 	private ComponentFactory mockComponentFactory;
 	private FormComponentInterceptorFactory mockInterceptorFactory;
-	
+
+	@Test
 	public void testCreateTextArea() {
 		final JTextArea textArea = new JTextArea();
-		
+
 		EasyMock.expect(mockComponentFactory.createTextArea(5, 40)).andReturn(textArea);
 
 		EasyMock.replay(mockComponentFactory);
-		
+
 		JComponent result = formBuilder.createTextArea("property");
 		assertSame(textArea, result);
-		
+
 		EasyMock.verify(mockComponentFactory);
 	}
-	
+
+	@Test
 	public void testCreateLabelWithNullInterceptor() {
 		final JLabel label = new JLabel("test-label");
-		
+
 		EasyMock.expect(mockComponentFactory.createLabel("")).andReturn(label);
 		EasyMock.expect(mockInterceptorFactory.getInterceptor(formModel)).andReturn(null);
 
 		EasyMock.replay(mockComponentFactory);
 		EasyMock.replay(mockInterceptorFactory);
-		
+
 		JTextField component = new JTextField();
 		formBuilder.createLabelFor("property", component);
-		
+
 		EasyMock.verify(mockComponentFactory);
 		EasyMock.verify(mockInterceptorFactory);
 	}
-	
+
+	@Test
 	public void testCreateLabel() {
 		final JLabel label = new JLabel("test-label");
-		
+
 		EasyMock.expect(mockComponentFactory.createLabel("")).andReturn(label);
-		
-		FormComponentInterceptor mockInterceptor= (FormComponentInterceptor) EasyMock.createMock(FormComponentInterceptor.class);
+
+		FormComponentInterceptor mockInterceptor = (FormComponentInterceptor) EasyMock
+				.createMock(FormComponentInterceptor.class);
 		mockInterceptor.processLabel("property", label);
-		
+
 		EasyMock.expect(mockInterceptorFactory.getInterceptor(formModel)).andReturn(mockInterceptor);
 
 		EasyMock.replay(mockComponentFactory);
 		EasyMock.replay(mockInterceptorFactory);
 		EasyMock.replay(mockInterceptor);
-		
+
 		JTextField component = new JTextField();
 		JLabel result = formBuilder.createLabelFor("property", component);
-		
+
 		assertSame(label, result);
-		assertNotNull("createLabelFor cannot return null", result);
+		assertNotNull(result, "createLabelFor cannot return null");
 		assertEquals(component, result.getLabelFor());
-		
+
 		EasyMock.verify(mockComponentFactory);
 		EasyMock.verify(mockInterceptorFactory);
 		EasyMock.verify(mockInterceptor);
 	}
-	
+
+	@Override
 	protected final void doSetUp() throws Exception {
 		formModel = new DefaultFormModel(new TestBean());
-		BindingFactory bindingFactory= new SwingBindingFactory(formModel);
-		
+		BindingFactory bindingFactory = new SwingBindingFactory(formModel);
+
 		formBuilder = createFormBuilder(bindingFactory);
-		assertNotNull("formBuilder cannot be null", formBuilder);
-		
-		mockComponentFactory= (ComponentFactory) EasyMock.createMock(ComponentFactory.class);
+		assertNotNull(formBuilder, "formBuilder cannot be null");
+
+		mockComponentFactory = (ComponentFactory) EasyMock.createMock(ComponentFactory.class);
 		formBuilder.setComponentFactory(mockComponentFactory);
-		
-		mockInterceptorFactory = (FormComponentInterceptorFactory) EasyMock.createMock(FormComponentInterceptorFactory.class);
+
+		mockInterceptorFactory = (FormComponentInterceptorFactory) EasyMock
+				.createMock(FormComponentInterceptorFactory.class);
 		formBuilder.setFormComponentInterceptorFactory(mockInterceptorFactory);
-		
+
 		additionalSetUp();
 	}
-	
+
 	protected abstract AbstractFormBuilder createFormBuilder(BindingFactory bindingFactory);
 
 	protected void additionalSetUp() throws Exception {
-		
+
 	}
 }

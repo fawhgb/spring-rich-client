@@ -15,11 +15,15 @@
  */
 package org.springframework.richclient.selection.binding.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.value.ValueChangeDetector;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.DefaultValueChangeDetector;
@@ -35,67 +39,73 @@ import ca.odell.glazedlists.EventList;
  * 
  * @author Peter De Bruycker
  */
-public class ValueModel2EventListBridgeTests extends TestCase {
-    public void testValueHolderMustContainCollection() {
-        EventList eventList = new BasicEventList();
+public class ValueModel2EventListBridgeTests {
 
-        ValueModel valueModel = new ValueHolder("test");
+	@Test
+	public void testValueHolderMustContainCollection() {
+		EventList eventList = new BasicEventList();
 
-        try {
-            new ValueModel2EventListBridge(valueModel, eventList);
-            fail("Must throw exception");
-        }
-        catch (IllegalArgumentException e) {
-            // test passes
-        }
-    }
+		ValueModel valueModel = new ValueHolder("test");
 
-    public void testAutomaticSynchronization() {
-        List list1 = Arrays.asList(new String[] { "item 1", "item2", "item3" });
-        List list2 = Arrays.asList(new String[] { "item 4", "item5", "item6" });
+		try {
+			new ValueModel2EventListBridge(valueModel, eventList);
+			fail("Must throw exception");
+		} catch (IllegalArgumentException e) {
+			// test passes
+		}
+	}
 
-        EventList eventList = new BasicEventList();
-        ValueModel valueModel = new ValueHolder(list1);
+	@Test
+	public void testAutomaticSynchronization() {
+		List list1 = Arrays.asList(new String[] { "item 1", "item2", "item3" });
+		List list2 = Arrays.asList(new String[] { "item 4", "item5", "item6" });
 
-        ValueModel2EventListBridge bridge = new ValueModel2EventListBridge(valueModel, eventList);
-        assertEquals("auto sync: data copied in constructor", list1, eventList);
+		EventList eventList = new BasicEventList();
+		ValueModel valueModel = new ValueHolder(list1);
 
-        valueModel.setValue(list2);
-        assertEquals("when value in ValueModel changes, it's copied to the EventList", list2, eventList);
-    }
+		ValueModel2EventListBridge bridge = new ValueModel2EventListBridge(valueModel, eventList);
+		assertEquals(list1, eventList, "auto sync: data copied in constructor");
 
-    public void testManualSynchronization() {
-        List list1 = Arrays.asList(new String[] { "item 1", "item2", "item3" });
-        List list2 = Arrays.asList(new String[] { "item 4", "item5", "item6" });
+		valueModel.setValue(list2);
+		assertEquals(list2, eventList, "when value in ValueModel changes, it's copied to the EventList");
+	}
 
-        EventList eventList = new BasicEventList();
-        ValueModel valueModel = new ValueHolder(list1);
+	@Test
+	public void testManualSynchronization() {
+		List list1 = Arrays.asList(new String[] { "item 1", "item2", "item3" });
+		List list2 = Arrays.asList(new String[] { "item 4", "item5", "item6" });
 
-        ValueModel2EventListBridge bridge = new ValueModel2EventListBridge(valueModel, eventList, true);
-        assertTrue("manual sync: data not copied in constructor", eventList.isEmpty());
+		EventList eventList = new BasicEventList();
+		ValueModel valueModel = new ValueHolder(list1);
 
-        bridge.synchronize();
-        assertEquals("sync copies data", list1, eventList);
+		ValueModel2EventListBridge bridge = new ValueModel2EventListBridge(valueModel, eventList, true);
+		assertTrue(eventList.isEmpty(), "manual sync: data not copied in constructor");
 
-        valueModel.setValue(list2);
-        assertEquals("when value in ValueModel changes, it's NOT copied to the EventList", list1, eventList);
+		bridge.synchronize();
+		assertEquals(list1, eventList, "sync copies data");
 
-        bridge.synchronize();
-        assertEquals(list2, eventList);
-    }
+		valueModel.setValue(list2);
+		assertEquals(list1, eventList, "when value in ValueModel changes, it's NOT copied to the EventList");
 
-    protected void setUp() throws Exception {
-        ApplicationServices services = new ApplicationServices() {
+		bridge.synchronize();
+		assertEquals(list2, eventList);
+	}
 
-            public Object getService(Class serviceType) {
-                return new DefaultValueChangeDetector();
-            }
+	@BeforeEach
+	protected void setUp() throws Exception {
+		ApplicationServices services = new ApplicationServices() {
 
-            public boolean containsService(Class serviceType) {
-                return ValueChangeDetector.class.equals(serviceType);
-            }
+			@Override
+			public Object getService(Class serviceType) {
+				return new DefaultValueChangeDetector();
+			}
 
-        };
-        ApplicationServicesLocator.load(new ApplicationServicesLocator(services));
-    }
+			@Override
+			public boolean containsService(Class serviceType) {
+				return ValueChangeDetector.class.equals(serviceType);
+			}
+
+		};
+		ApplicationServicesLocator.load(new ApplicationServicesLocator(services));
+	}
 }

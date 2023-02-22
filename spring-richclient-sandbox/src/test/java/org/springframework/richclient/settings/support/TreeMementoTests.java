@@ -15,24 +15,30 @@
  */
 package org.springframework.richclient.settings.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.settings.Settings;
 import org.springframework.richclient.settings.TransientSettings;
 
 /**
  * @author Peter De Bruycker
  */
-public class TreeMementoTests extends TestCase {
+public class TreeMementoTests {
 
-    private JTree tree;
+	private JTree tree;
 	private TreeMemento memento;
 
-    public void testConstructor() {
+	@Test
+	public void testConstructor() {
 		try {
 			new WindowMemento(null);
 			fail("Should throw IllegalArgumentException");
@@ -53,100 +59,106 @@ public class TreeMementoTests extends TestCase {
 		TreeMemento memento = new TreeMemento(tree);
 		assertEquals(tree, memento.getTree());
 		assertEquals("tree0", memento.getKey());
-		
+
 		memento = new TreeMemento(tree, "key");
 		assertEquals(tree, memento.getTree());
 		assertEquals("key", memento.getKey());
 	}
-    
-    public void testSaveSelectionState() {
-        TransientSettings settings = new TransientSettings();
 
-        memento.saveSelectionState(settings);
-        assertFalse(settings.contains("tree.selectedRows"));
+	@Test
+	public void testSaveSelectionState() {
+		TransientSettings settings = new TransientSettings();
 
-        tree.setSelectionRows(new int[] { 0, 2, 3 });
-        memento.saveSelectionState(settings);
-        assertTrue(settings.contains("tree.selectedRows"));
-        assertEquals("0,2-3", settings.getString("tree.selectedRows"));
-    }
+		memento.saveSelectionState(settings);
+		assertFalse(settings.contains("tree.selectedRows"));
 
-    public void testRestoreSelectionState() {
-        Settings settings = new TransientSettings();
+		tree.setSelectionRows(new int[] { 0, 2, 3 });
+		memento.saveSelectionState(settings);
+		assertTrue(settings.contains("tree.selectedRows"));
+		assertEquals("0,2-3", settings.getString("tree.selectedRows"));
+	}
 
-        settings.setString("tree.selectedRows", "0,2-3");
-        memento.restoreSelectionState(settings);
+	@Test
+	public void testRestoreSelectionState() {
+		Settings settings = new TransientSettings();
 
-        assertEquals(5, tree.getRowCount());
-        assertTrue(tree.isRowSelected(0));
-        assertFalse(tree.isRowSelected(1));
-        assertTrue(tree.isRowSelected(2));
-        assertTrue(tree.isRowSelected(3));
-        assertFalse(tree.isRowSelected(4));
-    }
+		settings.setString("tree.selectedRows", "0,2-3");
+		memento.restoreSelectionState(settings);
 
-    public void testSaveExpansionState() {
-        Settings settings = new TransientSettings();
+		assertEquals(5, tree.getRowCount());
+		assertTrue(tree.isRowSelected(0));
+		assertFalse(tree.isRowSelected(1));
+		assertTrue(tree.isRowSelected(2));
+		assertTrue(tree.isRowSelected(3));
+		assertFalse(tree.isRowSelected(4));
+	}
 
-        memento.saveExpansionState(settings);
-        assertTrue(settings.contains("tree.expansionState"));
-        assertEquals("1,0,0,0,0", settings.getString("tree.expansionState"));
+	@Test
+	public void testSaveExpansionState() {
+		Settings settings = new TransientSettings();
 
-        // expand child2
-        tree.expandRow(2);
+		memento.saveExpansionState(settings);
+		assertTrue(settings.contains("tree.expansionState"));
+		assertEquals("1,0,0,0,0", settings.getString("tree.expansionState"));
 
-        memento.saveExpansionState(settings);
-        assertTrue(settings.contains("tree.expansionState"));
-        assertEquals("1,0,1,0,0,0,0", settings.getString("tree.expansionState"));
-    }
+		// expand child2
+		tree.expandRow(2);
 
-    public void testRestoreExpansionState() {
-        Settings settings = new TransientSettings();
-        settings.setString("tree.expansionState", "1,0,1,0,0,0,0");
+		memento.saveExpansionState(settings);
+		assertTrue(settings.contains("tree.expansionState"));
+		assertEquals("1,0,1,0,0,0,0", settings.getString("tree.expansionState"));
+	}
 
-        memento.restoreExpansionState(settings);
+	@Test
+	public void testRestoreExpansionState() {
+		Settings settings = new TransientSettings();
+		settings.setString("tree.expansionState", "1,0,1,0,0,0,0");
 
-        assertEquals(7, tree.getRowCount());
-        assertTrue(tree.isExpanded(0));
-        assertFalse(tree.isExpanded(1));
-        assertTrue(tree.isExpanded(2));
-        assertFalse(tree.isExpanded(3));
-        assertFalse(tree.isExpanded(4));
-        assertFalse(tree.isExpanded(5));
-        assertFalse(tree.isExpanded(6));
-    }
+		memento.restoreExpansionState(settings);
 
-    public void testRestoreExpansionStateWithInvalidSettingsString() {
-        Settings settings = new TransientSettings();
-        settings.setString("key.expansionState", "invalidPref");
+		assertEquals(7, tree.getRowCount());
+		assertTrue(tree.isExpanded(0));
+		assertFalse(tree.isExpanded(1));
+		assertTrue(tree.isExpanded(2));
+		assertFalse(tree.isExpanded(3));
+		assertFalse(tree.isExpanded(4));
+		assertFalse(tree.isExpanded(5));
+		assertFalse(tree.isExpanded(6));
+	}
 
-        memento.restoreExpansionState(settings);
+	@Test
+	public void testRestoreExpansionStateWithInvalidSettingsString() {
+		Settings settings = new TransientSettings();
+		settings.setString("key.expansionState", "invalidPref");
 
-        assertEquals(5, tree.getRowCount());
-        assertTrue(tree.isExpanded(0));
-        assertFalse(tree.isExpanded(1));
-        assertFalse(tree.isExpanded(2));
-        assertFalse(tree.isExpanded(3));
-        assertFalse(tree.isExpanded(4));
-    }
+		memento.restoreExpansionState(settings);
 
-    protected void setUp() throws Exception {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
+		assertEquals(5, tree.getRowCount());
+		assertTrue(tree.isExpanded(0));
+		assertFalse(tree.isExpanded(1));
+		assertFalse(tree.isExpanded(2));
+		assertFalse(tree.isExpanded(3));
+		assertFalse(tree.isExpanded(4));
+	}
 
-        DefaultMutableTreeNode child1 = new DefaultMutableTreeNode("child1");
-        child1.add(new DefaultMutableTreeNode("child1.1"));
-        root.add(child1);
+	@BeforeEach
+	protected void setUp() throws Exception {
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
 
-        DefaultMutableTreeNode child2 = new DefaultMutableTreeNode("child2");
-        child2.add(new DefaultMutableTreeNode("child2.1"));
-        child2.add(new DefaultMutableTreeNode("child2.2"));
-        root.add(child2);
-        root.add(new DefaultMutableTreeNode("child3"));
-        root.add(new DefaultMutableTreeNode("child4"));
+		DefaultMutableTreeNode child1 = new DefaultMutableTreeNode("child1");
+		child1.add(new DefaultMutableTreeNode("child1.1"));
+		root.add(child1);
 
-        DefaultTreeModel treeModel = new DefaultTreeModel(root);
-        tree = new JTree(treeModel);
-        
-        memento = new TreeMemento(tree, "tree");
-    }
+		DefaultMutableTreeNode child2 = new DefaultMutableTreeNode("child2");
+		child2.add(new DefaultMutableTreeNode("child2.1"));
+		child2.add(new DefaultMutableTreeNode("child2.2"));
+		root.add(child2);
+		root.add(new DefaultMutableTreeNode("child3"));
+		root.add(new DefaultMutableTreeNode("child4"));
+
+		DefaultTreeModel treeModel = new DefaultTreeModel(root);
+		tree = new JTree(treeModel);
+
+		memento = new TreeMemento(tree, "tree");
+	}
 }

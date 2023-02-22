@@ -15,80 +15,122 @@
  */
 package org.springframework.richclient.form.binding.swing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Collections;
 
 import javax.swing.JComboBox;
 import javax.swing.event.ListDataEvent;
 
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.support.TestLabeledEnum;
 
 public class LabeledEnumComboBoxBindingAbstractTests extends BindingAbstractTests {
 
-    private LabeledEnumComboBoxBinding cbb;
+	private LabeledEnumComboBoxBinding cbb;
 
-    private JComboBox cb;
+	private JComboBox cb;
 
-    protected String setUpBinding() {
-        cbb = (LabeledEnumComboBoxBinding) new LabeledEnumComboBoxBinder().bind(fm, "enumProperty", Collections.EMPTY_MAP);
-        cb = (JComboBox) cbb.getControl();
-        return "enumProperty";
-    }
+	@Override
+	protected String setUpBinding() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				cbb = (LabeledEnumComboBoxBinding) new LabeledEnumComboBoxBinder().bind(fm, "enumProperty",
+						Collections.EMPTY_MAP);
+				cb = (JComboBox) cbb.getControl();
+			}
+		});
+		return "enumProperty";
+	}
 
-    public void testValueModelUpdatesComponent() {
-        TestListDataListener tldl = new TestListDataListener();
-        cb.getModel().addListDataListener(tldl);
+	@Override
+	@Test
+	public void testValueModelUpdatesComponent() {
+		TestListDataListener tldl = new TestListDataListener();
+		cb.getModel().addListDataListener(tldl);
 
-        assertEquals(null, cb.getSelectedItem());
-        assertEquals(-1, cb.getSelectedIndex());
-        tldl.assertCalls(0);
+		assertEquals(null, cb.getSelectedItem());
+		assertEquals(-1, cb.getSelectedIndex());
+		tldl.assertCalls(0);
 
-        vm.setValue(TestLabeledEnum.ONE);
-        assertEquals(TestLabeledEnum.ONE, cb.getSelectedItem());
-        assertEquals(1, cb.getSelectedIndex());
-        tldl.assertEvent(1, ListDataEvent.CONTENTS_CHANGED, -1, -1);
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				vm.setValue(TestLabeledEnum.ONE);
+				assertEquals(TestLabeledEnum.ONE, cb.getSelectedItem());
+				assertEquals(1, cb.getSelectedIndex());
+				tldl.assertEvent(1, ListDataEvent.CONTENTS_CHANGED, -1, -1);
 
-        vm.setValue(TestLabeledEnum.TWO);
-        assertEquals(TestLabeledEnum.TWO, cb.getSelectedItem());
-        assertEquals(2, cb.getSelectedIndex());
-        tldl.assertEvent(2, ListDataEvent.CONTENTS_CHANGED, -1, -1);
+				vm.setValue(TestLabeledEnum.TWO);
+				assertEquals(TestLabeledEnum.TWO, cb.getSelectedItem());
+				assertEquals(2, cb.getSelectedIndex());
+				tldl.assertEvent(2, ListDataEvent.CONTENTS_CHANGED, -1, -1);
 
-        vm.setValue(null);
-        assertEquals(null, cb.getSelectedItem());
-        assertEquals(-1, cb.getSelectedIndex());
-        tldl.assertEvent(3, ListDataEvent.CONTENTS_CHANGED, -1, -1);
+				vm.setValue(null);
+				assertEquals(null, cb.getSelectedItem());
+				assertEquals(-1, cb.getSelectedIndex());
+				tldl.assertEvent(3, ListDataEvent.CONTENTS_CHANGED, -1, -1);
 
-        vm.setValue(null);
-        tldl.assertCalls(3);
-    }
+				vm.setValue(null);
+				tldl.assertCalls(3);
+			}
+		});
+	}
 
-    public void testComponentUpdatesValueModel() {
-        cb.setSelectedIndex(1);
-        assertEquals(TestLabeledEnum.ONE, vm.getValue());
+	@Override
+	@Test
+	public void testComponentUpdatesValueModel() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				cb.setSelectedIndex(1);
+				assertEquals(TestLabeledEnum.ONE, vm.getValue());
 
-        cb.setSelectedItem(TestLabeledEnum.TWO);
-        assertEquals(TestLabeledEnum.TWO, vm.getValue());
+				cb.setSelectedItem(TestLabeledEnum.TWO);
+				assertEquals(TestLabeledEnum.TWO, vm.getValue());
 
-        cb.setSelectedIndex(-1);
-        assertEquals(null, vm.getValue());
-    }
+				cb.setSelectedIndex(-1);
+				assertEquals(null, vm.getValue());
+			}
+		});
+	}
 
-    public void testComponentTracksEnabledChanges() {
-        assertTrue(cb.isEnabled());
+	@Override
+	@Test
+	public void testComponentTracksEnabledChanges() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				assertTrue(cb.isEnabled());
 
-        fm.getFieldMetadata("enumProperty").setEnabled(false);
-        assertFalse(cb.isEnabled());
+				fm.getFieldMetadata("enumProperty").setEnabled(false);
+				assertFalse(cb.isEnabled());
 
-        fm.getFieldMetadata("enumProperty").setEnabled(true);
-        assertTrue(cb.isEnabled());
-    }
+				fm.getFieldMetadata("enumProperty").setEnabled(true);
+				assertTrue(cb.isEnabled());
+			}
+		});
+	}
 
-    public void testComponentTracksReadOnlyChanges() {
-        assertTrue(cb.isEnabled());
+	@Override
+	@Test
+	public void testComponentTracksReadOnlyChanges() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				assertTrue(cb.isEnabled());
 
-        fm.getFieldMetadata("enumProperty").setReadOnly(true);
-        assertFalse(cb.isEnabled());
+				fm.getFieldMetadata("enumProperty").setReadOnly(true);
+				assertFalse(cb.isEnabled());
 
-        fm.getFieldMetadata("enumProperty").setReadOnly(false);
-        assertTrue(cb.isEnabled());
-    }
+				fm.getFieldMetadata("enumProperty").setReadOnly(false);
+				assertTrue(cb.isEnabled());
+			}
+		});
+	}
 }

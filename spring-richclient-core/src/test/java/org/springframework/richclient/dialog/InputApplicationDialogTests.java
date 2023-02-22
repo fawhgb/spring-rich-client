@@ -15,8 +15,14 @@
  */
 package org.springframework.richclient.dialog;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.swing.JTextField;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.application.support.DefaultApplicationServices;
 import org.springframework.richclient.test.SpringRichTestCase;
 import org.springframework.rules.Rules;
@@ -26,81 +32,86 @@ import org.springframework.rules.support.DefaultRulesSource;
  * @author Peter De Bruycker
  */
 public class InputApplicationDialogTests extends SpringRichTestCase {
-    private static final String BUSINESS_FIELD = "name";
+	private static final String BUSINESS_FIELD = "name";
 
-    private BusinessObject businessObject;
+	private BusinessObject businessObject;
 
-    protected void doSetUp() {
-        // create business object
-        businessObject = new BusinessObject();
-    }
+	@Override
+	protected void doSetUp() {
+		// create business object
+		businessObject = new BusinessObject();
+	}
 
-    public void testInitialEnabledState() {
-        InputApplicationDialog createDialog = createDialog(businessObject, BUSINESS_FIELD);
+	@Test
+	public void testInitialEnabledState() {
+		InputApplicationDialog createDialog = createDialog(businessObject, BUSINESS_FIELD);
 		assertEnabledStateReflectsFormModelState(createDialog);
 
-        businessObject.setName("test");
-        assertEnabledStateReflectsFormModelState(createDialog);
-    }
+		businessObject.setName("test");
+		assertEnabledStateReflectsFormModelState(createDialog);
+	}
 
-    private void assertEnabledStateReflectsFormModelState(InputApplicationDialog dialog) {
-        assertEquals(dialog.getFormModel().getValidationResults().getHasErrors(), !dialog.isEnabled());
-    }
+	private void assertEnabledStateReflectsFormModelState(InputApplicationDialog dialog) {
+		assertEquals(dialog.getFormModel().getValidationResults().getHasErrors(), !dialog.isEnabled());
+	}
 
-    private InputApplicationDialog createDialog(BusinessObject businessObject, String field) {
-        InputApplicationDialog dialog = new InputApplicationDialog(businessObject, BUSINESS_FIELD);
-        dialog.createDialog();
+	private InputApplicationDialog createDialog(BusinessObject businessObject, String field) {
+		InputApplicationDialog dialog = new InputApplicationDialog(businessObject, BUSINESS_FIELD);
+		dialog.createDialog();
 
-        return dialog;
-    }
+		return dialog;
+	}
 
-    public void testConstructor() {
-        InputApplicationDialog dialog = new InputApplicationDialog(businessObject, BUSINESS_FIELD);
+	@Test
+	public void testConstructor() {
+		InputApplicationDialog dialog = new InputApplicationDialog(businessObject, BUSINESS_FIELD);
 
-        assertNotNull("No FormModel created", dialog.getFormModel());
-        assertEquals("BusinessObject not set on FormModel", businessObject, dialog.getFormModel().getFormObject());
+		assertNotNull(dialog.getFormModel(), "No FormModel created");
+		assertEquals(businessObject, dialog.getFormModel().getFormObject(), "BusinessObject not set on FormModel");
 
-        assertNotNull("No inputField created", dialog.getInputField());
-        assertTrue("Default inputField not a JTextField", dialog.getInputField() instanceof JTextField);
-    }
+		assertNotNull(dialog.getInputField(), "No inputField created");
+		assertTrue(dialog.getInputField() instanceof JTextField, "Default inputField not a JTextField");
+	}
 
-    public void testEnabledByUserAction() {
-        InputApplicationDialog dialog = createDialog(businessObject, BUSINESS_FIELD);
+	@Test
+	public void testEnabledByUserAction() {
+		InputApplicationDialog dialog = createDialog(businessObject, BUSINESS_FIELD);
 
-        assertFalse(dialog.isEnabled());
+		assertFalse(dialog.isEnabled());
 
-        dialog.getFormModel().getValueModel(BUSINESS_FIELD).setValue("test");
-        assertEnabledStateReflectsFormModelState(dialog);
+		dialog.getFormModel().getValueModel(BUSINESS_FIELD).setValue("test");
+		assertEnabledStateReflectsFormModelState(dialog);
 
-        dialog.getFormModel().getValueModel(BUSINESS_FIELD).setValue("");
-        assertEnabledStateReflectsFormModelState(dialog);
-    }
+		dialog.getFormModel().getValueModel(BUSINESS_FIELD).setValue("");
+		assertEnabledStateReflectsFormModelState(dialog);
+	}
 
-    /**
-     * May be implemented in subclasses that need to register services with the global
-     * application services instance.
-     */
-    protected void registerAdditionalServices( DefaultApplicationServices applicationServices ) {
-        applicationServices.setRulesSource(new BusinessRulesSource());
-    }
+	/**
+	 * May be implemented in subclasses that need to register services with the
+	 * global application services instance.
+	 */
+	@Override
+	protected void registerAdditionalServices(DefaultApplicationServices applicationServices) {
+		applicationServices.setRulesSource(new BusinessRulesSource());
+	}
 
-    private class BusinessRulesSource extends DefaultRulesSource {
-        public BusinessRulesSource() {
-            Rules rules = new Rules(BusinessObject.class);
-            rules.add(BUSINESS_FIELD, rules.required());
-            addRules(rules);
-        }
-    }
+	private class BusinessRulesSource extends DefaultRulesSource {
+		public BusinessRulesSource() {
+			Rules rules = new Rules(BusinessObject.class);
+			rules.add(BUSINESS_FIELD, rules.required());
+			addRules(rules);
+		}
+	}
 
-    public class BusinessObject {
-        private String name;
+	public class BusinessObject {
+		private String name;
 
-        public String getName() {
-            return name;
-        }
+		public String getName() {
+			return name;
+		}
 
-        public void setName(String name) {
-            this.name = name;
-        }
-    }
+		public void setName(String name) {
+			this.name = name;
+		}
+	}
 }

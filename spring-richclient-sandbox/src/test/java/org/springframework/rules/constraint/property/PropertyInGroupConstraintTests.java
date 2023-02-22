@@ -15,17 +15,21 @@
  */
 package org.springframework.rules.constraint.property;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Arrays;
 import java.util.Collection;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Mathias Broekelmann
  * 
  */
-public class PropertyInGroupConstraintTests extends TestCase {
+public class PropertyInGroupConstraintTests {
 
+	@Test
 	public void testConstraintWithObjectArray() {
 		MyTestBean bean = new MyTestBean();
 		AbstractPropertyConstraint constraint = new PropertyInGroupConstraint("property", "arrayvalues");
@@ -44,6 +48,7 @@ public class PropertyInGroupConstraintTests extends TestCase {
 		assertFalse(constraint.test(bean));
 	}
 
+	@Test
 	public void testConstraintWithObjectCollection() {
 		MyTestBean bean = new MyTestBean();
 		AbstractPropertyConstraint constraint = new PropertyInGroupConstraint("property", "collectionvalues");

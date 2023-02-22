@@ -15,39 +15,45 @@
  */
 package org.springframework.rules.support;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.rules.Rules;
 
 /**
  * @author Mathias Broekelmann
  * 
  */
-public class DefaultRulesSourceTests extends TestCase {
+public class DefaultRulesSourceTests {
 
-    private DefaultRulesSource source;
+	private DefaultRulesSource source;
 
-    private Rules interfaceRules;
+	private Rules interfaceRules;
 
-    protected void setUp() throws Exception {
-        source = new DefaultRulesSource();
-        interfaceRules = new Rules(TestInterface.class);
-    }
+	@BeforeEach
+	protected void setUp() throws Exception {
+		source = new DefaultRulesSource();
+		interfaceRules = new Rules(TestInterface.class);
+	}
 
-    protected void tearDown() throws Exception {
-        source = null;
-        interfaceRules = null;
-    }
+	@AfterEach
+	protected void tearDown() throws Exception {
+		source = null;
+		interfaceRules = null;
+	}
 
-    public void testInterfaceRules() {
-        source.addRules(interfaceRules);
-        assertEquals(interfaceRules, source.getRules(TestInterfaceImpl.class));
-    }
+	@Test
+	public void testInterfaceRules() {
+		source.addRules(interfaceRules);
+		assertEquals(interfaceRules, source.getRules(TestInterfaceImpl.class));
+	}
 
-    private static interface TestInterface {
-    }
+	private static interface TestInterface {
+	}
 
-    private static class TestInterfaceImpl implements TestInterface {
-    }
+	private static class TestInterfaceImpl implements TestInterface {
+	}
 
 }

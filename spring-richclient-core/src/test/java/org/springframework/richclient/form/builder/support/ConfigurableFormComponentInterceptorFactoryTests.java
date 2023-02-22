@@ -15,10 +15,14 @@
  */
 package org.springframework.richclient.form.builder.support;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Arrays;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.support.DefaultFormModel;
 import org.springframework.binding.value.swing.TestableFormComponentInterceptor;
@@ -29,81 +33,87 @@ import org.springframework.richclient.form.builder.FormComponentInterceptor;
  * 
  * @author Peter De Bruycker
  */
-public class ConfigurableFormComponentInterceptorFactoryTests extends TestCase {
-    public void testSettingBothIncludedAndExcludedFormModelIdsMustFail() throws Exception {
-        TestableConfigurableFormComponentInterceptorFactory factory = new TestableConfigurableFormComponentInterceptorFactory();
+public class ConfigurableFormComponentInterceptorFactoryTests {
 
-        factory.setIncludedFormModelIds( new String[] { "included-0", "included-1" } );
-        factory.setExcludedFormModelIds( new String[] { "excluded-0", "excluded-1" } );
+	@Test
+	public void testSettingBothIncludedAndExcludedFormModelIdsMustFail() throws Exception {
+		TestableConfigurableFormComponentInterceptorFactory factory = new TestableConfigurableFormComponentInterceptorFactory();
 
-        try {
-            factory.afterPropertiesSet();
-            fail( "Should throw IllegalStateException" );
-        } catch( IllegalStateException e ) {
-            // test passes;
-        }
-    }
+		factory.setIncludedFormModelIds(new String[] { "included-0", "included-1" });
+		factory.setExcludedFormModelIds(new String[] { "excluded-0", "excluded-1" });
 
-    public void testSetIncludedFormModelIds() throws Exception {
-        TestableConfigurableFormComponentInterceptorFactory factory = new TestableConfigurableFormComponentInterceptorFactory();
-        factory.setCreateThis( new TestableFormComponentInterceptor() );
+		try {
+			factory.afterPropertiesSet();
+			fail("Should throw IllegalStateException");
+		} catch (IllegalStateException e) {
+			// test passes;
+		}
+	}
 
-        factory.setIncludedFormModelIds( new String[] { "included-0", "included-1" } );
-        factory.afterPropertiesSet();
+	@Test
+	public void testSetIncludedFormModelIds() throws Exception {
+		TestableConfigurableFormComponentInterceptorFactory factory = new TestableConfigurableFormComponentInterceptorFactory();
+		factory.setCreateThis(new TestableFormComponentInterceptor());
 
-        assertTrue( Arrays.equals( new String[] { "included-0", "included-1" }, factory.getIncludedFormModelIds() ) );
+		factory.setIncludedFormModelIds(new String[] { "included-0", "included-1" });
+		factory.afterPropertiesSet();
 
-        DefaultFormModel included = new DefaultFormModel();
-        included.setId( "included-0" );
-        DefaultFormModel excluded = new DefaultFormModel();
-        excluded.setId( "excluded-0" );
+		assertTrue(Arrays.equals(new String[] { "included-0", "included-1" }, factory.getIncludedFormModelIds()));
 
-        assertNotNull( "FormModel should be included", factory.getInterceptor( included ) );
-        assertNull( "FormModel is not included", factory.getInterceptor( excluded ) );
-    }
+		DefaultFormModel included = new DefaultFormModel();
+		included.setId("included-0");
+		DefaultFormModel excluded = new DefaultFormModel();
+		excluded.setId("excluded-0");
 
-    public void testSetExcludedFormModelIds() throws Exception {
-        TestableConfigurableFormComponentInterceptorFactory factory = new TestableConfigurableFormComponentInterceptorFactory();
-        factory.setCreateThis( new TestableFormComponentInterceptor() );
+		assertNotNull(factory.getInterceptor(included), "FormModel should be included");
+		assertNull(factory.getInterceptor(excluded), "FormModel is not included");
+	}
 
-        factory.setExcludedFormModelIds( new String[] { "excluded-0", "excluded-1" } );
-        factory.afterPropertiesSet();
+	@Test
+	public void testSetExcludedFormModelIds() throws Exception {
+		TestableConfigurableFormComponentInterceptorFactory factory = new TestableConfigurableFormComponentInterceptorFactory();
+		factory.setCreateThis(new TestableFormComponentInterceptor());
 
-        assertTrue( Arrays.equals( new String[] { "excluded-0", "excluded-1" }, factory.getExcludedFormModelIds() ) );
+		factory.setExcludedFormModelIds(new String[] { "excluded-0", "excluded-1" });
+		factory.afterPropertiesSet();
 
-        DefaultFormModel included = new DefaultFormModel();
-        included.setId( "included-0" );
-        DefaultFormModel excluded = new DefaultFormModel();
-        excluded.setId( "excluded-0" );
+		assertTrue(Arrays.equals(new String[] { "excluded-0", "excluded-1" }, factory.getExcludedFormModelIds()));
 
-        assertNotNull( "FormModel should be included", factory.getInterceptor( included ) );
-        assertNull( "FormModel is not included", factory.getInterceptor( excluded ) );
-    }
-    
-    private class TestableConfigurableFormComponentInterceptorFactory extends ConfigurableFormComponentInterceptorFactory {
-        private FormComponentInterceptor createThis;
-        private FormModel lastFormModel;
+		DefaultFormModel included = new DefaultFormModel();
+		included.setId("included-0");
+		DefaultFormModel excluded = new DefaultFormModel();
+		excluded.setId("excluded-0");
 
-        protected FormComponentInterceptor createInterceptor( FormModel formModel ) {
-            lastFormModel = formModel;
-            return createThis;
-        }
+		assertNotNull(factory.getInterceptor(included), "FormModel should be included");
+		assertNull(factory.getInterceptor(excluded), "FormModel is not included");
+	}
 
-        public void reset() {
-            createThis = null;
-            lastFormModel = null;
-        }
+	private class TestableConfigurableFormComponentInterceptorFactory
+			extends ConfigurableFormComponentInterceptorFactory {
+		private FormComponentInterceptor createThis;
+		private FormModel lastFormModel;
 
-        public void setCreateThis( FormComponentInterceptor createThis ) {
-            this.createThis = createThis;
-        }
+		@Override
+		protected FormComponentInterceptor createInterceptor(FormModel formModel) {
+			lastFormModel = formModel;
+			return createThis;
+		}
 
-        public void setLastFormModel( FormModel lastFormModel ) {
-            this.lastFormModel = lastFormModel;
-        }
+		public void reset() {
+			createThis = null;
+			lastFormModel = null;
+		}
 
-        public FormModel getLastFormModel() {
-            return lastFormModel;
-        }
-    }
+		public void setCreateThis(FormComponentInterceptor createThis) {
+			this.createThis = createThis;
+		}
+
+		public void setLastFormModel(FormModel lastFormModel) {
+			this.lastFormModel = lastFormModel;
+		}
+
+		public FormModel getLastFormModel() {
+			return lastFormModel;
+		}
+	}
 }

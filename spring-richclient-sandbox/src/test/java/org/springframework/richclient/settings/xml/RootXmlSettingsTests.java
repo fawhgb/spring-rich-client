@@ -1,7 +1,10 @@
 package org.springframework.richclient.settings.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.settings.Settings;
 import org.springframework.richclient.settings.SettingsAbstractTests;
 import org.w3c.dom.Document;
@@ -14,6 +17,7 @@ public class RootXmlSettingsTests extends SettingsAbstractTests {
 
 	private Element element;
 
+	@Test
 	public void testConstructor() {
 		RootXmlSettings settings = new RootXmlSettings(document, readerWriter);
 		assertEquals(document, settings.getDocument());
@@ -21,6 +25,7 @@ public class RootXmlSettingsTests extends SettingsAbstractTests {
 		assertEquals("user", settings.getName());
 	}
 
+	@Override
 	protected void doSetUp() throws Exception {
 		readerWriter = new StringXmlSettingsReaderWriter();
 
@@ -30,6 +35,7 @@ public class RootXmlSettingsTests extends SettingsAbstractTests {
 		document.appendChild(element);
 	}
 
+	@Override
 	protected Settings createSettings() throws Exception {
 		StringXmlSettingsReaderWriter readerWriter = new StringXmlSettingsReaderWriter();
 

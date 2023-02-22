@@ -15,11 +15,14 @@
  */
 package org.springframework.richclient.image;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.awt.Image;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.Resource;
@@ -29,46 +32,48 @@ import org.springframework.core.io.Resource;
  * 
  * @author Keith Donald
  */
-public class ImageSourceTests extends TestCase {
-    private ApplicationContext context;
+public class ImageSourceTests {
+	private ApplicationContext context;
 
-    public void testValidImageAccess() throws IOException {
-        ImageSource source = (ImageSource)context.getBean("imageSource");
-        Resource resource = source.getImageResource("test.image.key");
-        assertNotNull(resource);
-        String urlExternalForm = resource.getURL().toExternalForm();
-        assertTrue(urlExternalForm.endsWith("org/springframework/richclient/image/test.gif"));
-        Image image = source.getImage("test.image.key");
-        assertNotNull(image);
-    }
+	@Test
+	public void testValidImageAccess() throws IOException {
+		ImageSource source = (ImageSource) context.getBean("imageSource");
+		Resource resource = source.getImageResource("test.image.key");
+		assertNotNull(resource);
+		String urlExternalForm = resource.getURL().toExternalForm();
+		assertTrue(urlExternalForm.endsWith("org/springframework/richclient/image/test.gif"));
+		Image image = source.getImage("test.image.key");
+		assertNotNull(image);
+	}
 
-    public void testBrokenImageAccess() throws IOException {
-        ImageSource source = (ImageSource)context.getBean("imageSourceBroken");
-        Resource resource = source.getImageResource("bogus.image.key");
-        assertNotNull(resource);
-        String urlExternalForm = resource.getURL().toExternalForm();
-        assertTrue(urlExternalForm.endsWith("org/springframework/richclient/image/broken.gif"));
-        Image image = source.getImage("bogus.image.key");
-        assertNotNull(image);
-    }
+	@Test
+	public void testBrokenImageAccess() throws IOException {
+		ImageSource source = (ImageSource) context.getBean("imageSourceBroken");
+		Resource resource = source.getImageResource("bogus.image.key");
+		assertNotNull(resource);
+		String urlExternalForm = resource.getURL().toExternalForm();
+		assertTrue(urlExternalForm.endsWith("org/springframework/richclient/image/broken.gif"));
+		Image image = source.getImage("bogus.image.key");
+		assertNotNull(image);
+	}
 
-    public void testInvalidImageAccess() {
-        ImageSource source = (ImageSource)context.getBean("imageSourceBroken");
-        try {
-            source.getImageResource("invalid.image.key");
-        }
-        catch (NoSuchImageResourceException e) {
-            // expected
-        }
-        try {
-            source.getImage("invalid.image.key");
-        }
-        catch (NoSuchImageResourceException e) {
-            // expected
-        }
-    }
+	@Test
+	public void testInvalidImageAccess() {
+		ImageSource source = (ImageSource) context.getBean("imageSourceBroken");
+		try {
+			source.getImageResource("invalid.image.key");
+		} catch (NoSuchImageResourceException e) {
+			// expected
+		}
+		try {
+			source.getImage("invalid.image.key");
+		} catch (NoSuchImageResourceException e) {
+			// expected
+		}
+	}
 
-    protected void setUp() throws Exception {
-        context = new ClassPathXmlApplicationContext("org/springframework/richclient/image/application-context.xml");
-    }
+	@BeforeEach
+	protected void setUp() throws Exception {
+		context = new ClassPathXmlApplicationContext("org/springframework/richclient/image/application-context.xml");
+	}
 }

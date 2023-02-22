@@ -15,23 +15,30 @@
  */
 package org.springframework.richclient.settings.j2seprefs;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Peter De Bruycker
  */
-public class PreferencesSettingsFactoryTests extends TestCase {
+public class PreferencesSettingsFactoryTests {
 
+	@Test
 	public void testSetPreferencesFactory() {
 		PreferencesSettingsFactory settingsFactory = new PreferencesSettingsFactory();
 
-		assertNull("PreferencesFactory must be initially null", settingsFactory.getPreferencesFactory());
+		assertNull(settingsFactory.getPreferencesFactory(), "PreferencesFactory must be initially null");
 
 		TransientPreferencesFactory prefsFactory = new TransientPreferencesFactory();
 		settingsFactory.setPreferencesFactory(prefsFactory);
 		assertEquals(prefsFactory, settingsFactory.getPreferencesFactory());
 	}
 
+	@Test
 	public void testCreate() {
 		PreferencesSettingsFactory settingsFactory = new PreferencesSettingsFactory();
 		TransientPreferencesFactory prefsFactory = new TransientPreferencesFactory();
@@ -55,6 +62,7 @@ public class PreferencesSettingsFactoryTests extends TestCase {
 		assertEquals("/test-id/internal", prefs.absolutePath());
 	}
 
+	@Test
 	public void testCreateWithPath() {
 		PreferencesSettingsFactory settingsFactory = new PreferencesSettingsFactory();
 		TransientPreferencesFactory prefsFactory = new TransientPreferencesFactory();
@@ -66,6 +74,7 @@ public class PreferencesSettingsFactoryTests extends TestCase {
 		assertEquals("/application/1/0/user", prefs.absolutePath());
 	}
 
+	@Test
 	public void testSetId() {
 		PreferencesSettingsFactory settingsFactory = new PreferencesSettingsFactory();
 		settingsFactory.setId("id");

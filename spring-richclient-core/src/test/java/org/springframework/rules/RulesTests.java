@@ -16,6 +16,10 @@
 
 package org.springframework.rules;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,13 +27,28 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.closure.BinaryConstraint;
 import org.springframework.rules.closure.StringLength;
-import org.springframework.rules.constraint.*;
+import org.springframework.rules.constraint.And;
+import org.springframework.rules.constraint.ClosureResultConstraint;
+import org.springframework.rules.constraint.Constraint;
+import org.springframework.rules.constraint.EqualTo;
+import org.springframework.rules.constraint.GreaterThan;
+import org.springframework.rules.constraint.GreaterThanEqualTo;
+import org.springframework.rules.constraint.InGroup;
+import org.springframework.rules.constraint.LessThan;
+import org.springframework.rules.constraint.LessThanEqualTo;
+import org.springframework.rules.constraint.LogicalOperator;
+import org.springframework.rules.constraint.Not;
+import org.springframework.rules.constraint.Or;
+import org.springframework.rules.constraint.ParameterizedBinaryConstraint;
+import org.springframework.rules.constraint.Range;
+import org.springframework.rules.constraint.RelationalOperator;
+import org.springframework.rules.constraint.Required;
+import org.springframework.rules.constraint.StringLengthConstraint;
+import org.springframework.rules.constraint.XOr;
 import org.springframework.rules.constraint.property.CompoundPropertyConstraint;
 import org.springframework.rules.constraint.property.ParameterizedPropertyConstraint;
 import org.springframework.rules.constraint.property.PropertiesConstraint;
@@ -42,10 +61,11 @@ import org.springframework.util.Assert;
 /**
  * @author Keith Donald
  */
-public class RulesTests extends TestCase {
+public class RulesTests {
 
 	private static final Constraints constraints = Constraints.instance();
 
+	@Test
 	public void testRelationalPredicates() {
 		Number n1 = new Integer(25);
 		Number n11 = new Integer(25);
@@ -77,6 +97,7 @@ public class RulesTests extends TestCase {
 		assertFalse(p.test(n1, n2));
 	}
 
+	@Test
 	public void testParameterizedBinaryPredicate() {
 		Integer number = new Integer(25);
 		ParameterizedBinaryConstraint p = new ParameterizedBinaryConstraint(GreaterThan.instance(), number);
@@ -84,14 +105,16 @@ public class RulesTests extends TestCase {
 		assertFalse(p.test(new Integer(24)));
 	}
 
+	@Test
 	public void testClosureResultConstraint() {
 		String s = "12345";
-		ClosureResultConstraint p = new ClosureResultConstraint(StringLength.instance(), constraints.bind(EqualTo
-				.instance(), new Integer(s.length())));
+		ClosureResultConstraint p = new ClosureResultConstraint(StringLength.instance(),
+				constraints.bind(EqualTo.instance(), new Integer(s.length())));
 		assertTrue(p.test(s));
 		assertFalse(p.test("1234567"));
 	}
 
+	@Test
 	public void testInGroup() {
 		String o1 = "o1";
 		String o2 = "o2";
@@ -110,6 +133,7 @@ public class RulesTests extends TestCase {
 		assertFalse(p.test("o4"));
 	}
 
+	@Test
 	public void testLike() {
 		String keithDonald = "keith donald";
 		String keith = "keith";
@@ -134,6 +158,7 @@ public class RulesTests extends TestCase {
 
 	}
 
+	@Test
 	public void testMethodInvokingRule() {
 		TestBean b = new TestBean();
 		Constraint p = constraints.method(b, "isTooMuch", "max");
@@ -141,18 +166,21 @@ public class RulesTests extends TestCase {
 		assertFalse(p.test(new Integer(25)));
 	}
 
+	@Test
 	public void testRegExpConstraint() {
 		Constraint p = constraints.regexp("a*b");
 		assertTrue(p.test("aaaaab"));
 		assertFalse(p.test("bbbbbba"));
 	}
 
+	@Test
 	public void testRequired() {
 		Required req = Required.instance();
 		assertEquals("required", req.getType());
 		emptyChecks(req);
 	}
 
+	@Test
 	public void testPresent() {
 		Required req = Required.present();
 		assertEquals("present", req.getType());
@@ -175,6 +203,7 @@ public class RulesTests extends TestCase {
 		assertTrue(req.test(Arrays.asList(new Object[1])));
 	}
 
+	@Test
 	public void testRequiredIfOthersPresent() {
 		Rules r = new Rules(Person.class);
 		PropertyConstraint c = new RequiredIfOthersPresent("zip", "city,state");
@@ -221,6 +250,7 @@ public class RulesTests extends TestCase {
 		assertTrue(r.test(p));
 	}
 
+	@Test
 	public void testMaxLengthConstraint() {
 		Constraint p = new StringLengthConstraint(5);
 		assertTrue(p.test(null));
@@ -230,6 +260,7 @@ public class RulesTests extends TestCase {
 		assertFalse(p.test("123456"));
 	}
 
+	@Test
 	public void testMinLengthConstraint() {
 		Constraint p = new StringLengthConstraint(RelationalOperator.GREATER_THAN_EQUAL_TO, 5);
 		assertFalse(p.test(null));
@@ -239,6 +270,7 @@ public class RulesTests extends TestCase {
 		assertFalse(p.test("1234"));
 	}
 
+	@Test
 	public void testRangeConstraint() {
 		Constraint p = new Range(new Integer(0), new Integer(10));
 		assertTrue(p.test(new Integer(0)));
@@ -247,6 +279,7 @@ public class RulesTests extends TestCase {
 		assertFalse(p.test(new Integer(11)));
 	}
 
+	@Test
 	public void testAnd() {
 		And and = new And();
 		and.add(Required.instance());
@@ -256,6 +289,7 @@ public class RulesTests extends TestCase {
 		assertFalse(and.test(""));
 	}
 
+	@Test
 	public void testOr() {
 		Or or = new Or();
 		or.add(Required.instance());
@@ -265,6 +299,7 @@ public class RulesTests extends TestCase {
 		assertFalse(or.test("           "));
 	}
 
+	@Test
 	public void testXOr() {
 		XOr xor = new XOr();
 		xor.add(new InGroup(new String[] { "123", "12345" }));
@@ -275,6 +310,7 @@ public class RulesTests extends TestCase {
 		assertFalse(xor.test("12345"));
 	}
 
+	@Test
 	public void testNot() {
 		Number n = new Integer("25");
 		Constraint p = constraints.bind(EqualTo.instance(), n);
@@ -283,6 +319,7 @@ public class RulesTests extends TestCase {
 		assertFalse(not.test(new Integer("25")));
 	}
 
+	@Test
 	public void testBeanPropertyValueConstraint() {
 		And p = constraints.conjunction();
 		p.add(constraints.required());
@@ -297,6 +334,7 @@ public class RulesTests extends TestCase {
 		assertFalse(e.test(new TestBean()));
 	}
 
+	@Test
 	public void testBeanPropertiesExpression() {
 		PropertiesConstraint p = new PropertiesConstraint("test", EqualTo.instance(), "confirmTest");
 		assertTrue(p.test(new TestBean()));
@@ -305,19 +343,23 @@ public class RulesTests extends TestCase {
 		assertFalse(p.test(new TestBean()));
 	}
 
+	@Test
 	public void testParameterizedBeanPropertyExpression() {
-		ParameterizedPropertyConstraint p = new ParameterizedPropertyConstraint("test", EqualTo.instance(), "testValue");
+		ParameterizedPropertyConstraint p = new ParameterizedPropertyConstraint("test", EqualTo.instance(),
+				"testValue");
 		assertTrue(p.test(new TestBean()));
 
 		p = new ParameterizedPropertyConstraint("test", EqualTo.instance(), "test2Value");
 		assertFalse(p.test(new TestBean()));
 	}
 
+	@Test
 	public void testNoRules() {
 		Rules r = new Rules(TestBean.class);
 		assertTrue(r.test(new TestBean()));
 	}
 
+	@Test
 	public void testMinMaxRules() {
 		Rules r = new Rules(TestBean.class);
 		r.add(constraints.inRangeProperties("number", "min", "max"));
@@ -327,6 +369,7 @@ public class RulesTests extends TestCase {
 		assertFalse(r.test(b));
 	}
 
+	@Test
 	public void testBasicCompoundRules() {
 		Rules r = new Rules(TestBean.class);
 		r.add(constraints.inRangeProperties("number", "min", "max")).add(constraints.eqProperty("test", "confirmTest"));
@@ -336,13 +379,18 @@ public class RulesTests extends TestCase {
 		assertFalse(r.test(new TestBean()));
 	}
 
+	@Test
 	public void testCompoundRules() {
 		Rules r = new Rules(TestBean.class);
 		// test must be required, and have a length in range 3 to 25
 		// or test must just equal confirmTest
-		CompoundPropertyConstraint rules = new CompoundPropertyConstraint(constraints.or(constraints.all("test",
-				new Constraint[] { constraints.required(), constraints.maxLength(25), constraints.minLength(3) }),
-				constraints.eqProperty("test", "confirmTest")));
+		CompoundPropertyConstraint rules = new CompoundPropertyConstraint(
+				constraints.or(
+						constraints
+								.all("test",
+										new Constraint[] { constraints.required(), constraints.maxLength(25),
+												constraints.minLength(3) }),
+						constraints.eqProperty("test", "confirmTest")));
 		r.add(rules);
 		assertTrue(r.test(new TestBean()));
 		TestBean b = new TestBean();
@@ -358,6 +406,7 @@ public class RulesTests extends TestCase {
 		assertFalse(r.test(b));
 	}
 
+	@Test
 	public void testDefaultRulesSource() {
 		ClassPathXmlApplicationContext ac = new ClassPathXmlApplicationContext(
 				"org/springframework/rules/rules-context.xml");

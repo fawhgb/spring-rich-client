@@ -15,7 +15,13 @@
  */
 package org.springframework.richclient.command.config;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import javax.swing.JButton;
+
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testcase for <code>MenuItemButtonConfigurer</code>.
@@ -24,18 +30,25 @@ import javax.swing.JButton;
  */
 public class MenuItemButtonConfigurerTests extends CommandButtonConfigurerTestCase {
 
+	@Override
 	protected CommandButtonConfigurer createConfigurer() {
 		return new DefaultCommandButtonConfigurer();
 	}
 
+	@Test
 	public void testConfigure() {
-		MenuItemButtonConfigurer configurer = new MenuItemButtonConfigurer();
-		JButton button = new JButton();
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				MenuItemButtonConfigurer configurer = new MenuItemButtonConfigurer();
+				JButton button = new JButton();
 
-		configurer.configure(button, null, getCommandFaceDescriptor());
+				configurer.configure(button, null, getCommandFaceDescriptor());
 
-		assertEquals(getCommandFaceDescriptor().getText(), button.getText());
-		assertEquals(getCommandFaceDescriptor().getIcon(), button.getIcon());
-		assertEquals(null, button.getToolTipText());
+				assertEquals(getCommandFaceDescriptor().getText(), button.getText());
+				assertEquals(getCommandFaceDescriptor().getIcon(), button.getIcon());
+				assertEquals(null, button.getToolTipText());
+			}
+		});
 	}
 }

@@ -15,9 +15,11 @@
  */
 package org.springframework.richclient.table;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.Comparator;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testcase for {@link ToStringComparator}
@@ -25,14 +27,15 @@ import junit.framework.TestCase;
  * @author Peter De Bruycker
  * 
  */
-public class ToStringComparatorTests extends TestCase {
+public class ToStringComparatorTests {
 
-    public void testCompare() {
-        Comparator comparator = new ToStringComparator();
+	@Test
+	public void testCompare() {
+		Comparator comparator = new ToStringComparator();
 
-        assertTrue(comparator.compare(new TestBean("a"), new TestBean("b")) < 0);
-        assertTrue(comparator.compare(new TestBean("b"), new TestBean("a")) > 0);
-        assertTrue(comparator.compare(new TestBean("a"), new TestBean("a")) == 0);
-    }
+		assertTrue(comparator.compare(new TestBean("a"), new TestBean("b")) < 0);
+		assertTrue(comparator.compare(new TestBean("b"), new TestBean("a")) > 0);
+		assertTrue(comparator.compare(new TestBean("a"), new TestBean("a")) == 0);
+	}
 
 }

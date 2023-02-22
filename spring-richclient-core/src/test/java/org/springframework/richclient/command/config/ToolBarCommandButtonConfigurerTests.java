@@ -15,7 +15,15 @@
  */
 package org.springframework.richclient.command.config;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.swing.JButton;
+
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.Test;
 
 /**
  * Test case for <code>ToolBarCommandButtonConfigurer</code>
@@ -24,57 +32,77 @@ import javax.swing.JButton;
  */
 public class ToolBarCommandButtonConfigurerTests extends CommandButtonConfigurerTestCase {
 
+	@Test
 	public void testDefaults() {
-		ToolBarCommandButtonConfigurer configurer= new ToolBarCommandButtonConfigurer();
-		
+		ToolBarCommandButtonConfigurer configurer = new ToolBarCommandButtonConfigurer();
+
 		assertFalse(configurer.isShowText());
 		assertTrue(configurer.isTextBelowIcon());
 	}
-	
+
+	@Test
 	public void testConfigureWithDefaults() {
 		ToolBarCommandButtonConfigurer configurer = new ToolBarCommandButtonConfigurer();
-		JButton button = new JButton();
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				JButton button = new JButton();
 
-		configurer.configure(button, null, getCommandFaceDescriptor());
+				configurer.configure(button, null, getCommandFaceDescriptor());
 
-		assertEquals(null, button.getText());
-		assertEquals(getCommandFaceDescriptor().getIcon(), button.getIcon());
-		assertEquals(getCommandFaceDescriptor().getCaption(), button.getToolTipText());
+				assertEquals(null, button.getText());
+				assertEquals(getCommandFaceDescriptor().getIcon(), button.getIcon());
+				assertEquals(getCommandFaceDescriptor().getCaption(), button.getToolTipText());
+			}
+		});
 	}
-	
+
+	@Test
 	public void testConfigureWithShowTextTrue() {
 		ToolBarCommandButtonConfigurer configurer = new ToolBarCommandButtonConfigurer();
 		configurer.setShowText(true);
-		
-		JButton button = new JButton();
 
-		configurer.configure(button, null, getCommandFaceDescriptor());
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				JButton button = new JButton();
 
-		assertEquals(getCommandFaceDescriptor().getText(), button.getText());
-		assertEquals(getCommandFaceDescriptor().getIcon(), button.getIcon());
-		assertEquals(getCommandFaceDescriptor().getCaption(), button.getToolTipText());
-		
-		assertEquals(JButton.BOTTOM, button.getVerticalTextPosition());
-		assertEquals(JButton.CENTER, button.getHorizontalTextPosition());
+				configurer.configure(button, null, getCommandFaceDescriptor());
+
+				assertEquals(getCommandFaceDescriptor().getText(), button.getText());
+				assertEquals(getCommandFaceDescriptor().getIcon(), button.getIcon());
+				assertEquals(getCommandFaceDescriptor().getCaption(), button.getToolTipText());
+
+				assertEquals(JButton.BOTTOM, button.getVerticalTextPosition());
+				assertEquals(JButton.CENTER, button.getHorizontalTextPosition());
+			}
+		});
 	}
-	
+
+	@Test
 	public void testConfigureWithShowTextTrueAndTextBelowIconFalse() {
 		ToolBarCommandButtonConfigurer configurer = new ToolBarCommandButtonConfigurer();
 		configurer.setShowText(true);
 		configurer.setTextBelowIcon(false);
-		
-		JButton button = new JButton();
 
-		configurer.configure(button, null, getCommandFaceDescriptor());
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				JButton button = new JButton();
 
-		assertEquals(getCommandFaceDescriptor().getText(), button.getText());
-		assertEquals(getCommandFaceDescriptor().getIcon(), button.getIcon());
-		assertEquals(getCommandFaceDescriptor().getCaption(), button.getToolTipText());
-		
-		assertEquals(JButton.CENTER, button.getVerticalTextPosition());
-		assertEquals(JButton.TRAILING, button.getHorizontalTextPosition());
+				configurer.configure(button, null, getCommandFaceDescriptor());
+
+				assertEquals(getCommandFaceDescriptor().getText(), button.getText());
+				assertEquals(getCommandFaceDescriptor().getIcon(), button.getIcon());
+				assertEquals(getCommandFaceDescriptor().getCaption(), button.getToolTipText());
+
+				assertEquals(JButton.CENTER, button.getVerticalTextPosition());
+				assertEquals(JButton.TRAILING, button.getHorizontalTextPosition());
+			}
+		});
 	}
-	
+
+	@Override
 	protected CommandButtonConfigurer createConfigurer() {
 		return new ToolBarCommandButtonConfigurer();
 	}

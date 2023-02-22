@@ -15,8 +15,9 @@
  */
 package org.springframework.richclient.form.builder.support;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.support.DefaultFormModel;
 
@@ -25,23 +26,26 @@ import org.springframework.binding.form.support.DefaultFormModel;
  *
  * @author Peter De Bruycker
  */
-public class DirtyIndicatorInterceptorFactoryTests extends TestCase {
-    public void testGetInterceptor() {
-        DirtyIndicatorInterceptorFactory factory = new DirtyIndicatorInterceptorFactory();
+public class DirtyIndicatorInterceptorFactoryTests {
 
-        FormModel formModel = new DefaultFormModel();
-        DirtyIndicatorInterceptor interceptor = (DirtyIndicatorInterceptor)factory.getInterceptor(formModel);
+	@Test
+	public void testGetInterceptor() {
+		DirtyIndicatorInterceptorFactory factory = new DirtyIndicatorInterceptorFactory();
 
-        assertNotNull("factory returned null", interceptor);
-    }
+		FormModel formModel = new DefaultFormModel();
+		DirtyIndicatorInterceptor interceptor = (DirtyIndicatorInterceptor) factory.getInterceptor(formModel);
 
-    public void testGetInterceptorWithNullFormModel() {
-        try {
-            DirtyIndicatorInterceptorFactory factory = new DirtyIndicatorInterceptorFactory();
-            factory.getInterceptor(null);
-        } catch (IllegalArgumentException ex) {
-            // test passes
-        }
+		assertNotNull(interceptor, "factory returned null");
+	}
 
-    }
+	@Test
+	public void testGetInterceptorWithNullFormModel() {
+		try {
+			DirtyIndicatorInterceptorFactory factory = new DirtyIndicatorInterceptorFactory();
+			factory.getInterceptor(null);
+		} catch (IllegalArgumentException ex) {
+			// test passes
+		}
+
+	}
 }

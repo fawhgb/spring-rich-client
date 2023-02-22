@@ -5,8 +5,9 @@
  */
 package org.springframework.richclient.util;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.fail;
 
+import org.junit.jupiter.api.Test;
 
 /**
  * Unit tests for the {@link Assert} class.
@@ -15,64 +16,62 @@ import junit.framework.TestCase;
  * @since 0.3
  *
  */
-public class AssertTests extends TestCase {
+public class AssertTests {
 
-    /**
-     * Test method for {@link Assert#required(java.lang.Object, java.lang.String)}.
-     */
-    public final void testRequired() {
-        
-        Assert.required(new Object(), "object");
-        Assert.required(new Object(), null);
-        
-        try {
-            Assert.required(null, "bogus");
-            fail("Should have thrown an IllegalArgumentException");
-        }
-        catch(IllegalArgumentException e) {
-            //do nothing, test succeeded
-        }
-        
-    }
+	/**
+	 * Test method for {@link Assert#required(java.lang.Object, java.lang.String)}.
+	 */
+	@Test
+	public final void testRequired() {
 
-    /**
-     * Test method for {@link Assert#noElementsNull(java.lang.Object[])}.
-     */
-    public final void testNoElementsNull() {
-        
-        Object[] array = new Object[0];
-        
-        Assert.noElementsNull(array, null);
-        Assert.noElementsNull(array, "bogusArray");
-        
-        try {
-            Assert.noElementsNull(null, "bogusArray");
-            fail("Should have thrown an IllegalArgumentException");
-        }
-        catch (IllegalArgumentException e) {
-            //do nothing, test succeeded
-        }
-        
-        array = new Object[1];
-        
-        try {
-            Assert.noElementsNull(null, "bogusArray");
-            fail("Should have thrown an IllegalArgumentException for a non-null array with a null element");
-        }
-        catch (IllegalArgumentException e) {
-            //do nothing, test succeeded
-        }
-        
-        array = new Object[] {"bogus", null};
-        
-        try {
-            Assert.noElementsNull(null, "bogusArray");
-            fail("Should have thrown an IllegalArgumentException for a non-null array with a null element");
-        }
-        catch (IllegalArgumentException e) {
-            //do nothing, test succeeded
-        }
-        
-    }
+		Assert.required(new Object(), "object");
+		Assert.required(new Object(), null);
+
+		try {
+			Assert.required(null, "bogus");
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			// do nothing, test succeeded
+		}
+
+	}
+
+	/**
+	 * Test method for {@link Assert#noElementsNull(java.lang.Object[])}.
+	 */
+	@Test
+	public final void testNoElementsNull() {
+
+		Object[] array = new Object[0];
+
+		Assert.noElementsNull(array, null);
+		Assert.noElementsNull(array, "bogusArray");
+
+		try {
+			Assert.noElementsNull(null, "bogusArray");
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			// do nothing, test succeeded
+		}
+
+		array = new Object[1];
+
+		try {
+			Assert.noElementsNull(null, "bogusArray");
+			fail("Should have thrown an IllegalArgumentException for a non-null array with a null element");
+		} catch (IllegalArgumentException e) {
+			// do nothing, test succeeded
+		}
+
+		array = new Object[] { "bogus", null };
+
+		try {
+			Assert.noElementsNull(null, "bogusArray");
+			fail("Should have thrown an IllegalArgumentException for a non-null array with a null element");
+		} catch (IllegalArgumentException e) {
+			// do nothing, test succeeded
+		}
+
+	}
 
 }

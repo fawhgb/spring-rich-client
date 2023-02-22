@@ -15,19 +15,22 @@
  */
 package org.springframework.rules.constraint;
 
-import org.springframework.rules.support.NumberComparator;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
+import org.springframework.rules.support.NumberComparator;
 
 /**
  * Testcase for Range
  * 
  * @author Peter De Bruycker
  */
-public class RangeTests extends TestCase {
+public class RangeTests {
+
+	@Test
 	public void testWithCustomComparator() {
 		Range range = new Range(Integer.valueOf(0), Integer.valueOf(10), NumberComparator.INSTANCE);
-		
+
 		assertTrue(range.test(Double.valueOf(5.5)));
 	}
 }

@@ -15,6 +15,8 @@
  */
 package org.springframework.richclient.form.binding.swing.date;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import java.util.Map;
 
 import javax.swing.JComponent;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.form.FieldMetadata;
 import org.springframework.richclient.form.binding.swing.BindingAbstractTests;
 
@@ -40,6 +43,7 @@ public abstract class AbstractDateFieldBindingTestCase extends BindingAbstractTe
 
 	private JComponent dateField;
 
+	@Override
 	protected String setUpBinding() {
 		Map context = new HashMap();
 
@@ -52,6 +56,7 @@ public abstract class AbstractDateFieldBindingTestCase extends BindingAbstractTe
 
 	protected abstract AbstractDateFieldBinder createBinder();
 
+	@Test
 	public void testInitialValue() {
 		Date date = createDate(1981, 10, 16);
 		vm.setValue(date);
@@ -65,40 +70,48 @@ public abstract class AbstractDateFieldBindingTestCase extends BindingAbstractTe
 		return date;
 	}
 
+	@Override
+	@Test
 	public final void testComponentTracksEnabledChanges() {
-		assertEquals(true, dateField.isEnabled());
+		org.junit.jupiter.api.Assertions.assertEquals(true, dateField.isEnabled());
 		fm.setEnabled(false);
-		assertEquals(false, dateField.isEnabled());
+		org.junit.jupiter.api.Assertions.assertEquals(false, dateField.isEnabled());
 		fm.setEnabled(true);
-		assertEquals(true, dateField.isEnabled());
+		org.junit.jupiter.api.Assertions.assertEquals(true, dateField.isEnabled());
 	}
 
+	@Override
+	@Test
 	public final void testComponentTracksReadOnlyChanges() {
 		FieldMetadata state = fm.getFieldMetadata("dateProperty");
-		assertEquals(true, !isReadOnly(dateField));
+		org.junit.jupiter.api.Assertions.assertEquals(true, !isReadOnly(dateField));
 		state.setReadOnly(true);
-		assertEquals(false, !isReadOnly(dateField));
+		org.junit.jupiter.api.Assertions.assertEquals(false, !isReadOnly(dateField));
 		state.setReadOnly(false);
-		assertEquals(true, !isReadOnly(dateField));
+		org.junit.jupiter.api.Assertions.assertEquals(true, !isReadOnly(dateField));
 	}
-	
+
 	protected abstract boolean isReadOnly(JComponent dateField);
 
 	protected abstract Date getValue(JComponent dateField);
 
 	protected abstract void setValue(JComponent dateField, Date date);
 
+	@Override
+	@Test
 	public final void testComponentUpdatesValueModel() {
 		Date date1 = createDate(1981, 10, 16);
 		setValue(dateField, date1);
-		assertEquals(date1, (Date)vm.getValue());
+		assertEquals(date1, (Date) vm.getValue());
 		setValue(dateField, null);
-		assertEquals(null, (Date)vm.getValue());
+		assertEquals(null, (Date) vm.getValue());
 		Date date2 = createDate(1999, 11, 31);
 		setValue(dateField, date2);
-		assertEquals(date2, (Date)vm.getValue());
+		assertEquals(date2, (Date) vm.getValue());
 	}
 
+	@Override
+	@Test
 	public final void testValueModelUpdatesComponent() {
 		Date date1 = createDate(1981, 10, 16);
 		vm.setValue(date1);
@@ -109,21 +122,21 @@ public abstract class AbstractDateFieldBindingTestCase extends BindingAbstractTe
 		vm.setValue(date2);
 		assertEquals(date2, getValue(dateField));
 	}
-	
+
 	/*
 	 * trim the dates to seconds
 	 */
 	protected void assertEquals(Date date1, Date date2) {
-		if(date1 == null || date2 == null) {
-			super.assertEquals(date1, date2);
+		if (date1 == null || date2 == null) {
+			org.junit.jupiter.api.Assertions.assertEquals(date1, date2);
 			return;
 		}
-		
+
 		long l1 = date1.getTime();
-		l1 = ((long)Math.round(l1/1000))*1000;
+		l1 = ((long) Math.round(l1 / 1000)) * 1000;
 		long l2 = date2.getTime();
-		l2 = ((long)Math.round(l1/1000))*1000;
-		
-		assertEquals(l1, l2);
+		l2 = ((long) Math.round(l1 / 1000)) * 1000;
+
+		org.junit.jupiter.api.Assertions.assertEquals(l1, l2);
 	}
 }

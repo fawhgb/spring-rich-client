@@ -15,11 +15,15 @@
  */
 package org.springframework.richclient.settings.jdbc;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.List;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.richclient.settings.Settings;
@@ -69,6 +73,7 @@ public class JdbcSettingsTests extends SettingsAbstractTests {
 		return ds;
 	}
 
+	@Test
 	public void testLoadExistingSettings() throws Exception {
 		jdbcTemplate.execute("INSERT INTO SETTINGS (ID, KEY, USER) VALUES (55, 'test-key', 'test-user')");
 		jdbcTemplate.execute("INSERT INTO SETTINGS_VALUES (SETTINGS_ID, KEY, VALUE) VALUES (55, 'key0', 'true')");
@@ -78,10 +83,12 @@ public class JdbcSettingsTests extends SettingsAbstractTests {
 		settings.load();
 	}
 
+	@Test
 	public void testLoadHierarchy() throws Exception {
 
 	}
 
+	@Test
 	public void testSaveHierarchy() throws Exception {
 		JdbcSettings settings = new JdbcSettings(dataSource, "test-user", null, "test-key");
 		settings.setBoolean("boolean-value", true);
@@ -94,12 +101,13 @@ public class JdbcSettingsTests extends SettingsAbstractTests {
 		assertEquals(Integer.valueOf(1), childSettings.getId());
 	}
 
+	@Test
 	public void testSaveNewSettings() throws Exception {
 		JdbcSettings settings = new JdbcSettings(dataSource, "test-user", null, "test-key");
 
-		assertEquals("name not set", "test-key", settings.getName());
-		assertEquals("user not set", "test-user", settings.getUser());
-		assertNull("id must be null until first save", settings.getId());
+		assertEquals("test-key", settings.getName(), "name not set");
+		assertEquals("test-user", settings.getUser(), "user not set");
+		assertNull(settings.getId(), "id must be null until first save");
 
 		settings.setBoolean("boolean-value", true);
 		settings.setString("string-value", "value");

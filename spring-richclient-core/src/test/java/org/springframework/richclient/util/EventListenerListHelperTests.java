@@ -15,13 +15,16 @@
  */
 package org.springframework.richclient.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.easymock.EasyMock;
-
-import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * Provides a suite of unit tests for the {@link EventListenerListHelper} class.
@@ -30,21 +33,21 @@ import junit.framework.TestCase;
  * @since 0.3.0
  * 
  */
-public class EventListenerListHelperTests extends TestCase {
+public class EventListenerListHelperTests {
 
 	/**
 	 * Test method for
 	 * {@link EventListenerListHelper#EventListenerListHelper(java.lang.Class)}.
-	 * Confirms that this constructor throws an IllegalArgumentException if
-	 * passed a null argument.
+	 * Confirms that this constructor throws an IllegalArgumentException if passed a
+	 * null argument.
 	 */
+	@Test
 	public void testEventListenerListHelper() {
 
 		try {
 			new EventListenerListHelper(null);
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing, test succeeded
 		}
 
@@ -53,30 +56,33 @@ public class EventListenerListHelperTests extends TestCase {
 	/**
 	 * Test method for {@link EventListenerListHelper#hasListeners()}.
 	 */
+	@Test
 	public void testHasListeners() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(Object.class);
-		Assert.assertFalse("Assert list helper has no listeners", listHelper.hasListeners());
+		assertFalse(listHelper.hasListeners(), "Assert list helper has no listeners");
 		listHelper.add(new Object());
-		Assert.assertTrue("Assert list helper has listeners", listHelper.hasListeners());
+		assertTrue(listHelper.hasListeners(), "Assert list helper has listeners");
 
 	}
 
 	/**
 	 * Test method for {@link EventListenerListHelper#isEmpty()}.
 	 */
+	@Test
 	public void testIsEmpty() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(Object.class);
-		Assert.assertTrue("Assert list helper is empty", listHelper.isEmpty());
+		assertTrue(listHelper.isEmpty(), "Assert list helper is empty");
 		listHelper.add(new Object());
-		Assert.assertFalse("Assert list helper is not empty", listHelper.isEmpty());
+		assertFalse(listHelper.isEmpty(), "Assert list helper is not empty");
 
 	}
 
 	/**
 	 * Test method for {@link EventListenerListHelper#getListenerCount()}.
 	 */
+	@Test
 	public void testGetListenerCount() {
 
 		Object listener1 = new Object();
@@ -85,25 +91,26 @@ public class EventListenerListHelperTests extends TestCase {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(Object.class);
 
-		Assert.assertEquals(0, listHelper.getListenerCount());
+		assertEquals(0, listHelper.getListenerCount());
 		listHelper.add(listener1);
-		Assert.assertEquals(1, listHelper.getListenerCount());
+		assertEquals(1, listHelper.getListenerCount());
 		listHelper.add(listener2);
-		Assert.assertEquals(2, listHelper.getListenerCount());
+		assertEquals(2, listHelper.getListenerCount());
 		listHelper.add(listener3);
-		Assert.assertEquals(3, listHelper.getListenerCount());
+		assertEquals(3, listHelper.getListenerCount());
 		listHelper.remove(listener1);
-		Assert.assertEquals(2, listHelper.getListenerCount());
+		assertEquals(2, listHelper.getListenerCount());
 		listHelper.remove(listener2);
-		Assert.assertEquals(1, listHelper.getListenerCount());
+		assertEquals(1, listHelper.getListenerCount());
 		listHelper.remove(listener3);
-		Assert.assertEquals(0, listHelper.getListenerCount());
+		assertEquals(0, listHelper.getListenerCount());
 
 	}
 
 	/**
 	 * Test method for {@link EventListenerListHelper#getListeners()}.
 	 */
+	@Test
 	public void testGetListeners() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(Object.class);
@@ -113,15 +120,16 @@ public class EventListenerListHelperTests extends TestCase {
 		listHelper.addAll(new Object[] { listener1, listener2 });
 
 		Object[] listeners = listHelper.getListeners();
-		Assert.assertEquals(2, listeners.length);
-		Assert.assertEquals(listener1, listeners[0]);
-		Assert.assertEquals(listener2, listeners[1]);
+		assertEquals(2, listeners.length);
+		assertEquals(listener1, listeners[0]);
+		assertEquals(listener2, listeners[1]);
 
 	}
 
 	/**
 	 * Test method for {@link EventListenerListHelper#iterator()}.
 	 */
+	@Test
 	public void testIterator() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(Object.class);
@@ -129,22 +137,21 @@ public class EventListenerListHelperTests extends TestCase {
 		Object listener2 = new Object();
 		Iterator itr = listHelper.iterator();
 
-		Assert.assertFalse("Assert iterator.hasNext() returns false", itr.hasNext());
+		assertFalse(itr.hasNext(), "Assert iterator.hasNext() returns false");
 		listHelper.add(listener1);
 		listHelper.add(listener2);
-		Assert.assertFalse("Assert iterator.hasNext() returns false", itr.hasNext());
+		assertFalse(itr.hasNext(), "Assert iterator.hasNext() returns false");
 		itr = listHelper.iterator();
-		Assert.assertTrue("Assert iterator.hasNext() returns true", itr.hasNext());
-		Assert.assertEquals(listener1, itr.next());
-		Assert.assertTrue("Assert iterator.hasNext() returns true", itr.hasNext());
-		Assert.assertEquals(listener2, itr.next());
-		Assert.assertFalse("Assert iterator.hasNext() returns false", itr.hasNext());
+		assertTrue(itr.hasNext(), "Assert iterator.hasNext() returns true");
+		assertEquals(listener1, itr.next());
+		assertTrue(itr.hasNext(), "Assert iterator.hasNext() returns true");
+		assertEquals(listener2, itr.next());
+		assertFalse(itr.hasNext(), "Assert iterator.hasNext() returns false");
 
 		try {
 			itr.next();
 			fail("Should have thrown a NoSuchElementException");
-		}
-		catch (NoSuchElementException e) {
+		} catch (NoSuchElementException e) {
 			// do nothing, test succeeded
 		}
 
@@ -153,6 +160,7 @@ public class EventListenerListHelperTests extends TestCase {
 	/**
 	 * Test method for {@link EventListenerListHelper#fire(java.lang.String)}.
 	 */
+	@Test
 	public void testFireByMethodName() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(DummyEventListener.class);
@@ -174,17 +182,15 @@ public class EventListenerListHelperTests extends TestCase {
 
 		try {
 			listHelper.fire(null);
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing
 		}
 
 		try {
 			listHelper.fire("bogusEventName");
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing
 		}
 
@@ -197,6 +203,7 @@ public class EventListenerListHelperTests extends TestCase {
 	 * Test method for
 	 * {@link EventListenerListHelper#fire(java.lang.String, java.lang.Object)}.
 	 */
+	@Test
 	public void testFireByMethodNameWithOneArg() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(DummyEventListener.class);
@@ -222,17 +229,15 @@ public class EventListenerListHelperTests extends TestCase {
 
 		try {
 			listHelper.fire("bogusEventName", arg1);
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing
 		}
 
 		try {
 			listHelper.fire(null, arg1);
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing
 		}
 
@@ -245,6 +250,7 @@ public class EventListenerListHelperTests extends TestCase {
 	 * Test method for
 	 * {@link EventListenerListHelper#fire(java.lang.String, java.lang.Object, java.lang.Object)}.
 	 */
+	@Test
 	public void testFireByMethodNameWithTwoArgs() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(DummyEventListener.class);
@@ -271,17 +277,15 @@ public class EventListenerListHelperTests extends TestCase {
 
 		try {
 			listHelper.fire("bogusEventName", arg1, arg2);
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing
 		}
 
 		try {
 			listHelper.fire(null, arg1, arg2);
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing
 		}
 
@@ -294,6 +298,7 @@ public class EventListenerListHelperTests extends TestCase {
 	 * Test method for
 	 * {@link org.springframework.richclient.util.EventListenerListHelper#fire(java.lang.String, java.lang.Object[])}.
 	 */
+	@Test
 	public void testFireByMethodNameWithArrayArg() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(DummyEventListener.class);
@@ -325,17 +330,15 @@ public class EventListenerListHelperTests extends TestCase {
 
 		try {
 			listHelper.fire("bogusEventName", (Object) args);
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing
 		}
 
 		try {
 			listHelper.fire(null, (Object) args);
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing
 		}
 
@@ -347,20 +350,20 @@ public class EventListenerListHelperTests extends TestCase {
 	/**
 	 * Test method for {@link EventListenerListHelper#add(java.lang.Object)}.
 	 */
+	@Test
 	public void testAdd() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(String.class);
 
-		Assert.assertFalse("Assert adding a null listener returns false", listHelper.add(null));
+		assertFalse(listHelper.add(null), "Assert adding a null listener returns false");
 		String listener1 = "bogusListener";
-		Assert.assertTrue("Assert adding a new listener returns true", listHelper.add(listener1));
-		Assert.assertFalse("Assert adding an existing listener returns false", listHelper.add(listener1));
+		assertTrue(listHelper.add(listener1), "Assert adding a new listener returns true");
+		assertFalse(listHelper.add(listener1), "Assert adding an existing listener returns false");
 
 		try {
 			listHelper.add(new Object());
 			fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// do nothing, test succeeded
 		}
 
@@ -370,30 +373,30 @@ public class EventListenerListHelperTests extends TestCase {
 	 * Test method for
 	 * {@link org.springframework.richclient.util.EventListenerListHelper#addAll(java.lang.Object[])}.
 	 */
+	@Test
 	public void testAddAll() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(String.class);
 
-		Assert.assertFalse("Assert adding a null array of listeners returns false", listHelper.addAll(null));
+		assertFalse(listHelper.addAll(null), "Assert adding a null array of listeners returns false");
 
 		String listener1 = "listener1";
 		String listener2 = "listener2";
 		String[] listenerArray = new String[] { listener1, listener2 };
 
-		Assert.assertTrue("Assert adding an array of new listeners returns true", listHelper.addAll(listenerArray));
-		Assert.assertFalse("Assert adding same listeners returns false", listHelper.addAll(listenerArray));
+		assertTrue(listHelper.addAll(listenerArray), "Assert adding an array of new listeners returns true");
+		assertFalse(listHelper.addAll(listenerArray), "Assert adding same listeners returns false");
 
 		String[] listenerArray2 = new String[] { "newListener", listener1 };
 
-		Assert.assertTrue("Assert adding array with one new listener returns true", listHelper.addAll(listenerArray2));
+		assertTrue(listHelper.addAll(listenerArray2), "Assert adding array with one new listener returns true");
 
 		Object[] listenerArray3 = new Object[] { listener1, new Object() };
 
 		try {
 			listHelper.addAll(listenerArray3);
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing, test succeeded
 		}
 
@@ -402,6 +405,7 @@ public class EventListenerListHelperTests extends TestCase {
 	/**
 	 * Test method for {@link EventListenerListHelper#remove(java.lang.Object)}.
 	 */
+	@Test
 	public void testRemove() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(String.class);
@@ -410,30 +414,28 @@ public class EventListenerListHelperTests extends TestCase {
 
 		listHelper.add(listener1);
 
-		Assert.assertEquals(1, listHelper.getListenerCount());
+		assertEquals(1, listHelper.getListenerCount());
 
 		listHelper.remove("bogusListener");
 
-		Assert.assertEquals(1, listHelper.getListenerCount());
+		assertEquals(1, listHelper.getListenerCount());
 
 		listHelper.remove(listener1);
 
-		Assert.assertEquals(0, listHelper.getListenerCount());
+		assertEquals(0, listHelper.getListenerCount());
 
 		try {
 			listHelper.remove(new Object());
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing, test succeeded
 		}
 
 		// TODO why does this method need to throw an IllegalArgEx?
 		try {
 			listHelper.remove(null);
-			Assert.fail("Should have thrown an IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
 			// do nothing, test succeeded
 		}
 
@@ -443,17 +445,18 @@ public class EventListenerListHelperTests extends TestCase {
 	 * Test method for
 	 * {@link org.springframework.richclient.util.EventListenerListHelper#clear()}.
 	 */
+	@Test
 	public void testClear() {
 
 		EventListenerListHelper listHelper = new EventListenerListHelper(Object.class);
 
 		listHelper.clear();
 
-		Assert.assertEquals(0, listHelper.getListenerCount());
+		assertEquals(0, listHelper.getListenerCount());
 		listHelper.add(new Object());
-		Assert.assertEquals(1, listHelper.getListenerCount());
+		assertEquals(1, listHelper.getListenerCount());
 		listHelper.clear();
-		Assert.assertEquals(0, listHelper.getListenerCount());
+		assertEquals(0, listHelper.getListenerCount());
 
 	}
 
@@ -461,6 +464,7 @@ public class EventListenerListHelperTests extends TestCase {
 	 * Test method for
 	 * {@link org.springframework.richclient.util.EventListenerListHelper#toArray()}.
 	 */
+	@Test
 	public void testToArray() {
 
 		Object listener1 = new Object();
@@ -474,10 +478,10 @@ public class EventListenerListHelperTests extends TestCase {
 
 		Object[] listenersCopy = (Object[]) listHelper.toArray();
 
-		Assert.assertEquals(listenerArray.length, listenersCopy.length);
+		assertEquals(listenerArray.length, listenersCopy.length);
 
 		for (int i = 0; i < listenerArray.length; i++) {
-			Assert.assertEquals(listenerArray[i], listenersCopy[i]);
+			assertEquals(listenerArray[i], listenersCopy[i]);
 		}
 
 	}

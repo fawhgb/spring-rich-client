@@ -15,14 +15,16 @@
  */
 package org.springframework.binding.value.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Arrays;
 
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testcase for <code>ListListModel</code>
@@ -30,14 +32,16 @@ import org.easymock.EasyMock;
  * @author Keith Donald
  * @author Peter De Bruycker
  */
-public class ListListModelTests extends TestCase {
+public class ListListModelTests {
 
 	private ListDataListener mockListener;
 
+	@BeforeEach
 	protected void setUp() throws Exception {
 		mockListener = (ListDataListener) EasyMock.createMock(ListDataListener.class);
 	}
 
+	@Test
 	public void testAddAllCollection() {
 		ListListModel model = new ListListModel(Arrays.asList(new Object[] { "1", "2", "3" }));
 		model.addListDataListener(mockListener);
@@ -52,6 +56,7 @@ public class ListListModelTests extends TestCase {
 		EasyMock.verify(mockListener);
 	}
 
+	@Test
 	public void testRetainAll() {
 		ListListModel model = new ListListModel(Arrays.asList(new Object[] { "1", "2", "3", "4", "5" }));
 		model.addListDataListener(mockListener);
@@ -66,6 +71,7 @@ public class ListListModelTests extends TestCase {
 		EasyMock.verify(mockListener);
 	}
 
+	@Test
 	public void testRemoveAll() {
 		ListListModel model = new ListListModel(Arrays.asList(new Object[] { "1", "2", "3", "4", "5" }));
 		model.addListDataListener(mockListener);
@@ -80,6 +86,7 @@ public class ListListModelTests extends TestCase {
 		EasyMock.verify(mockListener);
 	}
 
+	@Test
 	public void testRemove() {
 		ListListModel model = new ListListModel(Arrays.asList(new Object[] { "1", "2", "3" }));
 		model.addListDataListener(mockListener);
@@ -94,6 +101,7 @@ public class ListListModelTests extends TestCase {
 		EasyMock.verify(mockListener);
 	}
 
+	@Test
 	public void testRemoveObject() {
 		ListListModel model = new ListListModel(Arrays.asList(new Object[] { "1", "2", "3" }));
 		model.addListDataListener(mockListener);

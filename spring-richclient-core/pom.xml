@@ -233,8 +233,8 @@
 
         <!-- Testing -->
         <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-swing</artifactId>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-swing-junit</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

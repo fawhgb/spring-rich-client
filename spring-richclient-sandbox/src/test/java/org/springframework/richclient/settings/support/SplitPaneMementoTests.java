@@ -15,21 +15,25 @@
  */
 package org.springframework.richclient.settings.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import javax.swing.JLabel;
 import javax.swing.JSplitPane;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.settings.TransientSettings;
-
-import junit.framework.TestCase;
 
 /**
  * @author Peter De Bruycker
  */
-public class SplitPaneMementoTests extends TestCase {
+public class SplitPaneMementoTests {
 	private JSplitPane splitPane;
 
 	private TransientSettings settings;
 
+	@Test
 	public void testConstructor() {
 		try {
 			new SplitPaneMemento(null);
@@ -57,6 +61,7 @@ public class SplitPaneMementoTests extends TestCase {
 		assertEquals("key", memento.getKey());
 	}
 
+	@Test
 	public void testSaveState() {
 		SplitPaneMemento memento = new SplitPaneMemento(splitPane, "split");
 
@@ -67,6 +72,7 @@ public class SplitPaneMementoTests extends TestCase {
 		assertEquals(333, settings.getInt("split.dividerLocation"));
 	}
 
+	@Test
 	public void testRestoreState() {
 		SplitPaneMemento memento = new SplitPaneMemento(splitPane, "split");
 
@@ -80,6 +86,7 @@ public class SplitPaneMementoTests extends TestCase {
 		assertEquals(250, splitPane.getDividerLocation());
 	}
 
+	@BeforeEach
 	protected void setUp() throws Exception {
 		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 		splitPane.setLeftComponent(new JLabel("Left"));

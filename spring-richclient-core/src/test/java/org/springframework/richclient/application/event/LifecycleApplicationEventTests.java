@@ -1,8 +1,10 @@
 package org.springframework.richclient.application.event;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LifecycleApplicationEventTests extends TestCase {
+import org.junit.jupiter.api.Test;
+
+public class LifecycleApplicationEventTests {
 
 	private class Base {
 	}
@@ -13,10 +15,11 @@ public class LifecycleApplicationEventTests extends TestCase {
 	/**
 	 * Simple test to check {@link LifecycleApplicationEvent#objectIs(Class)}.
 	 */
+	@Test
 	public void testEventObjectType() {
 		Child child = new Child();
 		LifecycleApplicationEvent event = new LifecycleApplicationEvent(LifecycleApplicationEvent.CREATED, child);
-		assertTrue("Child extends Base so objectIs() should return true.", event.objectIs(Base.class));
+		assertTrue(event.objectIs(Base.class), "Child extends Base so objectIs() should return true.");
 	}
 
 }

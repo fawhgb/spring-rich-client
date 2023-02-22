@@ -15,6 +15,8 @@
  */
 package org.springframework.richclient.application.config;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -23,10 +25,8 @@ import java.util.Locale;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.MessageSource;
 import org.springframework.richclient.command.config.CommandButtonIconInfo;
 import org.springframework.richclient.command.config.CommandButtonLabelInfo;
@@ -53,7 +53,7 @@ import org.springframework.richclient.test.TestIcon;
  * @since 0.3
  * 
  */
-public class DefaultApplicationObjectConfigurerTests extends TestCase {
+public class DefaultApplicationObjectConfigurerTests {
 
 	/**
 	 * Creates a new {@code DefaultApplicationObjectConfigurerTests}.
@@ -66,6 +66,7 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 	 * Confirms that an IllegalArgumentException is thrown if the object to be
 	 * configured is not null but the object name is null.
 	 */
+	@Test
 	public void testForNullInputToConfigureMethod() {
 
 		DefaultApplicationObjectConfigurer configurer = new DefaultApplicationObjectConfigurer();
@@ -75,9 +76,8 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 
 		try {
 			configurer.configure("bogus", null);
-			Assert.fail("Should have thrown an IllegalArgumentException for null object name");
-		}
-		catch (IllegalArgumentException e) {
+			fail("Should have thrown an IllegalArgumentException for null object name");
+		} catch (IllegalArgumentException e) {
 			// do nothing, test succeeded
 		}
 
@@ -85,9 +85,9 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 
 	/**
 	 * Confirms that a {@link TitleConfigurable} object will have its title set
-	 * correctly, as retrieved from a MessageSource using the key
-	 * 'beanName.title'.
+	 * correctly, as retrieved from a MessageSource using the key 'beanName.title'.
 	 */
+	@Test
 	public void testConfigureTitleConfigurable() {
 		MessageSource messageSource = (MessageSource) EasyMock.createMock(MessageSource.class);
 
@@ -111,6 +111,7 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 		EasyMock.verify(configurable);
 	}
 
+	@Test
 	public void testConfigureTitleConfigurableWithNoTitleFound() {
 		MessageSource messageSource = (MessageSource) EasyMock.createMock(MessageSource.class);
 
@@ -137,6 +138,7 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 	 * description and caption set correctly, as retrieved from a MessageSource
 	 * using the key 'beanName.description' and 'beanName.caption' respectively.
 	 */
+	@Test
 	public void testDescriptionConfigurable() {
 		MessageSource messageSource = (MessageSource) EasyMock.createMock(MessageSource.class);
 
@@ -165,6 +167,7 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 		EasyMock.verify(configurable);
 	}
 
+	@Test
 	public void testDescriptionConfigurableWithNoDescriptionFound() {
 		MessageSource messageSource = (MessageSource) EasyMock.createMock(MessageSource.class);
 
@@ -191,9 +194,9 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 
 	/**
 	 * Confirms that a {@link LabelConfigurable} object will have its label set
-	 * correctly, as retrieved from a MessageSource using the key
-	 * 'beanName.label'.
+	 * correctly, as retrieved from a MessageSource using the key 'beanName.label'.
 	 */
+	@Test
 	public void testLabelConfigurable() {
 		MessageSource messageSource = (MessageSource) EasyMock.createMock(MessageSource.class);
 
@@ -219,6 +222,7 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 
 	}
 
+	@Test
 	public void testLabelConfigurableWithNoLabelFound() {
 		MessageSource messageSource = (MessageSource) EasyMock.createMock(MessageSource.class);
 
@@ -241,10 +245,11 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 	}
 
 	/**
-	 * Confirms that a {@link CommandLabelConfigurable} object will have its
-	 * label set correctly, as retrieved from a MessageSource using the key
+	 * Confirms that a {@link CommandLabelConfigurable} object will have its label
+	 * set correctly, as retrieved from a MessageSource using the key
 	 * 'beanName.label'.
 	 */
+	@Test
 	public void testCommandLabelConfigurable() {
 		MessageSource messageSource = (MessageSource) EasyMock.createMock(MessageSource.class);
 
@@ -271,6 +276,7 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 
 	}
 
+	@Test
 	public void testCommandLabelConfigurableWithNoLabelFound() {
 		MessageSource messageSource = (MessageSource) EasyMock.createMock(MessageSource.class);
 
@@ -296,9 +302,9 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 
 	/**
 	 * Confirms that a {@link IconConfigurable} object will have its icon set
-	 * correctly, if the icon source can find it using the key
-	 * 'objectName.icon'.
+	 * correctly, if the icon source can find it using the key 'objectName.icon'.
 	 */
+	@Test
 	public void testConfigureIconConfigurable() {
 		String objectName = "bogusIconConfigurable";
 		String iconKey = objectName + ".icon";
@@ -328,6 +334,7 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 		EasyMock.verify(configurable);
 	}
 
+	@Test
 	public void testConfigureIconConfigurableWithNoIconFound() {
 		String objectName = "undefinedIconConfigurable";
 		String iconKey = objectName + ".icon";
@@ -356,9 +363,10 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 	}
 
 	/**
-	 * Confirms that a {@link CommandIconConfigurable} object will have its
-	 * icons set correctly.
+	 * Confirms that a {@link CommandIconConfigurable} object will have its icons
+	 * set correctly.
 	 */
+	@Test
 	public void testCommandIconConfigurable() {
 
 		String objectName = "bogusCommandIconConfigurable";
@@ -444,7 +452,8 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 		EasyMock.verify(iconSource);
 		EasyMock.verify(configurable);
 	}
-	
+
+	@Test
 	public void testCommandIconConfigurableWithNoIconFound() {
 
 		String objectName = "bogusCommandIconConfigurable";
@@ -474,9 +483,9 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 
 	/**
 	 * Confirms that a {@link ImageConfigurable} object will have its image set
-	 * correctly, if the image source can find it using the key
-	 * 'objectName.image'.
+	 * correctly, if the image source can find it using the key 'objectName.image'.
 	 */
+	@Test
 	public void testImageConfigurable() {
 
 		String objectName = "bogusImageConfigurable";
@@ -504,6 +513,7 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 
 	}
 
+	@Test
 	public void testImageConfigurableWithNoImageFound() {
 		String objectName = "bogusImageConfigurable";
 		String iconKey = objectName + ".image";
@@ -529,10 +539,11 @@ public class DefaultApplicationObjectConfigurerTests extends TestCase {
 	}
 
 	/**
-	 * Confirms that a {@link SecurityControllable} object will have its
-	 * security controller set correctly, as retrieved from a MessageSource
-	 * using the key 'beanName.label'.
+	 * Confirms that a {@link SecurityControllable} object will have its security
+	 * controller set correctly, as retrieved from a MessageSource using the key
+	 * 'beanName.label'.
 	 */
+	@Test
 	public void testSecurityControllable() {
 
 		String objectName = "bogusSecurityControllable";

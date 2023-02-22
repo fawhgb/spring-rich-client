@@ -15,6 +15,13 @@
  */
 package org.springframework.binding.value.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.support.BeanPropertyAccessStrategy;
 import org.springframework.binding.support.TestBean;
 import org.springframework.binding.support.TestPropertyChangeListener;
@@ -23,7 +30,6 @@ import org.springframework.binding.value.ValueChangeDetector;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.richclient.application.ApplicationServicesLocator;
 import org.springframework.richclient.test.SpringRichTestCase;
-
 
 /**
  * Tests class {@link BufferedValueModel}.
@@ -34,778 +40,643 @@ import org.springframework.richclient.test.SpringRichTestCase;
  */
 public final class BufferedValueModelTests extends SpringRichTestCase {
 
-    private static final Object INITIAL_VALUE = "initial value";
-    private static final Object RESET_VALUE   = "reset value";
+	private static final Object INITIAL_VALUE = "initial value";
+	private static final Object RESET_VALUE = "reset value";
 
-    private ValueModel wrapped;
-    private CommitTrigger commitTrigger;
-        
-    protected void doSetUp() throws Exception {
-        wrapped = new ValueHolder(INITIAL_VALUE);
-        commitTrigger = new CommitTrigger();
-    }
-    
-    public void testGetWrappedValueModel() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        
-        assertSame(wrapped, buffer.getWrappedValueModel());
-        assertSame(wrapped, buffer.getInnerMostWrappedValueModel());
-        
-        ValueModel nestedValueModel = new AbstractValueModelWrapper(wrapped) {};
-        buffer = new BufferedValueModel(nestedValueModel);
-        assertSame(nestedValueModel, buffer.getWrappedValueModel());
-        assertSame(wrapped, buffer.getInnerMostWrappedValueModel());
-    }
+	private ValueModel wrapped;
+	private CommitTrigger commitTrigger;
 
-    public void testReturnsWrappedValueIfNoValueAssigned() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        assertEquals(
-            "Buffer value equals the wrapped value before any changes.",
-            buffer.getValue(),
-            wrapped.getValue());
+	@Override
+	protected void doSetUp() throws Exception {
+		wrapped = new ValueHolder(INITIAL_VALUE);
+		commitTrigger = new CommitTrigger();
+	}
 
-        wrapped.setValue("change1");
-        assertEquals(
-            "Buffer value equals the wrapped value changes.",
-            buffer.getValue(),
-            wrapped.getValue());
+	@Test
+	public void testGetWrappedValueModel() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
 
-        wrapped.setValue(null);
-        assertEquals(
-            "Buffer value equals the wrapped value changes.",
-            buffer.getValue(),
-            wrapped.getValue());
+		assertSame(wrapped, buffer.getWrappedValueModel());
+		assertSame(wrapped, buffer.getInnerMostWrappedValueModel());
 
-        wrapped.setValue("change2");
-        assertEquals(
-            "Buffer value equals the wrapped value changes.",
-            buffer.getValue(),
-            wrapped.getValue());
-    }
+		ValueModel nestedValueModel = new AbstractValueModelWrapper(wrapped) {
+		};
+		buffer = new BufferedValueModel(nestedValueModel);
+		assertSame(nestedValueModel, buffer.getWrappedValueModel());
+		assertSame(wrapped, buffer.getInnerMostWrappedValueModel());
+	}
 
-    /**
-     * Tests that the BufferedValueModel returns the buffered values
-     * once a value has been assigned. 
-     */
-    public void testReturnsBufferedValueIfValueAssigned() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
+	@Test
+	public void testReturnsWrappedValueIfNoValueAssigned() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		assertEquals(buffer.getValue(), wrapped.getValue(),
+				"Buffer value equals the wrapped value before any changes.");
 
-        Object newValue1 = wrapped.getValue();
-        buffer.setValue(newValue1);
-        assertSame(
-            "Buffer value == new value once a value has been assigned.",
-            buffer.getValue(),
-            newValue1);
+		wrapped.setValue("change1");
+		assertEquals(buffer.getValue(), wrapped.getValue(), "Buffer value equals the wrapped value changes.");
 
-        Object newValue2 = "change1";
-        buffer.setValue(newValue2);
-        assertSame(
-            "Buffer value == new value once a value has been assigned.",
-            buffer.getValue(),
-            newValue2);
+		wrapped.setValue(null);
+		assertEquals(buffer.getValue(), wrapped.getValue(), "Buffer value equals the wrapped value changes.");
 
-        Object newValue3 = null;
-        buffer.setValue(newValue3);
-        assertSame(
-            "Buffer value == new value once a value has been assigned.",
-            buffer.getValue(),
-            newValue3);
-        
-        Object newValue4 = "change2";
-        buffer.setValue(newValue4);
-        assertSame(
-            "Buffer value == new value once a value has been assigned.",
-            buffer.getValue(),
-            newValue4);
-    }
+		wrapped.setValue("change2");
+		assertEquals(buffer.getValue(), wrapped.getValue(), "Buffer value equals the wrapped value changes.");
+	}
 
-    public void testDetectedWrappedValueChangeIfValueAssigned() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
+	/**
+	 * Tests that the BufferedValueModel returns the buffered values once a value
+	 * has been assigned.
+	 */
+	@Test
+	public void testReturnsBufferedValueIfValueAssigned() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
 
-        Object newValue1 = "change1";
-        buffer.setValue(newValue1);
-        wrapped.setValue("change3");
-        assertSame(
-            "Buffer value == new value once a value has been assigned.",
-            buffer.getValue(),
-            "change3");
-        wrapped.setValue(newValue1);
-        assertSame(
-            "Buffer value == new value once a value has been assigned.",
-            buffer.getValue(),
-            newValue1);
-        wrapped.setValue(null);
-        assertSame(
-            "Buffer value == new value once a value has been assigned.",
-            buffer.getValue(),
-            null);
-    }
+		Object newValue1 = wrapped.getValue();
+		buffer.setValue(newValue1);
+		assertSame(buffer.getValue(), newValue1, "Buffer value == new value once a value has been assigned.");
 
-    /**
-     * Tests that the BufferedValueModel returns the wrapped's values
-     * after a commit. 
-     */
-    public void testReturnsWrappedValueAfterCommit() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        buffer.setValue("change1");  // shall buffer now
-        commit();
-        assertEquals(
-            "Buffer value equals the wrapped value after a commit.",
-            buffer.getValue(),
-            wrapped.getValue());
+		Object newValue2 = "change1";
+		buffer.setValue(newValue2);
+		assertSame(buffer.getValue(), newValue2, "Buffer value == new value once a value has been assigned.");
 
-        wrapped.setValue("change2");
-        assertEquals(
-            "Buffer value equals the wrapped value after a commit.",
-            buffer.getValue(),
-            wrapped.getValue());
+		Object newValue3 = null;
+		buffer.setValue(newValue3);
+		assertSame(buffer.getValue(), newValue3, "Buffer value == new value once a value has been assigned.");
 
-        wrapped.setValue(buffer.getValue());
-        assertEquals(
-            "Buffer value equals the wrapped value after a commit.",
-            buffer.getValue(),
-            wrapped.getValue());
-    }
+		Object newValue4 = "change2";
+		buffer.setValue(newValue4);
+		assertSame(buffer.getValue(), newValue4, "Buffer value == new value once a value has been assigned.");
+	}
 
-    /**
-     * Tests that the BufferedValueModel returns the wrapped's values
-     * after a flush. 
-     */
-    public void testReturnsWrappedValueAfterFlush() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        buffer.setValue("change1");  // shall buffer now
-        revert();
-        assertEquals(
-            "Buffer value equals the wrapped value after a flush.",
-            wrapped.getValue(),
-            buffer.getValue());
+	@Test
+	public void testDetectedWrappedValueChangeIfValueAssigned() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
 
-        wrapped.setValue("change2");
-        assertEquals(
-            "Buffer value equals the wrapped value after a flush.",
-            wrapped.getValue(),
-            buffer.getValue());
-    }
+		Object newValue1 = "change1";
+		buffer.setValue(newValue1);
+		wrapped.setValue("change3");
+		assertSame(buffer.getValue(), "change3", "Buffer value == new value once a value has been assigned.");
+		wrapped.setValue(newValue1);
+		assertSame(buffer.getValue(), newValue1, "Buffer value == new value once a value has been assigned.");
+		wrapped.setValue(null);
+		assertSame(buffer.getValue(), null, "Buffer value == new value once a value has been assigned.");
+	}
 
+	/**
+	 * Tests that the BufferedValueModel returns the wrapped's values after a
+	 * commit.
+	 */
+	@Test
+	public void testReturnsWrappedValueAfterCommit() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		buffer.setValue("change1"); // shall buffer now
+		commit();
+		assertEquals(buffer.getValue(), wrapped.getValue(), "Buffer value equals the wrapped value after a commit.");
 
-    // Testing Proper Value Commit and Flush **********************************
+		wrapped.setValue("change2");
+		assertEquals(buffer.getValue(), wrapped.getValue(), "Buffer value equals the wrapped value after a commit.");
 
-    /**
-     * Tests the core of the buffering feature: buffer modifications 
-     * do not affect the wrapped before a commit.
-     */
-    public void testWrappedValuesUnchangedBeforeCommit() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        Object oldWrappedValue = wrapped.getValue();
-        buffer.setValue("changedBuffer1");
-        assertEquals(
-            "Buffer changes do not change the wrapped value before a commit.",
-            wrapped.getValue(),
-            oldWrappedValue
-        );
-        buffer.setValue(null);
-        assertEquals(
-            "Buffer changes do not change the wrapped value before a commit.",
-            wrapped.getValue(),
-            oldWrappedValue
-        );
-        buffer.setValue(oldWrappedValue);
-        assertEquals(
-            "Buffer changes do not change the wrapped value before a commit.",
-            wrapped.getValue(),
-            oldWrappedValue
-        );
-        buffer.setValue("changedBuffer2");
-        assertEquals(
-            "Buffer changes do not change the wrapped value before a commit.",
-            wrapped.getValue(),
-            oldWrappedValue
-        );
-    }
+		wrapped.setValue(buffer.getValue());
+		assertEquals(buffer.getValue(), wrapped.getValue(), "Buffer value equals the wrapped value after a commit.");
+	}
 
-    /**
-     * Tests the core of a commit: buffer changes are written through on commit
-     * and change the wrapped value.
-     */
-    public void testCommitChangesWrappedValue() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        Object oldWrappedValue = wrapped.getValue();
-        Object newValue1 = "change1";
-        buffer.setValue(newValue1);
-        assertEquals(
-            "Wrapped value is unchanged before the first commit.",
-            wrapped.getValue(),
-            oldWrappedValue);
-        commit();
-        assertEquals(
-            "Wrapped value is the new value after the first commit.",
-            wrapped.getValue(),
-            newValue1);
-        
-        // Set the buffer to the current wrapped value to check whether 
-        // the starts buffering, even if there's no value difference.
-        Object newValue2 = wrapped.getValue();
-        buffer.setValue(newValue2);
-        commit();
-        assertEquals(
-            "Wrapped value is the new value after the second commit.",
-            wrapped.getValue(),
-            newValue2);
-    }
+	/**
+	 * Tests that the BufferedValueModel returns the wrapped's values after a flush.
+	 */
+	@Test
+	public void testReturnsWrappedValueAfterFlush() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		buffer.setValue("change1"); // shall buffer now
+		revert();
+		assertEquals(wrapped.getValue(), buffer.getValue(), "Buffer value equals the wrapped value after a flush.");
 
-    /**
-     * Tests the core of a flush action: buffer changes are overridden
-     * by wrapped changes after a flush.
-     */
-    public void testFlushResetsTheBufferedValue() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        Object newValue1 = "new value1";
-        buffer.setValue(newValue1);
-        assertSame(
-            "Buffer value reflects changes before the first flush.",
-            buffer.getValue(), 
-            newValue1);
-        revert();
-        assertEquals(
-            "Buffer value is the wrapped value after the first flush.",
-            buffer.getValue(),
-            wrapped.getValue());
+		wrapped.setValue("change2");
+		assertEquals(wrapped.getValue(), buffer.getValue(), "Buffer value equals the wrapped value after a flush.");
+	}
 
-        // Set the buffer to the current wrapped value to check whether 
-        // the starts buffering, even if there's no value difference.
-        Object newValue2 = wrapped.getValue();
-        buffer.setValue(newValue2);
-        assertSame(
-            "Buffer value reflects changes before the flush.",
-            buffer.getValue(), 
-            newValue2);
-        revert();
-        assertEquals(
-            "Buffer value is the wrapped value after the second flush.",
-            buffer.getValue(),
-            wrapped.getValue());
-    }
+	// Testing Proper Value Commit and Flush **********************************
 
-    // Tests a Proper Buffering State *****************************************
+	/**
+	 * Tests the core of the buffering feature: buffer modifications do not affect
+	 * the wrapped before a commit.
+	 */
+	@Test
+	public void testWrappedValuesUnchangedBeforeCommit() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		Object oldWrappedValue = wrapped.getValue();
+		buffer.setValue("changedBuffer1");
+		assertEquals(wrapped.getValue(), oldWrappedValue,
+				"Buffer changes do not change the wrapped value before a commit.");
+		buffer.setValue(null);
+		assertEquals(wrapped.getValue(), oldWrappedValue,
+				"Buffer changes do not change the wrapped value before a commit.");
+		buffer.setValue(oldWrappedValue);
+		assertEquals(wrapped.getValue(), oldWrappedValue,
+				"Buffer changes do not change the wrapped value before a commit.");
+		buffer.setValue("changedBuffer2");
+		assertEquals(wrapped.getValue(), oldWrappedValue,
+				"Buffer changes do not change the wrapped value before a commit.");
+	}
 
-    /**
-     * Tests that a buffer isn't buffering as long as no value has been assigned.
-     */
-    public void testIsNotBufferingIfNoValueAssigned() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        assertFalse(
-            "Initially the buffer does not buffer.",
-            buffer.isBuffering());
+	/**
+	 * Tests the core of a commit: buffer changes are written through on commit and
+	 * change the wrapped value.
+	 */
+	@Test
+	public void testCommitChangesWrappedValue() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		Object oldWrappedValue = wrapped.getValue();
+		Object newValue1 = "change1";
+		buffer.setValue(newValue1);
+		assertEquals(wrapped.getValue(), oldWrappedValue, "Wrapped value is unchanged before the first commit.");
+		commit();
+		assertEquals(wrapped.getValue(), newValue1, "Wrapped value is the new value after the first commit.");
 
-        Object newValue = "change1";
-        wrapped.setValue(newValue);
-        assertFalse(
-            "Wrapped changes do not affect the buffering state.",
-            buffer.isBuffering());
-        
-        wrapped.setValue(null);
-        assertFalse(
-            "Wrapped change to null does not affect the buffering state.",
-            buffer.isBuffering());
-    }
-    
-    /**
-     * Tests that the buffer is buffering once a value has been assigned.
-     */
-    public void testIsBufferingIfValueAssigned() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        buffer.setValue("change1");
-        assertTrue(
-            "Setting a value (even the wrapped's value) turns on buffering.",
-            buffer.isBuffering());
-        
-        buffer.setValue("change2");
-        assertTrue(
-            "Changing the value doesn't affect the buffering state.",
-            buffer.isBuffering());
-        
-        buffer.setValue(wrapped.getValue());
-        assertTrue(
-            "Resetting the value to the wrapped's value should affect buffering.",
-            !buffer.isBuffering());
-    }
-    
-    /**
-     * Tests that the buffer is not buffering after a commit.
-     */
-    public void testIsNotBufferingAfterCommit() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        buffer.setValue("change1");
-        commit();
-        assertFalse(
-            "The buffer does not buffer after a commit.",
-            buffer.isBuffering());
+		// Set the buffer to the current wrapped value to check whether
+		// the starts buffering, even if there's no value difference.
+		Object newValue2 = wrapped.getValue();
+		buffer.setValue(newValue2);
+		commit();
+		assertEquals(wrapped.getValue(), newValue2, "Wrapped value is the new value after the second commit.");
+	}
 
-        Object newValue = "change1";
-        wrapped.setValue(newValue);
-        assertFalse(
-        "The buffer does not buffer after a commit and wrapped change1.",
-            buffer.isBuffering());
-        
-        wrapped.setValue(null);
-        assertFalse(
-        "The buffer does not buffer after a commit and wrapped change2.",
-            buffer.isBuffering());
-    }
+	/**
+	 * Tests the core of a flush action: buffer changes are overridden by wrapped
+	 * changes after a flush.
+	 */
+	@Test
+	public void testFlushResetsTheBufferedValue() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		Object newValue1 = "new value1";
+		buffer.setValue(newValue1);
+		assertSame(buffer.getValue(), newValue1, "Buffer value reflects changes before the first flush.");
+		revert();
+		assertEquals(buffer.getValue(), wrapped.getValue(), "Buffer value is the wrapped value after the first flush.");
 
-    /**
-     * Tests that the buffer is not buffering after a flush.
-     */
-    public void testIsNotBufferingAfterFlush() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        buffer.setValue("change1");
-        revert();
-        assertFalse(
-            "The buffer does not buffer after a flush.",
-            buffer.isBuffering());
+		// Set the buffer to the current wrapped value to check whether
+		// the starts buffering, even if there's no value difference.
+		Object newValue2 = wrapped.getValue();
+		buffer.setValue(newValue2);
+		assertSame(buffer.getValue(), newValue2, "Buffer value reflects changes before the flush.");
+		revert();
+		assertEquals(buffer.getValue(), wrapped.getValue(),
+				"Buffer value is the wrapped value after the second flush.");
+	}
 
-        Object newValue = "change1";
-        wrapped.setValue(newValue);
-        assertFalse(
-        "The buffer does not buffer after a flush and wrapped change1.",
-            buffer.isBuffering());
-        
-        wrapped.setValue(null);
-        assertFalse(
-        "The buffer does not buffer after a flush and wrapped change2.",
-            buffer.isBuffering());
-    }
+	// Tests a Proper Buffering State *****************************************
 
-    /**
-     * Tests that changing the buffering state fires changes of 
-     * the <i>buffering</i> property.
-     */
-    public void testFiresBufferingChanges() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        
-        TestPropertyChangeListener pcl = new TestPropertyChangeListener(BufferedValueModel.BUFFERING_PROPERTY);
-        buffer.addPropertyChangeListener(BufferedValueModel.BUFFERING_PROPERTY, pcl);
-        
-        assertEquals("Initial state.", 0, pcl.eventCount());
-        buffer.getValue();
-        assertEquals("Reading initial value.", 0, pcl.eventCount());
-        buffer.setCommitTrigger(null);
-        buffer.setCommitTrigger(commitTrigger);
-        assertEquals("After commit trigger change.", 0, pcl.eventCount());
+	/**
+	 * Tests that a buffer isn't buffering as long as no value has been assigned.
+	 */
+	@Test
+	public void testIsNotBufferingIfNoValueAssigned() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		assertFalse(buffer.isBuffering(), "Initially the buffer does not buffer.");
 
-        buffer.setValue("now buffering");
-        assertEquals("After setting the first value.", 1, pcl.eventCount());
-        buffer.setValue("still buffering");
-        assertEquals("After setting the second value.", 1, pcl.eventCount());
-        buffer.getValue();
-        assertEquals("Reading buffered value.", 1, pcl.eventCount());
-                
-        wrapped.setValue(buffer.getValue());
-        assertEquals("Changing wrapped to same as buffer.", 2, pcl.eventCount());
+		Object newValue = "change1";
+		wrapped.setValue(newValue);
+		assertFalse(buffer.isBuffering(), "Wrapped changes do not affect the buffering state.");
 
-        commit();
-        assertEquals("After committing.", 2, pcl.eventCount());
-        buffer.getValue();
-        assertEquals("Reading unbuffered value.", 2, pcl.eventCount());
+		wrapped.setValue(null);
+		assertFalse(buffer.isBuffering(), "Wrapped change to null does not affect the buffering state.");
+	}
 
-        buffer.setValue("buffering again");
-        assertEquals("After second buffering switch.", 3, pcl.eventCount());
-        revert();
-        assertEquals("After flushing.", 4, pcl.eventCount());
-        buffer.getValue();
-        assertEquals("Reading unbuffered value.", 4, pcl.eventCount());
-        
-        buffer.setValue("before real commit");
-        assertEquals("With new change to be committed", 5, pcl.eventCount());
-        commit();
-        assertEquals("With new change committed", 6, pcl.eventCount());
-    }
-        
-    public void testSetValueSendsProperValueChangeEvents() {
-        Object obj1  = new Integer(1);
-        Object obj2a = new Integer(2);
-        Object obj2b = new Integer(2);
-        testSetValueSendsProperEvents(null, obj1,   true);
-        testSetValueSendsProperEvents(obj1, null,   true);
-        testSetValueSendsProperEvents(obj1, obj1,   false);
-        testSetValueSendsProperEvents(obj1, obj2a,  true);
-        testSetValueSendsProperEvents(obj2a, obj2b, false); 
-        testSetValueSendsProperEvents(null, null,   false);
-    }
+	/**
+	 * Tests that the buffer is buffering once a value has been assigned.
+	 */
+	@Test
+	public void testIsBufferingIfValueAssigned() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		buffer.setValue("change1");
+		assertTrue(buffer.isBuffering(), "Setting a value (even the wrapped's value) turns on buffering.");
 
-    
-    public void testValueChangeSendsProperValueChangeEvents() {
-        Object obj1  = new Integer(1);
-        Object obj2a = new Integer(2);
-        Object obj2b = new Integer(2);
-        testValueChangeSendsProperEvents(null, obj1,   true);
-        testValueChangeSendsProperEvents(obj1, null,   true);
-        testValueChangeSendsProperEvents(obj1, obj1,   false);
-        testValueChangeSendsProperEvents(obj1, obj2a,  true);
-        testValueChangeSendsProperEvents(obj2a, obj2b, false); 
-        testValueChangeSendsProperEvents(null, null,   false);
-        
-        // Now replace the default value change detector with one that
-        // only uses true equivalence.
-        ValueChangeDetector oldVCD = (ValueChangeDetector)ApplicationServicesLocator.services().getService(ValueChangeDetector.class);
-        getApplicationServices().setValueChangeDetector(new StrictEquivalenceValueChangeDetector());
-        testValueChangeSendsProperEvents(null, obj1,   true);
-        testValueChangeSendsProperEvents(obj1, null,   true);
-        testValueChangeSendsProperEvents(obj1, obj1,   false);
-        testValueChangeSendsProperEvents(obj1, obj2a,  true);
-        testValueChangeSendsProperEvents(obj2a, obj2b, true); 
-        testValueChangeSendsProperEvents(null, null,   false);
+		buffer.setValue("change2");
+		assertTrue(buffer.isBuffering(), "Changing the value doesn't affect the buffering state.");
 
-        getApplicationServices().setValueChangeDetector(oldVCD);
-    }
+		buffer.setValue(wrapped.getValue());
+		assertTrue(!buffer.isBuffering(), "Resetting the value to the wrapped's value should affect buffering.");
+	}
 
-  
-    // Commit Trigger Tests *************************************************
+	/**
+	 * Tests that the buffer is not buffering after a commit.
+	 */
+	@Test
+	public void testIsNotBufferingAfterCommit() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		buffer.setValue("change1");
+		commit();
+		assertFalse(buffer.isBuffering(), "The buffer does not buffer after a commit.");
 
+		Object newValue = "change1";
+		wrapped.setValue(newValue);
+		assertFalse(buffer.isBuffering(), "The buffer does not buffer after a commit and wrapped change1.");
 
-    /**
-     * Checks that #setCommitTrigger changes the commit trigger.
-     */
-    public void testCommitTriggerChange() {
-        CommitTrigger trigger1 = new CommitTrigger();
-        CommitTrigger trigger2 = new CommitTrigger();
-        
-        BufferedValueModel buffer = new BufferedValueModel(wrapped, trigger1);
-        assertSame(
-            "Commit trigger has been changed.",
-            buffer.getCommitTrigger(),
-            trigger1);
+		wrapped.setValue(null);
+		assertFalse(buffer.isBuffering(), "The buffer does not buffer after a commit and wrapped change2.");
+	}
 
-        buffer.setCommitTrigger(trigger2);
-        assertSame(
-            "Commit trigger has been changed.",
-            buffer.getCommitTrigger(),
-            trigger2);
-        
-        buffer.setCommitTrigger(null);
-        assertSame(
-            "Commit trigger has been changed.",
-            buffer.getCommitTrigger(),
-            null);
-    }
+	/**
+	 * Tests that the buffer is not buffering after a flush.
+	 */
+	@Test
+	public void testIsNotBufferingAfterFlush() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		buffer.setValue("change1");
+		revert();
+		assertFalse(buffer.isBuffering(), "The buffer does not buffer after a flush.");
 
-    /**
-     * Checks and verifies that commit and flush events are driven
-     * by the current commit trigger.
-     */
-    public void testListensToCurrentCommitTrigger() {
-        CommitTrigger trigger1 = new CommitTrigger();
-        CommitTrigger trigger2 = new CommitTrigger();
-        
-        BufferedValueModel buffer = new BufferedValueModel(wrapped, trigger1);
-        buffer.setValue("change1");
-        Object wrappedValue = wrapped.getValue();
-        Object bufferedValue = buffer.getValue();
-        trigger2.commit();
-        assertEquals(
-            "Changing the unrelated trigger2 to commit has no effect on the wrapped.", 
-            wrapped.getValue(),
-            wrappedValue);
-        assertSame(
-            "Changing the unrelated trigger2 to commit has no effect on the buffer.", 
-            buffer.getValue(),
-            bufferedValue);
-        
-        trigger2.revert();
-        assertEquals(
-            "Changing the unrelated trigger2 to revert has no effect on the wrapped.", 
-            wrapped.getValue(),
-            wrappedValue);
-        assertSame(
-            "Changing the unrelated trigger2 to revert has no effect on the buffer.", 
-            buffer.getValue(),
-            bufferedValue);
-        
-        // Change the commit trigger to trigger2.
-        buffer.setCommitTrigger(trigger2);
-        assertSame(
-            "Commit trigger has been changed.",
-            buffer.getCommitTrigger(),
-            trigger2);
+		Object newValue = "change1";
+		wrapped.setValue(newValue);
+		assertFalse(buffer.isBuffering(), "The buffer does not buffer after a flush and wrapped change1.");
 
-        trigger1.commit();
-        assertEquals(
-            "Changing the unrelated trigger1 to commit has no effect on the wrapped.", 
-            wrapped.getValue(),
-            wrappedValue);
-        assertSame(
-            "Changing the unrelated trigger1 to commit has no effect on the buffer.", 
-            buffer.getValue(),
-            bufferedValue);
-        
-        trigger1.revert();
-        assertEquals(
-            "Changing the unrelated trigger1 to revert has no effect on the wrapped.", 
-            wrapped.getValue(),
-            wrappedValue);
-        assertSame(
-            "Changing the unrelated trigger1 to revert has no effect on the buffer.", 
-            buffer.getValue(),
-            bufferedValue);
-        
-        // Commit using trigger2.
-        trigger2.commit();
-        assertEquals(
-            "Changing the current trigger2 to commit commits the buffered value.", 
-            buffer.getValue(),
-            wrapped.getValue());
-        
-        buffer.setValue("change2");
-        wrappedValue = wrapped.getValue();
-        trigger2.revert();
-        assertEquals(
-            "Changing the current trigger2 to revert flushes the buffered value.", 
-            buffer.getValue(),
-            wrapped.getValue());
-        assertEquals(
-            "Changing the current trigger2 to revert flushes the buffered value.", 
-            buffer.getValue(),
-            wrappedValue);
-    }
+		wrapped.setValue(null);
+		assertFalse(buffer.isBuffering(), "The buffer does not buffer after a flush and wrapped change2.");
+	}
 
+	/**
+	 * Tests that changing the buffering state fires changes of the <i>buffering</i>
+	 * property.
+	 */
+	@Test
+	public void testFiresBufferingChanges() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
 
-    // Tests Proper Update Notifications **************************************
-    
-    /**
-     * Checks that wrapped changes fire value changes 
-     * if no value has been assigned.
-     */
-    public void testPropagatesWrappedChangesIfNoValueAssigned() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
-        buffer.addValueChangeListener(pcl);
-        
-        wrapped.setValue("change1");
-        assertEquals("Value change.", 1, pcl.eventCount());
+		TestPropertyChangeListener pcl = new TestPropertyChangeListener(BufferedValueModel.BUFFERING_PROPERTY);
+		buffer.addPropertyChangeListener(BufferedValueModel.BUFFERING_PROPERTY, pcl);
 
-        wrapped.setValue(null);
-        assertEquals("Value change.", 2, pcl.eventCount());
+		assertEquals(0, pcl.eventCount(), "Initial state.");
+		buffer.getValue();
+		assertEquals(0, pcl.eventCount(), "Reading initial value.");
+		buffer.setCommitTrigger(null);
+		buffer.setCommitTrigger(commitTrigger);
+		assertEquals(0, pcl.eventCount(), "After commit trigger change.");
 
-        wrapped.setValue("change2");
-        assertEquals("Value change.", 3, pcl.eventCount());
+		buffer.setValue("now buffering");
+		assertEquals(1, pcl.eventCount(), "After setting the first value.");
+		buffer.setValue("still buffering");
+		assertEquals(1, pcl.eventCount(), "After setting the second value.");
+		buffer.getValue();
+		assertEquals(1, pcl.eventCount(), "Reading buffered value.");
 
-        wrapped.setValue(buffer.getValue());
-        assertEquals("No value change.", 3, pcl.eventCount());
-    }
+		wrapped.setValue(buffer.getValue());
+		assertEquals(2, pcl.eventCount(), "Changing wrapped to same as buffer.");
 
-    /**
-     * Tests that wrapped changes are  propagated once a value has
-     * been assigned, i.e. the buffer is buffering.
-     */
-    public void testIgnoresWrappedChangesIfValueAssigned() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
-        buffer.addValueChangeListener(pcl);
-        
-        buffer.setValue("new buffer");
-        wrapped.setValue("change1");
-        assertEquals("Value change.", 2, pcl.eventCount());
+		commit();
+		assertEquals(2, pcl.eventCount(), "After committing.");
+		buffer.getValue();
+		assertEquals(2, pcl.eventCount(), "Reading unbuffered value.");
 
-        buffer.setValue("new buffer");
-        wrapped.setValue(null);
-        assertEquals("Value change.", 4, pcl.eventCount());
+		buffer.setValue("buffering again");
+		assertEquals(3, pcl.eventCount(), "After second buffering switch.");
+		revert();
+		assertEquals(4, pcl.eventCount(), "After flushing.");
+		buffer.getValue();
+		assertEquals(4, pcl.eventCount(), "Reading unbuffered value.");
 
-        buffer.setValue("new buffer");
-        wrapped.setValue("change2");
-        assertEquals("Value change.", 6, pcl.eventCount());
+		buffer.setValue("before real commit");
+		assertEquals(5, pcl.eventCount(), "With new change to be committed");
+		commit();
+		assertEquals(6, pcl.eventCount(), "With new change committed");
+	}
 
-        buffer.setValue("new buffer");
-        wrapped.setValue(buffer.getValue());    // won't fire event
-        assertEquals("No value change.", 7, pcl.eventCount());
-    }
+	@Test
+	public void testSetValueSendsProperValueChangeEvents() {
+		Object obj1 = new Integer(1);
+		Object obj2a = new Integer(2);
+		Object obj2b = new Integer(2);
+		testSetValueSendsProperEvents(null, obj1, true);
+		testSetValueSendsProperEvents(obj1, null, true);
+		testSetValueSendsProperEvents(obj1, obj1, false);
+		testSetValueSendsProperEvents(obj1, obj2a, true);
+		testSetValueSendsProperEvents(obj2a, obj2b, false);
+		testSetValueSendsProperEvents(null, null, false);
+	}
 
-    /**
-     * Checks and verifies that a commit fires no value change.
-     */
-    public void testCommitFiresNoChangeOnSameOldAndNewValues() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        buffer.setValue("value1");
-        TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
-        buffer.addValueChangeListener(pcl);
-        
-        assertEquals("No initial change.", 0, pcl.eventCount());
-        commit();
-        assertEquals("First commit: no change.", 0, pcl.eventCount());
-        
-        buffer.setValue("value2");
-        assertEquals("Setting a value: a change.", 1, pcl.eventCount());
-        commit();
-        assertEquals("Second commit: no change.", 1, pcl.eventCount());
-    }
+	@Test
+	public void testValueChangeSendsProperValueChangeEvents() {
+		Object obj1 = new Integer(1);
+		Object obj2a = new Integer(2);
+		Object obj2b = new Integer(2);
+		testValueChangeSendsProperEvents(null, obj1, true);
+		testValueChangeSendsProperEvents(obj1, null, true);
+		testValueChangeSendsProperEvents(obj1, obj1, false);
+		testValueChangeSendsProperEvents(obj1, obj2a, true);
+		testValueChangeSendsProperEvents(obj2a, obj2b, false);
+		testValueChangeSendsProperEvents(null, null, false);
 
-    public void testCommitFiresChangeOnDifferentOldAndNewValues() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel(
-                new ToUpperCaseStringHolder());
-        buffer.setValue("initialValue");
-        TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
-        buffer.addValueChangeListener(pcl);
-        buffer.setValue("value1");
-        assertEquals("One event fired",
-                1,
-                pcl.eventCount());
-        assertEquals("First value set.",
-                "value1",
-                pcl.lastEvent().getNewValue());
-        commit();
-        assertEquals("Commit fires if the wrapped modifies the value.",
-                2,
-                pcl.eventCount());
-        assertEquals("Old value is the buffered value.",
-                "value1",
-                pcl.lastEvent().getOldValue());
-        assertEquals("New value is the modified value.",
-                "VALUE1",
-                pcl.lastEvent().getNewValue());
-    }
+		// Now replace the default value change detector with one that
+		// only uses true equivalence.
+		ValueChangeDetector oldVCD = (ValueChangeDetector) ApplicationServicesLocator.services()
+				.getService(ValueChangeDetector.class);
+		getApplicationServices().setValueChangeDetector(new StrictEquivalenceValueChangeDetector());
+		testValueChangeSendsProperEvents(null, obj1, true);
+		testValueChangeSendsProperEvents(obj1, null, true);
+		testValueChangeSendsProperEvents(obj1, obj1, false);
+		testValueChangeSendsProperEvents(obj1, obj2a, true);
+		testValueChangeSendsProperEvents(obj2a, obj2b, true);
+		testValueChangeSendsProperEvents(null, null, false);
 
-    /**
-     * Tests that a flush event fires a value change if and only if
-     * the flushed value does not equal the buffered value.
-     */
-    public void testFlushFiresTrueValueChanges() {
-        BufferedValueModel buffer = createDefaultBufferedValueModel();
-        TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
-        
-        wrapped.setValue("new wrapped");
-        buffer.setValue("new buffer");
-        buffer.addValueChangeListener(pcl);
-        revert();
-        assertEquals("First flush changes value.", 1, pcl.eventCount());
-        
-        buffer.setValue(wrapped.getValue());
-        assertEquals("Resetting value: no change.", 1, pcl.eventCount());
-        revert();
-        assertEquals("Second flush: no change.", 1, pcl.eventCount());
+		getApplicationServices().setValueChangeDetector(oldVCD);
+	}
 
-        buffer.setValue("new buffer2");
-        assertEquals("Second value change.", 2, pcl.eventCount());
-        wrapped.setValue("new wrapped2");
-        assertEquals("Setting new wrapped value: no change.", 3, pcl.eventCount());
-        buffer.setValue(wrapped.getValue());
-        assertEquals("Third value change.", 3, pcl.eventCount());
-        revert();
-        assertEquals("Third flush: no change.", 3, pcl.eventCount());
-    }
-    
-    // Misc Tests *************************************************************
- 
-    /**
-     * Tests read actions on a read-only model.
-     */
-    public void testReadOnly() {
-        TestBean bean = new TestBean();
-        ValueModel readOnlyModel = new BeanPropertyAccessStrategy(bean).getPropertyValueModel("readOnly");
-        BufferedValueModel buffer = new BufferedValueModel(readOnlyModel, commitTrigger);
-        
-        assertSame(
-            "Can read values from a read-only model.", 
-            buffer.getValue(),
-            readOnlyModel.getValue());
-        
-        Object newValue1 = "new value";
-        buffer.setValue(newValue1);
-        assertSame(
-            "Can read values from a read-only model when buffering.", 
-            buffer.getValue(),
-            newValue1);
-        
-        revert();
-        assertSame(
-            "Can read values from a read-only model after a flush.", 
-            buffer.getValue(),
-            bean.getReadOnly());
-        
-        buffer.setValue("new value2");
-        try {
-            commit();
-            fail("Cannot commit to a read-only model.");
-        } catch (Exception e) {
-            // The expected behavior
-        }
-    }
+	// Commit Trigger Tests *************************************************
 
-    // Test Implementations ***************************************************
-    
-    private void testSetValueSendsProperEvents(Object oldValue, Object newValue, boolean eventExpected) {
-        BufferedValueModel valueModel = 
-            new BufferedValueModel(new ValueHolder(oldValue), new CommitTrigger());
-        testSendsProperEvents(valueModel, oldValue, newValue, eventExpected);
-    }
-    
-    private void testValueChangeSendsProperEvents(Object oldValue, Object newValue, boolean eventExpected) {
-        BufferedValueModel defaultModel = createDefaultBufferedValueModel();
-        defaultModel.setValue(oldValue);
-        testSendsProperEvents(defaultModel, oldValue, newValue, eventExpected);
-    }
-    
-    private void testSendsProperEvents(BufferedValueModel valueModel, Object oldValue, Object newValue, boolean eventExpected) {
-        TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
-        valueModel.addValueChangeListener(pcl);
-        int expectedEventCount = eventExpected ? 1 : 0;
-        
-        valueModel.setValue(newValue);
-        assertEquals(
-                "Expected event count after ( " + 
-                oldValue + " -> " + newValue + ").", 
-                expectedEventCount, 
-                pcl.eventCount());
-        if (eventExpected) {
-            assertEquals("Event's old value.", oldValue, pcl.lastEvent().getOldValue());
-            assertEquals("Event's new value.", newValue, pcl.lastEvent().getNewValue());
-        }
-    }
-    
-    
-    // Helper Code ************************************************************
+	/**
+	 * Checks that #setCommitTrigger changes the commit trigger.
+	 */
+	@Test
+	public void testCommitTriggerChange() {
+		CommitTrigger trigger1 = new CommitTrigger();
+		CommitTrigger trigger2 = new CommitTrigger();
 
-    private void commit() {
-        commitTrigger.commit();
-    }
+		BufferedValueModel buffer = new BufferedValueModel(wrapped, trigger1);
+		assertSame(buffer.getCommitTrigger(), trigger1, "Commit trigger has been changed.");
 
-    private void revert() {
-        commitTrigger.revert();
-    }
+		buffer.setCommitTrigger(trigger2);
+		assertSame(buffer.getCommitTrigger(), trigger2, "Commit trigger has been changed.");
 
-    private BufferedValueModel createDefaultBufferedValueModel() {
-        wrapped.setValue(RESET_VALUE);
-        return new BufferedValueModel(wrapped, commitTrigger);
-    }
-    
-    private BufferedValueModel createDefaultBufferedValueModel(ValueModel wrapped) {
-        wrapped.setValue(RESET_VALUE);
-        return new BufferedValueModel(wrapped, commitTrigger);
-    }
-    
-    // A String typed ValueModel that modifies set values to uppercase.
-    private static class ToUpperCaseStringHolder extends AbstractValueModel {
-        
-        private String text;
-        
-        public Object getValue() {
-            return text;
-        }
-        
-        public void setValue(Object newValue) {
-            String newText = ((String) newValue).toUpperCase();
-            Object oldText = text;
-            text = newText;
-            fireValueChange(oldText, newText);
-        }
-        
-    }
+		buffer.setCommitTrigger(null);
+		assertSame(buffer.getCommitTrigger(), null, "Commit trigger has been changed.");
+	}
 
-    /**
-     * This class is used to test alternate value change detection methods.
-     */
-    private static class StrictEquivalenceValueChangeDetector implements ValueChangeDetector {
-        public boolean hasValueChanged(Object oldValue, Object newValue) {
-            return oldValue != newValue;
-        }
-    }
-    
+	/**
+	 * Checks and verifies that commit and flush events are driven by the current
+	 * commit trigger.
+	 */
+	@Test
+	public void testListensToCurrentCommitTrigger() {
+		CommitTrigger trigger1 = new CommitTrigger();
+		CommitTrigger trigger2 = new CommitTrigger();
+
+		BufferedValueModel buffer = new BufferedValueModel(wrapped, trigger1);
+		buffer.setValue("change1");
+		Object wrappedValue = wrapped.getValue();
+		Object bufferedValue = buffer.getValue();
+		trigger2.commit();
+		assertEquals(wrapped.getValue(), wrappedValue,
+				"Changing the unrelated trigger2 to commit has no effect on the wrapped.");
+		assertSame(buffer.getValue(), bufferedValue,
+				"Changing the unrelated trigger2 to commit has no effect on the buffer.");
+
+		trigger2.revert();
+		assertEquals(wrapped.getValue(), wrappedValue,
+				"Changing the unrelated trigger2 to revert has no effect on the wrapped.");
+		assertSame(buffer.getValue(), bufferedValue,
+				"Changing the unrelated trigger2 to revert has no effect on the buffer.");
+
+		// Change the commit trigger to trigger2.
+		buffer.setCommitTrigger(trigger2);
+		assertSame(buffer.getCommitTrigger(), trigger2, "Commit trigger has been changed.");
+
+		trigger1.commit();
+		assertEquals(wrapped.getValue(), wrappedValue,
+				"Changing the unrelated trigger1 to commit has no effect on the wrapped.");
+		assertSame(buffer.getValue(), bufferedValue,
+				"Changing the unrelated trigger1 to commit has no effect on the buffer.");
+
+		trigger1.revert();
+		assertEquals(wrapped.getValue(), wrappedValue,
+				"Changing the unrelated trigger1 to revert has no effect on the wrapped.");
+		assertSame(buffer.getValue(), bufferedValue,
+				"Changing the unrelated trigger1 to revert has no effect on the buffer.");
+
+		// Commit using trigger2.
+		trigger2.commit();
+		assertEquals(buffer.getValue(), wrapped.getValue(),
+				"Changing the current trigger2 to commit commits the buffered value.");
+
+		buffer.setValue("change2");
+		wrappedValue = wrapped.getValue();
+		trigger2.revert();
+		assertEquals(buffer.getValue(), wrapped.getValue(),
+				"Changing the current trigger2 to revert flushes the buffered value.");
+		assertEquals(buffer.getValue(), wrappedValue,
+				"Changing the current trigger2 to revert flushes the buffered value.");
+	}
+
+	// Tests Proper Update Notifications **************************************
+
+	/**
+	 * Checks that wrapped changes fire value changes if no value has been assigned.
+	 */
+	@Test
+	public void testPropagatesWrappedChangesIfNoValueAssigned() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
+		buffer.addValueChangeListener(pcl);
+
+		wrapped.setValue("change1");
+		assertEquals(1, pcl.eventCount(), "Value change.");
+
+		wrapped.setValue(null);
+		assertEquals(2, pcl.eventCount(), "Value change.");
+
+		wrapped.setValue("change2");
+		assertEquals(3, pcl.eventCount(), "Value change.");
+
+		wrapped.setValue(buffer.getValue());
+		assertEquals(3, pcl.eventCount(), "No value change.");
+	}
+
+	/**
+	 * Tests that wrapped changes are propagated once a value has been assigned,
+	 * i.e. the buffer is buffering.
+	 */
+	@Test
+	public void testIgnoresWrappedChangesIfValueAssigned() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
+		buffer.addValueChangeListener(pcl);
+
+		buffer.setValue("new buffer");
+		wrapped.setValue("change1");
+		assertEquals(2, pcl.eventCount(), "Value change.");
+
+		buffer.setValue("new buffer");
+		wrapped.setValue(null);
+		assertEquals(4, pcl.eventCount(), "Value change.");
+
+		buffer.setValue("new buffer");
+		wrapped.setValue("change2");
+		assertEquals(6, pcl.eventCount(), "Value change.");
+
+		buffer.setValue("new buffer");
+		wrapped.setValue(buffer.getValue()); // won't fire event
+		assertEquals(7, pcl.eventCount(), "No value change.");
+	}
+
+	/**
+	 * Checks and verifies that a commit fires no value change.
+	 */
+	@Test
+	public void testCommitFiresNoChangeOnSameOldAndNewValues() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		buffer.setValue("value1");
+		TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
+		buffer.addValueChangeListener(pcl);
+
+		assertEquals(0, pcl.eventCount(), "No initial change.");
+		commit();
+		assertEquals(0, pcl.eventCount(), "First commit: no change.");
+
+		buffer.setValue("value2");
+		assertEquals(1, pcl.eventCount(), "Setting a value: a change.");
+		commit();
+		assertEquals(1, pcl.eventCount(), "Second commit: no change.");
+	}
+
+	@Test
+	public void testCommitFiresChangeOnDifferentOldAndNewValues() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel(new ToUpperCaseStringHolder());
+		buffer.setValue("initialValue");
+		TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
+		buffer.addValueChangeListener(pcl);
+		buffer.setValue("value1");
+		assertEquals(1, pcl.eventCount(), "One event fired");
+		assertEquals("value1", pcl.lastEvent().getNewValue(), "First value set.");
+		commit();
+		assertEquals(2, pcl.eventCount(), "Commit fires if the wrapped modifies the value.");
+		assertEquals("value1", pcl.lastEvent().getOldValue(), "Old value is the buffered value.");
+		assertEquals("VALUE1", pcl.lastEvent().getNewValue(), "New value is the modified value.");
+	}
+
+	/**
+	 * Tests that a flush event fires a value change if and only if the flushed
+	 * value does not equal the buffered value.
+	 */
+	@Test
+	public void testFlushFiresTrueValueChanges() {
+		BufferedValueModel buffer = createDefaultBufferedValueModel();
+		TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
+
+		wrapped.setValue("new wrapped");
+		buffer.setValue("new buffer");
+		buffer.addValueChangeListener(pcl);
+		revert();
+		assertEquals(1, pcl.eventCount(), "First flush changes value.");
+
+		buffer.setValue(wrapped.getValue());
+		assertEquals(1, pcl.eventCount(), "Resetting value: no change.");
+		revert();
+		assertEquals(1, pcl.eventCount(), "Second flush: no change.");
+
+		buffer.setValue("new buffer2");
+		assertEquals(2, pcl.eventCount(), "Second value change.");
+		wrapped.setValue("new wrapped2");
+		assertEquals(3, pcl.eventCount(), "Setting new wrapped value: no change.");
+		buffer.setValue(wrapped.getValue());
+		assertEquals(3, pcl.eventCount(), "Third value change.");
+		revert();
+		assertEquals(3, pcl.eventCount(), "Third flush: no change.");
+	}
+
+	// Misc Tests *************************************************************
+
+	/**
+	 * Tests read actions on a read-only model.
+	 */
+	@Test
+	public void testReadOnly() {
+		TestBean bean = new TestBean();
+		ValueModel readOnlyModel = new BeanPropertyAccessStrategy(bean).getPropertyValueModel("readOnly");
+		BufferedValueModel buffer = new BufferedValueModel(readOnlyModel, commitTrigger);
+
+		assertSame(buffer.getValue(), readOnlyModel.getValue(), "Can read values from a read-only model.");
+
+		Object newValue1 = "new value";
+		buffer.setValue(newValue1);
+		assertSame(buffer.getValue(), newValue1, "Can read values from a read-only model when buffering.");
+
+		revert();
+		assertSame(buffer.getValue(), bean.getReadOnly(), "Can read values from a read-only model after a flush.");
+
+		buffer.setValue("new value2");
+		try {
+			commit();
+			fail("Cannot commit to a read-only model.");
+		} catch (Exception e) {
+			// The expected behavior
+		}
+	}
+
+	// Test Implementations ***************************************************
+
+	@Test
+	private void testSetValueSendsProperEvents(Object oldValue, Object newValue, boolean eventExpected) {
+		BufferedValueModel valueModel = new BufferedValueModel(new ValueHolder(oldValue), new CommitTrigger());
+		testSendsProperEvents(valueModel, oldValue, newValue, eventExpected);
+	}
+
+	@Test
+	private void testValueChangeSendsProperEvents(Object oldValue, Object newValue, boolean eventExpected) {
+		BufferedValueModel defaultModel = createDefaultBufferedValueModel();
+		defaultModel.setValue(oldValue);
+		testSendsProperEvents(defaultModel, oldValue, newValue, eventExpected);
+	}
+
+	@Test
+	private void testSendsProperEvents(BufferedValueModel valueModel, Object oldValue, Object newValue,
+			boolean eventExpected) {
+		TestPropertyChangeListener pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
+		valueModel.addValueChangeListener(pcl);
+		int expectedEventCount = eventExpected ? 1 : 0;
+
+		valueModel.setValue(newValue);
+		assertEquals(expectedEventCount, pcl.eventCount(),
+				"Expected event count after ( " + oldValue + " -> " + newValue + ").");
+		if (eventExpected) {
+			assertEquals(oldValue, pcl.lastEvent().getOldValue(), "Event's old value.");
+			assertEquals(newValue, pcl.lastEvent().getNewValue(), "Event's new value.");
+		}
+	}
+
+	// Helper Code ************************************************************
+
+	private void commit() {
+		commitTrigger.commit();
+	}
+
+	private void revert() {
+		commitTrigger.revert();
+	}
+
+	private BufferedValueModel createDefaultBufferedValueModel() {
+		wrapped.setValue(RESET_VALUE);
+		return new BufferedValueModel(wrapped, commitTrigger);
+	}
+
+	private BufferedValueModel createDefaultBufferedValueModel(ValueModel wrapped) {
+		wrapped.setValue(RESET_VALUE);
+		return new BufferedValueModel(wrapped, commitTrigger);
+	}
+
+	// A String typed ValueModel that modifies set values to uppercase.
+	private static class ToUpperCaseStringHolder extends AbstractValueModel {
+
+		private String text;
+
+		@Override
+		public Object getValue() {
+			return text;
+		}
+
+		@Override
+		public void setValue(Object newValue) {
+			String newText = ((String) newValue).toUpperCase();
+			Object oldText = text;
+			text = newText;
+			fireValueChange(oldText, newText);
+		}
+
+	}
+
+	/**
+	 * This class is used to test alternate value change detection methods.
+	 */
+	private static class StrictEquivalenceValueChangeDetector implements ValueChangeDetector {
+		@Override
+		public boolean hasValueChanged(Object oldValue, Object newValue) {
+			return oldValue != newValue;
+		}
+	}
+
 }

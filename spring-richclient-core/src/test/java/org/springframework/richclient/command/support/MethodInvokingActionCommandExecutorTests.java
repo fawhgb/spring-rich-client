@@ -15,31 +15,36 @@
  */
 package org.springframework.richclient.command.support;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MethodInvokingActionCommandExecutorTests extends TestCase {
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-    private MethodInvokingActionCommandExecutor e = new MethodInvokingActionCommandExecutor();
+public class MethodInvokingActionCommandExecutorTests {
 
-    private int invokeCount;
+	private MethodInvokingActionCommandExecutor e = new MethodInvokingActionCommandExecutor();
 
-    protected void setUp() throws Exception {
-        e = new MethodInvokingActionCommandExecutor();
-        e.setTargetObject(this);
-        e.setArguments(new Object[0]);
-        e.setTargetMethod("targetMethod");
-        e.afterPropertiesSet();
-    }
+	private int invokeCount;
 
-    public void testExceuteInvokesMethod() {
-        e.execute();
-        assertEquals("Execute should have invoked targetMethod", 1, invokeCount);
+	@BeforeEach
+	protected void setUp() throws Exception {
+		e = new MethodInvokingActionCommandExecutor();
+		e.setTargetObject(this);
+		e.setArguments(new Object[0]);
+		e.setTargetMethod("targetMethod");
+		e.afterPropertiesSet();
+	}
 
-        e.execute();
-        assertEquals("Execute should have invoked targetMethod", 2, invokeCount);
-    }
+	@Test
+	public void testExceuteInvokesMethod() {
+		e.execute();
+		assertEquals(1, invokeCount, "Execute should have invoked targetMethod");
 
-    public void targetMethod() {
-        invokeCount++;
-    }
+		e.execute();
+		assertEquals(2, invokeCount, "Execute should have invoked targetMethod");
+	}
+
+	public void targetMethod() {
+		invokeCount++;
+	}
 }

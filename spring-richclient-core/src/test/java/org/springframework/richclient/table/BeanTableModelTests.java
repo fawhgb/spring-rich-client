@@ -15,8 +15,11 @@
  */
 package org.springframework.richclient.table;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Date;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.StaticMessageSource;
 import org.springframework.richclient.test.TestBean;
 
@@ -27,13 +30,16 @@ import org.springframework.richclient.test.TestBean;
  */
 public class BeanTableModelTests extends AbstractBaseTableModelTests {
 
+	@Test
 	public void testConstructorWithoutMessageSource() {
 		BeanTableModel beanTableModel = new BeanTableModel(TestBean.class) {
 
+			@Override
 			protected String[] createColumnPropertyNames() {
 				return new String[] { "stringProperty", "dateProperty" };
 			}
 
+			@Override
 			protected Class[] createColumnClasses() {
 				return new Class[] { String.class, Date.class };
 			}
@@ -42,8 +48,7 @@ public class BeanTableModelTests extends AbstractBaseTableModelTests {
 		try {
 			beanTableModel.setRowNumbers(false);
 			fail("Must throw IllegalStateException: no messagesource set");
-		}
-		catch (IllegalStateException e) {
+		} catch (IllegalStateException e) {
 			// test passes
 		}
 
@@ -53,13 +58,16 @@ public class BeanTableModelTests extends AbstractBaseTableModelTests {
 		beanTableModel.setRowNumbers(false);
 	}
 
+	@Override
 	protected BaseTableModel getBaseTableModel() {
 		return new BeanTableModel(TestBean.class, new StaticMessageSource()) {
 
+			@Override
 			protected String[] createColumnPropertyNames() {
 				return new String[] { "stringProperty", "dateProperty" };
 			}
 
+			@Override
 			protected Class[] createColumnClasses() {
 				return new Class[] { String.class, Date.class };
 			}

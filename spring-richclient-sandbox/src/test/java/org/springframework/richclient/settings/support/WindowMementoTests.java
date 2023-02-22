@@ -15,6 +15,11 @@
  */
 package org.springframework.richclient.settings.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Toolkit;
@@ -22,26 +27,28 @@ import java.awt.Toolkit;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.settings.TransientSettings;
 
 /**
  * @author Peter De Bruycker
  */
-public class WindowMementoTests extends TestCase {
+public class WindowMementoTests {
 	private JFrame frame;
 
 	private JDialog dialog;
 
 	private TransientSettings settings;
 
+	@BeforeEach
 	protected void setUp() throws Exception {
 		frame = new JFrame("test frame");
 		dialog = new JDialog(frame, "test dialog");
 		settings = new TransientSettings();
 	}
 
+	@Test
 	public void testConstructor() {
 		try {
 			new WindowMemento(null);
@@ -63,12 +70,13 @@ public class WindowMementoTests extends TestCase {
 		WindowMemento memento = new WindowMemento(frame);
 		assertEquals(frame, memento.getWindow());
 		assertEquals("frame0", memento.getKey());
-		
+
 		memento = new WindowMemento(frame, "key");
 		assertEquals(frame, memento.getWindow());
 		assertEquals("key", memento.getKey());
 	}
 
+	@Test
 	public void testSaveLocation() {
 		// frame
 		WindowMemento frameMemento = new WindowMemento(frame, "frame");
@@ -87,6 +95,7 @@ public class WindowMementoTests extends TestCase {
 		assertEquals(15, settings.getInt("dialog.y"));
 	}
 
+	@Test
 	public void testRestoreLocation() {
 		// frame
 		WindowMemento frameMemento = new WindowMemento(frame, "frame");
@@ -111,6 +120,7 @@ public class WindowMementoTests extends TestCase {
 		assertEquals(115, dialog.getY());
 	}
 
+	@Test
 	public void testRestoreLocationNotInSettings() {
 		// frame
 		WindowMemento frameMemento = new WindowMemento(frame, "frame");
@@ -135,6 +145,7 @@ public class WindowMementoTests extends TestCase {
 		assertEquals(15, dialog.getY());
 	}
 
+	@Test
 	public void testSaveSize() {
 		// frame
 		WindowMemento frameMemento = new WindowMemento(frame, "frame");
@@ -155,6 +166,7 @@ public class WindowMementoTests extends TestCase {
 		assertEquals(100, settings.getInt("dialog.height"));
 	}
 
+	@Test
 	public void testSaveMaximizedState() {
 		// skip test if platform doesn't support this frame state.
 		if (!Toolkit.getDefaultToolkit().isFrameStateSupported(Frame.MAXIMIZED_BOTH))
@@ -172,6 +184,7 @@ public class WindowMementoTests extends TestCase {
 		assertFalse(settings.getBoolean("frame.maximized"));
 	}
 
+	@Test
 	public void testRestoreMaximizedState() {
 		// skip test if platform doesn't support this frame state.
 		if (!Toolkit.getDefaultToolkit().isFrameStateSupported(Frame.MAXIMIZED_BOTH))
@@ -190,6 +203,7 @@ public class WindowMementoTests extends TestCase {
 		assertEquals(Frame.NORMAL, frame.getExtendedState());
 	}
 
+	@Test
 	public void testRestoreSize() {
 		// frame
 		WindowMemento frameMemento = new WindowMemento(frame, "frame");
@@ -214,6 +228,7 @@ public class WindowMementoTests extends TestCase {
 		assertEquals(150, dialog.getHeight());
 	}
 
+	@Test
 	public void testRestoreSizeNotInSettings() {
 		// frame
 		WindowMemento frameMemento = new WindowMemento(frame, "frame");

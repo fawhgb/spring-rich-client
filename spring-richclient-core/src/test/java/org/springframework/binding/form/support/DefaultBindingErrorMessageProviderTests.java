@@ -15,10 +15,12 @@
  */
 package org.springframework.binding.form.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.util.Locale;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.binding.form.FieldFace;
 import org.springframework.binding.format.InvalidFormatException;
@@ -33,12 +35,14 @@ import org.springframework.richclient.core.LabelInfo;
  * 
  * @author Peter De Bruycker
  */
-public class DefaultBindingErrorMessageProviderTests extends TestCase {
+public class DefaultBindingErrorMessageProviderTests {
 
+	@Test
 	public void testGetErrorMessage() {
 		DefaultBindingErrorMessageProvider provider = new DefaultBindingErrorMessageProvider();
 
 		TestAbstractFormModel formModel = new TestAbstractFormModel(new Object()) {
+			@Override
 			public FieldFace getFieldFace(String field) {
 				return new DefaultFieldFace("Some Property", "", "", new LabelInfo("Some Property"), null);
 			}
@@ -58,11 +62,12 @@ public class DefaultBindingErrorMessageProviderTests extends TestCase {
 		assertEquals("Some Property has an invalid format \"new value\"", message.getMessage());
 	}
 
+	@Test
 	public void testGetMessageCodeForException() {
 		DefaultBindingErrorMessageProvider provider = new DefaultBindingErrorMessageProvider();
 
-		assertEquals("typeMismatch", provider.getMessageCodeForException(new TypeMismatchException(new Object(),
-				String.class)));
+		assertEquals("typeMismatch",
+				provider.getMessageCodeForException(new TypeMismatchException(new Object(), String.class)));
 		assertEquals("required", provider.getMessageCodeForException(new NullPointerException()));
 		assertEquals("typeMismatch", provider.getMessageCodeForException(new InvalidFormatException("", "")));
 		assertEquals("typeMismatch", provider.getMessageCodeForException(new IllegalArgumentException()));

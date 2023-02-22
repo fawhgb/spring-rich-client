@@ -18,7 +18,6 @@ package org.springframework.context.support;
 
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
@@ -76,8 +75,9 @@ public class ResourceMapFactoryBean extends PropertiesFactoryBean implements Res
 	/**
 	 * Create the Map instance, populated with keys and Resource values.
 	 */
-	protected Object createInstance() throws IOException {
-		Map resourceMap = new HashMap();
+	@Override
+	protected Properties createProperties() throws IOException {
+		Properties resourceMap = new Properties();
 		Properties props = mergeProperties();
 		for (Enumeration en = props.propertyNames(); en.hasMoreElements();) {
 			String key = (String) en.nextElement();

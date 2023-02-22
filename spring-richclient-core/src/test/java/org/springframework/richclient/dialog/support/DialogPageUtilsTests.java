@@ -15,11 +15,15 @@
  */
 package org.springframework.richclient.dialog.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.config.DefaultApplicationLifecycleAdvisor;
@@ -37,121 +41,132 @@ import org.springframework.richclient.dialog.TitlePane;
  * 
  * @author Larry Streepy
  */
-public class DialogPageUtilsTests extends TestCase {
+public class DialogPageUtilsTests {
 
-    public void setUp() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
-                "org/springframework/richclient/dialog/support/generic-application-ctx.xml");
-        Application.load(null);
-        Application app = new Application(new DefaultApplicationLifecycleAdvisor());
-        app.setApplicationContext(applicationContext);
-    }
+	@BeforeEach
+	public void setUp() {
+		ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(
+				"org/springframework/richclient/dialog/support/generic-application-ctx.xml");
+		Application.load(null);
+		Application app = new Application(new DefaultApplicationLifecycleAdvisor());
+		app.setApplicationContext(applicationContext);
+	}
 
-    public void testMessageMonitor() {
-        DialogPage page = new TestDialogPage();
-        TestMessagable monitor = new TestMessagable();
-        DialogPageUtils.addMessageMonitor(page, monitor);
+	@Test
+	public void testMessageMonitor() {
+		DialogPage page = new TestDialogPage();
+		TestMessagable monitor = new TestMessagable();
+		DialogPageUtils.addMessageMonitor(page, monitor);
 
-        monitor.resetMessageCount();
-        page.setMessage(new DefaultMessage("a message"));
-        assertEquals("Message text not equal", monitor.getMessage().getMessage(), "a message");
+		monitor.resetMessageCount();
+		page.setMessage(new DefaultMessage("a message"));
+		assertEquals(monitor.getMessage().getMessage(), "a message", "Message text not equal");
 
-        page.setMessage(new DefaultMessage("another message"));
-        assertEquals("Message text not equal", monitor.getMessage().getMessage(), "another message");
+		page.setMessage(new DefaultMessage("another message"));
+		assertEquals(monitor.getMessage().getMessage(), "another message", "Message text not equal");
 
-        assertEquals("Message count incorrect", 2, monitor.getMessageCount());
-    }
+		assertEquals(2, monitor.getMessageCount(), "Message count incorrect");
+	}
 
-    public void testPageCompleteAdapter() {
-        TestDialogPage page = new TestDialogPage();
-        Guarded guarded = new TestGuarded();
+	@Test
+	public void testPageCompleteAdapter() {
+		TestDialogPage page = new TestDialogPage();
+		Guarded guarded = new TestGuarded();
 
-        DialogPageUtils.adaptPageCompletetoGuarded(page, guarded);
+		DialogPageUtils.adaptPageCompletetoGuarded(page, guarded);
 
-        page.setPageComplete(false);
-        assertFalse("guarded should be disabled", guarded.isEnabled());
+		page.setPageComplete(false);
+		assertFalse(guarded.isEnabled(), "guarded should be disabled");
 
-        page.setPageComplete(true); // Change it
-        assertTrue("guarded should be enabled", guarded.isEnabled());
-    }
+		page.setPageComplete(true); // Change it
+		assertTrue(guarded.isEnabled(), "guarded should be enabled");
+	}
 
-    public void testStandardViewAdaptsOkCommand() {
-        TestDialogPage page = new TestDialogPage();
+	@Test
+	public void testStandardViewAdaptsOkCommand() {
+		TestDialogPage page = new TestDialogPage();
 
-        ActionCommand okCommand = new ActionCommand("okCommand") {
-            protected void doExecuteCommand() {
-            }
-        };
-        ActionCommand cancelCommand = new ActionCommand("cancelCommand") {
-            protected void doExecuteCommand() {
-            }
-        };
+		ActionCommand okCommand = new ActionCommand("okCommand") {
+			@Override
+			protected void doExecuteCommand() {
+			}
+		};
+		ActionCommand cancelCommand = new ActionCommand("cancelCommand") {
+			@Override
+			protected void doExecuteCommand() {
+			}
+		};
 
-        DialogPageUtils.createStandardView(page, okCommand, cancelCommand);
+		DialogPageUtils.createStandardView(page, okCommand, cancelCommand);
 
-        page.setPageComplete(false);
-        assertFalse("okCommand should be disabled", okCommand.isEnabled());
+		page.setPageComplete(false);
+		assertFalse(okCommand.isEnabled(), "okCommand should be disabled");
 
-        page.setPageComplete(true);
-        assertTrue("okCommand should be enabled", okCommand.isEnabled());
-    }
+		page.setPageComplete(true);
+		assertTrue(okCommand.isEnabled(), "okCommand should be enabled");
+	}
 
-    public void testCreateTitlePane() {
-        TestDialogPage page = new TestDialogPage();
+	@Test
+	public void testCreateTitlePane() {
+		TestDialogPage page = new TestDialogPage();
 
-        TitlePane titlePane = DialogPageUtils.createTitlePane(page);
+		TitlePane titlePane = DialogPageUtils.createTitlePane(page);
 
-        page.setMessage(new DefaultMessage("test message"));
-        assertEquals("Message text not equal", titlePane.getMessage().getMessage(), "test message");
-    }
+		page.setMessage(new DefaultMessage("test message"));
+		assertEquals(titlePane.getMessage().getMessage(), "test message", "Message text not equal");
+	}
 
-    /**
-     * Class to provide a concrete DialogPage for testing.
-     */
-    private class TestDialogPage extends AbstractDialogPage {
+	/**
+	 * Class to provide a concrete DialogPage for testing.
+	 */
+	private class TestDialogPage extends AbstractDialogPage {
 
-        public TestDialogPage() {
-            super("MyPageId");
-        }
+		public TestDialogPage() {
+			super("MyPageId");
+		}
 
-        protected JComponent createControl() {
-            return new JLabel();
-        }
-    }
+		@Override
+		protected JComponent createControl() {
+			return new JLabel();
+		}
+	}
 
-    /**
-     * Class to inspect Messagable operations.
-     */
-    private class TestMessagable extends DefaultMessageAreaModel {
+	/**
+	 * Class to inspect Messagable operations.
+	 */
+	private class TestMessagable extends DefaultMessageAreaModel {
 
-        private int msgCount = 0;
+		private int msgCount = 0;
 
-        public void setMessage( Message message ) {
-            msgCount += 1;
-            super.setMessage(message);
-        }
+		@Override
+		public void setMessage(Message message) {
+			msgCount += 1;
+			super.setMessage(message);
+		}
 
-        public int getMessageCount() {
-            return msgCount;
-        }
+		public int getMessageCount() {
+			return msgCount;
+		}
 
-        public void resetMessageCount() {
-            msgCount = 0;
-        }
-    }
+		public void resetMessageCount() {
+			msgCount = 0;
+		}
+	}
 
-    /**
-     * Class to inspect Guarded operations.
-     */
-    private class TestGuarded implements Guarded {
-        private boolean enabled = false;
+	/**
+	 * Class to inspect Guarded operations.
+	 */
+	private class TestGuarded implements Guarded {
+		private boolean enabled = false;
 
-        public boolean isEnabled() {
-            return enabled;
-        }
+		@Override
+		public boolean isEnabled() {
+			return enabled;
+		}
 
-        public void setEnabled( boolean enabled ) {
-            this.enabled = enabled;
-        }
-    }
+		@Override
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+	}
 }

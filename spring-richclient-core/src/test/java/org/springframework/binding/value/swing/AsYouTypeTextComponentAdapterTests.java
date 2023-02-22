@@ -15,6 +15,11 @@
  */
 package org.springframework.binding.value.swing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.support.TestPropertyChangeListener;
 import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.ValueHolder;
@@ -27,54 +32,78 @@ import org.springframework.richclient.test.SpringRichTestCase;
  */
 public class AsYouTypeTextComponentAdapterTests extends SpringRichTestCase {
 
-    private ValueModel valueModel;
+	private ValueModel valueModel;
 
-    private TestPropertyChangeListener valueListener;
+	private TestPropertyChangeListener valueListener;
 
-    private TestableJTextComponent comp;
+	private TestableJTextComponent comp;
 
-    public void doSetUp() throws Exception {
-        valueModel = new ValueHolder("");
-        valueListener = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
-        valueModel.addValueChangeListener(valueListener);
-        comp = new TestableJTextComponent();
-        
-        // Just creatnig this object is all that's needed
-        new AsYouTypeTextComponentAdapter(comp, valueModel);
-    }
+	@Override
+	public void doSetUp() throws Exception {
+		valueModel = new ValueHolder("");
+		valueListener = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
+		valueModel.addValueChangeListener(valueListener);
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				comp = new TestableJTextComponent();
+			}
+		});
 
-    public void testComponentChangeUpdatesValueModel() {
-        comp.setText("newValue");
-        assertEquals("newValue", valueModel.getValue());
-        assertEquals(1, valueListener.eventCount());
-    }
+		// Just creatnig this object is all that's needed
+		new AsYouTypeTextComponentAdapter(comp, valueModel);
+	}
 
-    public void testValueModelChangeUpdatesComponent() {
-        valueModel.setValue("newValue");
-        assertEquals("newValue", comp.getText());
-        assertEquals(1, valueListener.eventCount());
-    }
+	@Test
+	public void testComponentChangeUpdatesValueModel() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				comp.setText("newValue");
+				assertEquals("newValue", valueModel.getValue());
+				assertEquals(1, valueListener.eventCount());
+			}
+		});
+	}
 
-    public void testTypingUpdatesValueModel() {
-        comp.typeText("a");
-        assertEquals("a", valueModel.getValue());
-        assertEquals(1, valueListener.eventCount());
+	@Test
+	public void testValueModelChangeUpdatesComponent() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				valueModel.setValue("newValue");
+				assertEquals("newValue", comp.getText());
+				assertEquals(1, valueListener.eventCount());
+			}
+		});
+	}
 
-        valueListener.reset();
-        comp.typeText("bc");
-        assertEquals("abc", valueModel.getValue());
-        assertEquals(2, valueListener.eventCount());
+	@Test
+	public void testTypingUpdatesValueModel() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				comp.typeText("a");
+				assertEquals("a", valueModel.getValue());
+				assertEquals(1, valueListener.eventCount());
 
-        valueListener.reset();
-        comp.setCaretPosition(1);
-        comp.typeText("d");
-        assertEquals("adbc", valueModel.getValue());
-        assertEquals(1, valueListener.eventCount());
+				valueListener.reset();
+				comp.typeText("bc");
+				assertEquals("abc", valueModel.getValue());
+				assertEquals(2, valueListener.eventCount());
 
-        valueListener.reset();
-        comp.setCaretPosition(1);
-        comp.typeBackSpace();
-        assertEquals("dbc", valueModel.getValue());
-        assertEquals(1, valueListener.eventCount());
-    }
+				valueListener.reset();
+				comp.setCaretPosition(1);
+				comp.typeText("d");
+				assertEquals("adbc", valueModel.getValue());
+				assertEquals(1, valueListener.eventCount());
+
+				valueListener.reset();
+				comp.setCaretPosition(1);
+				comp.typeBackSpace();
+				assertEquals("dbc", valueModel.getValue());
+				assertEquals(1, valueListener.eventCount());
+			}
+		});
+	}
 }

@@ -15,6 +15,10 @@
  */
 package org.springframework.richclient.settings.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
@@ -24,6 +28,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.settings.Settings;
 import org.springframework.richclient.settings.SettingsAbstractTests;
 import org.w3c.dom.Document;
@@ -38,6 +43,7 @@ import org.xml.sax.SAXException;
  */
 public class XmlSettingsTests extends SettingsAbstractTests {
 
+	@Override
 	protected Settings createSettings() throws Exception {
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 		Element element = doc.createElement("settings");
@@ -47,8 +53,9 @@ public class XmlSettingsTests extends SettingsAbstractTests {
 		return new XmlSettings(element);
 	}
 
-	public void testConstructor() throws ParserConfigurationException, FactoryConfigurationError, SAXException,
-			IOException {
+	@Test
+	public void testConstructor()
+			throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<?xml version=\"1.0\"?>");
 		sb.append("<settings name=\"test-settings\">");
@@ -82,8 +89,9 @@ public class XmlSettingsTests extends SettingsAbstractTests {
 		assertEquals("child-key", childSettings.getKeys()[0]);
 	}
 
-	public void testRemove_RemovesElement() throws ParserConfigurationException, FactoryConfigurationError,
-			SAXException, IOException {
+	@Test
+	public void testRemove_RemovesElement()
+			throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
 		StringBuffer sb = new StringBuffer();
 		sb.append("<?xml version=\"1.0\"?>");
 		sb.append("<settings name=\"test-settings\">");
@@ -111,6 +119,7 @@ public class XmlSettingsTests extends SettingsAbstractTests {
 		}
 	}
 
+	@Test
 	public void testSetValue() throws ParserConfigurationException, FactoryConfigurationError {
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 		Element element = doc.createElement("settings");
@@ -127,6 +136,7 @@ public class XmlSettingsTests extends SettingsAbstractTests {
 		assertEquals("new value", entry.getAttribute("value"));
 	}
 
+	@Test
 	public void testSave() throws ParserConfigurationException, FactoryConfigurationError, IOException {
 		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 		Element parentElement = doc.createElement("settings");
@@ -143,28 +153,30 @@ public class XmlSettingsTests extends SettingsAbstractTests {
 
 		assertEquals(parentSettings, readerWriter.lastWritten);
 	}
-    
-    public void testChildSettings() throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
-        StringBuffer sb = new StringBuffer();
-        sb.append("<?xml version=\"1.0\"?>");
-        sb.append("<settings name=\"test-settings\">");
-        sb.append("  <entry key=\"key-1\" value=\"value-1\" />");
-        sb.append("  <entry key=\"key-2\" value=\"false\" />");
-        sb.append("  <entry key=\"key-3\" value=\"1.5\" />");
-        sb.append("  <settings name=\"child-settings\">");
-        sb.append("    <entry key=\"child-key\" value=\"value\" />");
-        sb.append("  </settings>");
-        sb.append("</settings>");
 
-        XmlSettings settings = new XmlSettings(createElement(sb.toString()));
-        
-        assertEquals(Arrays.asList(new String[] {"child-settings"}), Arrays.asList(settings.getChildSettings()));
-    }
+	@Test
+	public void testChildSettings()
+			throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
+		StringBuffer sb = new StringBuffer();
+		sb.append("<?xml version=\"1.0\"?>");
+		sb.append("<settings name=\"test-settings\">");
+		sb.append("  <entry key=\"key-1\" value=\"value-1\" />");
+		sb.append("  <entry key=\"key-2\" value=\"false\" />");
+		sb.append("  <entry key=\"key-3\" value=\"1.5\" />");
+		sb.append("  <settings name=\"child-settings\">");
+		sb.append("    <entry key=\"child-key\" value=\"value\" />");
+		sb.append("  </settings>");
+		sb.append("</settings>");
 
-	private static Element createElement(String xml) throws ParserConfigurationException, FactoryConfigurationError,
-			SAXException, IOException {
-		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(
-				new InputSource(new StringReader(xml)));
+		XmlSettings settings = new XmlSettings(createElement(sb.toString()));
+
+		assertEquals(Arrays.asList(new String[] { "child-settings" }), Arrays.asList(settings.getChildSettings()));
+	}
+
+	private static Element createElement(String xml)
+			throws ParserConfigurationException, FactoryConfigurationError, SAXException, IOException {
+		Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+				.parse(new InputSource(new StringReader(xml)));
 		return doc.getDocumentElement();
 	}
 

@@ -15,9 +15,14 @@
  */
 package org.springframework.richclient.command.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.command.AbstractCommand;
 import org.springframework.richclient.command.AbstractCommandRegistryTests;
 import org.springframework.richclient.command.ActionCommand;
@@ -34,127 +39,144 @@ import org.springframework.richclient.command.CommandRegistryListener;
  * @author Kevin Stembridge
  */
 public class DefaultCommandRegistryTests extends AbstractCommandRegistryTests {
-    
-    /**
-     * {@inheritDoc}
-     */
-    protected CommandRegistry getCommandRegistry() {
-        return new DefaultCommandRegistry();
-    }
 
-    public void testConstructor() {
-        DefaultCommandRegistry registry = new DefaultCommandRegistry();
-        assertNull("parent must be null", registry.getParent());
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected CommandRegistry getCommandRegistry() {
+		return new DefaultCommandRegistry();
+	}
 
-        TestCommandRegistry parent = new TestCommandRegistry();
-        registry = new DefaultCommandRegistry(parent);
-        assertEquals("parent not set", parent, registry.getParent());
-        assertEquals("registry not added to parent", 1, parent.addedListeners.size());
-        assertTrue("registry not added to parent", parent.addedListeners.contains(registry));
-    }
+	@Test
+	public void testConstructor() {
+		DefaultCommandRegistry registry = new DefaultCommandRegistry();
+		assertNull(registry.getParent(), "parent must be null");
 
-    public void testSetParent() {
-        TestCommandRegistry parent = new TestCommandRegistry();
-        TestCommandRegistry parent2 = new TestCommandRegistry();
+		TestCommandRegistry parent = new TestCommandRegistry();
+		registry = new DefaultCommandRegistry(parent);
+		assertEquals(parent, registry.getParent(), "parent not set");
+		assertEquals(1, parent.addedListeners.size(), "registry not added to parent");
+		assertTrue(parent.addedListeners.contains(registry), "registry not added to parent");
+	}
 
-        DefaultCommandRegistry registry = new DefaultCommandRegistry(parent);
+	@Test
+	public void testSetParent() {
+		TestCommandRegistry parent = new TestCommandRegistry();
+		TestCommandRegistry parent2 = new TestCommandRegistry();
 
-        registry.setParent(parent2);
+		DefaultCommandRegistry registry = new DefaultCommandRegistry(parent);
 
-        assertEquals("parent not set", parent2, registry.getParent());
-        assertEquals("registry not removed from parent", 1, parent.removedListeners.size());
-        assertTrue("registry not removed from parent", parent.removedListeners.contains(registry));
-        assertEquals("registry not added to parent", 1, parent2.addedListeners.size());
-        assertTrue("registry not added to parent", parent2.addedListeners.contains(registry));
+		registry.setParent(parent2);
 
-        // set same parent, nothing should happen
-        registry.setParent(parent2);
-        assertEquals("registry added twice to same parent", 1, parent2.addedListeners.size());
-        assertTrue("registry removed from same parent", parent2.removedListeners.isEmpty());
+		assertEquals(parent2, registry.getParent(), "parent not set");
+		assertEquals(1, parent.removedListeners.size(), "registry not removed from parent");
+		assertTrue(parent.removedListeners.contains(registry), "registry not removed from parent");
+		assertEquals(1, parent2.addedListeners.size(), "registry not added to parent");
+		assertTrue(parent2.addedListeners.contains(registry), "registry not added to parent");
 
-        parent2.reset();
+		// set same parent, nothing should happen
+		registry.setParent(parent2);
+		assertEquals(1, parent2.addedListeners.size(), "registry added twice to same parent");
+		assertTrue(parent2.removedListeners.isEmpty(), "registry removed from same parent");
 
-        // set parent to null
-        registry.setParent(null);
-        assertNull("parent not set to null", registry.getParent());
-        assertEquals("registry not removed from parent", 1, parent2.removedListeners.size());
-    }
+		parent2.reset();
 
-    private static class TestCommandRegistry implements CommandRegistry {
-        private List addedListeners = new ArrayList();
+		// set parent to null
+		registry.setParent(null);
+		assertNull(registry.getParent(), "parent not set to null");
+		assertEquals(1, parent2.removedListeners.size(), "registry not removed from parent");
+	}
 
-        private List removedListeners = new ArrayList();
+	private static class TestCommandRegistry implements CommandRegistry {
+		private List addedListeners = new ArrayList();
 
-        public ActionCommand getActionCommand(String commandId) {
-            return null;
-        }
+		private List removedListeners = new ArrayList();
 
-        public CommandGroup getCommandGroup(String groupId) {
-            return null;
-        }
+		@Override
+		public ActionCommand getActionCommand(String commandId) {
+			return null;
+		}
 
-        public boolean containsActionCommand(String commandId) {
-            return false;
-        }
+		@Override
+		public CommandGroup getCommandGroup(String groupId) {
+			return null;
+		}
 
-        public boolean containsCommandGroup(String groupId) {
-            return false;
-        }
+		@Override
+		public boolean containsActionCommand(String commandId) {
+			return false;
+		}
 
-        public void registerCommand(AbstractCommand command) {
-        }
+		@Override
+		public boolean containsCommandGroup(String groupId) {
+			return false;
+		}
 
-        public void setTargetableActionCommandExecutor(String targetableCommandId, ActionCommandExecutor commandExecutor) {
-        }
+		@Override
+		public void registerCommand(AbstractCommand command) {
+		}
 
-        public void addCommandRegistryListener(CommandRegistryListener l) {
-            addedListeners.add(l);
-        }
+		@Override
+		public void setTargetableActionCommandExecutor(String targetableCommandId,
+				ActionCommandExecutor commandExecutor) {
+		}
 
-        public void removeCommandRegistryListener(CommandRegistryListener l) {
-            removedListeners.add(l);
-        }
+		@Override
+		public void addCommandRegistryListener(CommandRegistryListener l) {
+			addedListeners.add(l);
+		}
 
-        public void reset() {
-            addedListeners.clear();
-            removedListeners.clear();
-        }
+		@Override
+		public void removeCommandRegistryListener(CommandRegistryListener l) {
+			removedListeners.add(l);
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        public boolean containsCommand(String commandId) {
-            return false;
-        }
+		public void reset() {
+			addedListeners.clear();
+			removedListeners.clear();
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        public Object getCommand(String commandId) {
-            return null;
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public boolean containsCommand(String commandId) {
+			return false;
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        public Object getCommand(String commandId, Class requiredType) throws CommandNotOfRequiredTypeException {
-            return null;
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public Object getCommand(String commandId) {
+			return null;
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        public Class getType(String commandId) {
-            return null;
-        }
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public Object getCommand(String commandId, Class requiredType) throws CommandNotOfRequiredTypeException {
+			return null;
+		}
 
-        /**
-         * {@inheritDoc}
-         */
-        public boolean isTypeMatch(String commandId, Class targetType) {
-            return false;
-        }
-        
-    }
-    
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public Class getType(String commandId) {
+			return null;
+		}
+
+		/**
+		 * {@inheritDoc}
+		 */
+		@Override
+		public boolean isTypeMatch(String commandId, Class targetType) {
+			return false;
+		}
+
+	}
+
 }

@@ -15,12 +15,19 @@
  */
 package org.springframework.richclient.form.binding.swing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.swing.JToggleButton;
 
-import org.springframework.binding.support.TestBean;
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.form.FieldMetadata;
 import org.springframework.binding.form.FormModel;
 import org.springframework.binding.form.support.DefaultFormModel;
+import org.springframework.binding.support.TestBean;
 
 /**
  * @author Mathias Broekelmann
@@ -28,58 +35,98 @@ import org.springframework.binding.form.support.DefaultFormModel;
  */
 public class ToggleButtonBindingTests extends BindingAbstractTests {
 
-    private JToggleButton tb;
+	private JToggleButton tb;
 
-    private ToggleButtonBinding tbb;
+	private ToggleButtonBinding tbb;
 
-    protected String setUpBinding() {
-        tbb = new ToggleButtonBinding(new JToggleButton(), fm, "booleanProperty");
-        tb = (JToggleButton) tbb.getControl();
-        return "booleanProperty";
-    }
+	@Override
+	protected String setUpBinding() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				tbb = new ToggleButtonBinding(new JToggleButton(), fm, "booleanProperty");
+				tb = (JToggleButton) tbb.getControl();
+			}
+		});
+		return "booleanProperty";
+	}
 
-    public void testInitialValue() {
-        TestBean bean = new TestBean();
-        bean.setBooleanProperty(true);
-        FormModel fm = new DefaultFormModel(bean);
-        ToggleButtonBinding binding = new ToggleButtonBinding(new JToggleButton(), fm, "booleanProperty");
-        JToggleButton control = (JToggleButton) binding.getControl();
-        assertEquals(true, control.isSelected());
-    }
+	@Test
+	public void testInitialValue() {
+		TestBean bean = new TestBean();
+		bean.setBooleanProperty(true);
+		FormModel fm = new DefaultFormModel(bean);
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				ToggleButtonBinding binding = new ToggleButtonBinding(new JToggleButton(), fm, "booleanProperty");
+				JToggleButton control = (JToggleButton) binding.getControl();
+				assertEquals(true, control.isSelected());
+			}
+		});
+	}
 
-    public void testComponentTracksEnabledChanges() {
-        assertEquals(true, tb.isEnabled());
-        fm.setEnabled(false);
-        assertEquals(false, tb.isEnabled());
-        fm.setEnabled(true);
-        assertEquals(true, tb.isEnabled());
-    }
+	@Override
+	@Test
+	public void testComponentTracksEnabledChanges() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				assertEquals(true, tb.isEnabled());
+				fm.setEnabled(false);
+				assertEquals(false, tb.isEnabled());
+				fm.setEnabled(true);
+				assertEquals(true, tb.isEnabled());
+			}
+		});
+	}
 
-    public void testComponentTracksReadOnlyChanges() {
-        FieldMetadata state = fm.getFieldMetadata(property);
-        assertEquals(true, tb.isEnabled());
-        state.setReadOnly(true);
-        assertEquals(false, tb.isEnabled());
-        state.setReadOnly(false);
-        assertEquals(true, tb.isEnabled());
-    }
+	@Override
+	@Test
+	public void testComponentTracksReadOnlyChanges() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				FieldMetadata state = fm.getFieldMetadata(property);
+				assertEquals(true, tb.isEnabled());
+				state.setReadOnly(true);
+				assertEquals(false, tb.isEnabled());
+				state.setReadOnly(false);
+				assertEquals(true, tb.isEnabled());
+			}
+		});
+	}
 
-    public void testComponentUpdatesValueModel() {
-        tb.setSelected(true);
-        assertEquals(Boolean.TRUE, vm.getValue());
-        tb.setSelected(false);
-        assertEquals(Boolean.FALSE, vm.getValue());
-        tb.setSelected(true);
-        assertEquals(Boolean.TRUE, vm.getValue());
-    }
+	@Override
+	@Test
+	public void testComponentUpdatesValueModel() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				tb.setSelected(true);
+				assertEquals(Boolean.TRUE, vm.getValue());
+				tb.setSelected(false);
+				assertEquals(Boolean.FALSE, vm.getValue());
+				tb.setSelected(true);
+				assertEquals(Boolean.TRUE, vm.getValue());
+			}
+		});
+	}
 
-    public void testValueModelUpdatesComponent() {
-        vm.setValue(Boolean.TRUE);
-        assertTrue(tb.isSelected());
-        vm.setValue(Boolean.FALSE);
-        assertFalse(tb.isSelected());
-        vm.setValue(Boolean.TRUE);
-        assertTrue(tb.isSelected());
-    }
+	@Override
+	@Test
+	public void testValueModelUpdatesComponent() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				vm.setValue(Boolean.TRUE);
+				assertTrue(tb.isSelected());
+				vm.setValue(Boolean.FALSE);
+				assertFalse(tb.isSelected());
+				vm.setValue(Boolean.TRUE);
+				assertTrue(tb.isSelected());
+			}
+		});
+	}
 
 }

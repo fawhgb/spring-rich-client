@@ -15,10 +15,10 @@
  */
 package org.springframework.richclient.test;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.context.support.StaticMessageSource;
@@ -29,113 +29,112 @@ import org.springframework.richclient.application.config.DefaultApplicationLifec
 import org.springframework.richclient.application.support.DefaultApplicationServices;
 
 /**
- * Convenient base implementation for Spring Rich test cases; automatically configures the
- * application services singleton and provides hooks for common test case setup
- * requirements.
+ * Convenient base implementation for Spring Rich test cases; automatically
+ * configures the application services singleton and provides hooks for common
+ * test case setup requirements.
  * 
  * @author Oliver Hutchison
  */
-public abstract class SpringRichTestCase extends TestCase {
-
-    /**
-     * Logger available to subclasses.
-     */
-    protected final Log logger = LogFactory.getLog(getClass());
-
-    protected DefaultApplicationServices applicationServices;
-
-    protected final void setUp() throws Exception {
-        try {
-            Application.load(null);
-            ConfigurableApplicationContext applicationContext = createApplicationContext();
-            applicationServices = new DefaultApplicationServices(applicationContext);
-            new ApplicationServicesLocator(applicationServices);
-
-            final ApplicationLifecycleAdvisor advisor = createApplicationLifecycleAdvisor();
-            final Application application = new Application(advisor);
-            advisor.setApplication(application);
-            
-            Application.instance().setApplicationContext(applicationContext);
-            applicationServices.setApplicationContext(applicationContext);
-
-            registerBasicServices(applicationServices);
-            registerAdditionalServices(applicationServices);
-
-            applicationContext.refresh();
-            doSetUp();
-        } catch( Exception e ) {
-            Application.load(null);
-            throw e;
-        }
-    }
+public abstract class SpringRichTestCase {
 
 	/**
-     * returns the application context to use for testing
-     * 
-     * overwrite to specify a different application context
-     * 
-     * @return this implementation returns an instance of StaticApplicationContext
-     */
-    protected ConfigurableApplicationContext createApplicationContext() {
-        return new StaticApplicationContext();
-    }
+	 * Logger available to subclasses.
+	 */
+	protected final Log logger = LogFactory.getLog(getClass());
 
-    /**
-     * Subclasses may override this to return a custom
-     * ApplicationLifecycleAdvisor.
-     */
-    protected ApplicationLifecycleAdvisor createApplicationLifecycleAdvisor() {
-        return new DefaultApplicationLifecycleAdvisor();
-    }
-    
-    
+	protected DefaultApplicationServices applicationServices;
 
-    /**
-     * Register the application services needed for our tests.
-     */
-    protected void registerBasicServices( DefaultApplicationServices applicationServices ) {
-        applicationServices.setMessageSource(new StaticMessageSource());
-    }
+	@BeforeEach
+	protected final void setUp() throws Exception {
+		try {
+			Application.load(null);
+			ConfigurableApplicationContext applicationContext = createApplicationContext();
+			applicationServices = new DefaultApplicationServices(applicationContext);
+			new ApplicationServicesLocator(applicationServices);
 
-    /**
-     * May be implemented in subclasses that need to register services with the global
-     * application services instance.
-     */
-    protected void registerAdditionalServices( DefaultApplicationServices applicationServices ) {
-    }
+			final ApplicationLifecycleAdvisor advisor = createApplicationLifecycleAdvisor();
+			final Application application = new Application(advisor);
+			advisor.setApplication(application);
 
-    /**
-     * Get the application services instance.
-     */
-    protected DefaultApplicationServices getApplicationServices() {
-        return applicationServices;
-    }
+			Application.instance().setApplicationContext(applicationContext);
+			applicationServices.setApplicationContext(applicationContext);
 
-    /**
-     * Tear down method invoked by JUnit framework. Derived classes should put their work
-     * in {@link #doTearDown()}.
-     */
-    protected final void tearDown() throws Exception {
-        try {
-            doTearDown();
-        } finally {
-            Application.load(null);
-        }
-    }
+			registerBasicServices(applicationServices);
+			registerAdditionalServices(applicationServices);
 
-    /**
-     * Should be implemented in subclasses as an alternative to the final method
-     * {@link #setUp()}
-     * 
-     * @throws Exception
-     */
-    protected void doSetUp() throws Exception {
-    }
+			applicationContext.refresh();
+			doSetUp();
+		} catch (Exception e) {
+			Application.load(null);
+			throw e;
+		}
+	}
 
-    /**
-     * Should be implemented in subclasses as an alternative to the final method
-     * {@link #tearDown()}
-     */
-    protected void doTearDown() throws Exception {
-    }
+	/**
+	 * returns the application context to use for testing
+	 * 
+	 * overwrite to specify a different application context
+	 * 
+	 * @return this implementation returns an instance of StaticApplicationContext
+	 */
+	protected ConfigurableApplicationContext createApplicationContext() {
+		return new StaticApplicationContext();
+	}
+
+	/**
+	 * Subclasses may override this to return a custom ApplicationLifecycleAdvisor.
+	 */
+	protected ApplicationLifecycleAdvisor createApplicationLifecycleAdvisor() {
+		return new DefaultApplicationLifecycleAdvisor();
+	}
+
+	/**
+	 * Register the application services needed for our tests.
+	 */
+	protected void registerBasicServices(DefaultApplicationServices applicationServices) {
+		applicationServices.setMessageSource(new StaticMessageSource());
+	}
+
+	/**
+	 * May be implemented in subclasses that need to register services with the
+	 * global application services instance.
+	 */
+	protected void registerAdditionalServices(DefaultApplicationServices applicationServices) {
+	}
+
+	/**
+	 * Get the application services instance.
+	 */
+	protected DefaultApplicationServices getApplicationServices() {
+		return applicationServices;
+	}
+
+	/**
+	 * Tear down method invoked by JUnit framework. Derived classes should put their
+	 * work in {@link #doTearDown()}.
+	 */
+	@AfterEach
+	protected final void tearDown() throws Exception {
+		try {
+			doTearDown();
+		} finally {
+			Application.load(null);
+		}
+	}
+
+	/**
+	 * Should be implemented in subclasses as an alternative to the final method
+	 * {@link #setUp()}
+	 * 
+	 * @throws Exception
+	 */
+	protected void doSetUp() throws Exception {
+	}
+
+	/**
+	 * Should be implemented in subclasses as an alternative to the final method
+	 * {@link #tearDown()}
+	 */
+	protected void doTearDown() throws Exception {
+	}
 }

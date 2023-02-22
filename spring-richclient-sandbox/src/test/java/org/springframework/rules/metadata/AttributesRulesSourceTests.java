@@ -15,14 +15,15 @@
  */
 package org.springframework.rules.metadata;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Oliver Hutchison
- */    
-public class AttributesRulesSourceTests extends TestCase {
-        
-    public void testLoadsAttributes() {
+ */
+public class AttributesRulesSourceTests {
+
+	@Test
+	public void testLoadsAttributes() {
 //        Attributes attributes = new CommonsAttributes();        
 //        assertTrue("You must compile the attributes to run this test", 
 //                attributes.getAttributes(Foo.class).size() == 1);        
@@ -39,8 +40,8 @@ public class AttributesRulesSourceTests extends TestCase {
 //        
 //        PropertyConstraint pc2 = rules.getPropertyConstraint("property2");
 //        assertNull(pc2);
-    }
-    
+	}
+
 //    private void assertContains(CompoundPropertyConstraint cpc, Class constraintClass) {
 //        CompoundConstraint cc = (CompoundConstraint) cpc.getPredicate();
 //        for (int i = 0; i < cc.size(); i++) {
@@ -59,36 +60,36 @@ public class AttributesRulesSourceTests extends TestCase {
 //        fail("Could not find constraint with class [" + constraintClass + "]");
 //    }
 
-    /**
-     * @@Object()
-     */
-    public static class Foo {
+	/**
+	 * @@Object()
+	 */
+	public static class Foo {
 
-        private String property1;
+		private String property1;
 
-        /**
-         * @@Object()
-         * 
-         * @@StringLengthConstraint(255)
-         * @@Not(new PropertiesConstraint("property1", new EqualTo(),
-         *           "property2"))
-         */
-        public String getProperty1() {
-            return property1;
-        }
+		/**
+		 * @@Object()
+		 * 
+		 * @@StringLengthConstraint(255)
+		 *                               @@Not(new PropertiesConstraint("property1", new
+		 *                               EqualTo(), "property2"))
+		 */
+		public String getProperty1() {
+			return property1;
+		}
 
-        /**
-         * @@Required()
-         */
-        public void setProperty1(String property1) {
-            this.property1 = property1;
-        }
+		/**
+		 * @@Required()
+		 */
+		public void setProperty1(String property1) {
+			this.property1 = property1;
+		}
 
-        public String getProperty2() {
-            return "";
-        }
+		public String getProperty2() {
+			return "";
+		}
 
-        public void setProperty2(String property2) {
-        }
-    }
+		public void setProperty2(String property2) {
+		}
+	}
 }

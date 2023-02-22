@@ -15,12 +15,15 @@
  */
 package org.springframework.binding.form.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.awt.Color;
 import java.util.Locale;
 
 import javax.swing.Icon;
 
 import org.easymock.EasyMock;
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.form.FieldFace;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.context.support.StaticMessageSource;
@@ -35,6 +38,7 @@ import org.springframework.richclient.test.TestIcon;
  */
 public class MessageSourceFieldFaceSourceTests extends SpringRichTestCase {
 
+	@Test
 	public void testLoadFieldFace() {
 		Icon testIcon = new TestIcon(Color.RED);
 

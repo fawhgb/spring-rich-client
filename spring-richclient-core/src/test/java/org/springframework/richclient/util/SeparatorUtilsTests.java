@@ -15,107 +15,137 @@
  */
 package org.springframework.richclient.util;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 
-import junit.framework.TestCase;
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testcase for <code>MenuElementUtils</code>
  * 
  * @author Peter De Bruycker
  */
-public class SeparatorUtilsTests extends TestCase {
+public class SeparatorUtilsTests {
+
+	@Test
 	public void testConsolidateSeparatorsInToolBar() {
-		JToolBar toolBar = new JToolBar();
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				JToolBar toolBar = new JToolBar();
 
-		toolBar.add(createButton("button1", false));
-		toolBar.addSeparator(); // index 1
-		toolBar.add(createButton("button2", true));
-		toolBar.addSeparator(); // index 3
-		toolBar.add(createButton("button3", false));
-		toolBar.addSeparator(); // index 5
-		toolBar.add(createButton("button4",true));
-		toolBar.addSeparator(); // index 7
-		toolBar.add(createButton("button5", false));
+				toolBar.add(createButton("button1", false));
+				toolBar.addSeparator(); // index 1
+				toolBar.add(createButton("button2", true));
+				toolBar.addSeparator(); // index 3
+				toolBar.add(createButton("button3", false));
+				toolBar.addSeparator(); // index 5
+				toolBar.add(createButton("button4", true));
+				toolBar.addSeparator(); // index 7
+				toolBar.add(createButton("button5", false));
 
-		SeparatorUtils.consolidateSeparators(toolBar);
-		
-		assertEquals(9, toolBar.getComponentCount());
-		
-		assertFalse(toolBar.getComponent(1).isVisible());
-		assertFalse(toolBar.getComponent(3).isVisible());
-		assertTrue(toolBar.getComponent(5).isVisible());
-		assertFalse(toolBar.getComponent(7).isVisible());
+				SeparatorUtils.consolidateSeparators(toolBar);
+
+				assertEquals(9, toolBar.getComponentCount());
+
+				assertFalse(toolBar.getComponent(1).isVisible());
+				assertFalse(toolBar.getComponent(3).isVisible());
+				assertTrue(toolBar.getComponent(5).isVisible());
+				assertFalse(toolBar.getComponent(7).isVisible());
+			}
+		});
 	}
-	
+
+	@Test
 	public void testConsolidateSeparatorsReset() {
-		JMenu menu = new JMenu("test-menu");
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				JMenu menu = new JMenu("test-menu");
 
-		menu.add(createMenuItem("item1", false));
-		menu.addSeparator(); // index 1
-		menu.add(createMenuItem("item2", true));
-		menu.addSeparator(); // index 3
-		menu.add(createMenuItem("item3", false));
-		menu.addSeparator(); // index 5
-		menu.add(createMenuItem("item4", true));
-		menu.addSeparator(); // index 7
-		menu.add(createMenuItem("item5", false));
+				menu.add(createMenuItem("item1", false));
+				menu.addSeparator(); // index 1
+				menu.add(createMenuItem("item2", true));
+				menu.addSeparator(); // index 3
+				menu.add(createMenuItem("item3", false));
+				menu.addSeparator(); // index 5
+				menu.add(createMenuItem("item4", true));
+				menu.addSeparator(); // index 7
+				menu.add(createMenuItem("item5", false));
 
-		SeparatorUtils.consolidateSeparators(menu);
+				SeparatorUtils.consolidateSeparators(menu);
 
-		menu.getMenuComponent(0).setVisible(true);
+				menu.getMenuComponent(0).setVisible(true);
 
-		SeparatorUtils.consolidateSeparators(menu);
+				SeparatorUtils.consolidateSeparators(menu);
 
-		assertTrue(((JSeparator)menu.getMenuComponent(1)).isVisible());
-		assertFalse(((JSeparator)menu.getMenuComponent(3)).isVisible());
-		assertTrue(((JSeparator)menu.getMenuComponent(5)).isVisible());
-		assertFalse(((JSeparator)menu.getMenuComponent(7)).isVisible());
+				assertTrue(((JSeparator) menu.getMenuComponent(1)).isVisible());
+				assertFalse(((JSeparator) menu.getMenuComponent(3)).isVisible());
+				assertTrue(((JSeparator) menu.getMenuComponent(5)).isVisible());
+				assertFalse(((JSeparator) menu.getMenuComponent(7)).isVisible());
+			}
+		});
 	}
 
+	@Test
 	public void testConsolidateSeparatorsInMenu() {
-		JMenu menu = new JMenu("test-menu");
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				JMenu menu = new JMenu("test-menu");
 
-		menu.add(createMenuItem("item1", false));
-		menu.addSeparator(); // index 1
-		menu.add(createMenuItem("item2", true));
-		menu.addSeparator(); // index 3
-		menu.add(createMenuItem("item3", false));
-		menu.addSeparator(); // index 5
-		menu.add(createMenuItem("item4", true));
-		menu.addSeparator(); // index 7
-		menu.add(createMenuItem("item5", false));
+				menu.add(createMenuItem("item1", false));
+				menu.addSeparator(); // index 1
+				menu.add(createMenuItem("item2", true));
+				menu.addSeparator(); // index 3
+				menu.add(createMenuItem("item3", false));
+				menu.addSeparator(); // index 5
+				menu.add(createMenuItem("item4", true));
+				menu.addSeparator(); // index 7
+				menu.add(createMenuItem("item5", false));
 
-		SeparatorUtils.consolidateSeparators(menu);
+				SeparatorUtils.consolidateSeparators(menu);
 
-		assertEquals(9, menu.getMenuComponentCount());
+				assertEquals(9, menu.getMenuComponentCount());
 
-		assertFalse(menu.getMenuComponent(1).isVisible());
-		assertFalse(menu.getMenuComponent(3).isVisible());
-		assertTrue(menu.getMenuComponent(5).isVisible());
-		assertFalse(menu.getMenuComponent(7).isVisible());
+				assertFalse(menu.getMenuComponent(1).isVisible());
+				assertFalse(menu.getMenuComponent(3).isVisible());
+				assertTrue(menu.getMenuComponent(5).isVisible());
+				assertFalse(menu.getMenuComponent(7).isVisible());
+			}
+		});
 	}
 
-
+	@Test
 	public void testConsolidateSeparatorsInSubMenu() {
-		JMenu sub = new JMenu("sub-menu");
-		sub.add(createMenuItem("sub-item1", true));
-		sub.addSeparator();
-		sub.add(createMenuItem("sub-item2", false));
-		sub.addSeparator();
-		sub.add(createMenuItem("sub-item3", true));
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				JMenu sub = new JMenu("sub-menu");
+				sub.add(createMenuItem("sub-item1", true));
+				sub.addSeparator();
+				sub.add(createMenuItem("sub-item2", false));
+				sub.addSeparator();
+				sub.add(createMenuItem("sub-item3", true));
 
-		JMenu menu = new JMenu("test-menu");
-		menu.add(sub);
+				JMenu menu = new JMenu("test-menu");
+				menu.add(sub);
 
-		SeparatorUtils.consolidateSeparators(menu);
+				SeparatorUtils.consolidateSeparators(menu);
 
-		assertFalse(sub.getMenuComponent(1).isVisible());
-		assertTrue(sub.getMenuComponent(3).isVisible());
+				assertFalse(sub.getMenuComponent(1).isVisible());
+				assertTrue(sub.getMenuComponent(3).isVisible());
+			}
+		});
 	}
 
 	private static JMenuItem createMenuItem(String text, boolean visible) {

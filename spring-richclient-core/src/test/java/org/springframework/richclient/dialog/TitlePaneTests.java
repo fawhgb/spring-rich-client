@@ -15,13 +15,15 @@
  */
 package org.springframework.richclient.dialog;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.awt.image.BufferedImage;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.core.DefaultMessage;
 
 /**
@@ -29,8 +31,9 @@ import org.springframework.richclient.core.DefaultMessage;
  * 
  * @author Peter De Bruycker
  */
-public class TitlePaneTests extends TestCase {
+public class TitlePaneTests {
 
+	@Test
 	public void testBlah() {
 		TitlePane titlePane = new TitlePane();
 		titlePane.setImage(new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB));
@@ -41,7 +44,7 @@ public class TitlePaneTests extends TestCase {
 		// trigger control creation
 		JPanel panel = (JPanel) titlePane.getControl();
 
-		assertEquals("must have 3 components: title, icon and message", 3, panel.getComponentCount());
+		assertEquals(3, panel.getComponentCount(), "must have 3 components: title, icon and message");
 
 		JLabel titleLabel = (JLabel) panel.getComponent(0);
 		assertEquals("new title", titleLabel.getText());
@@ -51,7 +54,7 @@ public class TitlePaneTests extends TestCase {
 
 		JLabel messageLabel = (JLabel) panel.getComponent(2);
 		assertEquals("<html>test message</html>", messageLabel.getText());
-		
+
 		// change title and message after control creation
 		titlePane.setTitle("other title");
 		titlePane.setMessage(new DefaultMessage("other message", null));

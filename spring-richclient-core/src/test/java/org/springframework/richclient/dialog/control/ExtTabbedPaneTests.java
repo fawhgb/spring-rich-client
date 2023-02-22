@@ -15,63 +15,65 @@
  */
 package org.springframework.richclient.dialog.control;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import javax.swing.JLabel;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.util.EventListenerListHelper.EventBroadcastException;
-
-import junit.framework.TestCase;
 
 /**
  * 
  * @author Peter De Bruycker
  */
-public class ExtTabbedPaneTests extends TestCase {
-    // testcase for RCP-528
-    public void testGetTabInsideChangeHandlerThrowsIndexOutOfBoundsException() {
-        final ExtTabbedPane extTabbedPane = new ExtTabbedPane();
+public class ExtTabbedPaneTests {
 
-        // when the changelistener performs a getTab(index) call, an IndexOutOfBoundsException
-        extTabbedPane.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                JTabbedPane tabbedPane = (JTabbedPane) extTabbedPane.getControl();
-                int index = tabbedPane.getSelectedIndex();
+	// testcase for RCP-528
+	@Test
+	public void testGetTabInsideChangeHandlerThrowsIndexOutOfBoundsException() {
+		final ExtTabbedPane extTabbedPane = new ExtTabbedPane();
 
-                if (index >= 0) {
-                    index = extTabbedPane.convertUIIndexToModelIndex(index);
-                    Tab tab = extTabbedPane.getTab(index);
-                    assertNotNull(tab);
-                }
-            }
-        });
+		// when the changelistener performs a getTab(index) call, an
+		// IndexOutOfBoundsException
+		extTabbedPane.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JTabbedPane tabbedPane = (JTabbedPane) extTabbedPane.getControl();
+				int index = tabbedPane.getSelectedIndex();
 
-        Tab tab1 = new Tab("test1", new JLabel("test1"));
-        Tab tab2 = new Tab("test2", new JLabel("test2"));
-        
-        try {
-            extTabbedPane.addTab(tab1);
-        }
-        catch (EventBroadcastException e) {
-            fail(e.getMessage());
-        }
+				if (index >= 0) {
+					index = extTabbedPane.convertUIIndexToModelIndex(index);
+					Tab tab = extTabbedPane.getTab(index);
+					assertNotNull(tab);
+				}
+			}
+		});
 
+		Tab tab1 = new Tab("test1", new JLabel("test1"));
+		Tab tab2 = new Tab("test2", new JLabel("test2"));
 
-        try {
-            extTabbedPane.addTab(0, tab2);
-        }
-        catch (EventBroadcastException e) {
-            fail(e.getMessage());
-        }
-        
-        extTabbedPane.selectTab(tab1);
+		try {
+			extTabbedPane.addTab(tab1);
+		} catch (EventBroadcastException e) {
+			fail(e.getMessage());
+		}
 
-        try {
-            extTabbedPane.removeTab(tab1);
-        }
-        catch (EventBroadcastException e) {
-            fail(e.getMessage());
-        }
-}
+		try {
+			extTabbedPane.addTab(0, tab2);
+		} catch (EventBroadcastException e) {
+			fail(e.getMessage());
+		}
+
+		extTabbedPane.selectTab(tab1);
+
+		try {
+			extTabbedPane.removeTab(tab1);
+		} catch (EventBroadcastException e) {
+			fail(e.getMessage());
+		}
+	}
 }

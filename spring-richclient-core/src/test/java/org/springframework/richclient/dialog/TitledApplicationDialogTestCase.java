@@ -15,9 +15,12 @@
  */
 package org.springframework.richclient.dialog;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.core.DefaultMessage;
 
 /**
@@ -30,12 +33,14 @@ public abstract class TitledApplicationDialogTestCase extends ApplicationDialogT
 
 	protected abstract TitledApplicationDialog createTitledApplicationDialog(final Runnable onAboutToShow);
 
+	@Override
 	protected final ApplicationDialog createApplicationDialog(final Runnable onAboutToShow) {
 		dialogUnderTest = createTitledApplicationDialog(onAboutToShow);
 
 		return dialogUnderTest;
 	}
 
+	@Test
 	public void testGetAndSetTitlePaneTitle() {
 		dialogUnderTest.setTitlePaneTitle("new title pane text");
 		assertEquals("new title pane text", dialogUnderTest.getTitlePaneTitle());
@@ -46,6 +51,7 @@ public abstract class TitledApplicationDialogTestCase extends ApplicationDialogT
 		assertEquals("other title pane text", dialogUnderTest.getTitlePaneTitle());
 	}
 
+	@Test
 	public void testGetAndSetMessage() {
 		dialogUnderTest.setMessage(new DefaultMessage("test message"));
 		assertEquals("test message", dialogUnderTest.getMessage().getMessage());
@@ -56,6 +62,7 @@ public abstract class TitledApplicationDialogTestCase extends ApplicationDialogT
 		assertEquals("new message", dialogUnderTest.getMessage().getMessage());
 	}
 
+	@Test
 	public void testGetAndSetTitlePaneImage() {
 		Image image1 = new BufferedImage(16, 16, BufferedImage.TYPE_INT_RGB);
 		Image image2 = new BufferedImage(32, 32, BufferedImage.TYPE_INT_RGB);

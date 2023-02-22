@@ -1,74 +1,82 @@
 package org.springframework.richclient.form;
 
-import java.text.Collator;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.text.Collator;
 import java.util.Collections;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.form.binding.swing.ComboBoxBinder;
 
-public class DefaultFormUIProviderTests extends TestCase {
-    private SimplePanel panel;
-    private Map context;
+public class DefaultFormUIProviderTests {
+	private SimplePanel panel;
+	private Map context;
 
-    public void testGetComponent() {
-        DefaultFormUIProvider formUIProvider = new DefaultFormUIProvider(panel);
+	@Test
+	public void testGetComponent() {
+		DefaultFormUIProvider formUIProvider = new DefaultFormUIProvider(panel);
 
-        assertSame(panel, formUIProvider.getControl());
-        assertEquals(panel.getStringField(), formUIProvider.getComponent("stringProperty"));
-        assertEquals(panel.getComboBox(), formUIProvider.getComponent("comboProperty"));
-        assertEquals(panel.getCheckBox(), formUIProvider.getComponent("booleanProperty"));
-        
-        // find nested components
-        assertEquals(panel.getNestedField(), formUIProvider.getComponent("nestedField"));
-    }
+		assertSame(panel, formUIProvider.getControl());
+		assertEquals(panel.getStringField(), formUIProvider.getComponent("stringProperty"));
+		assertEquals(panel.getComboBox(), formUIProvider.getComponent("comboProperty"));
+		assertEquals(panel.getCheckBox(), formUIProvider.getComponent("booleanProperty"));
 
-    public void testBind() {
-        DefaultFormUIProvider formUIProvider = new DefaultFormUIProvider(panel);
+		// find nested components
+		assertEquals(panel.getNestedField(), formUIProvider.getComponent("nestedField"));
+	}
 
-        TestableBindingFactory bindingFactory = new TestableBindingFactory();
+	@Test
+	public void testBind() {
+		DefaultFormUIProvider formUIProvider = new DefaultFormUIProvider(panel);
 
-        String[] properties = { "stringProperty", "comboProperty", "booleanProperty" };
-        formUIProvider.setProperties(properties);
+		TestableBindingFactory bindingFactory = new TestableBindingFactory();
 
-        formUIProvider.setContext("comboProperty", context);
+		String[] properties = { "stringProperty", "comboProperty", "booleanProperty" };
+		formUIProvider.setProperties(properties);
 
-        formUIProvider.bind(bindingFactory, null);
-        assertEquals(3, bindingFactory.getBindControlCount());
+		formUIProvider.setContext("comboProperty", context);
 
-        // string property
-        assertEquals("stringProperty", bindingFactory.getPropertyPaths().get(0));
-        assertEquals(panel.getStringField(), bindingFactory.getControls().get(0));
-        assertEquals(Collections.EMPTY_MAP, bindingFactory.getContexts().get(0));
+		formUIProvider.bind(bindingFactory, null);
+		assertEquals(3, bindingFactory.getBindControlCount());
 
-        // combo property
-        assertEquals("comboProperty", bindingFactory.getPropertyPaths().get(1));
-        assertEquals(panel.getComboBox(), bindingFactory.getControls().get(1));
-        assertEquals(context, bindingFactory.getContexts().get(1));
+		// string property
+		assertEquals("stringProperty", bindingFactory.getPropertyPaths().get(0));
+		assertEquals(panel.getStringField(), bindingFactory.getControls().get(0));
+		assertEquals(Collections.EMPTY_MAP, bindingFactory.getContexts().get(0));
 
-        // boolean property
-        assertEquals("booleanProperty", bindingFactory.getPropertyPaths().get(2));
-        assertEquals(panel.getCheckBox(), bindingFactory.getControls().get(2));
-        assertEquals(Collections.EMPTY_MAP, bindingFactory.getContexts().get(2));
-    }
+		// combo property
+		assertEquals("comboProperty", bindingFactory.getPropertyPaths().get(1));
+		assertEquals(panel.getComboBox(), bindingFactory.getControls().get(1));
+		assertEquals(context, bindingFactory.getContexts().get(1));
 
-    protected void setUp() throws Exception {
-        panel = new SimplePanel();
+		// boolean property
+		assertEquals("booleanProperty", bindingFactory.getPropertyPaths().get(2));
+		assertEquals(panel.getCheckBox(), bindingFactory.getControls().get(2));
+		assertEquals(Collections.EMPTY_MAP, bindingFactory.getContexts().get(2));
+	}
 
-        context = Collections.singletonMap(ComboBoxBinder.COMPARATOR_KEY, Collator.getInstance());
-    }
+	@BeforeEach
+	protected void setUp() throws Exception {
+		panel = new SimplePanel();
 
-    public void testSetAndGetContext() {
-        DefaultFormUIProvider formUIProvider = new DefaultFormUIProvider(panel);
+		context = Collections.singletonMap(ComboBoxBinder.COMPARATOR_KEY, Collator.getInstance());
+	}
 
-        formUIProvider.setContext("comboProperty", context);
+	@Test
+	public void testSetAndGetContext() {
+		DefaultFormUIProvider formUIProvider = new DefaultFormUIProvider(panel);
 
-        assertEquals(context, formUIProvider.getContext("comboProperty"));
+		formUIProvider.setContext("comboProperty", context);
 
-        assertNotNull("if no context provided, must return empty map", formUIProvider.getContext("stringProperty"));
-        assertTrue("if no context provided, must return empty map", 
-                   formUIProvider.getContext("stringProperty").isEmpty());
-    }
+		assertEquals(context, formUIProvider.getContext("comboProperty"));
+
+		assertNotNull(formUIProvider.getContext("stringProperty"), "if no context provided, must return empty map");
+		assertTrue(formUIProvider.getContext("stringProperty").isEmpty(),
+				"if no context provided, must return empty map");
+	}
 }

@@ -15,6 +15,11 @@
  */
 package org.springframework.richclient.command.config;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.awt.Color;
 
 import javax.swing.Icon;
@@ -22,8 +27,10 @@ import javax.swing.JButton;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import junit.framework.TestCase;
-
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.test.TestIcon;
 
 /**
@@ -31,121 +38,144 @@ import org.springframework.richclient.test.TestIcon;
  * 
  * @author Peter De Bruycker
  */
-public class CommandButtonIconInfoTests extends TestCase {
+public class CommandButtonIconInfoTests {
 
-    private Icon icon;
+	private Icon icon;
 
-    private Icon selectedIcon;
+	private Icon selectedIcon;
 
-    private Icon rolloverIcon;
+	private Icon rolloverIcon;
 
-    private Icon disabledIcon;
+	private Icon disabledIcon;
 
-    private Icon pressedIcon;
+	private Icon pressedIcon;
 
-    private CommandButtonIconInfo completeInfo;
+	private CommandButtonIconInfo completeInfo;
 
-    public void testConstructor() {
-        CommandButtonIconInfo info = new CommandButtonIconInfo(icon);
-        assertEquals(icon, info.getIcon());
-        assertNull(info.getSelectedIcon());
-        assertNull(info.getRolloverIcon());
-        assertNull(info.getDisabledIcon());
-        assertNull(info.getPressedIcon());
-    }
+	@Test
+	public void testConstructor() {
+		CommandButtonIconInfo info = new CommandButtonIconInfo(icon);
+		assertEquals(icon, info.getIcon());
+		assertNull(info.getSelectedIcon());
+		assertNull(info.getRolloverIcon());
+		assertNull(info.getDisabledIcon());
+		assertNull(info.getPressedIcon());
+	}
 
-    public void testConstructor2() {
-        CommandButtonIconInfo info = new CommandButtonIconInfo(icon, selectedIcon);
-        assertEquals(icon, info.getIcon());
-        assertEquals(selectedIcon, info.getSelectedIcon());
-        assertNull(info.getRolloverIcon());
-        assertNull(info.getDisabledIcon());
-        assertNull(info.getPressedIcon());
-    }
+	@Test
+	public void testConstructor2() {
+		CommandButtonIconInfo info = new CommandButtonIconInfo(icon, selectedIcon);
+		assertEquals(icon, info.getIcon());
+		assertEquals(selectedIcon, info.getSelectedIcon());
+		assertNull(info.getRolloverIcon());
+		assertNull(info.getDisabledIcon());
+		assertNull(info.getPressedIcon());
+	}
 
-    public void testConstructor3() {
-        CommandButtonIconInfo info = new CommandButtonIconInfo(icon, selectedIcon, rolloverIcon);
-        assertEquals(icon, info.getIcon());
-        assertEquals(selectedIcon, info.getSelectedIcon());
-        assertEquals(rolloverIcon, info.getRolloverIcon());
-        assertNull(info.getDisabledIcon());
-        assertNull(info.getPressedIcon());
-    }
+	@Test
+	public void testConstructor3() {
+		CommandButtonIconInfo info = new CommandButtonIconInfo(icon, selectedIcon, rolloverIcon);
+		assertEquals(icon, info.getIcon());
+		assertEquals(selectedIcon, info.getSelectedIcon());
+		assertEquals(rolloverIcon, info.getRolloverIcon());
+		assertNull(info.getDisabledIcon());
+		assertNull(info.getPressedIcon());
+	}
 
-    public void testConstructor4() {
-        CommandButtonIconInfo info = new CommandButtonIconInfo(icon, selectedIcon, rolloverIcon, disabledIcon,
-                pressedIcon);
-        assertEquals(icon, info.getIcon());
-        assertEquals(selectedIcon, info.getSelectedIcon());
-        assertEquals(rolloverIcon, info.getRolloverIcon());
-        assertEquals(disabledIcon, info.getDisabledIcon());
-        assertEquals(pressedIcon, info.getPressedIcon());
-    }
+	@Test
+	public void testConstructor4() {
+		CommandButtonIconInfo info = new CommandButtonIconInfo(icon, selectedIcon, rolloverIcon, disabledIcon,
+				pressedIcon);
+		assertEquals(icon, info.getIcon());
+		assertEquals(selectedIcon, info.getSelectedIcon());
+		assertEquals(rolloverIcon, info.getRolloverIcon());
+		assertEquals(disabledIcon, info.getDisabledIcon());
+		assertEquals(pressedIcon, info.getPressedIcon());
+	}
 
-    public void testConfigureWithNullButton() {
-        CommandButtonIconInfo info = new CommandButtonIconInfo(icon);
-        try {
-            info.configure(null);
-            fail("Should throw IllegalArgumentException");
-        }
-        catch (IllegalArgumentException e) {
-            pass();
-        }
-    }
+	@Test
+	public void testConfigureWithNullButton() {
+		CommandButtonIconInfo info = new CommandButtonIconInfo(icon);
+		try {
+			info.configure(null);
+			fail("Should throw IllegalArgumentException");
+		} catch (IllegalArgumentException e) {
+			pass();
+		}
+	}
 
-    public void testConfigureWithJButton() {
-        JButton button = new JButton("Test");
-        JButton result = (JButton)completeInfo.configure(button);
-        assertSame(button, result);
+	@Test
+	public void testConfigureWithJButton() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				JButton button = new JButton("Test");
+				JButton result = (JButton) completeInfo.configure(button);
+				assertSame(button, result);
 
-        assertEquals(icon, button.getIcon());
-        assertEquals(selectedIcon, button.getSelectedIcon());
-        assertEquals(rolloverIcon, button.getRolloverIcon());
-        assertEquals(disabledIcon, button.getDisabledIcon());
-        assertEquals(pressedIcon, button.getPressedIcon());
-    }
+				assertEquals(icon, button.getIcon());
+				assertEquals(selectedIcon, button.getSelectedIcon());
+				assertEquals(rolloverIcon, button.getRolloverIcon());
+				assertEquals(disabledIcon, button.getDisabledIcon());
+				assertEquals(pressedIcon, button.getPressedIcon());
+			}
+		});
+	}
 
-    public void testConfigureWithJMenuItem() {
-        JMenuItem button = new JMenuItem("Test");
-        JMenuItem result = (JMenuItem)completeInfo.configure(button);
-        assertSame(button, result);
+	@Test
+	public void testConfigureWithJMenuItem() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				JMenuItem button = new JMenuItem("Test");
+				JMenuItem result = (JMenuItem) completeInfo.configure(button);
+				assertSame(button, result);
 
-        assertEquals(icon, button.getIcon());
-        assertEquals(selectedIcon, button.getSelectedIcon());
-        assertEquals(rolloverIcon, button.getRolloverIcon());
-        assertEquals(disabledIcon, button.getDisabledIcon());
-        assertEquals(pressedIcon, button.getPressedIcon());
-    }
+				assertEquals(icon, button.getIcon());
+				assertEquals(selectedIcon, button.getSelectedIcon());
+				assertEquals(rolloverIcon, button.getRolloverIcon());
+				assertEquals(disabledIcon, button.getDisabledIcon());
+				assertEquals(pressedIcon, button.getPressedIcon());
+			}
+		});
+	}
 
-    public void testConfigureWithJMenu() {
-        JMenu button = new JMenu("Test");
-        button.setIcon(icon);
-        button.setSelectedIcon(selectedIcon);
-        button.setRolloverIcon(rolloverIcon);
-        button.setDisabledIcon(disabledIcon);
-        button.setPressedIcon(pressedIcon);
+	@Test
+	public void testConfigureWithJMenu() {
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				JMenu button = new JMenu("Test");
+				button.setIcon(icon);
+				button.setSelectedIcon(selectedIcon);
+				button.setRolloverIcon(rolloverIcon);
+				button.setDisabledIcon(disabledIcon);
+				button.setPressedIcon(pressedIcon);
 
-        JMenuItem result = (JMenuItem)completeInfo.configure(button);
-        assertSame(button, result);
+				JMenuItem result = (JMenuItem) completeInfo.configure(button);
+				assertSame(button, result);
 
-        assertEquals(icon, button.getIcon());
-        assertEquals(selectedIcon, button.getSelectedIcon());
-        assertEquals(rolloverIcon, button.getRolloverIcon());
-        assertEquals(disabledIcon, button.getDisabledIcon());
-        assertEquals(pressedIcon, button.getPressedIcon());
-    }
+				assertEquals(icon, button.getIcon());
+				assertEquals(selectedIcon, button.getSelectedIcon());
+				assertEquals(rolloverIcon, button.getRolloverIcon());
+				assertEquals(disabledIcon, button.getDisabledIcon());
+				assertEquals(pressedIcon, button.getPressedIcon());
+			}
+		});
+	}
 
-    private static void pass() {
-        // test passes
-    }
+	private static void pass() {
+		// test passes
+	}
 
-    protected void setUp() throws Exception {
-        icon = new TestIcon(Color.BLUE);
-        selectedIcon = new TestIcon(Color.BLACK);
-        rolloverIcon = new TestIcon(Color.GREEN);
-        disabledIcon = new TestIcon(Color.GRAY);
-        pressedIcon = new TestIcon(Color.WHITE);
+	@BeforeEach
+	protected void setUp() throws Exception {
+		icon = new TestIcon(Color.BLUE);
+		selectedIcon = new TestIcon(Color.BLACK);
+		rolloverIcon = new TestIcon(Color.GREEN);
+		disabledIcon = new TestIcon(Color.GRAY);
+		pressedIcon = new TestIcon(Color.WHITE);
 
-        completeInfo = new CommandButtonIconInfo(icon, selectedIcon, rolloverIcon, disabledIcon, pressedIcon);
-    }
+		completeInfo = new CommandButtonIconInfo(icon, selectedIcon, rolloverIcon, disabledIcon, pressedIcon);
+	}
 }

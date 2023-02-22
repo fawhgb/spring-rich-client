@@ -15,6 +15,15 @@
  */
 package org.springframework.binding.form.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.binding.convert.ConversionException;
 import org.springframework.binding.convert.ConversionExecutor;
@@ -28,11 +37,9 @@ import org.springframework.binding.value.ValueModel;
 import org.springframework.binding.value.support.ValueHolder;
 import org.springframework.richclient.test.SpringRichTestCase;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-
 /**
  * Tests for
+ * 
  * @link AbstractFormModel
  * 
  * @author Oliver Hutchison
@@ -51,6 +58,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		return new TestAbstractFormModel(valueModel, buffering);
 	}
 
+	@Test
 	public void testGetValueModelFromPAS() {
 		TestBean p = new TestBean();
 		TestPropertyAccessStrategy tpas = new TestPropertyAccessStrategy(p);
@@ -65,12 +73,12 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		try {
 			fm.getValueModel("iDontExist");
 			fail("should't be able to get value model for invalid property");
-		}
-		catch (NotReadablePropertyException e) {
+		} catch (NotReadablePropertyException e) {
 			// exprected
 		}
 	}
 
+	@Test
 	public void testUnbufferedWritesThrough() {
 		TestBean p = new TestBean();
 		BeanPropertyAccessStrategy pas = new BeanPropertyAccessStrategy(p);
@@ -84,6 +92,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertEquals(null, p.getSimpleProperty());
 	}
 
+	@Test
 	public void testBufferedDoesNotWriteThrough() {
 		TestBean p = new TestBean();
 		BeanPropertyAccessStrategy pas = new BeanPropertyAccessStrategy(p);
@@ -97,10 +106,12 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertEquals(null, p.getSimpleProperty());
 	}
 
+	@Test
 	public void testDirtyTrackingWithBuffering() {
 		testDirtyTracking(true);
 	}
 
+	@Test
 	public void testDirtyTrackingWithoutBuffering() {
 		testDirtyTracking(false);
 	}
@@ -140,10 +151,10 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 	}
 
 	/**
-	 * Test on dirty state of parent-child relations. When child gets dirty,
-	 * parent should also be dirty. When parent reverts, child should revert
-	 * too.
+	 * Test on dirty state of parent-child relations. When child gets dirty, parent
+	 * should also be dirty. When parent reverts, child should revert too.
 	 */
+	@Test
 	public void testDirtyTracksKids() {
 		TestPropertyChangeListener pcl = new TestPropertyChangeListener(FormModel.DIRTY_PROPERTY);
 		AbstractFormModel pfm = getFormModel(new TestBean());
@@ -188,6 +199,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertEquals(6, pcl.eventCount());
 	}
 
+	@Test
 	public void testSetFormObjectDoesNotRevertChangesToPreviousFormObject() {
 		TestBean p1 = new TestBean();
 		BeanPropertyAccessStrategy pas = new BeanPropertyAccessStrategy(p1);
@@ -197,6 +209,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertEquals("1", p1.getSimpleProperty());
 	}
 
+	@Test
 	public void testCommitEvents() {
 		TestBean p = new TestBean();
 		BeanPropertyAccessStrategy pas = new BeanPropertyAccessStrategy(p);
@@ -211,6 +224,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertEquals(1, cl.postEditCalls);
 	}
 
+	@Test
 	public void testCommitWritesBufferingThrough() {
 		TestBean p = new TestBean();
 		BeanPropertyAccessStrategy pas = new BeanPropertyAccessStrategy(p);
@@ -224,10 +238,12 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertEquals("1", p.getSimpleProperty());
 	}
 
+	@Test
 	public void testRevertWithBuffering() {
 		testRevert(true);
 	}
 
+	@Test
 	public void testRevertWithoutBuffering() {
 		testRevert(false);
 	}
@@ -257,6 +273,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertEquals("tb2", tb2.getSimpleProperty());
 	}
 
+	@Test
 	public void testEnabledEvents() {
 		TestPropertyChangeListener pcl = new TestPropertyChangeListener(FormModel.ENABLED_PROPERTY);
 		AbstractFormModel fm = getFormModel(new Object());
@@ -281,6 +298,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertEquals(2, pcl.eventCount());
 	}
 
+	@Test
 	public void testEnabledTracksParent() {
 		TestPropertyChangeListener pcl = new TestPropertyChangeListener(FormModel.ENABLED_PROPERTY);
 		AbstractFormModel pfm = getFormModel(new Object());
@@ -313,6 +331,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertEquals(4, pcl.eventCount());
 	}
 
+	@Test
 	public void testConvertingValueModels() {
 		AbstractFormModel fm = getFormModel(new TestBean());
 		TestConversionService cs = new TestConversionService();
@@ -325,16 +344,15 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		try {
 			fm.getValueModel("simpleProperty", Integer.class);
 			fail("should have throw IllegalArgumentException");
-		}
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			// expected
 		}
 		assertEquals(1, cs.calls);
 		assertEquals(String.class, cs.lastSource);
 		assertEquals(Integer.class, cs.lastTarget);
 
-		cs.executer = new ConversionExecutor(String.class, Integer.class, new CopiedPublicNoOpConverter(String.class,
-				Integer.class));
+		cs.executer = new ConversionExecutor(String.class, Integer.class,
+				new CopiedPublicNoOpConverter(String.class, Integer.class));
 		ValueModel cvm = fm.getValueModel("simpleProperty", Integer.class);
 		assertEquals(3, cs.calls);
 		assertEquals(Integer.class, cs.lastSource);
@@ -344,6 +362,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertEquals(3, cs.calls);
 	}
 
+	@Test
 	public void testFieldMetadata() {
 		AbstractFormModel fm = getFormModel(new TestBean());
 
@@ -354,6 +373,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertTrue(fm.getFieldMetadata("readOnly").isReadOnly());
 	}
 
+	@Test
 	public void testSetFormObjectUpdatesDirtyState() {
 		final AbstractFormModel fm = getFormModel(new TestBean());
 		fm.add("simpleProperty");
@@ -363,6 +383,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 
 		fm.getValueModel("simpleProperty").addValueChangeListener(new PropertyChangeListener() {
 
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				fm.getValueModel("singleSelectListProperty").setValue(null);
 			}
@@ -373,11 +394,12 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		newBean.setSingleSelectListProperty("singleSelectListProperty");
 		fm.setFormObject(newBean);
 		assertEquals(null, fm.getValueModel("singleSelectListProperty").getValue());
-		assertTrue(fm.isDirty());
-		fm.getValueModel("singleSelectListProperty").setValue("singleSelectListProperty");
 		assertTrue(!fm.isDirty());
+		fm.getValueModel("singleSelectListProperty").setValue("singleSelectListProperty");
+		assertTrue(fm.isDirty());
 	}
 
+	@Test
 	public void testFormPropertiesAreAccessableFromFormObjectChangeEvents() {
 		final AbstractFormModel fm = getFormModel(new TestBean());
 		assertEquals(null, fm.getValueModel("simpleProperty").getValue());
@@ -385,6 +407,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		newTestBean.setSimpleProperty("NewValue");
 		fm.getFormObjectHolder().addValueChangeListener(new PropertyChangeListener() {
 
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				assertEquals("NewValue", fm.getValueModel("simpleProperty").getValue());
 			}
@@ -392,6 +415,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		fm.setFormObject(newTestBean);
 	}
 
+	@Test
 	public void testFormObjectChangeEventComesBeforePropertyChangeEvent() {
 		final TestBean testBean = new TestBean();
 		final AbstractFormModel fm = getFormModel(testBean);
@@ -400,20 +424,23 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		final boolean[] formObjectChangeCalled = new boolean[1];
 		fm.getFormObjectHolder().addValueChangeListener(new PropertyChangeListener() {
 
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				formObjectChangeCalled[0] = true;
 			}
 		});
 		fm.getValueModel("simpleProperty").addValueChangeListener(new PropertyChangeListener() {
 
+			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
-				assertEquals("Form property change event was called before form object change event", true,
-						formObjectChangeCalled[0]);
+				assertEquals(true, formObjectChangeCalled[0],
+						"Form property change event was called before form object change event");
 			}
 		});
 		fm.setFormObject(newTestBean);
 	}
 
+	@Test
 	public void testFormObjectChangeEvents() {
 		TestBean testBean = new TestBean();
 		final AbstractFormModel fm = getFormModel(testBean);
@@ -432,10 +459,12 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 
 		int postEditCalls;
 
+		@Override
 		public void preCommit(FormModel formModel) {
 			preEditCalls++;
 		}
 
+		@Override
 		public void postCommit(FormModel formModel) {
 			postEditCalls++;
 		}
@@ -451,6 +480,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 
 		public ConversionExecutor executer;
 
+		@Override
 		public ConversionExecutor getConversionExecutor(Class source, Class target) {
 			calls++;
 			lastSource = source;
@@ -461,17 +491,20 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 			throw new IllegalArgumentException("no converter found");
 		}
 
+		@Override
 		public ConversionExecutor getConversionExecutorByTargetAlias(Class arg0, String arg1)
 				throws IllegalArgumentException {
 			fail("this method should never be called");
 			return null;
 		}
 
+		@Override
 		public Class getClassByAlias(String arg0) {
 			fail("this method should never be called");
 			return null;
 		}
 
+		@Override
 		public ConversionExecutor[] getConversionExecutorsForSource(Class sourceClass) throws ConversionException {
 			fail("this method should never be called");
 			return null;
@@ -485,25 +518,26 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 	 * </p>
 	 * 
 	 * <p>
-	 * This test checks that when a valueModel is dirty and a new FormObject is
-	 * set which has the same value for that valueModel, the formModel should
-	 * not be dirty.
+	 * This test checks that when a valueModel is dirty and a new FormObject is set
+	 * which has the same value for that valueModel, the formModel should not be
+	 * dirty.
 	 * </p>
 	 */
+	@Test
 	public void testBufferedFormModelSetFormObjectNotDirty() {
 		String someString = "someString";
 		FormModel model = getFormModel(new TestBean());
 		ValueModel valueModel = model.getValueModel("simpleProperty");
 
-		assertEquals("Initial check, formmodel not dirty.", false, model.isDirty());
+		assertEquals(false, model.isDirty(), "Initial check, formmodel not dirty.");
 
 		valueModel.setValue(someString);
-		assertEquals("Value changed, model should be dirty.", true, model.isDirty());
+		assertEquals(true, model.isDirty(), "Value changed, model should be dirty.");
 
 		TestBean newFormObject = new TestBean();
 		newFormObject.setSimpleProperty(someString);
 		model.setFormObject(newFormObject);
-		assertEquals("New formObject is set, model should not be dirty.", false, model.isDirty());
+		assertEquals(false, model.isDirty(), "New formObject is set, model should not be dirty.");
 	}
 
 	/**
@@ -513,31 +547,32 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 	 * </p>
 	 * 
 	 * <p>
-	 * This test checks that when a valueModel is dirty and a new FormObject is
-	 * set which has the same value for that valueModel, the formModel should
-	 * not be dirty.
+	 * This test checks that when a valueModel is dirty and a new FormObject is set
+	 * which has the same value for that valueModel, the formModel should not be
+	 * dirty.
 	 * </p>
 	 */
+	@Test
 	public void testFormModelSetFormObjectNotDirty() {
 		String someString = "someString";
 		FormModel model = getFormModel(new ValueHolder(new TestBean()), false);
 		ValueModel valueModel = model.getValueModel("simpleProperty");
 
-		assertEquals("Initial check, formmodel not dirty.", false, model.isDirty());
+		assertEquals(false, model.isDirty(), "Initial check, formmodel not dirty.");
 
 		valueModel.setValue(someString);
-		assertEquals("Value changed, model should be dirty.", true, model.isDirty());
+		assertEquals(true, model.isDirty(), "Value changed, model should be dirty.");
 
 		TestBean newFormObject = new TestBean();
 		newFormObject.setSimpleProperty(someString);
 		model.setFormObject(newFormObject);
-		assertEquals("New formObject is set, model should not be dirty.", false, model.isDirty());
+		assertEquals(false, model.isDirty(), "New formObject is set, model should not be dirty.");
 	}
 
 	/**
 	 * <p>
-	 * Test whether the enabled state is correctly propagated between
-	 * parent-child formModel and that the proper events are fired.
+	 * Test whether the enabled state is correctly propagated between parent-child
+	 * formModel and that the proper events are fired.
 	 * </p>
 	 * <p>
 	 * In detail:
@@ -547,6 +582,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 	 * </ul>
 	 * </p>
 	 */
+	@Test
 	public void testParentChildEnabledState() {
 		TestBean formObject = new TestBean();
 		AbstractFormModel parent = getFormModel(formObject);
@@ -556,14 +592,14 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		child.addPropertyChangeListener(FormModel.ENABLED_PROPERTY, listener);
 
 		parent.addChild(child);
- 
-		// check if parent->enabled then (child->enabled or child->disabled) 
+
+		// check if parent->enabled then (child->enabled or child->disabled)
 		parent.setEnabled(true);
 		child.setEnabled(true);
 		assertTrue(listener.state);
 		child.setEnabled(false);
 		assertFalse(listener.state);
-		
+
 		// check if parent->disabled then always child->disabled
 		parent.setEnabled(false);
 		child.setEnabled(false);
@@ -572,10 +608,11 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertFalse(listener.state);
 
 		parent.removeChild(child);
-		
-		// check initial state when adding a child formModel, state should be synchronized at setup and reverted when removing the relation
-		
-		// check parent->disabled is correctly overriding child state 
+
+		// check initial state when adding a child formModel, state should be
+		// synchronized at setup and reverted when removing the relation
+
+		// check parent->disabled is correctly overriding child state
 		parent.setEnabled(false);
 		child.setEnabled(true);
 		parent.addChild(child);
@@ -588,8 +625,8 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertFalse(listener.state);
 		parent.removeChild(child);
 		assertFalse(listener.state);
-		
-		// check parent->enabled is correctly allowing child state to override 
+
+		// check parent->enabled is correctly allowing child state to override
 		parent.setEnabled(true);
 		child.setEnabled(false);
 		parent.addChild(child);
@@ -603,11 +640,11 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		parent.removeChild(child);
 		assertTrue(listener.state);
 	}
-	
+
 	/**
 	 * <p>
-	 * Test whether the read-only state is correctly propagated between
-	 * parent-child formModel and that the proper events are fired.
+	 * Test whether the read-only state is correctly propagated between parent-child
+	 * formModel and that the proper events are fired.
 	 * </p>
 	 * <p>
 	 * In detail:
@@ -617,6 +654,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 	 * </ul>
 	 * </p>
 	 */
+	@Test
 	public void testParentChildReadOnlyState() {
 		TestBean formObject = new TestBean();
 		AbstractFormModel parent = getFormModel(formObject);
@@ -626,14 +664,14 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		child.addPropertyChangeListener(FormModel.READONLY_PROPERTY, listener);
 
 		parent.addChild(child);
- 
+
 		// if parent->readOnly then child->readOnly
 		parent.setReadOnly(true);
 		child.setReadOnly(false);
 		assertTrue(listener.state);
 		child.setReadOnly(true);
 		assertTrue(listener.state);
-		
+
 		// if parent->writable then (child->writable or child->readOnly)
 		parent.setReadOnly(false);
 		child.setReadOnly(false);
@@ -643,7 +681,8 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 
 		parent.removeChild(child);
 
-		// check initial state when adding a child formModel, state should be synchronized at setup and reverted when removing the relation
+		// check initial state when adding a child formModel, state should be
+		// synchronized at setup and reverted when removing the relation
 
 		// check parent->writable is correctly allowing child to override
 		parent.setReadOnly(false);
@@ -658,7 +697,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertFalse(listener.state);
 		parent.removeChild(child);
 		assertFalse(listener.state);
-		
+
 		// check parent->readOnly is correctly overriding child state
 		parent.setReadOnly(true);
 		child.setReadOnly(false);
@@ -673,20 +712,22 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		parent.removeChild(child);
 		assertTrue(listener.state);
 	}
-	
+
 	/**
-	 * Listener to register on boolean properties to check if they are in the expected state.
+	 * Listener to register on boolean properties to check if they are in the
+	 * expected state.
 	 */
 	protected static class BooleanStatelistener implements PropertyChangeListener {
-		
+
 		final String property;
-		
+
 		boolean state = false;
-		
+
 		public BooleanStatelistener(final String property) {
 			this.property = property;
 		}
-		
+
+		@Override
 		public void propertyChange(PropertyChangeEvent evt) {
 			if (property.equals(evt.getPropertyName()))
 				state = Boolean.parseBoolean(evt.getNewValue().toString());
@@ -695,8 +736,8 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 
 	/**
 	 * <p>
-	 * Test whether the dirty state is correctly propagated between
-	 * parent-child formModel and that the proper events are fired.
+	 * Test whether the dirty state is correctly propagated between parent-child
+	 * formModel and that the proper events are fired.
 	 * </p>
 	 * <p>
 	 * In detail:
@@ -705,6 +746,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 	 * <li>if child isn't dirty then parent CAN be dirty</li>
 	 * </ul>
 	 */
+	@Test
 	public void testParentChildDirtyState() {
 		TestBean formObject = new TestBean();
 		AbstractFormModel parent = getFormModel(formObject);
@@ -716,7 +758,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		parent.addPropertyChangeListener(FormModel.DIRTY_PROPERTY, listener);
 
 		parent.addChild(child);
- 
+
 		// check if child->dirty then parent->dirty
 		assertFalse(listener.state);
 		childValueModel.setValue(Boolean.TRUE);
@@ -725,18 +767,19 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertTrue(listener.state);
 		parentValueModel.setValue(null); // original value
 		assertTrue(listener.state);
-		childValueModel.setValue(Boolean.FALSE); //original value
+		childValueModel.setValue(Boolean.FALSE); // original value
 		assertFalse(listener.state);
-		
+
 		// check if child->clean then (parent->clean or parent->dirty)
 		parentValueModel.setValue("x");
 		assertTrue(listener.state);
 		parentValueModel.setValue(null); // original value
 		assertFalse(listener.state);
-				
+
 		parent.removeChild(child);
 
-		// check initial state when adding a child formModel, state should be synchronized at setup and reverted when removing the relation
+		// check initial state when adding a child formModel, state should be
+		// synchronized at setup and reverted when removing the relation
 
 		// check if dirty child sets parent dirty
 		childValueModel.setValue(Boolean.TRUE);
@@ -751,7 +794,7 @@ public abstract class AbstractFormModelTests extends SpringRichTestCase {
 		assertTrue(listener.state);
 		parent.removeChild(child);
 		assertTrue(listener.state);
-		
+
 		// check if clean child allows parent to override
 		child.revert();
 		parent.revert();

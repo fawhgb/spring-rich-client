@@ -15,11 +15,11 @@
  */
 package org.springframework.richclient.command;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.easymock.EasyMock;
-
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
+import org.junit.jupiter.api.Test;
 
 /**
  * Provides unit tests for the {@link CommandRegistryEvent} class.
@@ -28,49 +28,50 @@ import junit.framework.TestCase;
  * @since 0.3
  *
  */
-public class CommandRegistryEventTests extends TestCase {
+public class CommandRegistryEventTests {
 
-    /**
-     * Creates a new uninitialized {@code CommandRegistryEventTests}.
-     */
-    public CommandRegistryEventTests() {
-        super();
-    }
+	/**
+	 * Creates a new uninitialized {@code CommandRegistryEventTests}.
+	 */
+	public CommandRegistryEventTests() {
+		super();
+	}
 
-    /**
-     * Tests that the event object can be created and its properties correctly retrieved. 
-     */
-    public final void testAll() {
-        
-        AbstractCommand command = new AbstractCommand("noOpCommand") {
-            public void execute() {
-                //do nothing
-            }
-        };
-        
-        CommandRegistry registry = (CommandRegistry) EasyMock.createMock(CommandRegistry.class);
-        
-        try {
-            new CommandRegistryEvent(null, command);
-            Assert.fail("Should have thrown an IllegalArgumentException for null registry");
-        } 
-        catch (IllegalArgumentException e) {
-            //test passes
-        }
-        
-        try {
-            new CommandRegistryEvent(registry, null);
-            Assert.fail("Should have thrown an IllegalArgumentException for null command");
-        }
-        catch (IllegalArgumentException e) {
-            //test passes
-        }
+	/**
+	 * Tests that the event object can be created and its properties correctly
+	 * retrieved.
+	 */
+	@Test
+	public final void testAll() {
 
-        CommandRegistryEvent event = new CommandRegistryEvent(registry, command);
-        
-        Assert.assertEquals(command, event.getCommand());
-        Assert.assertEquals(registry, event.getSource());
-        
-    }
+		AbstractCommand command = new AbstractCommand("noOpCommand") {
+			@Override
+			public void execute() {
+				// do nothing
+			}
+		};
+
+		CommandRegistry registry = (CommandRegistry) EasyMock.createMock(CommandRegistry.class);
+
+		try {
+			new CommandRegistryEvent(null, command);
+			fail("Should have thrown an IllegalArgumentException for null registry");
+		} catch (IllegalArgumentException e) {
+			// test passes
+		}
+
+		try {
+			new CommandRegistryEvent(registry, null);
+			fail("Should have thrown an IllegalArgumentException for null command");
+		} catch (IllegalArgumentException e) {
+			// test passes
+		}
+
+		CommandRegistryEvent event = new CommandRegistryEvent(registry, command);
+
+		assertEquals(command, event.getCommand());
+		assertEquals(registry, event.getSource());
+
+	}
 
 }

@@ -15,179 +15,195 @@
  */
 package org.springframework.binding.value.support;
 
-import org.springframework.binding.support.TestPropertyChangeListener;
-import org.springframework.binding.value.ValueModel;
-import org.springframework.richclient.test.SpringRichTestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.junit.jupiter.api.Test;
+import org.springframework.binding.support.TestPropertyChangeListener;
+import org.springframework.binding.value.ValueModel;
+import org.springframework.richclient.test.SpringRichTestCase;
+
 /**
  * Tests class {@link AbstractValueModel}.
- *  
+ * 
  * @author Oliver Hutchison
  */
 public abstract class AbstractValueModelTests extends SpringRichTestCase {
 
-    private TestAbstractValueModel vm;
+	private TestAbstractValueModel vm;
 
-    private TestPropertyChangeListener pcl;
+	private TestPropertyChangeListener pcl;
 
-    private class EqualsEverything {
-        public boolean equals(Object other) {
-            return true;
-        }
-    }
+	private class EqualsEverything {
+		@Override
+		public boolean equals(Object other) {
+			return true;
+		}
+	}
 
-    public void doSetUp() {
-        vm = new TestAbstractValueModel();
-        pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
-        vm.addValueChangeListener(pcl);
-    }
+	@Override
+	public void doSetUp() {
+		vm = new TestAbstractValueModel();
+		pcl = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
+		vm.addValueChangeListener(pcl);
+	}
 
-    public void testSetValueSilently() {
-        PropertyChangeListener pcl1 = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
+	@Test
+	public void testSetValueSilently() {
+		PropertyChangeListener pcl1 = new TestPropertyChangeListener(ValueModel.VALUE_PROPERTY);
 
-        vm.setValueSilently("1", pcl1);
-        assertEquals("should have notified listener", 1, pcl.eventCount());
-        assertEquals("should have changed value", vm.value, "1");
+		vm.setValueSilently("1", pcl1);
+		assertEquals(1, pcl.eventCount(), "should have notified listener");
+		assertEquals(vm.value, "1", "should have changed value");
 
-        vm.setValueSilently("2", pcl);
-        assertEquals("should not have notified listener", 1, pcl.eventCount());
-        assertEquals("should have changed value", vm.value, "2");
+		vm.setValueSilently("2", pcl);
+		assertEquals(1, pcl.eventCount(), "should not have notified listener");
+		assertEquals(vm.value, "2", "should have changed value");
 
-        vm.setValue("3");
-        assertEquals("should have notified listener", 2, pcl.eventCount());
-        assertEquals("should have changed value", vm.value, "3");
-    }
+		vm.setValue("3");
+		assertEquals(2, pcl.eventCount(), "should have notified listener");
+		assertEquals(vm.value, "3", "should have changed value");
+	}
 
-    public void testFirePrimativeValueChange() {
-        vm.fireValueChange(true, false);
-        assertEquals(1, pcl.eventCount());
-        assertSame(Boolean.TRUE, pcl.lastEvent().getOldValue());
-        assertSame(Boolean.FALSE, pcl.lastEvent().getNewValue());
+	@Test
+	public void testFirePrimativeValueChange() {
+		vm.fireValueChange(true, false);
+		assertEquals(1, pcl.eventCount());
+		assertSame(Boolean.TRUE, pcl.lastEvent().getOldValue());
+		assertSame(Boolean.FALSE, pcl.lastEvent().getNewValue());
 
-        vm.fireValueChange(1, 2);
-        assertEquals(2, pcl.eventCount());
-        assertEquals(new Integer(1), pcl.lastEvent().getOldValue());
-        assertEquals(new Integer(2), pcl.lastEvent().getNewValue());
+		vm.fireValueChange(1, 2);
+		assertEquals(2, pcl.eventCount());
+		assertEquals(new Integer(1), pcl.lastEvent().getOldValue());
+		assertEquals(new Integer(2), pcl.lastEvent().getNewValue());
 
-        vm.fireValueChange(1l, 2l);
-        assertEquals(3, pcl.eventCount());
-        assertEquals(new Long(1), pcl.lastEvent().getOldValue());
-        assertEquals(new Long(2), pcl.lastEvent().getNewValue());
+		vm.fireValueChange(1l, 2l);
+		assertEquals(3, pcl.eventCount());
+		assertEquals(new Long(1), pcl.lastEvent().getOldValue());
+		assertEquals(new Long(2), pcl.lastEvent().getNewValue());
 
-        vm.fireValueChange(1f, 2f);
-        assertEquals(4, pcl.eventCount());
-        assertEquals(new Double(1f), pcl.lastEvent().getOldValue());
-        assertEquals(new Double(2f), pcl.lastEvent().getNewValue());
-    }
-    
-    public void testFireValueChange() {
-        Object o1 = new Object();
-        Object o2 = new Object();
-        
-        vm.fireValueChange(o1, o2);
-        assertEquals(1, pcl.eventCount());
-        assertSame(o1, pcl.lastEvent().getOldValue());
-        assertSame(o2, pcl.lastEvent().getNewValue());
+		vm.fireValueChange(1f, 2f);
+		assertEquals(4, pcl.eventCount());
+		assertEquals(new Double(1f), pcl.lastEvent().getOldValue());
+		assertEquals(new Double(2f), pcl.lastEvent().getNewValue());
+	}
 
-        vm.fireValueChange(o1, o1);
-        assertEquals(1, pcl.eventCount());
+	@Test
+	public void testFireValueChange() {
+		Object o1 = new Object();
+		Object o2 = new Object();
 
-        vm.fireValueChange(o1, null);
-        assertEquals(2, pcl.eventCount());
-        assertEquals(o1, pcl.lastEvent().getOldValue());
-        assertEquals(null, pcl.lastEvent().getNewValue());
-        
-        vm.fireValueChange(null, o1);
-        assertEquals(3, pcl.eventCount());
-        assertEquals(null, pcl.lastEvent().getOldValue());
-        assertEquals(o1, pcl.lastEvent().getNewValue());
-        
-        vm.fireValueChange(null, null);
-        assertEquals(3, pcl.eventCount());
-        
-        vm.fireValueChange(new Integer(1), new Integer(1));
-        assertEquals(3, pcl.eventCount());
+		vm.fireValueChange(o1, o2);
+		assertEquals(1, pcl.eventCount());
+		assertSame(o1, pcl.lastEvent().getOldValue());
+		assertSame(o2, pcl.lastEvent().getNewValue());
 
-        vm.fireValueChangeWhenStillEqual();
-        assertEquals(4, pcl.eventCount());
-        assertEquals(vm.value, pcl.lastEvent().getOldValue());
-        assertEquals(vm.value, pcl.lastEvent().getNewValue());
+		vm.fireValueChange(o1, o1);
+		assertEquals(1, pcl.eventCount());
 
-        Object equalsEverything = new EqualsEverything();
-        vm.fireValueChange(o1, equalsEverything);
-        assertEquals(5, pcl.eventCount());
-        assertEquals(o1, pcl.lastEvent().getOldValue());
-        assertSame(equalsEverything, pcl.lastEvent().getNewValue());
-        
-        vm.fireValueChange(equalsEverything, o1);
-        assertEquals(6, pcl.eventCount());
-        assertSame(equalsEverything, pcl.lastEvent().getOldValue());
-        assertEquals(o1, pcl.lastEvent().getNewValue());
-    }
+		vm.fireValueChange(o1, null);
+		assertEquals(2, pcl.eventCount());
+		assertEquals(o1, pcl.lastEvent().getOldValue());
+		assertEquals(null, pcl.lastEvent().getNewValue());
 
-    public void testHasValueChangedChecksIdentityForUnsafeClasses() {
-        Object equalsEverything = new EqualsEverything();
-        Object o2 = new Object();
+		vm.fireValueChange(null, o1);
+		assertEquals(3, pcl.eventCount());
+		assertEquals(null, pcl.lastEvent().getOldValue());
+		assertEquals(o1, pcl.lastEvent().getNewValue());
 
-        assertTrue(vm.hasValueChanged(equalsEverything, o2));
-        assertTrue(vm.hasValueChanged(null, o2));
-        assertTrue(vm.hasValueChanged(null, equalsEverything));
-        assertTrue(vm.hasValueChanged(equalsEverything, null));
+		vm.fireValueChange(null, null);
+		assertEquals(3, pcl.eventCount());
 
-        assertTrue(!vm.hasValueChanged(equalsEverything, equalsEverything));
-        assertTrue(!vm.hasValueChanged(null, null));
-    }
+		vm.fireValueChange(new Integer(1), new Integer(1));
+		assertEquals(3, pcl.eventCount());
 
-    public void testHasValueChangedChecksEqualityForSafeClasses() {
-        vm.setValueChangeDetector( new DefaultValueChangeDetector() );
+		vm.fireValueChangeWhenStillEqual();
+		assertEquals(4, pcl.eventCount());
+		assertEquals(vm.value, pcl.lastEvent().getOldValue());
+		assertEquals(vm.value, pcl.lastEvent().getNewValue());
 
-        testChecksEqualityForSafeClasses(new Boolean(true), new Boolean(false), new Boolean(true));        
-        testChecksEqualityForSafeClasses(new Byte((byte)1), new Byte((byte)2), new Byte((byte)1));
-        testChecksEqualityForSafeClasses(new Short((short)1), new Short((short)2), new Short((short)1));
-        testChecksEqualityForSafeClasses(new Integer(1), new Integer(2), new Integer(1));
-        testChecksEqualityForSafeClasses(new Long(1), new Long(2), new Long(1));
-        testChecksEqualityForSafeClasses(new Float(1), new Float(2), new Float(1));
-        testChecksEqualityForSafeClasses(new Double(1), new Double(2), new Double(1));
-        testChecksEqualityForSafeClasses(new BigInteger("1"), new BigInteger("2"), new BigInteger("1"));
-        testChecksEqualityForSafeClasses(new BigDecimal("1"), new BigDecimal("2"), new BigDecimal("1"));
-        testChecksEqualityForSafeClasses(new Character('a'), new Character('b'), new Character('a'));        
-        testChecksEqualityForSafeClasses("1", "2", new String("1"));
-    }
+		Object equalsEverything = new EqualsEverything();
+		vm.fireValueChange(o1, equalsEverything);
+		assertEquals(5, pcl.eventCount());
+		assertEquals(o1, pcl.lastEvent().getOldValue());
+		assertSame(equalsEverything, pcl.lastEvent().getNewValue());
 
-    private void testChecksEqualityForSafeClasses(Object o1, Object o2, Object o3) {        
-        Object other = new Object();
-        
-        assertNotSame(o1, o2);
-        assertNotSame(o1, o3);
-        assertEquals(o1, o3);
-        
-        assertTrue(vm.hasValueChanged(o1, o2));
-        assertTrue(vm.hasValueChanged(null, o2));
-        assertTrue(vm.hasValueChanged(o1, null));
-        assertTrue(vm.hasValueChanged(o1, other));
-        
-        assertTrue(vm.hasValueChanged(other, o1));
-        assertTrue(!vm.hasValueChanged(o1, o1));
-        assertTrue(!vm.hasValueChanged(o1, o3));
-        assertTrue(!vm.hasValueChanged(o3, o1));
-    }
+		vm.fireValueChange(equalsEverything, o1);
+		assertEquals(6, pcl.eventCount());
+		assertSame(equalsEverything, pcl.lastEvent().getOldValue());
+		assertEquals(o1, pcl.lastEvent().getNewValue());
+	}
 
-    public class TestAbstractValueModel extends AbstractValueModel {
+	@Test
+	public void testHasValueChangedChecksIdentityForUnsafeClasses() {
+		Object equalsEverything = new EqualsEverything();
+		Object o2 = new Object();
 
-        public Object value;
+		assertTrue(vm.hasValueChanged(equalsEverything, o2));
+		assertTrue(vm.hasValueChanged(null, o2));
+		assertTrue(vm.hasValueChanged(null, equalsEverything));
+		assertTrue(vm.hasValueChanged(equalsEverything, null));
 
-        public Object getValue() {
-            return value;
-        }
+		assertTrue(!vm.hasValueChanged(equalsEverything, equalsEverything));
+		assertTrue(!vm.hasValueChanged(null, null));
+	}
 
-        public void setValue(Object newValue) {
-            Object oldValue = value;
-            value = newValue;
-            fireValueChange(oldValue, newValue);
-        }
-    }
+	@Test
+	public void testHasValueChangedChecksEqualityForSafeClasses() {
+		vm.setValueChangeDetector(new DefaultValueChangeDetector());
+
+		testChecksEqualityForSafeClasses(new Boolean(true), new Boolean(false), new Boolean(true));
+		testChecksEqualityForSafeClasses(new Byte((byte) 1), new Byte((byte) 2), new Byte((byte) 1));
+		testChecksEqualityForSafeClasses(new Short((short) 1), new Short((short) 2), new Short((short) 1));
+		testChecksEqualityForSafeClasses(new Integer(1), new Integer(2), new Integer(1));
+		testChecksEqualityForSafeClasses(new Long(1), new Long(2), new Long(1));
+		testChecksEqualityForSafeClasses(new Float(1), new Float(2), new Float(1));
+		testChecksEqualityForSafeClasses(new Double(1), new Double(2), new Double(1));
+		testChecksEqualityForSafeClasses(new BigInteger("1"), new BigInteger("2"), new BigInteger("1"));
+		testChecksEqualityForSafeClasses(new BigDecimal("1"), new BigDecimal("2"), new BigDecimal("1"));
+		testChecksEqualityForSafeClasses(new Character('a'), new Character('b'), new Character('a'));
+		testChecksEqualityForSafeClasses("1", "2", new String("1"));
+	}
+
+	@Test
+	private void testChecksEqualityForSafeClasses(Object o1, Object o2, Object o3) {
+		Object other = new Object();
+
+		assertNotSame(o1, o2);
+		assertNotSame(o1, o3);
+		assertEquals(o1, o3);
+
+		assertTrue(vm.hasValueChanged(o1, o2));
+		assertTrue(vm.hasValueChanged(null, o2));
+		assertTrue(vm.hasValueChanged(o1, null));
+		assertTrue(vm.hasValueChanged(o1, other));
+
+		assertTrue(vm.hasValueChanged(other, o1));
+		assertTrue(!vm.hasValueChanged(o1, o1));
+		assertTrue(!vm.hasValueChanged(o1, o3));
+		assertTrue(!vm.hasValueChanged(o3, o1));
+	}
+
+	public class TestAbstractValueModel extends AbstractValueModel {
+
+		public Object value;
+
+		@Override
+		public Object getValue() {
+			return value;
+		}
+
+		@Override
+		public void setValue(Object newValue) {
+			Object oldValue = value;
+			value = newValue;
+			fireValueChange(oldValue, newValue);
+		}
+	}
 }

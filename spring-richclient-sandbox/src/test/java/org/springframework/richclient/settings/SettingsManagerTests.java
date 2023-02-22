@@ -15,25 +15,32 @@
  */
 package org.springframework.richclient.settings;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Peter De Bruycker
  */
-public class SettingsManagerTests extends TestCase {
+public class SettingsManagerTests {
+
+	@Test
 	public void testSetSettingsFactory() {
 		SettingsManager settingsManager = new SettingsManager();
-		assertTrue("Default must be TransientSettingsFactory",
-				settingsManager.getSettingsFactory() instanceof TransientSettingsFactory);
+		assertTrue(settingsManager.getSettingsFactory() instanceof TransientSettingsFactory,
+				"Default must be TransientSettingsFactory");
 
 		TestableSettingsFactory factory = new TestableSettingsFactory();
 		settingsManager.setSettingsFactory(factory);
 		assertEquals(factory, settingsManager.getSettingsFactory());
 
 		settingsManager.setSettingsFactory(null);
-		assertTrue("null resets factory", settingsManager.getSettingsFactory() instanceof TransientSettingsFactory);
+		assertTrue(settingsManager.getSettingsFactory() instanceof TransientSettingsFactory, "null resets factory");
 	}
 
+	@Test
 	public void testGetInternalSettings() throws SettingsException {
 		SettingsManager settingsManager = new SettingsManager();
 
@@ -55,6 +62,7 @@ public class SettingsManagerTests extends TestCase {
 		assertEquals(0, factory.getCount());
 	}
 
+	@Test
 	public void testGetUserSettings() throws SettingsException {
 		SettingsManager settingsManager = new SettingsManager();
 
@@ -76,6 +84,7 @@ public class SettingsManagerTests extends TestCase {
 		assertEquals(0, factory.getCount());
 	}
 
+	@Test
 	public void testCreateSettings() throws SettingsException {
 		SettingsManager settingsManager = new SettingsManager();
 

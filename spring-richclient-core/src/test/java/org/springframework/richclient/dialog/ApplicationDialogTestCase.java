@@ -15,11 +15,16 @@
  */
 package org.springframework.richclient.dialog;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 import javax.swing.SwingUtilities;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.value.support.ValueHolder;
 import org.springframework.richclient.test.SpringRichTestCase;
 
@@ -33,6 +38,7 @@ public abstract class ApplicationDialogTestCase extends SpringRichTestCase {
 
 	private OnAboutToShow onAboutToShow = new OnAboutToShow();
 
+	@Test
 	public void testSetAndGetTitle() {
 		applicationDialog.setTitle("new title");
 
@@ -45,10 +51,13 @@ public abstract class ApplicationDialogTestCase extends SpringRichTestCase {
 		assertEquals("other title", applicationDialog.getDialog().getTitle());
 	}
 
+	@Test
 	public void testOnAboutToShowIsCalled() {
 		applicationDialog.getDialog().addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowOpened(WindowEvent e) {
 				SwingUtilities.invokeLater(new Runnable() {
+					@Override
 					public void run() {
 						applicationDialog.getDialog().dispose();
 					}
@@ -60,6 +69,7 @@ public abstract class ApplicationDialogTestCase extends SpringRichTestCase {
 		assertTrue(onAboutToShow.wasRun());
 	}
 
+	@Override
 	protected final void doSetUp() throws Exception {
 		applicationDialog = createApplicationDialog(onAboutToShow);
 
@@ -77,6 +87,7 @@ public abstract class ApplicationDialogTestCase extends SpringRichTestCase {
 	private static class OnAboutToShow implements Runnable {
 		public ValueHolder booleanHolder = new ValueHolder();
 
+		@Override
 		public void run() {
 			booleanHolder.setValue(Boolean.TRUE);
 		}

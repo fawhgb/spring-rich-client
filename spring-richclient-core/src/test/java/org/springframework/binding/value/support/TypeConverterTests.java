@@ -15,9 +15,12 @@
  */
 package org.springframework.binding.value.support;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.value.ValueModel;
-import org.springframework.rules.closure.Closure;
 import org.springframework.richclient.test.SpringRichTestCase;
+import org.springframework.rules.closure.Closure;
 
 /**
  * Tests class {@link TypeConverter}.
@@ -26,42 +29,47 @@ import org.springframework.richclient.test.SpringRichTestCase;
  */
 public class TypeConverterTests extends SpringRichTestCase {
 
-    private ValueModel vm = new ValueHolder("whatever!");
+	private ValueModel vm = new ValueHolder("whatever!");
 
-    private TypeConverter tc = new TypeConverter(vm, new UpperConverter(), new LowerConverter());
+	private TypeConverter tc = new TypeConverter(vm, new UpperConverter(), new LowerConverter());
 
-    public void testConvertsTo() {
-        vm.setValue("test");
-        assertEquals("TEST", tc.getValue());
-        assertEquals("test", vm.getValue());
-    }
+	@Test
+	public void testConvertsTo() {
+		vm.setValue("test");
+		assertEquals("TEST", tc.getValue());
+		assertEquals("test", vm.getValue());
+	}
 
-    public void testConvertsFrom() {
-        tc.setValue("TEST");
-        assertEquals("TEST", tc.getValue());
-        assertEquals("test", vm.getValue());
-    }
+	@Test
+	public void testConvertsFrom() {
+		tc.setValue("TEST");
+		assertEquals("TEST", tc.getValue());
+		assertEquals("test", vm.getValue());
+	}
 
-    public void testDoesNotSetWrappedValueWhenConvertedValueHasNotChanged() {
-        vm.setValue("tEsT");
-        tc.setValue("TEST");
-        assertEquals("TEST", tc.getValue());
-        assertEquals("tEsT", vm.getValue());
-    }
+	@Test
+	public void testDoesNotSetWrappedValueWhenConvertedValueHasNotChanged() {
+		vm.setValue("tEsT");
+		tc.setValue("TEST");
+		assertEquals("TEST", tc.getValue());
+		assertEquals("tEsT", vm.getValue());
+	}
 
-    private static class UpperConverter implements Closure {
+	private static class UpperConverter implements Closure {
 
-        public Object call(Object argument) {
-            return ((String)argument).toUpperCase();
-        }
+		@Override
+		public Object call(Object argument) {
+			return ((String) argument).toUpperCase();
+		}
 
-    }
+	}
 
-    private static class LowerConverter implements Closure {
+	private static class LowerConverter implements Closure {
 
-        public Object call(Object argument) {
-            return ((String)argument).toLowerCase();
-        }
+		@Override
+		public Object call(Object argument) {
+			return ((String) argument).toLowerCase();
+		}
 
-    }
+	}
 }

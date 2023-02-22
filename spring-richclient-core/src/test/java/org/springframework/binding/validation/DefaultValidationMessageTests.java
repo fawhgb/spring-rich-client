@@ -15,22 +15,26 @@
  */
 package org.springframework.binding.validation;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.binding.validation.support.DefaultValidationMessage;
 import org.springframework.richclient.core.Severity;
 
-import junit.framework.TestCase;
+public class DefaultValidationMessageTests {
 
-public class DefaultValidationMessageTests extends TestCase {
+	@Test
+	public void testDefaultValidationMessage() {
+		ValidationMessage vm = new DefaultValidationMessage("property", Severity.INFO, "message");
+		assertEquals("property", vm.getProperty());
+		assertEquals(Severity.INFO, vm.getSeverity());
+		assertEquals("message", vm.getMessage());
+	}
 
-    public void testDefaultValidationMessage() {
-        ValidationMessage vm = new DefaultValidationMessage("property", Severity.INFO, "message");
-        assertEquals("property", vm.getProperty());
-        assertEquals(Severity.INFO, vm.getSeverity());
-        assertEquals("message", vm.getMessage());
-    }
-    
-    public void testToString() {
-        ValidationMessage vm = new DefaultValidationMessage("property", Severity.INFO, "message");
-        assertTrue(vm.toString().endsWith("property = \'property\', severity = \'info\', message = \'message\']"));
-    }
+	@Test
+	public void testToString() {
+		ValidationMessage vm = new DefaultValidationMessage("property", Severity.INFO, "message");
+		assertTrue(vm.toString().endsWith("property = \'property\', severity = \'info\', message = \'message\']"));
+	}
 }

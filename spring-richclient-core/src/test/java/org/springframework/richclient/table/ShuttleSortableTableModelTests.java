@@ -15,72 +15,77 @@
  */
 package org.springframework.richclient.table;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.Comparator;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Test;
 
-public class ShuttleSortableTableModelTests extends TestCase {
+public class ShuttleSortableTableModelTests {
 
-    public void testNullComparisonWithComparator() {
-        Object[] columnNames = new Object[] { "first name", "last name" };
-        Object[][] data = new Object[][] { { "Peter", "De Bruycker" },
-                { "Jan", "Hoskens" }, { null, "test" } };
+	@Test
+	public void testNullComparisonWithComparator() {
+		Object[] columnNames = new Object[] { "first name", "last name" };
+		Object[][] data = new Object[][] { { "Peter", "De Bruycker" }, { "Jan", "Hoskens" }, { null, "test" } };
 
-        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
+		DefaultTableModel tableModel = new DefaultTableModel(data, columnNames);
 
-        ShuttleSortableTableModel shuttleSortableTableModel = new ShuttleSortableTableModel(tableModel);
-        shuttleSortableTableModel.setComparator(0, new Comparator() {
-            public int compare(Object o1, Object o2) {
-                String s1 = (String) o1;
-                String s2 = (String) o2;
+		ShuttleSortableTableModel shuttleSortableTableModel = new ShuttleSortableTableModel(tableModel);
+		shuttleSortableTableModel.setComparator(0, new Comparator() {
+			@Override
+			public int compare(Object o1, Object o2) {
+				String s1 = (String) o1;
+				String s2 = (String) o2;
 
-                if (s1 == null && s2 == null) {
-                    return 0;
-                }
+				if (s1 == null && s2 == null) {
+					return 0;
+				}
 
-                if (s1 == null) {
-                    return 1;
-                }
-                if (s2 == null) {
-                    return -1;
-                }
+				if (s1 == null) {
+					return 1;
+				}
+				if (s2 == null) {
+					return -1;
+				}
 
-                return s1.compareTo(s2);
-            }
-        });
+				return s1.compareTo(s2);
+			}
+		});
 
-        shuttleSortableTableModel.sortByColumn(new ColumnToSort(1, 0));
+		shuttleSortableTableModel.sortByColumn(new ColumnToSort(1, 0));
 
-        // the row with first name == null must be the last one after sort
-        assertEquals("Jan", shuttleSortableTableModel.getValueAt(0, 0));
-        assertEquals("Peter", shuttleSortableTableModel.getValueAt(1, 0));
-        assertEquals(null, shuttleSortableTableModel.getValueAt(2, 0));
-    }
+		// the row with first name == null must be the last one after sort
+		assertEquals("Jan", shuttleSortableTableModel.getValueAt(0, 0));
+		assertEquals("Peter", shuttleSortableTableModel.getValueAt(1, 0));
+		assertEquals(null, shuttleSortableTableModel.getValueAt(2, 0));
+	}
 
-    public void testNullComparisonWithoutComparator() {
-        Object[] columnNames = new Object[] { "first name", "last name", "test bean" };
-        Object[][] data = new Object[][] { { "Peter", "De Bruycker", new TestBean("1") },
-                { "Jan", "Hoskens", new TestBean("2") }, { null, "test", null } };
+	@Test
+	public void testNullComparisonWithoutComparator() {
+		Object[] columnNames = new Object[] { "first name", "last name", "test bean" };
+		Object[][] data = new Object[][] { { "Peter", "De Bruycker", new TestBean("1") },
+				{ "Jan", "Hoskens", new TestBean("2") }, { null, "test", null } };
 
-        TableModel tableModel = new DefaultTableModel(data, columnNames) {
-            public Class getColumnClass(int columnIndex) {
-                if (columnIndex == 2) {
-                    return TestBean.class;
-                }
-                return super.getColumnClass(columnIndex);
-            }
-        };
+		TableModel tableModel = new DefaultTableModel(data, columnNames) {
+			@Override
+			public Class getColumnClass(int columnIndex) {
+				if (columnIndex == 2) {
+					return TestBean.class;
+				}
+				return super.getColumnClass(columnIndex);
+			}
+		};
 
-        ShuttleSortableTableModel shuttleSortableTableModel = new ShuttleSortableTableModel(tableModel);
+		ShuttleSortableTableModel shuttleSortableTableModel = new ShuttleSortableTableModel(tableModel);
 
-        shuttleSortableTableModel.sortByColumn(new ColumnToSort(1, 2));
+		shuttleSortableTableModel.sortByColumn(new ColumnToSort(1, 2));
 
-        // the row with first name == null must be the last one after sort
-        assertEquals(null, shuttleSortableTableModel.getValueAt(0, 0));
-        assertEquals("Peter", shuttleSortableTableModel.getValueAt(1, 0));
-        assertEquals("Jan", shuttleSortableTableModel.getValueAt(2, 0));
-    }
+		// the row with first name == null must be the last one after sort
+		assertEquals(null, shuttleSortableTableModel.getValueAt(0, 0));
+		assertEquals("Peter", shuttleSortableTableModel.getValueAt(1, 0));
+		assertEquals("Jan", shuttleSortableTableModel.getValueAt(2, 0));
+	}
 }

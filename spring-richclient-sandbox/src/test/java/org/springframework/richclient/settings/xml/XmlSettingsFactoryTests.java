@@ -1,31 +1,37 @@
 package org.springframework.richclient.settings.xml;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.settings.Settings;
 import org.springframework.richclient.settings.SettingsException;
 import org.w3c.dom.Document;
 
-import junit.framework.TestCase;
+public class XmlSettingsFactoryTests {
 
-public class XmlSettingsFactoryTests extends TestCase {
+	@Test
 	public void testGetAndSetLocation() {
 		XmlSettingsFactory settingsFactory = new XmlSettingsFactory();
 
-		assertEquals("default settings location is \"settings\"", "settings", settingsFactory.getLocation());
+		assertEquals("settings", settingsFactory.getLocation(), "default settings location is \"settings\"");
 
 		settingsFactory.setLocation("other-settings");
 		assertEquals("other-settings", settingsFactory.getLocation());
 
 		settingsFactory.setLocation(null);
-		assertEquals("location not reset to default", "settings", settingsFactory.getLocation());
+		assertEquals("settings", settingsFactory.getLocation(), "location not reset to default");
 	}
 
+	@Test
 	public void testGetAndSetReaderWriter() {
 		XmlSettingsFactory settingsFactory = new XmlSettingsFactory();
 		settingsFactory.setLocation("other-settings");
 
 		XmlSettingsReaderWriter readerWriter = settingsFactory.getReaderWriter();
-		assertTrue("default must be FileSystemXmlSettingsReaderWriter",
-				readerWriter instanceof FileSystemXmlSettingsReaderWriter);
+		assertTrue(readerWriter instanceof FileSystemXmlSettingsReaderWriter,
+				"default must be FileSystemXmlSettingsReaderWriter");
 		// test location
 		FileSystemXmlSettingsReaderWriter fileSystemXmlSettingsReaderWriter = (FileSystemXmlSettingsReaderWriter) readerWriter;
 		assertEquals("other-settings", fileSystemXmlSettingsReaderWriter.getLocation());
@@ -35,10 +41,11 @@ public class XmlSettingsFactoryTests extends TestCase {
 		assertEquals(newReaderWriter, settingsFactory.getReaderWriter());
 
 		settingsFactory.setReaderWriter(null);
-		assertTrue("not reset to default",
-				settingsFactory.getReaderWriter() instanceof FileSystemXmlSettingsReaderWriter);
+		assertTrue(settingsFactory.getReaderWriter() instanceof FileSystemXmlSettingsReaderWriter,
+				"not reset to default");
 	}
 
+	@Test
 	public void testCreate() throws SettingsException {
 		XmlSettingsFactory settingsFactory = new XmlSettingsFactory();
 		settingsFactory.setReaderWriter(new StringXmlSettingsReaderWriter(null));

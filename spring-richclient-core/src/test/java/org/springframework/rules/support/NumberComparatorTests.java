@@ -15,15 +15,18 @@
  */
 package org.springframework.rules.support;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 /**
  * Testcase for NumberComparator
  * 
  * @author Peter De Bruycker
  */
-public class NumberComparatorTests extends TestCase {
+public class NumberComparatorTests {
 
+	@Test
 	public void testCompareIntegers() {
 		NumberComparator comparator = NumberComparator.INSTANCE;
 
@@ -32,6 +35,7 @@ public class NumberComparatorTests extends TestCase {
 		assertEquals(-1, comparator.compare(Integer.valueOf(1), Integer.valueOf(10)));
 	}
 
+	@Test
 	public void testCompareLongs() {
 		NumberComparator comparator = NumberComparator.INSTANCE;
 
@@ -40,6 +44,7 @@ public class NumberComparatorTests extends TestCase {
 		assertEquals(-1, comparator.compare(Long.valueOf(1l), Long.valueOf(10l)));
 	}
 
+	@Test
 	public void testCompareFloats() {
 		NumberComparator comparator = NumberComparator.INSTANCE;
 
@@ -48,6 +53,7 @@ public class NumberComparatorTests extends TestCase {
 		assertEquals(-1, comparator.compare(Float.valueOf(1.5f), Float.valueOf(10.22f)));
 	}
 
+	@Test
 	public void testCompareDoubles() {
 		NumberComparator comparator = NumberComparator.INSTANCE;
 
@@ -56,6 +62,7 @@ public class NumberComparatorTests extends TestCase {
 		assertEquals(-1, comparator.compare(Double.valueOf(1.5), Double.valueOf(10.22)));
 	}
 
+	@Test
 	public void testCompareDifferentTypesEqual() {
 		NumberComparator comparator = NumberComparator.INSTANCE;
 
@@ -76,6 +83,7 @@ public class NumberComparatorTests extends TestCase {
 		assertEquals(0, comparator.compare(Float.valueOf(1.0f), Double.valueOf(1.0)));
 	}
 
+	@Test
 	public void testCompareDifferentTypesSmaller() {
 		NumberComparator comparator = NumberComparator.INSTANCE;
 
@@ -96,6 +104,7 @@ public class NumberComparatorTests extends TestCase {
 		assertEquals(-1, comparator.compare(Float.valueOf(1.0f), Double.valueOf(10.0)));
 	}
 
+	@Test
 	public void testCompareDifferentTypesLarger() {
 		NumberComparator comparator = NumberComparator.INSTANCE;
 

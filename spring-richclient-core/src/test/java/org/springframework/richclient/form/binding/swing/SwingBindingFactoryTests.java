@@ -15,6 +15,10 @@
  */
 package org.springframework.richclient.form.binding.swing;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +31,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextField;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.support.SortDefinition;
 import org.springframework.binding.form.support.DefaultFormModel;
@@ -44,170 +49,181 @@ import org.springframework.richclient.test.SpringRichTestCase;
  */
 public class SwingBindingFactoryTests extends SpringRichTestCase {
 
-    private SwingBindingFactory sbf;
+	private SwingBindingFactory sbf;
 
-    public void doSetUp() {
-        sbf = new SwingBindingFactory(FormModelHelper.createFormModel(new TestBean()));
-        sbf.setBinderSelectionStrategy(new TestingBinderSelectionStrategy());
-    }
+	@Override
+	public void doSetUp() {
+		sbf = new SwingBindingFactory(FormModelHelper.createFormModel(new TestBean()));
+		sbf.setBinderSelectionStrategy(new TestingBinderSelectionStrategy());
+	}
 
-    public void testSwingBindingFactory() {
-        try {
-            new SwingBindingFactory(null);
-            fail("allowed null form model");
-        }
-        catch (IllegalArgumentException e) {
-            // expected
-        }
-    }
+	@Test
+	public void testSwingBindingFactory() {
+		try {
+			new SwingBindingFactory(null);
+			fail("allowed null form model");
+		} catch (IllegalArgumentException e) {
+			// expected
+		}
+	}
 
-    public void testCreateBoundTextField() {
-        TestableBinding b = (TestableBinding)sbf.createBoundTextField("name");
-        assertBindingProperties(b, JTextField.class, null, "name");
-        assertEquals(Collections.EMPTY_MAP, b.getContext());
-    }
+	@Test
+	public void testCreateBoundTextField() {
+		TestableBinding b = (TestableBinding) sbf.createBoundTextField("name");
+		assertBindingProperties(b, JTextField.class, null, "name");
+		assertEquals(Collections.EMPTY_MAP, b.getContext());
+	}
 
-    public void testCreateBoundCheckBox() {
-        TestableBinding b = (TestableBinding)sbf.createBoundCheckBox("name");
-        assertBindingProperties(b, JCheckBox.class, null, "name");
-        assertEquals(Collections.EMPTY_MAP, b.getContext());
-    }
+	@Test
+	public void testCreateBoundCheckBox() {
+		TestableBinding b = (TestableBinding) sbf.createBoundCheckBox("name");
+		assertBindingProperties(b, JCheckBox.class, null, "name");
+		assertEquals(Collections.EMPTY_MAP, b.getContext());
+	}
 
-    public void testCreateBoundLabel() {
-        TestableBinding b = (TestableBinding)sbf.createBoundLabel("name");
-        assertBindingProperties(b, JLabel.class, null, "name");
-        assertEquals(Collections.EMPTY_MAP, b.getContext());
-    }
+	@Test
+	public void testCreateBoundLabel() {
+		TestableBinding b = (TestableBinding) sbf.createBoundLabel("name");
+		assertBindingProperties(b, JLabel.class, null, "name");
+		assertEquals(Collections.EMPTY_MAP, b.getContext());
+	}
 
-    public void testCreateBoundComboBoxString() {
-        TestableBinding b = (TestableBinding)sbf.createBoundComboBox("name");
-        assertBindingProperties(b, JComboBox.class, null, "name");
-        assertEquals(Collections.EMPTY_MAP, b.getContext());
-    }
+	@Test
+	public void testCreateBoundComboBoxString() {
+		TestableBinding b = (TestableBinding) sbf.createBoundComboBox("name");
+		assertBindingProperties(b, JComboBox.class, null, "name");
+		assertEquals(Collections.EMPTY_MAP, b.getContext());
+	}
 
-    public void testCreateBoundComboBoxStringObjectArray() {
-        Object[] items = new Object[0];
-        TestableBinding b = (TestableBinding)sbf.createBoundComboBox("name", items);
-        assertBindingProperties(b, JComboBox.class, null, "name");
-        assertEquals(1, b.getContext().size(), 1);
-        assertEquals(items, b.getContext().get(ComboBoxBinder.SELECTABLE_ITEMS_KEY));
-    }
+	@Test
+	public void testCreateBoundComboBoxStringObjectArray() {
+		Object[] items = new Object[0];
+		TestableBinding b = (TestableBinding) sbf.createBoundComboBox("name", items);
+		assertBindingProperties(b, JComboBox.class, null, "name");
+		assertEquals(1, b.getContext().size(), 1);
+		assertEquals(items, b.getContext().get(ComboBoxBinder.SELECTABLE_ITEMS_KEY));
+	}
 
-    public void testCreateBoundComboBoxStringValueModel() {
-        ValueModel valueHolder = new ValueHolder();
-        TestableBinding b = (TestableBinding)sbf.createBoundComboBox("name", valueHolder);
-        assertBindingProperties(b, JComboBox.class, null, "name");
-        assertEquals(1, b.getContext().size(), 1);
-        assertEquals(valueHolder, b.getContext().get(ComboBoxBinder.SELECTABLE_ITEMS_KEY));
-    }
+	@Test
+	public void testCreateBoundComboBoxStringValueModel() {
+		ValueModel valueHolder = new ValueHolder();
+		TestableBinding b = (TestableBinding) sbf.createBoundComboBox("name", valueHolder);
+		assertBindingProperties(b, JComboBox.class, null, "name");
+		assertEquals(1, b.getContext().size(), 1);
+		assertEquals(valueHolder, b.getContext().get(ComboBoxBinder.SELECTABLE_ITEMS_KEY));
+	}
 
-    public void testCreateBoundComboBoxStringStringString() {
-        TestableBinding b = (TestableBinding)sbf.createBoundComboBox("name", "listProperty", "displayProperty");
-        assertBindingProperties(b, JComboBox.class, null, "name");
-        assertEquals(4, b.getContext().size());
-        assertEquals(sbf.getFormModel().getValueModel("listProperty"), b.getContext().get(
-                ComboBoxBinder.SELECTABLE_ITEMS_KEY));
-        assertEquals("displayProperty",
-                ((BeanPropertyValueListRenderer)b.getContext().get(ComboBoxBinder.RENDERER_KEY)).getPropertyName());
-        assertEquals("displayProperty",
-                ((BeanPropertyEditorClosure)b.getContext().get(ComboBoxBinder.EDITOR_KEY)).getRenderedProperty());
-        assertEquals("displayProperty", getComparatorProperty(b));
+	@Test
+	public void testCreateBoundComboBoxStringStringString() {
+		TestableBinding b = (TestableBinding) sbf.createBoundComboBox("name", "listProperty", "displayProperty");
+		assertBindingProperties(b, JComboBox.class, null, "name");
+		assertEquals(4, b.getContext().size());
+		assertEquals(sbf.getFormModel().getValueModel("listProperty"),
+				b.getContext().get(ComboBoxBinder.SELECTABLE_ITEMS_KEY));
+		assertEquals("displayProperty",
+				((BeanPropertyValueListRenderer) b.getContext().get(ComboBoxBinder.RENDERER_KEY)).getPropertyName());
+		assertEquals("displayProperty",
+				((BeanPropertyEditorClosure) b.getContext().get(ComboBoxBinder.EDITOR_KEY)).getRenderedProperty());
+		assertEquals("displayProperty", getComparatorProperty(b));
 
-        try {
-            b = (TestableBinding)sbf.createBoundComboBox("name", "someUnknownProperty", "displayProperty");
-            fail("cant use an unknown property to provide the selectable items");
-        }
-        catch (InvalidPropertyException e) {
-            // expected
-        }
-    }
+		try {
+			b = (TestableBinding) sbf.createBoundComboBox("name", "someUnknownProperty", "displayProperty");
+			fail("cant use an unknown property to provide the selectable items");
+		} catch (InvalidPropertyException e) {
+			// expected
+		}
+	}
 
-    public void testCreateBoundComboBoxStringValueModelString() {
-        ValueModel selectableItemsHolder = new ValueHolder(new Object());
-        TestableBinding b = (TestableBinding)sbf.createBoundComboBox("name", selectableItemsHolder, "displayProperty");
-        assertBindingProperties(b, JComboBox.class, null, "name");
-        assertEquals(4, b.getContext().size());
-        assertEquals(selectableItemsHolder, b.getContext().get(ComboBoxBinder.SELECTABLE_ITEMS_KEY));
-        assertEquals("displayProperty",
-                ((BeanPropertyValueListRenderer)b.getContext().get(ComboBoxBinder.RENDERER_KEY)).getPropertyName());
-        assertEquals("displayProperty",
-                ((BeanPropertyEditorClosure)b.getContext().get(ComboBoxBinder.EDITOR_KEY)).getRenderedProperty());
-        assertEquals("displayProperty", getComparatorProperty(b));
-    }
+	@Test
+	public void testCreateBoundComboBoxStringValueModelString() {
+		ValueModel selectableItemsHolder = new ValueHolder(new Object());
+		TestableBinding b = (TestableBinding) sbf.createBoundComboBox("name", selectableItemsHolder, "displayProperty");
+		assertBindingProperties(b, JComboBox.class, null, "name");
+		assertEquals(4, b.getContext().size());
+		assertEquals(selectableItemsHolder, b.getContext().get(ComboBoxBinder.SELECTABLE_ITEMS_KEY));
+		assertEquals("displayProperty",
+				((BeanPropertyValueListRenderer) b.getContext().get(ComboBoxBinder.RENDERER_KEY)).getPropertyName());
+		assertEquals("displayProperty",
+				((BeanPropertyEditorClosure) b.getContext().get(ComboBoxBinder.EDITOR_KEY)).getRenderedProperty());
+		assertEquals("displayProperty", getComparatorProperty(b));
+	}
 
-    public void testCreateBoundListModel() {
-        ValueModel vm = ((DefaultFormModel)sbf.getFormModel()).getFormObjectPropertyAccessStrategy().getPropertyValueModel(
-                "listProperty");
-        ObservableList observableList = sbf.createBoundListModel("listProperty");
+	@Test
+	public void testCreateBoundListModel() {
+		ValueModel vm = ((DefaultFormModel) sbf.getFormModel()).getFormObjectPropertyAccessStrategy()
+				.getPropertyValueModel("listProperty");
+		ObservableList observableList = sbf.createBoundListModel("listProperty");
 
-        ArrayList list = new ArrayList();
-        list.add(new Integer(1));
-        vm.setValue(list);
-        assertEquals(new Integer(1), observableList.get(0));
-        observableList.add(new Integer(2));
-        assertEquals(1, ((List)vm.getValue()).size());
-        sbf.getFormModel().commit();
-        assertEquals(new Integer(2), ((List)vm.getValue()).get(1));
-    }
+		ArrayList list = new ArrayList();
+		list.add(new Integer(1));
+		vm.setValue(list);
+		assertEquals(new Integer(1), observableList.get(0));
+		observableList.add(new Integer(2));
+		assertEquals(1, ((List) vm.getValue()).size());
+		sbf.getFormModel().commit();
+		assertEquals(new Integer(2), ((List) vm.getValue()).get(1));
+	}
 
-    public void testCreateBoundListString() {
-        TestableBinding b = (TestableBinding)sbf.createBoundList("listProperty");
-        assertBindingProperties(b, JList.class, null, "listProperty");
+	@Test
+	public void testCreateBoundListString() {
+		TestableBinding b = (TestableBinding) sbf.createBoundList("listProperty");
+		assertBindingProperties(b, JList.class, null, "listProperty");
 
-        assertEquals(1, b.getContext().size());
-    }
+		assertEquals(1, b.getContext().size());
+	}
 
-    public void testCreateBoundListStringObjectString() {
-        Object selectableItems = new Object();
-        TestableBinding b = (TestableBinding)sbf.createBoundList("listProperty", selectableItems, "displayProperty");
-        assertBindingProperties(b, JList.class, null, "listProperty");
+	@Test
+	public void testCreateBoundListStringObjectString() {
+		Object selectableItems = new Object();
+		TestableBinding b = (TestableBinding) sbf.createBoundList("listProperty", selectableItems, "displayProperty");
+		assertBindingProperties(b, JList.class, null, "listProperty");
 
-        assertEquals(3, b.getContext().size());
-        assertEquals(selectableItems,
-                ((ValueModel)b.getContext().get(ListBinder.SELECTABLE_ITEMS_KEY)).getValue());
-        assertEquals("displayProperty",
-                ((BeanPropertyValueListRenderer)b.getContext().get(ListBinder.RENDERER_KEY)).getPropertyName());
-        assertEquals("displayProperty", getComparatorProperty(b));
-        assertFalse(b.getContext().containsKey(ListBinder.SELECTION_MODE_KEY));
-    }
+		assertEquals(3, b.getContext().size());
+		assertEquals(selectableItems, ((ValueModel) b.getContext().get(ListBinder.SELECTABLE_ITEMS_KEY)).getValue());
+		assertEquals("displayProperty",
+				((BeanPropertyValueListRenderer) b.getContext().get(ListBinder.RENDERER_KEY)).getPropertyName());
+		assertEquals("displayProperty", getComparatorProperty(b));
+		assertFalse(b.getContext().containsKey(ListBinder.SELECTION_MODE_KEY));
+	}
 
-    public void testCreateBoundListStringValueModelString() {
-        ValueModel selectableItemsHolder = new ValueHolder(new Object());
-        TestableBinding b = (TestableBinding)sbf.createBoundList("listProperty", selectableItemsHolder,
-                "displayProperty");
-        assertBindingProperties(b, JList.class, null, "listProperty");
+	@Test
+	public void testCreateBoundListStringValueModelString() {
+		ValueModel selectableItemsHolder = new ValueHolder(new Object());
+		TestableBinding b = (TestableBinding) sbf.createBoundList("listProperty", selectableItemsHolder,
+				"displayProperty");
+		assertBindingProperties(b, JList.class, null, "listProperty");
 
-        assertEquals(3, b.getContext().size());
-        assertEquals(selectableItemsHolder, b.getContext().get(ListBinder.SELECTABLE_ITEMS_KEY));
-        assertEquals("displayProperty",
-                ((BeanPropertyValueListRenderer)b.getContext().get(ListBinder.RENDERER_KEY)).getPropertyName());
-        assertEquals("displayProperty", getComparatorProperty(b));
-        assertFalse(b.getContext().containsKey(ListBinder.SELECTION_MODE_KEY));
-    }
+		assertEquals(3, b.getContext().size());
+		assertEquals(selectableItemsHolder, b.getContext().get(ListBinder.SELECTABLE_ITEMS_KEY));
+		assertEquals("displayProperty",
+				((BeanPropertyValueListRenderer) b.getContext().get(ListBinder.RENDERER_KEY)).getPropertyName());
+		assertEquals("displayProperty", getComparatorProperty(b));
+		assertFalse(b.getContext().containsKey(ListBinder.SELECTION_MODE_KEY));
+	}
 
-    private void assertBindingProperties(TestableBinding b, Class controlType, JComponent control, String property) {
-        assertEquals(b.getControlType(), controlType);
-        assertEquals(b.getControl(), control);
-        assertEquals(b.getFormModel(), sbf.getFormModel());
-        assertEquals(b.getProperty(), property);
-    }
-    
-    private String getComparatorProperty(TestableBinding b) {
-        // TODO: remove this nasty reflection once PropertyComparator is extended with the abbility
-        // to query the SortDefinition
-        return ((SortDefinition)getField(b.getContext().get(ListBinder.COMPARATOR_KEY),
-                "sortDefinition")).getProperty();
-    }
+	private void assertBindingProperties(TestableBinding b, Class controlType, JComponent control, String property) {
+		assertEquals(b.getControlType(), controlType);
+		assertEquals(b.getControl(), control);
+		assertEquals(b.getFormModel(), sbf.getFormModel());
+		assertEquals(b.getProperty(), property);
+	}
 
-    private Object getField(Object source, String fieldName) {
-        try {
-            Field field = source.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return field.get(source);
-        }
-        catch (Exception e) {
-            fail(e.toString());
-            return null;
-        }
-    }
+	private String getComparatorProperty(TestableBinding b) {
+		// TODO: remove this nasty reflection once PropertyComparator is extended with
+		// the abbility
+		// to query the SortDefinition
+		return ((SortDefinition) getField(b.getContext().get(ListBinder.COMPARATOR_KEY), "sortDefinition"))
+				.getProperty();
+	}
+
+	private Object getField(Object source, String fieldName) {
+		try {
+			Field field = source.getClass().getDeclaredField(fieldName);
+			field.setAccessible(true);
+			return field.get(source);
+		} catch (Exception e) {
+			fail(e.toString());
+			return null;
+		}
+	}
 }

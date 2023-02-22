@@ -15,63 +15,80 @@
  */
 package org.springframework.richclient.command.config;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.swing.AbstractButton;
 
+import org.assertj.swing.edt.GuiActionRunner;
+import org.assertj.swing.edt.GuiTask;
+import org.junit.jupiter.api.Test;
 import org.springframework.richclient.command.ActionCommand;
 import org.springframework.richclient.test.SpringRichTestCase;
 
 /**
- * MultiFacedEnablingTests was built to check up on the issue reported as <a
- * href="http://opensource.atlassian.com/projects/spring/browse/RCP-73">RCP-73 </a>.
+ * MultiFacedEnablingTests was built to check up on the issue reported as
+ * <a href=
+ * "http://opensource.atlassian.com/projects/spring/browse/RCP-73">RCP-73 </a>.
  */
-public class MultiFacedEnablingTests extends SpringRichTestCase
-{
-    private static final String ALTERNATE_ID = "otherId";
-    private static final String MAIN_ID = "someid";
+public class MultiFacedEnablingTests extends SpringRichTestCase {
+	private static final String ALTERNATE_ID = "otherId";
+	private static final String MAIN_ID = "someid";
 
-    /**
-     * Big idea of the test:
-     * <ol>
-     * <li>create silly command</li>
-     * <li>register additional command face to it, and create a button that uses that.</li>
-     * <li>disable/enable the command --> check if all buttons follow up on the changes</li>
-     * </ol>
-     */
-    public void testMultifacedCommandDisabling()
-    {
-        ActionCommand command = new ActionCommand(MAIN_ID)
-        {
+	/**
+	 * Big idea of the test:
+	 * <ol>
+	 * <li>create silly command</li>
+	 * <li>register additional command face to it, and create a button that uses
+	 * that.</li>
+	 * <li>disable/enable the command --> check if all buttons follow up on the
+	 * changes</li>
+	 * </ol>
+	 */
+	@Test
+	public void testMultifacedCommandDisabling() {
+		ActionCommand command = new ActionCommand(MAIN_ID) {
 
-            protected void doExecuteCommand()
-            {
-                // does nothing during this test anyway
-            }
-        };
+			@Override
+			protected void doExecuteCommand() {
+				// does nothing during this test anyway
+			}
+		};
 
-        AbstractButton standardButton = command.createButton();
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				AbstractButton standardButton = command.createButton();
 
-        // test this dude's enabling
-        command.setEnabled(false);
-        assertFalse("standard face button didn't follow up on the command's disabling", standardButton
-                .isEnabled());
-        command.setEnabled(true);
-        assertTrue("standard face button didn't follow up on the command's enabling", standardButton
-                .isEnabled());
+				// test this dude's enabling
+				command.setEnabled(false);
+				assertFalse(standardButton.isEnabled(),
+						"standard face button didn't follow up on the command's disabling");
+				command.setEnabled(true);
+				assertTrue(standardButton.isEnabled(),
+						"standard face button didn't follow up on the command's enabling");
+			}
+		});
 
-        // register an alternative face to this command
-        CommandFaceDescriptor face = new CommandFaceDescriptor();
-        command.setFaceDescriptor(ALTERNATE_ID, face);
+		// register an alternative face to this command
+		CommandFaceDescriptor face = new CommandFaceDescriptor();
+		command.setFaceDescriptor(ALTERNATE_ID, face);
 
-        // and get us a button with that face
-        AbstractButton otherFacedButton = command.createButton(ALTERNATE_ID);
+		GuiActionRunner.execute(new GuiTask() {
+			@Override
+			protected void executeInEDT() throws Throwable {
+				// and get us a button with that face
+				AbstractButton otherFacedButton = command.createButton(ALTERNATE_ID);
 
-        // test this newly faced dude
-        command.setEnabled(false);
-        assertFalse("alternative face button didn't follow up on the command's disabling", otherFacedButton
-                .isEnabled());
-        command.setEnabled(true);
-        assertTrue("alternative face button didn't follow up on the command's enabling", otherFacedButton
-                .isEnabled());
+				// test this newly faced dude
+				command.setEnabled(false);
+				assertFalse(otherFacedButton.isEnabled(),
+						"alternative face button didn't follow up on the command's disabling");
+				command.setEnabled(true);
+				assertTrue(otherFacedButton.isEnabled(),
+						"alternative face button didn't follow up on the command's enabling");
+			}
+		});
 
-    }
+	}
 }
