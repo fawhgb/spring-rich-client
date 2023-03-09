@@ -1038,11 +1038,11 @@
 
     <distributionManagement>
 		<repository>
-            <id>releases</id>
+            <id>${env.REPOSITORY_RELEASES_ID}</id>
             <url>${env.REPOSITORY_RELEASES_URL}</url>
         </repository>
         <snapshotRepository>
-            <id>snapshots</id>
+            <id>${env.REPOSITORY_SNAPSHOTS_ID}</id>
             <url>${env.REPOSITORY_SNAPSHOTS_URL}</url>
         </snapshotRepository>
         <!--repository>
