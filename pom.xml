@@ -1039,11 +1039,11 @@
     <distributionManagement>
 		<repository>
             <id>releases</id>
-            <url>${env.repositoryReleasesUrl}</url>
+            <url>${env.REPOSITORY_RELEASES_URL}</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
-            <url>${env.repositorySnapshotsUrl}</url>
+            <url>${env.REPOSITORY_SNAPSHOTS_URL}</url>
         </snapshotRepository>
         <!--repository>
             <id>shell.sourceforge.net</id>
