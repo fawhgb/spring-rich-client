@@ -203,8 +203,8 @@
    a transitive way, but when not using validation,
    this package is also needed -->
         <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
         </dependency>
 
         <!-- only required when ValangRichValidator is used -->

@@ -690,12 +690,12 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-binding</artifactId>
-                <version>1.0.5</version>
+                <version>1.0.6</version>
             </dependency>
             <dependency>
                 <groupId>org.springmodules</groupId>
                 <artifactId>spring-modules-validation</artifactId>
-                <version>0.8a</version>
+                <version>0.8</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.springframework</groupId>
@@ -706,9 +706,9 @@
 
             <!-- Collections -->
             <dependency>
-                <groupId>commons-collections</groupId>
-                <artifactId>commons-collections</artifactId>
-                <version>3.2.1</version>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>4.4</version>
             </dependency>
 
             <!-- Codec -->
