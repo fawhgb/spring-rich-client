@@ -1037,7 +1037,15 @@
     </dependencyManagement>
 
     <distributionManagement>
-        <repository>
+		<repository>
+            <id>releases</id>
+            <url>${env.repositoryReleasesUrl}</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <url>${env.repositorySnapshotsUrl}</url>
+        </snapshotRepository>
+        <!--repository>
             <id>shell.sourceforge.net</id>
             <url>scp://shell.sourceforge.net/home/groups/s/sp/spring-rich-c/htdocs/maven2repository</url>
         </repository>
@@ -1048,7 +1056,7 @@
         <site>
             <id>shell.sourceforge.net</id>
             <url>scp://shell.sourceforge.net/home/groups/s/sp/spring-rich-c/htdocs/${project.version}</url>
-        </site>
+        </site-->
         <!-- Archive deployment -->
         <!--<site>-->
         <!--<id>shell.sourceforge.net</id>-->
