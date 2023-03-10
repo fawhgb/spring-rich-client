@@ -10,11 +10,11 @@ import org.springframework.rules.PropertyConstraintProvider;
 import org.springframework.rules.Rules;
 import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.constraint.property.PropertyConstraint;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationManager;
-import org.springframework.security.SpringSecurityException;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * This class provides a bean suitable for use in a login form, providing
@@ -108,7 +108,7 @@ public class SessionDetails implements Serializable, PropertyConstraintProvider 
 		this.authenticationManager = manager;
 	}
 
-	public void login() throws SpringSecurityException {
+	public void login() throws AuthenticationException {
 		final ApplicationContext appCtx = Application.instance().getApplicationContext();
 
 		// Attempt login
@@ -119,7 +119,7 @@ public class SessionDetails implements Serializable, PropertyConstraintProvider 
 
 		try {
 			result = authenticationManager.authenticate(request);
-		} catch (SpringSecurityException e) {
+		} catch (AuthenticationException e) {
 			logger.warn("authentication failed", e);
 
 			// Fire application event to advise of failed login

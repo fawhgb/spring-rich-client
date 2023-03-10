@@ -9,15 +9,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.AccessDecisionManager;
-import org.springframework.security.AccessDeniedException;
-import org.springframework.security.Authentication;
-import org.springframework.security.ConfigAttribute;
-import org.springframework.security.ConfigAttributeDefinition;
-import org.springframework.security.providers.TestingAuthenticationToken;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 /**
  * @author Larry Streepy
@@ -170,7 +170,7 @@ public class SecurityControllerTests {
 		}
 
 		@Override
-		protected ConfigAttributeDefinition getConfigAttributeDefinition(Object securedObject) {
+		protected Collection<ConfigAttribute> getConfigAttributeDefinition(Object securedObject) {
 			return null;
 		}
 	}
@@ -187,7 +187,7 @@ public class SecurityControllerTests {
 		}
 
 		@Override
-		public void decide(Authentication authentication, Object object, ConfigAttributeDefinition config)
+		public void decide(Authentication authentication, Object object, Collection<ConfigAttribute> config)
 				throws AccessDeniedException {
 			if (!decisionValue) {
 				throw new AccessDeniedException("access denied");

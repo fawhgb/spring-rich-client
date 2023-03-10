@@ -21,7 +21,7 @@ import org.springframework.richclient.dialog.ApplicationDialog;
 import org.springframework.richclient.dialog.CompositeDialogPage;
 import org.springframework.richclient.dialog.TabbedDialogPage;
 import org.springframework.richclient.dialog.TitledPageApplicationDialog;
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 
 /**
  * Provides a login interface to the user.

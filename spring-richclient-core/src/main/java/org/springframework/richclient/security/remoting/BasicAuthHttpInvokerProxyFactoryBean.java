@@ -18,7 +18,7 @@ package org.springframework.richclient.security.remoting;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.remoting.httpinvoker.HttpInvokerRequestExecutor;
 import org.springframework.richclient.security.AuthenticationAware;
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 
 /**
  * Extension of <code>HttpInvokerProxyFactoryBean</code> that supports the use

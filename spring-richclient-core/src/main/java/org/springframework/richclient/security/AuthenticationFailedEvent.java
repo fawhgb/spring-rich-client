@@ -15,8 +15,8 @@
  */
 package org.springframework.richclient.security;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.SpringSecurityException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * Event fired when an authentication attempt fails.
@@ -30,7 +30,7 @@ import org.springframework.security.SpringSecurityException;
 public class AuthenticationFailedEvent extends ClientSecurityEvent {
 
 	private static final long serialVersionUID = 1L;
-	private SpringSecurityException cause;
+	private AuthenticationException cause;
 
 	/**
 	 * Constructor. Use the given authentication token as the source of the event.
@@ -38,7 +38,7 @@ public class AuthenticationFailedEvent extends ClientSecurityEvent {
 	 * @param authentication token
 	 * @param cause          The exception that caused the login failure
 	 */
-	public AuthenticationFailedEvent(Authentication authentication, SpringSecurityException cause) {
+	public AuthenticationFailedEvent(Authentication authentication, AuthenticationException cause) {
 		super(authentication);
 		setCause(cause);
 	}
@@ -48,7 +48,7 @@ public class AuthenticationFailedEvent extends ClientSecurityEvent {
 	 *
 	 * @return causing exception
 	 */
-	public SpringSecurityException getCause() {
+	public AuthenticationException getCause() {
 		return cause;
 	}
 
@@ -57,7 +57,7 @@ public class AuthenticationFailedEvent extends ClientSecurityEvent {
 	 *
 	 * @param cause
 	 */
-	public void setCause(SpringSecurityException cause) {
+	public void setCause(AuthenticationException cause) {
 		this.cause = cause;
 	}
 }

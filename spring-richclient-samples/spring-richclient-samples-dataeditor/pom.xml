@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.springframework.richclient.samples</groupId>
     <artifactId>spring-richclient-samples</artifactId>
-    <version>1.0.0.faw-SNAPSHOT</version>
+    <version>5.3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.springframework.richclient.samples</groupId>

@@ -7,16 +7,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.Authentication;
-import org.springframework.security.ConfigAttribute;
-import org.springframework.security.ConfigAttributeDefinition;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.GrantedAuthorityImpl;
-import org.springframework.security.providers.TestingAuthenticationToken;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.authentication.TestingAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 /**
  * @author Larry Streepy
@@ -41,10 +42,10 @@ public class UserRoleSecurityControllerTests {
 	public void testSetAuthorizingRoles() {
 		controller.setAuthorizingRoles("ROLE_1,ROLE_2");
 
-		ConfigAttributeDefinition cad = controller.getParsedConfigs();
-		assertTrue(cad.getConfigAttributes().size() == 2, "Should be 2 roles");
+		Collection<ConfigAttribute> cad = controller.getParsedConfigs();
+		assertTrue(cad.size() == 2, "Should be 2 roles");
 
-		Iterator iter = cad.getConfigAttributes().iterator();
+		Iterator iter = cad.iterator();
 		ConfigAttribute attr1 = (ConfigAttribute) iter.next();
 		ConfigAttribute attr2 = (ConfigAttribute) iter.next();
 
@@ -67,7 +68,7 @@ public class UserRoleSecurityControllerTests {
 
 		// Now set the authentication token so that it contains one of these roles
 		Authentication auth = new TestingAuthenticationToken("USER1", "FOO",
-				new GrantedAuthority[] { new GrantedAuthorityImpl("ROLE_1") });
+				Arrays.asList(new GrantedAuthority[] { new SimpleGrantedAuthority("ROLE_1") }));
 		controller.setAuthenticationToken(auth);
 
 		assertTrue(a1.isAuthorized(), "Object should be authorized");
@@ -75,7 +76,7 @@ public class UserRoleSecurityControllerTests {
 
 		// Now to a token that does not contain one of the roles
 		auth = new TestingAuthenticationToken("USER1", "FOO",
-				new GrantedAuthority[] { new GrantedAuthorityImpl("ROLE_NOTFOUND") });
+				Arrays.asList(new GrantedAuthority[] { new SimpleGrantedAuthority("ROLE_NOTFOUND") }));
 		controller.setAuthenticationToken(auth);
 
 		assertFalse(a1.isAuthorized(), "Object should not be authorized");
@@ -92,7 +93,7 @@ public class UserRoleSecurityControllerTests {
 	 * More accessible implementation.
 	 */
 	public class TestUserRoleSecurityController extends UserRoleSecurityController {
-		public ConfigAttributeDefinition getParsedConfigs() {
+		public Collection<ConfigAttribute> getParsedConfigs() {
 			return getConfigAttributeDefinition(null);
 		}
 	}

@@ -15,6 +15,7 @@
  */
 package org.springframework.richclient.security.support;
 
+import java.util.Collection;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -27,13 +28,13 @@ import org.springframework.richclient.security.AuthenticationEvent;
 import org.springframework.richclient.security.AuthenticationFailedEvent;
 import org.springframework.richclient.security.LoginEvent;
 import org.springframework.richclient.security.LogoutEvent;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationManager;
-import org.springframework.security.GrantedAuthority;
-import org.springframework.security.SpringSecurityException;
-import org.springframework.security.context.SecurityContextHolder;
-import org.springframework.security.providers.AuthenticationProvider;
-import org.springframework.security.providers.ProviderManager;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Default implementation of ApplicationSecurityManager. It provides basic
@@ -165,7 +166,7 @@ public class DefaultApplicationSecurityManager implements ApplicationSecurityMan
 
 		try {
 			result = getAuthenticationManager().authenticate(authentication);
-		} catch (SpringSecurityException e) {
+		} catch (AuthenticationException e) {
 			logger.info("authentication failed: " + e.getMessage());
 
 			// Fire application event to advise of failed login
@@ -234,9 +235,9 @@ public class DefaultApplicationSecurityManager implements ApplicationSecurityMan
 
 		Authentication authentication = getAuthentication();
 		if (authentication != null) {
-			GrantedAuthority[] authorities = authentication.getAuthorities();
-			for (int i = 0; i < authorities.length; i++) {
-				if (role.equals(authorities[i].getAuthority())) {
+			Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+			for (GrantedAuthority authority : authorities) {
+				if (role.equals(authority.getAuthority())) {
 					inRole = true;
 					break;
 				}

@@ -6,7 +6,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.richclient.security.AuthenticationAware;
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 
 /**
  * Extension of <code>HttpInvokerProxyFactoryBean</code> that supports the use

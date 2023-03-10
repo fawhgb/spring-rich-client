@@ -19,6 +19,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -28,10 +29,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.richclient.core.Authorizable;
 import org.springframework.richclient.security.SecurityController;
-import org.springframework.security.AccessDecisionManager;
-import org.springframework.security.AccessDeniedException;
-import org.springframework.security.Authentication;
-import org.springframework.security.ConfigAttributeDefinition;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.core.Authentication;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -107,7 +108,7 @@ public abstract class AbstractSecurityController implements SecurityController, 
 	 *                      is to be rretrieved. This may be null.
 	 * @return attribute definition for the provided secured object
 	 */
-	protected abstract ConfigAttributeDefinition getConfigAttributeDefinition(Object securedObject);
+	protected abstract Collection<ConfigAttribute> getConfigAttributeDefinition(Object securedObject);
 
 	/**
 	 * Set the list of post-processor actions to be run. This must be a
@@ -252,7 +253,7 @@ public abstract class AbstractSecurityController implements SecurityController, 
 		try {
 			if (authentication != null) {
 				Object securedObject = getSecuredObject();
-				ConfigAttributeDefinition cad = getConfigAttributeDefinition(securedObject);
+				Collection<ConfigAttribute> cad = getConfigAttributeDefinition(securedObject);
 				getAccessDecisionManager().decide(authentication, getSecuredObject(), cad);
 				authorize = true;
 			}

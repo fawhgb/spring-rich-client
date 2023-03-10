@@ -29,11 +29,11 @@ import org.springframework.richclient.application.Application;
 import org.springframework.richclient.application.ApplicationServicesLocator;
 import org.springframework.richclient.application.config.DefaultApplicationLifecycleAdvisor;
 import org.springframework.richclient.security.support.DefaultApplicationSecurityManager;
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationManager;
-import org.springframework.security.BadCredentialsException;
-import org.springframework.security.LockedException;
-import org.springframework.security.SpringSecurityException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * Test cases for the DefaultApplicationSecurityManager implementation.
@@ -190,7 +190,7 @@ public class DefaultApplicationSecurityManagerTests {
 		try {
 			asm.doLogin(authentication);
 			fail(exceptionType.getName() + " should have been thrown");
-		} catch (SpringSecurityException e) {
+		} catch (AuthenticationException e) {
 			// We expect an exception
 			assertTrue(exceptionType.isAssignableFrom(e.getClass()),
 					"Wrong exception thrown; expecting: " + exceptionType.getName());

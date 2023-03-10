@@ -15,7 +15,7 @@
  */
 package org.springframework.richclient.security;
 
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 
 /**
  * Event fired when the user's authentication token changes.

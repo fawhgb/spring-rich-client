@@ -23,7 +23,7 @@ import org.springframework.richclient.security.ApplicationSecurityManager;
 import org.springframework.richclient.security.SecurityController;
 import org.springframework.richclient.security.SecurityControllerManager;
 import org.springframework.richclient.security.TestAuthenticationManager;
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 
 /**
  * @author Larry Streepy

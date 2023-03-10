@@ -16,7 +16,7 @@ import org.springframework.remoting.caucho.BurlapProxyFactoryBean;
 import org.springframework.remoting.caucho.HessianProxyFactoryBean;
 import org.springframework.remoting.jaxrpc.JaxRpcPortProxyFactoryBean;
 import org.springframework.richclient.application.Application;
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 
 /**
  * Correctly configures the username and password on Spring's remoting proxy

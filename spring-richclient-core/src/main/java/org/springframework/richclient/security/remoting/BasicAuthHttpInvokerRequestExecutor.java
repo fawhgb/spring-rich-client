@@ -21,7 +21,7 @@ import java.net.HttpURLConnection;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 import org.springframework.richclient.security.AuthenticationAware;
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 
 /**
  * Adds BASIC authentication support to

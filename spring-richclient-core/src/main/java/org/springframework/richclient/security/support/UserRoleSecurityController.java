@@ -15,12 +15,15 @@
  */
 package org.springframework.richclient.security.support;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
-import org.springframework.security.ConfigAttributeDefinition;
-import org.springframework.security.ConfigAttributeEditor;
-import org.springframework.security.vote.AffirmativeBased;
-import org.springframework.security.vote.RoleVoter;
+import org.springframework.security.access.ConfigAttribute;
+import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.util.StringUtils;
 
 /**
  * This class controls the authorization of other objects, that implement the
@@ -62,7 +65,7 @@ import org.springframework.security.vote.RoleVoter;
 public class UserRoleSecurityController extends AbstractSecurityController {
 
 	/** The ConfigAttributeDefinition controlling our authorization decision. */
-	private ConfigAttributeDefinition roles = null;
+	private Collection<ConfigAttribute> roles = null;
 
 	/** Roles as a string. */
 	private String rolesString;
@@ -72,8 +75,7 @@ public class UserRoleSecurityController extends AbstractSecurityController {
 	 */
 	public UserRoleSecurityController() {
 		// Install the default decision manager
-		AffirmativeBased adm = new AffirmativeBased();
-		adm.setDecisionVoters(Arrays.asList(new RoleVoter[] { new RoleVoter() }));
+		AffirmativeBased adm = new AffirmativeBased(Arrays.asList(new RoleVoter[] { new RoleVoter() }));
 		setAccessDecisionManager(adm);
 	}
 
@@ -90,9 +92,10 @@ public class UserRoleSecurityController extends AbstractSecurityController {
 		// to automatically convert the string to a ConfigAttributeDefinition.
 		// So, we do it manually :-(
 
-		ConfigAttributeEditor editor = new ConfigAttributeEditor();
-		editor.setAsText(roles);
-		this.roles = (ConfigAttributeDefinition) editor.getValue();
+		this.roles = new ArrayList<>();
+		for (String attributeToken : StringUtils.commaDelimitedListToStringArray(roles)) {
+			this.roles.add(new SecurityConfig(attributeToken.trim()));
+		}
 		rolesString = roles;
 	}
 
@@ -125,7 +128,7 @@ public class UserRoleSecurityController extends AbstractSecurityController {
 	 * @return attribute definition for the provided secured object
 	 */
 	@Override
-	protected ConfigAttributeDefinition getConfigAttributeDefinition(Object securedObject) {
+	protected Collection<ConfigAttribute> getConfigAttributeDefinition(Object securedObject) {
 		return roles;
 	}
 

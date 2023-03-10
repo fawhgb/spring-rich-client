@@ -20,7 +20,7 @@ import org.springframework.rules.PropertyConstraintProvider;
 import org.springframework.rules.Rules;
 import org.springframework.rules.constraint.Constraint;
 import org.springframework.rules.constraint.property.PropertyConstraint;
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 
 /**
  * This class provides a bean suitable for use in a login form, providing

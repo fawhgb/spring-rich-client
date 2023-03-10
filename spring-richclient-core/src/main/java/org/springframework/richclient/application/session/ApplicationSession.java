@@ -11,7 +11,7 @@ import org.springframework.richclient.application.Application;
 import org.springframework.richclient.security.ClientSecurityEvent;
 import org.springframework.richclient.security.LoginEvent;
 import org.springframework.richclient.security.LogoutEvent;
-import org.springframework.security.Authentication;
+import org.springframework.security.core.Authentication;
 
 /**
  * This object is a singleton that will: act as a storage for session and user

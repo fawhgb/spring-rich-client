@@ -15,9 +15,9 @@
  */
 package org.springframework.richclient.security;
 
-import org.springframework.security.Authentication;
-import org.springframework.security.AuthenticationManager;
-import org.springframework.security.SpringSecurityException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  * This interface defines the operations required of an Application Security
@@ -54,7 +54,7 @@ public interface ApplicationSecurityManager {
 	 *         {@link AuthenticationManager#authenticate(org.springframework.security.Authentication)}.
 	 * @throws SpringSecurityException If the authentication attempt fails
 	 */
-	public Authentication doLogin(Authentication authentication) throws SpringSecurityException;
+	public Authentication doLogin(Authentication authentication) throws AuthenticationException;
 
 	/**
 	 * Return if a user is currently logged in, meaning that a previous call to
